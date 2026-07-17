@@ -1,0 +1,114 @@
+"use client";
+
+import Link from "next/link";
+
+function openFeedback() {
+  window.dispatchEvent(new Event("open-feedback"));
+}
+
+export default function Footer() {
+  return (
+    <footer className="border-t border-zinc-800 bg-black text-zinc-300">
+      <div className="mx-auto grid max-w-[1400px] gap-10 px-5 py-12 sm:grid-cols-2 lg:grid-cols-4">
+        <div>
+          <h2 className="text-xl font-black uppercase tracking-wide text-white">
+            All-In Tournament Trail
+          </h2>
+          <p className="mt-3 max-w-sm text-sm leading-6 text-zinc-400">
+            Premier team bass fishing competition in North Texas.
+          </p>
+        </div>
+
+        <div>
+          <h3 className="text-sm font-black uppercase tracking-[0.18em] text-yellow-400">
+            Navigation
+          </h3>
+          <div className="mt-4 flex flex-col gap-3 text-sm">
+            <Link href="#" className="transition hover:text-red-500">
+              Home
+            </Link>
+            <Link href="#schedule" className="transition hover:text-red-500">
+              Schedule
+            </Link>
+            <Link href="#results" className="transition hover:text-red-500">
+              Results
+            </Link>
+            <Link href="#standings" className="transition hover:text-red-500">
+              Standings
+            </Link>
+            <Link href="#rules" className="transition hover:text-red-500">
+              Rules
+            </Link>
+          </div>
+        </div>
+
+        <div>
+          <h3 className="text-sm font-black uppercase tracking-[0.18em] text-yellow-400">
+            Resources
+          </h3>
+          <div className="mt-4 flex flex-col gap-3 text-sm">
+            <Link
+              href="/how-it-works"
+              className="transition hover:text-red-500"
+            >
+              How It Works
+            </Link>
+            <Link href="/contact" className="transition hover:text-red-500">
+              Contact Us
+            </Link>
+            <button
+              type="button"
+              onClick={openFeedback}
+              className="w-fit text-left transition hover:text-red-500"
+            >
+              Feedback
+            </button>
+            <Link href="#sponsors" className="transition hover:text-red-500">
+              Sponsors
+            </Link>
+          </div>
+        </div>
+
+        <div>
+          <h3 className="text-sm font-black uppercase tracking-[0.18em] text-yellow-400">
+            Contact
+          </h3>
+          <div className="mt-4 flex flex-col gap-3 text-sm">
+            <a
+              href="mailto:support@allintournamenttrail.com"
+              className="break-all transition hover:text-red-500"
+            >
+              support@allintournamenttrail.com
+            </a>
+            <a
+              href="#"
+              className="transition hover:text-red-500"
+              aria-label="All-In Tournament Trail on Facebook"
+            >
+              Facebook
+            </a>
+            <a
+              href="#"
+              className="transition hover:text-red-500"
+              aria-label="All-In Tournament Trail on Instagram"
+            >
+              Instagram
+            </a>
+            <a
+              href="#"
+              className="transition hover:text-red-500"
+              aria-label="All-In Tournament Trail on YouTube"
+            >
+              YouTube
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <div className="border-t border-zinc-900 px-5 py-5 text-center text-xs uppercase tracking-wider text-zinc-500">
+        © {new Date().getFullYear()} All-In Tournament Trail. All rights
+        reserved.
+      </div>
+    </footer>
+  );
+}
