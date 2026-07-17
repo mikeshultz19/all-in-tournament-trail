@@ -2,29 +2,27 @@ import Image from "next/image";
 
 export default function Hero() {
   return (
-    <section className="relative bg-black">
-      <div className="relative mx-auto max-w-[1500px]">
-        <Image
-          src="/images/hero/hero-locked-v3.png"
-          alt="All In Tournament Trail"
-          width={1536}
-          height={1024}
-          priority
-          className="block h-auto w-full"
-        />
+    <section className="relative overflow-hidden bg-black">
+      <Image
+        src="/images/hero/hero-locked-v10.png"
+        alt="All In Tournament Trail"
+        width={1920}
+        height={1080}
+        priority
+        sizes="100vw"
+        className="
+          block
+          w-full
+          h-auto
 
-        <a
-          href="/register"
-          aria-label="Register now"
-          className="absolute bottom-[8%] left-[3.4%] h-[9%] w-[20%]"
-        />
+          -translate-y-[2vw]
+          sm:-translate-y-[3vw]
+          lg:-translate-y-[4vw]
+        "
+      />
 
-        <a
-          href="#winners"
-          aria-label="View latest results"
-          className="absolute bottom-[8%] left-[25.3%] h-[9%] w-[21%]"
-        />
-      </div>
+      {/* Bottom divider */}
+      <div className="h-px bg-gradient-to-r from-transparent via-red-700/60 to-transparent" />
     </section>
   );
 }

@@ -1,5 +1,6 @@
+import AOYStandings from "@/components/AOYStandings";
 import FeaturedTournament from "@/components/FeaturedTournament";
-import TournamentTrailNews from "@/components/TournamentTrailNews";
+import TournamentTrailNews from "@/components/LatestTournamentNews";
 
 export default function HomeDashboard() {
   return (
@@ -11,6 +12,10 @@ export default function HomeDashboard() {
 
         <div className="lg:col-span-4">
           <FeaturedTournament />
+        </div>
+
+        <div className="lg:col-span-6">
+          <AOYStandings />
         </div>
       </div>
     </section>

@@ -1,5 +1,5 @@
 import FeaturedTournament from "@/components/FeaturedTournament";
-import TournamentTrailNews from "@/components/TournamentTrailNews";
+import TournamentTrailNews from "@/components/LatestTournamentNews";
 
 export default function HomeHighlights() {
   return (
