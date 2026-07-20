@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { tournaments } from "@/data/tournaments";
+import { getTournamentImage, tournaments } from "@/data/tournaments";
 
 export default function ResultsPage() {
   return (
@@ -28,13 +28,13 @@ export default function ResultsPage() {
         <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
           {tournaments.map((tournament) => (
             <article
-              key={tournament.id}
+              key={tournament.slug}
               className="group overflow-hidden rounded-xl border border-white/10 bg-[#111111] transition-all duration-300 hover:-translate-y-1 hover:border-yellow-500 hover:shadow-2xl"
             >
               {/* Shared Hero Image */}
               <div className="relative h-40 overflow-hidden">
                 <Image
-                  src="/images/tournament-hero.png"
+                  src={getTournamentImage(tournament)}
                   alt="All-In Tournament Trail"
                   fill
                   className="object-cover transition duration-500 group-hover:scale-105"

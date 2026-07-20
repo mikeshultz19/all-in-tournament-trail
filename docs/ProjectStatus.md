@@ -9,12 +9,16 @@
 
 ## Completed
 
+- ✔ Data Consolidation (Repository Cleanup Batch 3)
+
 - ✔ Foundation
 - ✔ Homepage
 - ✔ Shared Components
 - ✔ Repository Cleanup Batch 2
 
 ## In Progress
+
+- ◐ Repository Cleanup
 
 - ◐ Schedule
 

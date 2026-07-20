@@ -1,59 +1,10 @@
 import Link from "next/link";
-
-type AOYStanding = {
-  rank: number;
-  teamName: string;
-  eventsFished: number;
-  points: number;
-};
-
-type TournamentStop = {
-  stop: number;
-  lake: string;
-  date: string;
-};
-
-const standings: AOYStanding[] = [
-  {
-    rank: 1,
-    teamName: "Smith / Jones",
-    eventsFished: 7,
-    points: 1186,
-  },
-  {
-    rank: 2,
-    teamName: "Davis / Lee",
-    eventsFished: 7,
-    points: 1172,
-  },
-  {
-    rank: 3,
-    teamName: "Brown",
-    eventsFished: 6,
-    points: 1140,
-  },
-];
-
-const upcomingSchedule: TournamentStop[] = [
-  {
-    stop: 1,
-    lake: "Eagle Mountain",
-    date: "November 1, 2026",
-  },
-  {
-    stop: 2,
-    lake: "Squaw Creek",
-    date: "November 22, 2026",
-  },
-  {
-    stop: 3,
-    lake: "Ray Hubbard",
-    date: "December 13, 2026",
-  },
-];
+import { aoyStandings } from "@/data/aoyStandings";
+import { getUpcomingTournaments } from "@/data/tournaments";
 
 export default function AOYStandings() {
-  const topThree = [...standings]
+  const upcomingSchedule = getUpcomingTournaments().slice(0, 3);
+  const topThree = [...aoyStandings]
     .sort((a, b) => b.points - a.points)
     .slice(0, 3);
 
@@ -88,7 +39,7 @@ export default function AOYStandings() {
           <div>
             {topThree.map((standing) => (
               <div
-                key={`${standing.rank}-${standing.teamName}`}
+                key={`${standing.rank}-${standing.team}`}
                 className="grid grid-cols-[52px_minmax(0,1fr)_76px_88px] items-center border-b border-white/5 px-3 py-3 last:border-b-0 sm:grid-cols-[58px_minmax(0,1fr)_90px_100px] sm:px-4"
               >
                 <div>
@@ -104,7 +55,7 @@ export default function AOYStandings() {
                 </div>
 
                 <p className="truncate pr-2 text-sm font-bold uppercase tracking-wide text-white">
-                  {standing.teamName}
+                  {standing.team}
                 </p>
 
                 <p className="text-center text-sm font-semibold text-neutral-400">
@@ -156,13 +107,13 @@ export default function AOYStandings() {
           </div>
 
           <div>
-            {upcomingSchedule.map((event) => (
+            {upcomingSchedule.map((event, index) => (
               <div
-                key={event.stop}
+                key={event.slug}
                 className="grid grid-cols-[64px_minmax(0,1fr)_160px] items-center border-b border-white/5 px-3 py-4 last:border-b-0 sm:grid-cols-[76px_minmax(0,1fr)_190px] sm:px-4"
               >
                 <span className="inline-flex h-8 w-10 items-center justify-center border border-[#8f762f]/60 bg-black text-xs font-black text-[#c9aa4a]">
-                  {String(event.stop).padStart(2, "0")}
+                  {String(index + 1).padStart(2, "0")}
                 </span>
 
                 <p className="truncate pr-3 text-sm font-black uppercase tracking-wide text-white sm:text-base">
@@ -170,7 +121,10 @@ export default function AOYStandings() {
                 </p>
 
                 <p className="text-right text-xs font-semibold text-neutral-300 sm:text-sm">
-                  {event.date}
+                  {new Date(`${event.date}T12:00:00`).toLocaleDateString(
+                    "en-US",
+                    { month: "long", day: "numeric", year: "numeric" },
+                  )}
                 </p>
               </div>
             ))}

@@ -1,5 +1,30 @@
 # Repository Audit
 
+## Cleanup Batch 3 — Complete (2026-07-20)
+
+Tournament data consolidation is complete. `data/tournaments.ts` is now the temporary canonical source for public event facts and provides typed selectors for featured, upcoming, slug lookup, and image fallback behavior.
+
+### Data files changed
+
+- Refined `data/tournaments.ts` into the canonical typed event model.
+- Replaced the mixed `data/tournamentData.ts` module with `data/tournamentResults.ts`.
+- Added `data/aoyStandings.ts` to keep unchanged AOY values separate from schedule data.
+
+### Duplicate data removed
+
+- Removed the hard-coded featured event date, name, image, and countdown source from `FeaturedTournament.tsx`.
+- Removed the duplicate three-event schedule and display dates from `AOYStandings.tsx`.
+- Removed component-local populated-looking result names and weights from `WinnersCircle.tsx`.
+- Removed the duplicate event name, date, and result route from the former `data/tournamentData.ts` structure.
+
+### Remaining placeholders and unresolved decisions
+
+- The single result record is deliberately unpublished and empty; all current event results remain “Results Coming Soon.”
+- Existing AOY values remain unchanged and are still unsourced placeholder data pending an approved real data source.
+- Registration is marked open for the three existing events, but no approved registration URLs exist, so controls remain unavailable.
+- The canonical public lake names remain exactly as recorded in the prior schedule data; no naming changes were invented.
+- Event information and registration route work remains outside this batch.
+
 Audit date: 2026-07-20  
 Scope: complete maintained repository, excluding generated/dependency internals (`.git/`, `.next/`, and `node_modules/`)  
 Mode: read-only analysis; this report is the only modified file  

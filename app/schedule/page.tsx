@@ -48,7 +48,7 @@ export default function SchedulePage() {
           <div>
             {tournaments.map((tournament, index) => (
               <article
-                key={tournament.id}
+                key={tournament.slug}
                 className="grid grid-cols-[70px_155px_1.25fr_1fr_125px_140px] items-center gap-5 border-b border-white/15 px-3 py-6 transition hover:bg-white/[0.025]"
               >
                 <span className="text-2xl font-black text-red-500">
@@ -65,7 +65,7 @@ export default function SchedulePage() {
                   </h3>
 
                   <p className="mt-1 text-xs text-neutral-500">
-                    {tournament.launchSite}
+                    {tournament.venue}
                   </p>
                 </div>
 
@@ -81,7 +81,7 @@ export default function SchedulePage() {
                 </span>
 
                 <div className="text-right">
-                  {tournament.registrationOpen ? (
+                  {tournament.registrationStatus === "open" ? (
                     <span
                       aria-disabled="true"
                       className="inline-flex min-w-32 cursor-not-allowed items-center justify-center bg-red-950 px-5 py-3 text-xs font-black uppercase tracking-[0.14em] text-neutral-400"
@@ -102,7 +102,7 @@ export default function SchedulePage() {
         {/* MOBILE SCHEDULE */}
         <div className="divide-y divide-white/15 border-t border-white/20 md:hidden">
           {tournaments.map((tournament, index) => (
-            <article key={tournament.id} className="py-6">
+            <article key={tournament.slug} className="py-6">
               <div className="flex items-start gap-4">
                 <span className="text-2xl font-black leading-none text-red-500">
                   {String(index + 1).padStart(2, "0")}
@@ -122,7 +122,7 @@ export default function SchedulePage() {
                   </p>
 
                   <p className="mt-1 text-sm text-neutral-500">
-                    {tournament.launchSite}
+                    {tournament.venue}
                   </p>
 
                   <div className="mt-5 flex items-center justify-between gap-4">
@@ -133,7 +133,7 @@ export default function SchedulePage() {
                       View Event Info
                     </span>
 
-                    {tournament.registrationOpen ? (
+                    {tournament.registrationStatus === "open" ? (
                       <span
                         aria-disabled="true"
                         className="cursor-not-allowed bg-red-950 px-5 py-3 text-xs font-black uppercase tracking-wider text-neutral-400"

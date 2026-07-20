@@ -1,8 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
-
-const EVENT_DATE = new Date("2026-11-01T06:00:00-06:00");
+import {
+  getFeaturedTournament,
+  getTournamentImage,
+} from "@/data/tournaments";
 
 type Countdown = {
   days: number;
@@ -11,8 +13,11 @@ type Countdown = {
   seconds: number;
 };
 
-function calculateCountdown(): Countdown {
-  const difference = Math.max(EVENT_DATE.getTime() - Date.now(), 0);
+function calculateCountdown(date: string): Countdown {
+  const difference = Math.max(
+    new Date(`${date}T06:00:00-06:00`).getTime() - Date.now(),
+    0,
+  );
 
   return {
     days: Math.floor(difference / (1000 * 60 * 60 * 24)),
@@ -23,6 +28,7 @@ function calculateCountdown(): Countdown {
 }
 
 export default function FeaturedTournament() {
+  const tournament = getFeaturedTournament();
   const [countdown, setCountdown] = useState<Countdown>({
     days: 0,
     hours: 0,
@@ -32,7 +38,9 @@ export default function FeaturedTournament() {
 
   useEffect(() => {
     const updateCountdown = () => {
-      setCountdown(calculateCountdown());
+      if (tournament) {
+        setCountdown(calculateCountdown(tournament.date));
+      }
     };
 
     updateCountdown();
@@ -40,7 +48,7 @@ export default function FeaturedTournament() {
     const interval = window.setInterval(updateCountdown, 1000);
 
     return () => window.clearInterval(interval);
-  }, []);
+  }, [tournament]);
 
   const countdownItems = [
     { label: "Days", value: countdown.days },
@@ -48,6 +56,14 @@ export default function FeaturedTournament() {
     { label: "Min", value: countdown.minutes },
     { label: "Sec", value: countdown.seconds },
   ];
+
+  if (!tournament) {
+    return (
+      <article className="border border-yellow-700/50 bg-[#080808] p-6 text-center text-sm text-zinc-500">
+        Tournament information is not currently available.
+      </article>
+    );
+  }
 
   return (
     <article className="overflow-hidden rounded-md border border-yellow-700/50 bg-[#080808]">
@@ -65,7 +81,7 @@ export default function FeaturedTournament() {
       <div
         className="relative h-[180px] bg-cover bg-center"
         style={{
-          backgroundImage: "url('/images/featured-tournament.png')",
+          backgroundImage: `url('${getTournamentImage(tournament)}')`,
         }}
       >
         <div className="absolute inset-0 bg-gradient-to-t from-black via-black/10 to-transparent" />
@@ -80,11 +96,14 @@ export default function FeaturedTournament() {
 
         <div className="text-center">
           <h3 className="text-lg font-black uppercase text-white sm:text-xl">
-            Eagle Mountain Lake
+            {tournament.name}
           </h3>
 
           <p className="mt-1 text-[9px] font-black uppercase tracking-[0.15em] text-yellow-500">
-            November 1, 2026
+            {new Date(`${tournament.date}T12:00:00`).toLocaleDateString(
+              "en-US",
+              { month: "long", day: "numeric", year: "numeric" },
+            )}
           </p>
         </div>
 
@@ -129,7 +148,11 @@ export default function FeaturedTournament() {
             aria-disabled="true"
             className="cursor-not-allowed bg-red-950 px-2 py-2.5 text-center text-[9px] font-black uppercase tracking-[0.08em] text-zinc-400"
           >
-            Register Now
+            {tournament.registrationStatus === "open"
+              ? "Register Now"
+              : tournament.registrationStatus === "closed"
+                ? "Registration Closed"
+                : "Registration Unavailable"}
           </span>
         </div>
 

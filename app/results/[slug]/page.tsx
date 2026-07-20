@@ -1,7 +1,11 @@
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { tournaments } from "@/data/tournaments";
+import {
+  getTournamentBySlug,
+  getTournamentImage,
+} from "@/data/tournaments";
+import { getTournamentResultsBySlug } from "@/data/tournamentResults";
 
 interface ResultsDetailPageProps {
   params: Promise<{
@@ -22,19 +26,20 @@ export default async function ResultsDetailPage({
 }: ResultsDetailPageProps) {
   const { slug } = await params;
 
-  const tournament = tournaments.find(
-    (item) => item.slug === slug
-  );
+  const tournament = getTournamentBySlug(slug);
 
   if (!tournament) {
     notFound();
   }
 
+  const results = getTournamentResultsBySlug(slug);
+  const resultsPublished = tournament.resultsAvailable && results?.published;
+
   return (
     <main className="min-h-screen bg-black text-white">
       <section className="relative h-[360px] overflow-hidden border-b border-white/10">
         <Image
-          src="/images/tournament-hero.png"
+          src={getTournamentImage(tournament)}
           alt="All-In Tournament Trail"
           fill
           priority
@@ -73,7 +78,7 @@ export default async function ResultsDetailPage({
               </p>
 
               <p className="mt-2 text-lg font-bold">
-                {tournament.launchSite}
+                {tournament.venue}
               </p>
             </div>
 
@@ -90,17 +95,51 @@ export default async function ResultsDetailPage({
 
           <div className="mt-8 border-t border-white/10 pt-8 text-center">
             <p className="text-sm font-black uppercase tracking-[0.25em] text-yellow-400">
-              Results Coming Soon
+              {resultsPublished ? "Official Results" : "Results Coming Soon"}
             </p>
 
             <h2 className="mt-4 text-3xl font-black uppercase">
-              Tournament results have not been posted
+              {resultsPublished
+                ? "Tournament Results"
+                : "Tournament results have not been posted"}
             </h2>
 
             <p className="mx-auto mt-4 max-w-2xl text-neutral-400">
-              Official standings, winning weight, Big Bass, and payouts will
-              appear here after the tournament is completed.
+              {resultsPublished
+                ? "Official standings, winning weight, Big Bass, and payouts are available for this tournament."
+                : "Official standings, winning weight, Big Bass, and payouts will appear here after the tournament is completed."}
             </p>
+
+            {resultsPublished && results ? (
+              <div className="mt-8 grid gap-4 text-left sm:grid-cols-3">
+                <div className="border border-white/10 p-4">
+                  <p className="text-xs font-black uppercase tracking-widest text-neutral-500">
+                    Winning Weight
+                  </p>
+                  <p className="mt-2 text-lg font-bold">
+                    {results.winningWeight === null
+                      ? "Not posted"
+                      : `${results.winningWeight} lbs`}
+                  </p>
+                </div>
+                <div className="border border-white/10 p-4">
+                  <p className="text-xs font-black uppercase tracking-widest text-neutral-500">
+                    Big Bass
+                  </p>
+                  <p className="mt-2 text-lg font-bold">
+                    {results.bigBass?.team ?? "Not posted"}
+                  </p>
+                </div>
+                <div className="border border-white/10 p-4">
+                  <p className="text-xs font-black uppercase tracking-widest text-neutral-500">
+                    Standings / Payouts
+                  </p>
+                  <p className="mt-2 text-lg font-bold">
+                    {results.standings.length} / {results.payouts.length}
+                  </p>
+                </div>
+              </div>
+            ) : null}
 
             <Link
               href="/results"

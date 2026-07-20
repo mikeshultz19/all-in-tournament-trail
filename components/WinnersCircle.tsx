@@ -1,42 +1,15 @@
 import Image from "next/image";
 import Link from "next/link";
-import { currentTournament } from "@/data/tournamentData";
+import { getFeaturedTournament } from "@/data/tournaments";
+import { getTournamentResultsBySlug } from "@/data/tournamentResults";
 
 type PotType = "bronze" | "silver" | "gold";
 
 type PotCardProps = {
   type: PotType;
-  name: string;
-  weight: string;
+  name?: string;
+  weight?: number | null;
 };
-
-const topFiveResults = [
-  {
-    place: 1,
-    name: currentTournament.winners.champion.name || "Team Johnson",
-    weight: "23.48 lbs",
-  },
-  {
-    place: 2,
-    name: "Team Davis",
-    weight: "21.67 lbs",
-  },
-  {
-    place: 3,
-    name: "Team Smith",
-    weight: "20.89 lbs",
-  },
-  {
-    place: 4,
-    name: "Team Williams",
-    weight: "19.74 lbs",
-  },
-  {
-    place: 5,
-    name: "Team Thompson",
-    weight: "18.92 lbs",
-  },
-];
 
 const potStyles = {
   bronze: {
@@ -115,7 +88,9 @@ function PotCard({ type, name, weight }: PotCardProps) {
         {name || "Coming Soon"}
       </h3>
 
-      <p className="mt-2 text-sm font-bold text-zinc-200">{weight}</p>
+      <p className="mt-2 text-sm font-bold text-zinc-200">
+        {weight === null || weight === undefined ? "—" : `${weight} lbs`}
+      </p>
 
       <p
         className={`mt-2 text-xs font-black uppercase tracking-wide ${styles.icon}`}
@@ -127,11 +102,13 @@ function PotCard({ type, name, weight }: PotCardProps) {
 }
 
 export default function WinnersCircle() {
-  const overallWinner =
-    currentTournament.winners.champion.name || "Coming Soon";
-
-  const bigBassWinner =
-    currentTournament.winners.bigBass.name || "Coming Soon";
+  const tournament = getFeaturedTournament();
+  const result = tournament
+    ? getTournamentResultsBySlug(tournament.slug)
+    : undefined;
+  const overallWinner = result?.winner?.team || "Coming Soon";
+  const bigBassWinner = result?.bigBass?.team || "Coming Soon";
+  const topFiveResults = result?.standings.slice(0, 5) ?? [];
 
   return (
     <section
@@ -171,11 +148,14 @@ export default function WinnersCircle() {
               </h3>
 
               <p className="mt-1 text-base font-black text-yellow-400">
-                23.48 lbs
+                {result?.winningWeight === null ||
+                result?.winningWeight === undefined
+                  ? "—"
+                  : `${result.winningWeight} lbs`}
               </p>
 
               <p className="mt-1 text-[10px] font-bold uppercase tracking-[0.12em] text-zinc-500">
-                {currentTournament.lake}
+                {tournament?.lake ?? "Tournament To Be Announced"}
               </p>
             </div>
           </article>
@@ -188,30 +168,37 @@ export default function WinnersCircle() {
               </h3>
 
               <div className="mt-3 flex flex-1 flex-col">
-                {topFiveResults.map((result) => (
+                {Array.from({ length: 5 }, (_, index) => {
+                  const standing = topFiveResults[index];
+
+                  return (
                   <div
-                    key={result.place}
+                    key={standing?.rank ?? index + 1}
                     className="grid grid-cols-[28px_1fr_auto] items-center gap-3 border-b border-white/5 py-3 text-sm"
                   >
                     <span className="font-black text-zinc-300">
-                      {result.place}
+                      {standing?.rank ?? index + 1}
                     </span>
 
                     <span
                       className={`font-semibold ${
-                        result.place === 1
+                        (standing?.rank ?? index + 1) === 1
                           ? "text-yellow-400"
                           : "text-white"
                       }`}
                     >
-                      {result.name}
+                      {standing?.team ?? "Coming Soon"}
                     </span>
 
                     <span className="font-semibold text-zinc-300">
-                      {result.weight}
+                      {standing?.weight === null ||
+                      standing?.weight === undefined
+                        ? "—"
+                        : `${standing.weight} lbs`}
                     </span>
                   </div>
-                ))}
+                  );
+                })}
               </div>
 
               <Link
@@ -229,20 +216,20 @@ export default function WinnersCircle() {
           {/* Pot winners */}
           <PotCard
             type="bronze"
-            name={currentTournament.winners.bronzePot.name}
-            weight="18.14 lbs"
+            name={result?.payouts[0]?.team}
+            weight={result?.payouts[0]?.weight}
           />
 
           <PotCard
             type="silver"
-            name={currentTournament.winners.silverPot.name}
-            weight="20.11 lbs"
+            name={result?.payouts[1]?.team}
+            weight={result?.payouts[1]?.weight}
           />
 
           <PotCard
             type="gold"
-            name={currentTournament.winners.goldPot.name}
-            weight="23.48 lbs"
+            name={result?.payouts[2]?.team}
+            weight={result?.payouts[2]?.weight}
           />
 
           {/* Big Bass */}
@@ -267,7 +254,10 @@ export default function WinnersCircle() {
               </h3>
 
               <p className="mt-1 text-sm font-black text-yellow-400">
-                8.42 lbs
+                {result?.bigBass?.weight === null ||
+                result?.bigBass?.weight === undefined
+                  ? "—"
+                  : `${result.bigBass.weight} lbs`}
               </p>
             </div>
           </article>
