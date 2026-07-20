@@ -341,9 +341,9 @@ Missing files are defects, not cleanup candidates, so they are not counted as cl
 
 ## 9. Cleanup Order
 
-### Batch 1: High-confidence safe removals
+### Batch 1: High-confidence safe removals — COMPLETE (2026-07-20)
 
-After one final import/reference check, remove the 15 SAFE TO DELETE items above. Run lint, TypeScript, and build. This is the recommended first cleanup batch because it does not require sitemap or content decisions.
+Completed the approved Repository Cleanup Batch 1 after a final import/reference check. Removed the 13 files explicitly approved for this batch (six components, five starter SVGs, and two redundant placeholder images). No active imports or references required removal. Lint and build verification passed. The two other items in the original 15-item SAFE TO DELETE classification (`lib/utils.ts` and `public/images/hero/all-in-feedback-footer.zip`) were outside the approved Batch 1 deletion list and remain for a later cleanup decision.
 
 ### Batch 2: Old experimental pages and components
 
