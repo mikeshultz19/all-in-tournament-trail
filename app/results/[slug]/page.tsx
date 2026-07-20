@@ -34,7 +34,7 @@ export default async function ResultsDetailPage({
     <main className="min-h-screen bg-black text-white">
       <section className="relative h-[360px] overflow-hidden border-b border-white/10">
         <Image
-          src="/images/tournament-hero.jpg"
+          src="/images/tournament-hero.png"
           alt="All-In Tournament Trail"
           fill
           priority

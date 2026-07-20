@@ -19,5 +19,5 @@ The All In Tournament Trail is a unique bass fishing tournament series that allo
 - Schedule
 - Sponsors
 
-Official Website
-Coming Soon...
+This repository contains the active website implementation. Some approved site
+sections remain scheduled for future development.

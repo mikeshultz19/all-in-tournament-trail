@@ -345,9 +345,37 @@ Missing files are defects, not cleanup candidates, so they are not counted as cl
 
 Completed the approved Repository Cleanup Batch 1 after a final import/reference check. Removed the 13 files explicitly approved for this batch (six components, five starter SVGs, and two redundant placeholder images). No active imports or references required removal. Lint and build verification passed. The two other items in the original 15-item SAFE TO DELETE classification (`lib/utils.ts` and `public/images/hero/all-in-feedback-footer.zip`) were outside the approved Batch 1 deletion list and remain for a later cleanup decision.
 
-### Batch 2: Old experimental pages and components
+### Batch 2: Link, asset, metadata, and feedback configuration repairs — COMPLETE (2026-07-20)
 
-Visually review and then resolve retained design variants/mockups. Confirm the active Header, remove any remaining competing implementation, and decide whether unused imagery belongs in non-public project storage rather than `public/`.
+Completed the approved Repository Cleanup Batch 2 without adding routes, pages,
+features, or architecture. Repairs made:
+
+- Replaced the missing result-detail hero reference
+  `/images/tournament-hero.jpg` with the existing
+  `/images/tournament-hero.png`.
+- Removed the unused `heroImage` field and its three nonexistent
+  `/images/lakes/*.jpg` values from `data/tournaments.ts`.
+- Replaced Home, Schedule, and Results fragment/placeholder navigation with
+  `/`, `/schedule`, and `/results` respectively.
+- Removed broken links to `/standings`,
+  `/tournaments/eagle-mountain-lake`, `/register`, `/rules`, `/login`,
+  `/contact`, and `/register?tournament=...`.
+- Kept AOY Standings, Event Info, Register, Official Rules, Sponsors, and Login
+  visible but intentionally disabled until their approved routes are built.
+- Changed Footer Contact Us to open the existing feedback form.
+- Rendered Facebook, Instagram, and YouTube labels as non-clickable placeholders
+  because no verified social URLs are documented.
+- Replaced default Create Next App metadata with the approved site title and
+  description.
+- Moved feedback recipient and sender configuration to `FEEDBACK_TO_EMAIL` and
+  `FEEDBACK_FROM_EMAIL`, with a server configuration error when either is absent.
+- Revised the README's blanket “Coming Soon” statement to describe the active
+  implementation factually.
+
+Unresolved route-dependent items: Event Information, Registration and its
+confirmation flow, AOY Standings, Official Rules, Sponsors, Contact, Privacy
+Policy, and Terms of Use. These require future approved route work and were not
+created in this batch. Repository cleanup as a whole remains in progress.
 
 ### Batch 3: Route and architecture cleanup
 

@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { useEffect, useState } from "react";
 
 const EVENT_DATE = new Date("2026-11-01T06:00:00-06:00");
@@ -119,19 +118,19 @@ export default function FeaturedTournament() {
 
         {/* Buttons */}
         <div className="mt-4 grid grid-cols-2 gap-2">
-          <Link
-            href="/tournaments/eagle-mountain-lake"
-            className="border border-zinc-600 px-2 py-2.5 text-center text-[9px] font-black uppercase tracking-[0.08em] text-white transition hover:border-yellow-500 hover:text-yellow-400"
+          <span
+            aria-disabled="true"
+            className="cursor-not-allowed border border-zinc-800 px-2 py-2.5 text-center text-[9px] font-black uppercase tracking-[0.08em] text-zinc-600"
           >
             Event Info
-          </Link>
+          </span>
 
-          <Link
-            href="/register"
-            className="bg-red-600 px-2 py-2.5 text-center text-[9px] font-black uppercase tracking-[0.08em] text-white transition hover:bg-red-700"
+          <span
+            aria-disabled="true"
+            className="cursor-not-allowed bg-red-950 px-2 py-2.5 text-center text-[9px] font-black uppercase tracking-[0.08em] text-zinc-400"
           >
             Register Now
-          </Link>
+          </span>
         </div>
 
       </div>

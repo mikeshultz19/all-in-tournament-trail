@@ -24,21 +24,21 @@ export default function Footer() {
             Navigation
           </h3>
           <div className="mt-4 flex flex-col gap-3 text-sm">
-            <Link href="#" className="transition hover:text-red-500">
+            <Link href="/" className="transition hover:text-red-500">
               Home
             </Link>
-            <Link href="#schedule" className="transition hover:text-red-500">
+            <Link href="/schedule" className="transition hover:text-red-500">
               Schedule
             </Link>
-            <Link href="#results" className="transition hover:text-red-500">
+            <Link href="/results" className="transition hover:text-red-500">
               Results
             </Link>
-            <Link href="#standings" className="transition hover:text-red-500">
+            <span aria-disabled="true" className="cursor-not-allowed text-zinc-600">
               Standings
-            </Link>
-            <Link href="#rules" className="transition hover:text-red-500">
+            </span>
+            <span aria-disabled="true" className="cursor-not-allowed text-zinc-600">
               Rules
-            </Link>
+            </span>
           </div>
         </div>
 
@@ -53,9 +53,9 @@ export default function Footer() {
             >
               How It Works
             </Link>
-            <Link href="/contact" className="transition hover:text-red-500">
+            <button type="button" onClick={openFeedback} className="w-fit text-left transition hover:text-red-500">
               Contact Us
-            </Link>
+            </button>
             <button
               type="button"
               onClick={openFeedback}
@@ -63,9 +63,9 @@ export default function Footer() {
             >
               Feedback
             </button>
-            <Link href="#sponsors" className="transition hover:text-red-500">
+            <span aria-disabled="true" className="cursor-not-allowed text-zinc-600">
               Sponsors
-            </Link>
+            </span>
           </div>
         </div>
 
@@ -80,27 +80,15 @@ export default function Footer() {
             >
               support@allintournamenttrail.com
             </a>
-            <a
-              href="#"
-              className="transition hover:text-red-500"
-              aria-label="All-In Tournament Trail on Facebook"
-            >
+            <span aria-disabled="true" className="text-zinc-600">
               Facebook
-            </a>
-            <a
-              href="#"
-              className="transition hover:text-red-500"
-              aria-label="All-In Tournament Trail on Instagram"
-            >
+            </span>
+            <span aria-disabled="true" className="text-zinc-600">
               Instagram
-            </a>
-            <a
-              href="#"
-              className="transition hover:text-red-500"
-              aria-label="All-In Tournament Trail on YouTube"
-            >
+            </span>
+            <span aria-disabled="true" className="text-zinc-600">
               YouTube
-            </a>
+            </span>
           </div>
         </div>
       </div>

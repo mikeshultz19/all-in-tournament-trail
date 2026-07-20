@@ -254,19 +254,19 @@ export default function HowItWorksPage() {
           </p>
 
           <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-            <Link
-              href="/register"
-              className="inline-flex min-h-12 items-center justify-center border border-red-500 bg-red-600 px-7 py-3 text-sm font-black uppercase tracking-wider text-white transition hover:bg-red-500"
+            <span
+              aria-disabled="true"
+              className="inline-flex min-h-12 cursor-not-allowed items-center justify-center border border-red-950 bg-red-950 px-7 py-3 text-sm font-black uppercase tracking-wider text-zinc-400"
             >
               Register Now
-            </Link>
+            </span>
 
-            <Link
-              href="/rules"
-              className="inline-flex min-h-12 items-center justify-center border border-white/25 bg-black px-7 py-3 text-sm font-black uppercase tracking-wider text-white transition hover:border-[#b99a3f] hover:text-[#d0ae4c]"
+            <span
+              aria-disabled="true"
+              className="inline-flex min-h-12 cursor-not-allowed items-center justify-center border border-white/10 bg-black px-7 py-3 text-sm font-black uppercase tracking-wider text-neutral-600"
             >
               View Official Rules
-            </Link>
+            </span>
           </div>
         </div>
       </section>
@@ -417,12 +417,12 @@ export default function HowItWorksPage() {
             </p>
           </div>
 
-          <Link
-            href="/register"
-            className="inline-flex min-h-14 w-full items-center justify-center border border-red-500 bg-red-600 px-8 py-4 text-sm font-black uppercase tracking-wider text-white transition hover:bg-red-500 sm:w-auto"
+          <span
+            aria-disabled="true"
+            className="inline-flex min-h-14 w-full cursor-not-allowed items-center justify-center border border-red-950 bg-red-950 px-8 py-4 text-sm font-black uppercase tracking-wider text-zinc-400 sm:w-auto"
           >
             Register Now
-          </Link>
+          </span>
         </div>
 
         <div className="mx-auto mt-10 max-w-[1300px] border-t border-white/10 pt-7">

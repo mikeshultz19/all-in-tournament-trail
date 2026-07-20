@@ -119,15 +119,15 @@ export default function AOYStandings() {
           </div>
 
           <div className="flex justify-end border-t border-white/10 bg-[#171717] px-4 py-3">
-            <Link
-              href="/standings"
-              className="inline-flex min-h-9 items-center justify-center border border-[#c9aa4a] px-4 py-2 text-[10px] font-black uppercase tracking-[0.12em] text-[#c9aa4a] transition hover:bg-[#c9aa4a] hover:text-black"
+            <span
+              aria-disabled="true"
+              className="inline-flex min-h-9 cursor-not-allowed items-center justify-center border border-[#8f762f]/40 px-4 py-2 text-[10px] font-black uppercase tracking-[0.12em] text-neutral-600"
             >
               View Full Standings
               <span className="ml-2" aria-hidden="true">
                 →
               </span>
-            </Link>
+            </span>
           </div>
         </article>
 

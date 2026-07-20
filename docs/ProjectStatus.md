@@ -12,6 +12,7 @@
 - ✔ Foundation
 - ✔ Homepage
 - ✔ Shared Components
+- ✔ Repository Cleanup Batch 2
 
 ## In Progress
 

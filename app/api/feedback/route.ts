@@ -26,9 +26,20 @@ export async function POST(request: Request) {
       );
     }
 
+    const feedbackToEmail = process.env.FEEDBACK_TO_EMAIL?.trim();
+    const feedbackFromEmail = process.env.FEEDBACK_FROM_EMAIL?.trim();
+
+    if (!feedbackToEmail || !feedbackFromEmail) {
+      console.error("Missing feedback email configuration");
+      return NextResponse.json(
+        { error: "Feedback email configuration is incomplete." },
+        { status: 500 }
+      );
+    }
+
     const result = await resend.emails.send({
-      from: "All-In Tournament Trail <onboarding@resend.dev>",
-      to: ["mikeshultz19@gmail.com"],
+      from: feedbackFromEmail,
+      to: [feedbackToEmail],
       replyTo: email,
       subject: `Website feedback from ${name}`,
       text: [

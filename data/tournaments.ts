@@ -27,7 +27,6 @@ export interface Tournament {
 
   livestream: boolean;
 
-  heroImage: string;
 }
 
 export const tournaments: Tournament[] = [
@@ -53,7 +52,6 @@ export const tournaments: Tournament[] = [
 
     livestream: false,
 
-    heroImage: "/images/lakes/eagle-mountain.jpg",
   },
 
   {
@@ -78,7 +76,6 @@ export const tournaments: Tournament[] = [
 
     livestream: false,
 
-    heroImage: "/images/lakes/squaw-creek.jpg",
   },
 
   {
@@ -103,6 +100,5 @@ export const tournaments: Tournament[] = [
 
     livestream: false,
 
-    heroImage: "/images/lakes/ray-hubbard.jpg",
   },
 ];

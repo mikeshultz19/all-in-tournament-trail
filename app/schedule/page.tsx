@@ -1,4 +1,3 @@
-import Link from "next/link";
 import PageHeader from "@/components/PageHeader";
 import { tournaments } from "@/data/tournaments";
 
@@ -74,21 +73,21 @@ export default function SchedulePage() {
                   {tournament.city}, TX
                 </span>
 
-                <Link
-                  href={`/results/${tournament.slug}`}
-                  className="w-fit border-b border-neutral-500 pb-1 text-sm font-semibold text-neutral-200 transition hover:border-red-500 hover:text-red-500"
+                <span
+                  aria-disabled="true"
+                  className="w-fit cursor-not-allowed border-b border-neutral-800 pb-1 text-sm font-semibold text-neutral-600"
                 >
                   View Info
-                </Link>
+                </span>
 
                 <div className="text-right">
                   {tournament.registrationOpen ? (
-                    <Link
-                      href={`/register?tournament=${tournament.slug}`}
-                      className="inline-flex min-w-32 items-center justify-center bg-red-600 px-5 py-3 text-xs font-black uppercase tracking-[0.14em] transition hover:bg-red-500"
+                    <span
+                      aria-disabled="true"
+                      className="inline-flex min-w-32 cursor-not-allowed items-center justify-center bg-red-950 px-5 py-3 text-xs font-black uppercase tracking-[0.14em] text-neutral-400"
                     >
                       Register
-                    </Link>
+                    </span>
                   ) : (
                     <span className="inline-flex min-w-32 items-center justify-center border border-white/15 px-5 py-3 text-xs font-black uppercase tracking-[0.14em] text-neutral-600">
                       Closed
@@ -127,20 +126,20 @@ export default function SchedulePage() {
                   </p>
 
                   <div className="mt-5 flex items-center justify-between gap-4">
-                    <Link
-                      href={`/results/${tournament.slug}`}
-                      className="border-b border-neutral-500 pb-1 text-sm font-semibold text-neutral-200 transition hover:border-red-500 hover:text-red-500"
+                    <span
+                      aria-disabled="true"
+                      className="cursor-not-allowed border-b border-neutral-800 pb-1 text-sm font-semibold text-neutral-600"
                     >
                       View Event Info
-                    </Link>
+                    </span>
 
                     {tournament.registrationOpen ? (
-                      <Link
-                        href={`/register?tournament=${tournament.slug}`}
-                        className="bg-red-600 px-5 py-3 text-xs font-black uppercase tracking-wider transition hover:bg-red-500"
+                      <span
+                        aria-disabled="true"
+                        className="cursor-not-allowed bg-red-950 px-5 py-3 text-xs font-black uppercase tracking-wider text-neutral-400"
                       >
                         Register
-                      </Link>
+                      </span>
                     ) : (
                       <span className="border border-white/15 px-5 py-3 text-xs font-black uppercase tracking-wider text-neutral-600">
                         Closed
