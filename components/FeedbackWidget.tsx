@@ -3,27 +3,34 @@
 import { FormEvent, useEffect, useState } from "react";
 
 const categories = [
-  "Website Issue",
+  "General Question",
   "Tournament Question",
   "Rule Clarification",
-  "Feature Request",
-  "General Feedback",
+  "Website Issue",
+  "Suggestion",
+  "Sponsor Inquiry",
+  "Other",
 ];
 
 export default function FeedbackWidget() {
   const [isOpen, setIsOpen] = useState(false);
-  const [status, setStatus] = useState<"idle" | "sending" | "success" | "error">(
-    "idle",
-  );
+  const [status, setStatus] = useState<
+    "idle" | "sending" | "success" | "error"
+  >("idle");
 
   useEffect(() => {
-    const openFeedback = () => {
+    const openContact = () => {
       setStatus("idle");
       setIsOpen(true);
     };
 
-    window.addEventListener("open-feedback", openFeedback);
-    return () => window.removeEventListener("open-feedback", openFeedback);
+    window.addEventListener("open-feedback", openContact);
+    window.addEventListener("open-contact", openContact);
+
+    return () => {
+      window.removeEventListener("open-feedback", openContact);
+      window.removeEventListener("open-contact", openContact);
+    };
   }, []);
 
   useEffect(() => {
@@ -33,6 +40,11 @@ export default function FeedbackWidget() {
       document.body.style.overflow = "";
     };
   }, [isOpen]);
+
+  function openModal() {
+    setStatus("idle");
+    setIsOpen(true);
+  }
 
   function closeModal() {
     if (status !== "sending") {
@@ -59,12 +71,14 @@ export default function FeedbackWidget() {
     try {
       const response = await fetch("/api/feedback", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+        },
         body: JSON.stringify(payload),
       });
 
       if (!response.ok) {
-        throw new Error("Unable to send feedback");
+        throw new Error("Unable to send message");
       }
 
       form.reset();
@@ -78,15 +92,12 @@ export default function FeedbackWidget() {
     <>
       <button
         type="button"
-        onClick={() => {
-          setStatus("idle");
-          setIsOpen(true);
-        }}
+        onClick={openModal}
         className="fixed right-0 top-1/2 z-[80] -translate-y-1/2 rounded-l-md border border-r-0 border-red-500/50 bg-red-700 px-2 py-4 text-xs font-black uppercase tracking-[0.18em] text-white shadow-2xl transition hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-yellow-400"
         style={{ writingMode: "vertical-rl" }}
-        aria-label="Open feedback form"
+        aria-label="Open contact form"
       >
-        Feedback
+        Contact
       </button>
 
       {isOpen && (
@@ -94,7 +105,7 @@ export default function FeedbackWidget() {
           className="fixed inset-0 z-[200] flex items-center justify-center bg-black/80 p-4 backdrop-blur-sm"
           role="dialog"
           aria-modal="true"
-          aria-labelledby="feedback-title"
+          aria-labelledby="contact-title"
           onMouseDown={(event) => {
             if (event.target === event.currentTarget) {
               closeModal();
@@ -106,14 +117,17 @@ export default function FeedbackWidget() {
               <p className="mb-1 text-xs font-black uppercase tracking-[0.22em] text-yellow-400">
                 All-In Tournament Trail
               </p>
+
               <h2
-                id="feedback-title"
+                id="contact-title"
                 className="text-2xl font-black uppercase tracking-wide text-white"
               >
-                Send Feedback
+                Contact Us
               </h2>
+
               <p className="mt-2 text-sm text-zinc-400">
-                Report a website issue, ask a question, or suggest an improvement.
+                Ask a question, report an issue, share a suggestion, or contact
+                us about sponsorship opportunities.
               </p>
             </div>
 
@@ -121,7 +135,7 @@ export default function FeedbackWidget() {
               type="button"
               onClick={closeModal}
               className="absolute right-4 top-4 rounded-md p-2 text-zinc-400 transition hover:bg-zinc-800 hover:text-white"
-              aria-label="Close feedback form"
+              aria-label="Close contact form"
             >
               <span aria-hidden="true" className="text-2xl leading-none">
                 ×
@@ -133,12 +147,16 @@ export default function FeedbackWidget() {
                 <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-green-500/15 text-2xl text-green-400">
                   ✓
                 </div>
+
                 <h3 className="text-xl font-black uppercase text-white">
-                  Feedback Sent
+                  Message Sent
                 </h3>
+
                 <p className="mt-2 text-zinc-400">
-                  Thanks for helping us improve the tournament trail.
+                  Thanks for contacting All-In Tournament Trail. We will review
+                  your message as soon as possible.
                 </p>
+
                 <button
                   type="button"
                   onClick={closeModal}
@@ -161,11 +179,13 @@ export default function FeedbackWidget() {
                 <div className="grid gap-5 sm:grid-cols-2">
                   <label className="block">
                     <span className="mb-2 block text-xs font-black uppercase tracking-wider text-zinc-300">
-                      Name <span className="text-zinc-600">(optional)</span>
+                      Name
                     </span>
+
                     <input
                       type="text"
                       name="name"
+                      required
                       maxLength={100}
                       className="w-full rounded-md border border-zinc-700 bg-black px-4 py-3 text-white outline-none transition placeholder:text-zinc-600 focus:border-yellow-400"
                       placeholder="Your name"
@@ -174,11 +194,13 @@ export default function FeedbackWidget() {
 
                   <label className="block">
                     <span className="mb-2 block text-xs font-black uppercase tracking-wider text-zinc-300">
-                      Email <span className="text-zinc-600">(optional)</span>
+                      Email
                     </span>
+
                     <input
                       type="email"
                       name="email"
+                      required
                       maxLength={160}
                       className="w-full rounded-md border border-zinc-700 bg-black px-4 py-3 text-white outline-none transition placeholder:text-zinc-600 focus:border-yellow-400"
                       placeholder="you@example.com"
@@ -188,8 +210,9 @@ export default function FeedbackWidget() {
 
                 <label className="block">
                   <span className="mb-2 block text-xs font-black uppercase tracking-wider text-zinc-300">
-                    Category
+                    Reason for Contact
                   </span>
+
                   <select
                     name="category"
                     required
@@ -199,6 +222,7 @@ export default function FeedbackWidget() {
                     <option value="" disabled>
                       Select a category
                     </option>
+
                     {categories.map((category) => (
                       <option key={category} value={category}>
                         {category}
@@ -211,6 +235,7 @@ export default function FeedbackWidget() {
                   <span className="mb-2 block text-xs font-black uppercase tracking-wider text-zinc-300">
                     Message
                   </span>
+
                   <textarea
                     name="message"
                     required
@@ -218,13 +243,13 @@ export default function FeedbackWidget() {
                     maxLength={3000}
                     rows={6}
                     className="w-full resize-y rounded-md border border-zinc-700 bg-black px-4 py-3 text-white outline-none transition placeholder:text-zinc-600 focus:border-yellow-400"
-                    placeholder="Tell us what happened, what you need help with, or what you would like to see improved."
+                    placeholder="Tell us how we can help."
                   />
                 </label>
 
                 {status === "error" && (
                   <p className="rounded-md border border-red-900 bg-red-950/60 px-4 py-3 text-sm text-red-300">
-                    The message could not be sent. Please try again.
+                    Your message could not be sent. Please try again.
                   </p>
                 )}
 
@@ -242,7 +267,7 @@ export default function FeedbackWidget() {
                     disabled={status === "sending"}
                     className="rounded-md bg-red-700 px-6 py-3 text-sm font-black uppercase tracking-wide text-white transition hover:bg-red-600 disabled:cursor-not-allowed disabled:opacity-60"
                   >
-                    {status === "sending" ? "Sending..." : "Send Feedback"}
+                    {status === "sending" ? "Sending..." : "Send Message"}
                   </button>
                 </div>
               </form>
