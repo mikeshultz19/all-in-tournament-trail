@@ -9,6 +9,7 @@
 
 ## Completed
 
+- ✔ Repository Cleanup v0.2 (Batches 1–4)
 - ✔ Data Consolidation (Repository Cleanup Batch 3)
 
 - ✔ Foundation
@@ -17,8 +18,6 @@
 - ✔ Repository Cleanup Batch 2
 
 ## In Progress
-
-- ◐ Repository Cleanup
 
 - ◐ Schedule
 
@@ -43,4 +42,5 @@
 
 ## Next Recommended Task
 
-- Complete the Schedule and begin Event Information according to the approved master sitemap.
+- Begin the **Schedule / Tournament Experience** milestone by completing the
+  Schedule and then Event Information according to the approved master sitemap.

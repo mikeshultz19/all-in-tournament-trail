@@ -1,163 +1,125 @@
 # Repository Map
 
-Comparison date: 2026-07-20
+Updated: 2026-07-20
+Cleanup baseline: v0.2
 
-This report compares the current repository against the approved architecture in `docs/MasterSiteMap.md`.
+This map describes the maintained repository after Repository Cleanup Batch 4.
+The approved route hierarchy remains defined by `docs/MasterSiteMap.md`; missing
+future routes are not represented here as existing files.
 
-## Intended High-Level Structure
+## Active application routes
+
+| Route | Source | Purpose |
+|---|---|---|
+| `/` | `app/page.tsx` | Homepage |
+| `/schedule` | `app/schedule/page.tsx` | Tournament schedule |
+| `/results` | `app/results/page.tsx` | Results index |
+| `/results/[slug]` | `app/results/[slug]/page.tsx` | Per-tournament results shell; Big Bass remains within the tournament result |
+| `/how-it-works` | `app/how-it-works/page.tsx` | Current How It Works and FAQ content |
+| `/api/feedback` | `app/api/feedback/route.ts` | Feedback email API used by the global widget |
+
+`app/layout.tsx` provides the root layout, fonts, Footer, and FeedbackWidget.
+`app/globals.css` provides Tailwind CSS 4 and global theme styles.
+`app/favicon.ico` is the application favicon.
+
+## Shared and homepage components
+
+- `components/Header.tsx` — active homepage header
+- `components/Footer.tsx` — root-layout footer
+- `components/FeedbackWidget.tsx` — root-layout feedback form
+- `components/PageHeader.tsx` — shared major-page heading
+- `components/Hero.tsx` — homepage hero
+- `components/LatestTournamentNews.tsx` — homepage news section
+- `components/FeaturedTournament.tsx` — canonical featured-event consumer
+- `components/WinnersCircle.tsx` — homepage tournament-results preview
+- `components/AOYStandings.tsx` — homepage AOY preview
+
+The Header intentionally remains outside the root layout. Moving it is deferred
+to approved feature/architecture work.
+
+## Data and helpers
+
+- `data/tournaments.ts` — canonical typed public tournament facts and selectors
+- `data/tournamentResults.ts` — typed result records, including nested Big Bass
+- `data/aoyStandings.ts` — typed AOY standings
+- `lib/utils.ts` — `cn` class composition helper for the configured shadcn workflow
+
+## Active public assets
 
 ```text
-app/
-├── page.tsx
-├── schedule/
-│   ├── page.tsx
-│   └── [slug]/
-│       └── page.tsx
-├── results/
-│   └── page.tsx
-└── standings/
-    └── page.tsx
-
-components/
-├── Header
-├── Footer
-├── PageHeader
-├── TournamentCard
-└── etc.
-
-data/
-
-public/
+public/images/
+├── featured-tournament.png
+├── logo.png
+├── tournament-hero.png
+├── hero/
+│   └── hero-locked-v10.png
+└── results/
+    ├── big-bass.jpg
+    └── overall-winner.jpg
 ```
 
-Current differences from this intended outline:
+Every listed public asset has an active source or data reference. No source ZIP
+or unreferenced design revision remains publicly deployable.
 
-- `app/schedule/[slug]/page.tsx` does not exist.
-- `app/standings/page.tsx` does not exist.
-- `components/TournamentCard` does not exist; tournament presentation is implemented inline or within other components.
-- The repository has an additional `app/results/[slug]/page.tsx` route.
-- The repository has an additional `app/how-it-works/page.tsx` route, which is approved under FAQ & Rules.
-- The repository has an additional `app/api/feedback/route.ts` supporting API route.
-- Component files use `.tsx` filenames, such as `Header.tsx`, `Footer.tsx`, and `PageHeader.tsx`.
+## Archived design assets
 
-## Active Routes
+```text
+archive/design-assets/
+├── all-in-flyer.png
+├── homepage-mockup.png
+├── homepage-v2.png
+├── trophy-inaugural.png
+├── trophy-inaugural-v2.png
+├── winners-circle-template.png
+├── winners-circle-title.png
+├── winners-circle-title-v3.png
+├── winners-circle-title-v4.png
+└── hero/
+    ├── all-in-feedback-footer.zip
+    ├── hero-image.png
+    ├── hero-locked-v6.png
+    ├── hero-locked-v7.png
+    ├── hero-locked-v8.png
+    ├── hero-locked-v9.png
+    └── hero-title.png
+```
 
-| Route | Source | Architecture status |
-|---|---|---|
-| `/` | `app/page.tsx` | Approved: Home |
-| `/schedule` | `app/schedule/page.tsx` | Approved: Schedule |
-| `/results` | `app/results/page.tsx` | Approved: Results |
-| `/results/[slug]` | `app/results/[slug]/page.tsx` | Consistent with individual tournament results, but also being used as Event Information |
-| `/how-it-works` | `app/how-it-works/page.tsx` | Approved under FAQ & Rules |
-| `/api/feedback` | `app/api/feedback/route.ts` | Supporting API route not documented in the sitemap |
+These files are retained design history or source material and are not served by
+Next.js.
 
-The framework-generated `/_not-found` route is not an architectural inconsistency.
+## Documentation
 
-## Missing Pages
+- `AGENTS.md` — repository operating instructions
+- `CLAUDE.md` — delegates compatible tooling to `AGENTS.md`
+- `README.md` — factual repository overview
+- `docs/MasterSiteMap.md` — approved public information architecture
+- `docs/RepositoryAudit.md` — cleanup audit and batch record
+- `docs/RepositoryMap.md` — current maintained-file map
+- `docs/DevelopmentRoadmap.md` — milestone roadmap
+- `docs/ProjectStatus.md` — current project and milestone status
+- `docs/DecisionLog.md` — approved architectural and maintenance decisions
+- `docs/DataModel.md` — static typed data ownership
+- `docs/UI-Standards.md` — visual and UI standards
+- `docs/WeighFishIntegration.md` — future integration planning only
 
-- Event Information
-- Registration
-- Registration Confirmation
-- AOY Standings
-- Official Rules
-- FAQ as a dedicated page or section
-- Sponsors
-- Contact
-- Privacy Policy
-- Terms of Use
+## Configuration and package files
 
-Results-related implementation gaps:
+- `package.json` and `package-lock.json` — npm scripts and synchronized dependency graph
+- `next.config.ts` — typed Next.js configuration
+- `postcss.config.mjs` — canonical Tailwind CSS 4 PostCSS configuration
+- `components.json` — maintained shadcn component-generation configuration
+- `tsconfig.json` — TypeScript configuration and `@/*` alias
+- `eslint.config.mjs` — Next.js/TypeScript ESLint configuration
+- `.gitignore` — dependency, build, environment, and local-file exclusions
 
-- No implemented Current Tournament Results view
-- No implemented Past Tournament Results archive
-- No stored or displayed Big Bass result within each tournament result
-- `/results/[slug]` currently displays a “Results Coming Soon” shell
+There is no `postcss.config.js` duplicate and no Tailwind 3-style
+`tailwind.config.js`.
 
-## Extra Pages and Routes
+## Approved architecture guardrails
 
-- `/api/feedback` is not documented in the master sitemap, although it supports the global feedback widget.
-- No clearly unapproved public page file currently exists.
-- `/login` and `/tournaments/eagle-mountain-lake` are referenced by navigation but are neither implemented nor approved routes.
-
-## Broken Navigation
-
-Live navigation targets without matching routes:
-
-- `/standings`
-- `/tournaments/eagle-mountain-lake`
-- `/register`
-- `/rules`
-- `/login`
-- `/contact`
-- `/register?tournament=...`
-
-Broken homepage fragments:
-
-- `#schedule`
-- `#standings`
-- `#rules`
-- `#sponsors`
-- `#register`
-
-Only `#results` has a corresponding section ID.
-
-Additional navigation inconsistencies:
-
-- Header and footer Home links use `#` instead of `/`.
-- Facebook, Instagram, and YouTube links use `#` placeholders.
-- Header Schedule points to `#schedule` instead of `/schedule`.
-- Header Results points to `#results` instead of `/results`.
-- Footer Schedule, Results, Standings, Rules, and Sponsors use fragments rather than approved page routes.
-- Schedule “Event Info” links point to `/results/[slug]`, conflating event information with tournament results.
-
-## Unused Routes
-
-No implemented application route is completely unused:
-
-- `/` is the site entry point.
-- `/how-it-works` has incoming links.
-- `/schedule` is linked from the AOY component.
-- `/results` has incoming links.
-- `/results/[slug]` is linked from Schedule and Results.
-- `/api/feedback` is called by the feedback widget.
-
-However, `/schedule` and `/results` are omitted from the live shared navigation because the header and footer use fragments instead.
-
-## Duplicate Functionality
-
-- `components/Header.tsx` and inactive `components/ui/Header.tsx` implement competing headers with similar navigation.
-- Header and footer independently duplicate navigation definitions with inconsistent targets.
-- How It Works contains a complete FAQ collection even though the approved architecture identifies How It Works and FAQ as separate entries under FAQ & Rules.
-- `/results/[slug]` is being used for both Event Information and future tournament results.
-- `AOYStandings.tsx` contains upcoming schedule information that duplicates the dedicated Schedule functionality and tournament data.
-- `FeaturedTournament.tsx` duplicates tournament information instead of deriving it from the shared tournament dataset.
-- `HomeDashboard.tsx`, `HomeHighlights.tsx`, and `app/page.tsx` contain overlapping homepage composition approaches.
-
-## Pages Not in the Approved Architecture
-
-Implemented public pages align with an approved sitemap entry:
-
-- `/` — Home
-- `/schedule` — Schedule
-- `/results` — Results
-- `/results/[slug]` — individual tournament result
-- `/how-it-works` — How It Works
-
-Potential violations or ambiguities:
-
-- `/results/[slug]` acts as Event Information when reached from Schedule, although Event Information belongs beneath Schedule and tournament detail belongs beneath Results.
-- `/login` and `/tournaments/eagle-mountain-lake` are referenced as pages but are not approved or implemented.
-- `/api/feedback` is an undocumented supporting route.
-
-## Global Architecture Inconsistencies
-
-- Header is not shared globally; it is rendered only on the homepage.
-- Footer is correctly shared through the root layout.
-- `PageHeader` is used only by Schedule rather than consistently across major pages.
-- Privacy Policy is missing.
-- Terms of Use is missing.
-- Social links are placeholders.
-- Contact functionality is split between a global feedback widget, an email link, and a broken `/contact` link.
-- FAQ & Rules has no shared landing page or organized route structure.
-- Safety requirements are not organized within an Official Rules page because that page does not exist.
-- Sponsors appears only as a broken fragment link and has no implemented page or homepage section.
+- No route was added or removed during Batch 4.
+- Big Bass is part of `data/tournamentResults.ts` and the tournament result UI;
+  there is no separate Big Bass page.
+- Safety Requirements remain within the future Official Rules branch defined in
+  the master sitemap; there is no separate safety page.
+- There is no archive gallery route. `archive/design-assets/` is repository-only.

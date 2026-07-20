@@ -15,6 +15,33 @@ Use this document to record approved project decisions that affect architecture,
 
 ## Decisions
 
+### 2026-07-20 — Archive design sources outside the public deployment tree
+
+- **Status:** Approved
+- **Context:** Historical mockups, revisions, a flyer, and a source ZIP were stored under `public/` despite having no runtime references.
+- **Decision:** Keep only actively referenced production assets under `public/` and preserve design sources in `archive/design-assets/` with clear filenames.
+- **Reasoning:** This keeps deployable assets lean without discarding useful design history or source packages.
+- **Impact:** Sixteen design-source files moved out of `public/`; no application asset path changed.
+- **Follow-up:** Store future non-runtime design sources in the repository archive rather than `public/`.
+
+### 2026-07-20 — Use one Tailwind CSS 4 PostCSS configuration
+
+- **Status:** Approved
+- **Context:** Equivalent CommonJS and ESM PostCSS files coexisted, and an unused Tailwind 3-style config duplicated obsolete content discovery settings.
+- **Decision:** Use `postcss.config.mjs` with `@tailwindcss/postcss` as the canonical configuration and keep Tailwind CSS 4 directives in `app/globals.css`; remove the duplicate PostCSS file and obsolete Tailwind config.
+- **Reasoning:** One configuration removes ambiguity and preserves the verified Tailwind CSS 4 output.
+- **Impact:** `postcss.config.js` and `tailwind.config.js` were removed after lint, TypeScript, and production build verification.
+- **Follow-up:** Configure future Tailwind changes through the Tailwind CSS 4 stylesheet-first workflow unless a documented need changes this convention.
+
+### 2026-07-20 — Keep only dependencies with active code or tooling ownership
+
+- **Status:** Approved
+- **Context:** The earlier generated UI chain left direct packages with mixed runtime and tooling relevance.
+- **Decision:** Remove unused `@base-ui/react`, `class-variance-authority`, and `autoprefixer`; retain `clsx`, `tailwind-merge`, `lucide-react`, and `shadcn` for the configured shadcn CSS, utility, and component-generation workflow.
+- **Reasoning:** Direct dependencies should have an identifiable maintained consumer while preserving the documented component workflow.
+- **Impact:** `package.json` and `package-lock.json` were synchronized through npm uninstall.
+- **Follow-up:** Re-evaluate retained workflow dependencies if `components.json`, the shadcn CSS import, or `lib/utils.ts` is intentionally retired.
+
 ### 2026-07-20 — Separate event, result, and AOY data by responsibility
 
 - **Status:** Approved

@@ -1,5 +1,11 @@
 # Development Roadmap
 
+## Current Milestone — Schedule / Tournament Experience
+
+Repository Cleanup v0.2 is complete. The next active work is to finish Schedule
+and proceed to Event Information in approved sitemap order. Registration work
+follows Event Information; this milestone has not begun as part of cleanup.
+
 ## Phase 1 — Foundation
 
 - Next.js / React / Tailwind setup

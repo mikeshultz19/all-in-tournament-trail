@@ -1,5 +1,86 @@
 # Repository Audit
 
+## Cleanup Batch 4 — Complete (2026-07-20)
+
+Repository polish is complete and establishes the v0.2 cleanup baseline. The
+detailed audit below remains as the historical pre-cleanup record; this section
+supersedes its file, dependency, and configuration inventories where they differ.
+
+### Design assets
+
+- Moved 16 unreferenced design-source files from `public/` to
+  `archive/design-assets/`: the flyer, two homepage mockups, two trophy
+  revisions, five winners-circle revisions, five historical hero sources or
+  revisions, and `hero/all-in-feedback-footer.zip`.
+- Retained the original clear filenames and retained the `hero/` grouping in
+  the archive.
+- Retained six actively referenced production assets under `public/images/`:
+  `logo.png`, `hero/hero-locked-v10.png`, `featured-tournament.png`,
+  `tournament-hero.png`, `results/overall-winner.jpg`, and
+  `results/big-bass.jpg`.
+- Deleted the unreferenced `public/images/placeholders/tournament-coming-soon.png`
+  after confirming it was byte-identical to both retained result placeholders;
+  it had neither runtime nor distinct archival value.
+- Every other unreferenced design candidate had archival value, and no ZIP or
+  other source package remains publicly deployable.
+
+### Dependency decisions
+
+- Removed `@base-ui/react` and `class-variance-authority`: neither is imported,
+  configured, nor required by the maintained shadcn setup.
+- Removed `autoprefixer`: neither PostCSS configuration used it, and the active
+  Tailwind CSS 4 pipeline uses `@tailwindcss/postcss`.
+- Retained `clsx` and `tailwind-merge`: `lib/utils.ts` uses both for the
+  configured shadcn `cn` helper.
+- Retained `lucide-react`: `components.json` selects Lucide as the icon library
+  for the maintained shadcn component workflow.
+- Retained `shadcn`: `app/globals.css` imports `shadcn/tailwind.css`, and
+  `components.json` is the active generated-component configuration.
+- Package changes were made with `npm uninstall`; `package.json` and
+  `package-lock.json` are synchronized.
+
+### Configuration and root-file review
+
+- Kept `postcss.config.mjs` as the canonical ESM PostCSS configuration and
+  removed the equivalent `postcss.config.js` after lint, TypeScript, and a
+  production build passed.
+- Removed the obsolete Tailwind 3-style `tailwind.config.js`. Tailwind CSS 4
+  continues to load through `app/globals.css` and `@tailwindcss/postcss`.
+- Retained `components.json` for the shadcn workflow, `next.config.ts` as the
+  typed Next.js configuration boundary, and `.gitignore` for generated,
+  dependency, environment, and local files.
+- Retained `CLAUDE.md`; its single `@AGENTS.md` directive delegates to the
+  canonical repository instructions and does not conflict with them.
+- Updated `README.md` to describe implemented and future sections factually.
+- Removed generated placeholder comments from maintained configuration.
+
+### Final scan and unresolved review items
+
+- No unused imports or broken imports were reported by lint, TypeScript, or the
+  production build.
+- No `href="#"`, missing referenced public asset, public source archive,
+  duplicate PostCSS/Tailwind config, active stale Create Next App language, or
+  empty maintained directory remains.
+- All active routes remain in place. Big Bass remains nested in tournament
+  results; no Big Bass page or archive gallery exists. Safety Requirements
+  remains assigned to Official Rules in the approved sitemap; that future route
+  was not created.
+- Unresolved work is intentionally route/feature scoped: Event Information,
+  Registration and confirmation, full tournament results, AOY, FAQ & Rules
+  (including Official Rules and Safety Requirements), Sponsors, Contact,
+  Privacy Policy, and Terms of Use. Existing placeholder AOY values remain
+  unchanged as required.
+
+### Batch 4 verification
+
+- `npm install`: pass
+- `npm ls --depth=0`: pass
+- `npm run lint`: pass
+- `npx tsc --noEmit`: pass
+- `npm run build`: pass
+- Production asset reference check: pass
+- Public archive/source-package check: pass
+
 ## Cleanup Batch 3 — Complete (2026-07-20)
 
 Tournament data consolidation is complete. `data/tournaments.ts` is now the temporary canonical source for public event facts and provides typed selectors for featured, upcoming, slug lookup, and image fallback behavior.
