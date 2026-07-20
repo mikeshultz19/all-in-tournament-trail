@@ -1,327 +1,383 @@
 # Repository Audit
 
-Audit date: 2026-07-20
-
-## Scope and Classification
-
-This audit inspected every project-owned file in the repository, including ignored local configuration and generated TypeScript declarations. Dependency, build-output, and Git-internal trees (`node_modules/`, `.next/`, and `.git/`) were excluded as generated or third-party content. The npm dependency tree and lockfile were validated through npm. Binary assets were inspected by path, type, size, dimensions, hash, source references, and—where applicable—archive contents. Secret values in `.env.local` were not exposed; only variable names were reviewed.
-
-Classification meanings:
-
-- **KEEP** — active, required, approved documentation, or otherwise currently necessary.
-- **REVIEW** — requires a product, design, history, deployment, or architecture decision before changing or deleting.
-- **SAFE TO DELETE** — no route, import, string reference, archive dependency, or build dependency was found; removal is safe for the current application runtime. This is a recommendation only. Nothing was deleted.
-
-The working tree contained application changes before this audit began. They were preserved. This audit changed only `docs/RepositoryAudit.md`.
+Audit date: 2026-07-20  
+Scope: complete maintained repository, excluding generated/dependency internals (`.git/`, `.next/`, and `node_modules/`)  
+Mode: read-only analysis; this report is the only modified file  
+Source of truth: `AGENTS.md`, `docs/MasterSiteMap.md`, `docs/DevelopmentRoadmap.md`, `docs/UI-Standards.md`, `docs/DecisionLog.md`, and `docs/ProjectStatus.md`
 
 ## Executive Summary
 
-- **KEEP** — Six application routes are active: five page routes and one API endpoint. The framework also emits `/_not-found`.
-- **KEEP** — Ten TSX components are reachable from a route or the root layout.
-- **KEEP** — `Footer` and `FeedbackWidget` are global shared components; `PageHeader` is shared-capable but currently used only on Schedule.
-- **SAFE TO DELETE** — Six TSX files are absent from the complete route/import graph, including one empty file and an inactive duplicate header.
-- **SAFE TO DELETE** — Five default Create Next App SVGs and two unreferenced exact-copy placeholder images have no runtime references.
-- **REVIEW** — Nineteen additional unreferenced images/archive assets appear to be design sources, revisions, mockups, or experiments.
-- **REVIEW** — Static AOY, schedule, featured-event, result, and winner data should be consolidated before content management or WeighFish automation is implemented.
-- **REVIEW** — Live navigation contains missing routes, dead fragments, placeholders, and one missing image extension.
-- **KEEP** — Lint, TypeScript, dependency validation, and the production build all pass.
+The repository is a working Next.js foundation, but it does not yet implement most of the approved public sitemap. The active application has Home, Schedule, Results, a dynamic result detail, a standalone How It Works page, and a feedback API. The production build succeeds, lint succeeds, and TypeScript succeeds. The main audit concerns are broken navigation, four missing referenced images, placeholder results/AOY content, duplicated and hard-coded tournament information, unused experimental components, and 24 unreferenced public files.
 
-## Active Project Structure
+The implementation also conflicts with the approved hierarchy in two places: `/how-it-works` is a top-level route instead of living under FAQ & Rules, and Schedule sends “Event Info” traffic to `/results/[slug]`. No separate archive gallery, Big Bass page, or safety page exists.
 
-- **KEEP** — `app/`: Next.js 16 App Router routes, layout, global CSS, favicon, and API handler.
-- **KEEP** — `components/`: homepage sections and shared site UI.
-- **REVIEW** — `components/ui/`: generated-style UI primitives plus a second header; neither file is currently active.
-- **KEEP** — `data/`: tournament records and current-winner placeholder data, both imported by active UI.
-- **KEEP** — `lib/`: class-name utility, currently reachable only through the inactive UI button.
-- **KEEP** — `public/`: active production artwork mixed with unreferenced design iterations and starter assets.
-- **KEEP** — `docs/`: approved project direction and audit/status documents.
-- **KEEP** — Root configuration and npm manifests, subject to the specific consolidation reviews below.
+## 1. Active Project Structure
 
-## Routes
+### Application routes
 
-Production-build-confirmed routes:
-
-| Classification | Route | Source | Status |
+| URL | File | Type | Current purpose |
 |---|---|---|---|
-| **KEEP** | `/` | `app/page.tsx` | Static homepage |
-| **KEEP** | `/how-it-works` | `app/how-it-works/page.tsx` | Static explainer and embedded FAQ content |
-| **KEEP** | `/schedule` | `app/schedule/page.tsx` | Static schedule from tournament data |
-| **KEEP** | `/results` | `app/results/page.tsx` | Static results index/shell |
-| **KEEP** | `/results/[slug]` | `app/results/[slug]/page.tsx` | Dynamic event/result shell |
-| **KEEP** | `/api/feedback` | `app/api/feedback/route.ts` | Dynamic POST endpoint |
-| **KEEP** | `/_not-found` | Framework generated | Static framework route |
+| `/` | `app/page.tsx` | Static page | Home |
+| `/schedule` | `app/schedule/page.tsx` | Static page | Tournament schedule |
+| `/results` | `app/results/page.tsx` | Static page | Results index, currently “Coming Soon” |
+| `/results/[slug]` | `app/results/[slug]/page.tsx` | Dynamic page | Tournament result shell |
+| `/how-it-works` | `app/how-it-works/page.tsx` | Static page | How It Works plus embedded FAQ |
+| `/api/feedback` | `app/api/feedback/route.ts` | Dynamic POST API | Sends feedback through Resend |
+| `/_not-found` | Framework generated | Static | Next.js not-found output; not a source route |
 
-### Unused Pages
+### Layouts
 
-- **KEEP** — No unused `page.tsx` or `route.ts` file was found. App Router files are entry points and all six application route files appear in the production route manifest.
-
-### Duplicate Routes
-
-- **KEEP** — No duplicate filesystem routes, route groups resolving to the same URL, Pages Router overlap, or duplicate API endpoint was found.
-- **REVIEW** — Schedule labels `/results/[slug]` as “Event Info,” while the same route is also the results detail route. Decide whether one approved route should intentionally serve both pre-event and post-event states, or whether the approved Event Information structure needs a distinct route. Do not add a route without approval.
-
-### Approved Sitemap Gaps
-
-- **REVIEW** — Registration and confirmation, AOY Standings, Official Rules, FAQ, Sponsors, Contact, Privacy Policy, and Terms of Use do not yet have dedicated route files. This is a gap report, not approval to create routes.
-- **REVIEW** — `/how-it-works` currently contains FAQ material. Decide whether that satisfies the approved FAQ grouping or should later be consolidated into an approved FAQ & Rules experience.
-
-## Components
-
-### Active Components
-
-| Classification | Component | Used by |
+| File | Scope | Contents |
 |---|---|---|
-| **KEEP** | `components/Header.tsx` | Homepage |
-| **KEEP** | `components/Hero.tsx` | Homepage |
-| **KEEP** | `components/LatestTournamentNews.tsx` | Homepage |
-| **KEEP** | `components/FeaturedTournament.tsx` | Homepage |
-| **KEEP** | `components/WinnersCircle.tsx` | Homepage |
-| **KEEP** | `components/AOYStandings.tsx` | Homepage |
-| **KEEP** | `components/Footer.tsx` | Root layout; all pages |
-| **KEEP** | `components/FeedbackWidget.tsx` | Root layout; all pages |
-| **KEEP** | `components/PageHeader.tsx` | Schedule page |
-
-### Shared Components
+| `app/layout.tsx` | Entire application | Geist fonts, global CSS, shared Footer, shared FeedbackWidget |
+
+There are no nested layouts. The active Header is rendered only by `app/page.tsx`, so it is not actually global. Footer and FeedbackWidget are global.
+
+### Reusable components
+
+| File | Imported by active code? | Notes |
+|---|---:|---|
+| `components/Header.tsx` | Yes | Home only; should be promoted to the shared layout |
+| `components/Footer.tsx` | Yes | Shared through root layout |
+| `components/FeedbackWidget.tsx` | Yes | Shared through root layout; calls `/api/feedback` |
+| `components/PageHeader.tsx` | Yes | Schedule only; approved shared major-page heading |
+| `components/Hero.tsx` | Yes | Home hero |
+| `components/LatestTournamentNews.tsx` | Yes | Home news block |
+| `components/FeaturedTournament.tsx` | Yes | Home featured tournament; contains hard-coded tournament data |
+| `components/WinnersCircle.tsx` | Yes | Home placeholder results/Big Bass |
+| `components/AOYStandings.tsx` | Yes | Home placeholder AOY and duplicated schedule |
+| `components/HomeDashboard.tsx` | No | Unused alternate composition |
+| `components/HomeHighlights.tsx` | No | Unused alternate composition |
+| `components/HeroActions.tsx` | No | Unused action strip |
+| `components/ui/Header.tsx` | No | Duplicate/experimental Header |
+| `components/ui/button.tsx` | No | Unused generated UI primitive |
+| `components/Button.tsx` | No | Empty file |
+
+### Data and utility files
+
+| File | Active? | Contents |
+|---|---:|---|
+| `data/tournaments.ts` | Yes | Three 2026–2027 tournament records and exported types |
+| `data/tournamentData.ts` | Yes | Placeholder current-tournament winners/pots used by WinnersCircle |
+| `lib/utils.ts` | Indirect unused chain only | Used only by unused `components/ui/button.tsx` |
+
+All exports in `data/tournaments.ts` and `data/tournamentData.ts` are used. `TournamentStatus` and `Tournament` support the exported active array. There are no compiler-reported unused imports or variables.
+
+### Public assets currently referenced
+
+| Asset | References | Status |
+|---|---|---|
+| `public/images/logo.png` | Both Header implementations | Exists |
+| `public/images/hero/hero-locked-v10.png` | `components/Hero.tsx` | Exists |
+| `public/images/featured-tournament.png` | `components/FeaturedTournament.tsx` | Exists |
+| `public/images/tournament-hero.png` | Results index | Exists |
+| `public/images/results/overall-winner.jpg` | WinnersCircle | Exists; byte-identical placeholder |
+| `public/images/results/big-bass.jpg` | WinnersCircle | Exists; byte-identical placeholder |
+| `public/images/placeholders/tournament-coming-soon.png` | `data/tournamentData.ts` | Exists; byte-identical placeholder |
+| `app/favicon.ico` | Next.js metadata convention | Exists, implicitly referenced |
+| `public/images/tournament-hero.jpg` | Result detail | **Missing**; only `.png` exists |
+| `public/images/lakes/eagle-mountain.jpg` | Tournament data | **Missing** |
+| `public/images/lakes/squaw-creek.jpg` | Tournament data | **Missing** |
+| `public/images/lakes/ray-hubbard.jpg` | Tournament data | **Missing** |
+
+The three missing lake paths are not currently rendered by the active pages, but they are malformed data references and will break when `heroImage` is consumed.
+
+## 2. Route Analysis
+
+### Active and missing approved routes
 
-- **KEEP** — `Footer` and `FeedbackWidget` are truly shared through `app/layout.tsx`.
-- **KEEP** — `PageHeader` is an intended shared component, but only Schedule uses it today.
-- **REVIEW** — `Header` is rendered only by `app/page.tsx`, so internal pages have no shared header. Consider moving the canonical header into the root layout when the shared-header design is approved.
-- **REVIEW** — Results and How It Works implement their own page introductions instead of reusing `PageHeader`. Consolidate only after confirming the desired variants.
+Home, Schedule, Results, and individual tournament result URLs are active. The following approved sitemap destinations are missing:
 
-### Unused TSX Files
+- Schedule → Event Information
+- Event Information → Registration
+- Registration → Confirmation
+- AOY Standings
+- FAQ & Rules landing/organization
+- Official Rules, including safety requirements
+- FAQ as its own approved entry/section
+- Sponsors
+- Contact
+- Privacy Policy
+- Terms of Use
 
-The complete static import graph found no incoming import from any route, layout, API handler, or active component for these files:
+Current Tournament Results and Past Tournament Results are not implemented as meaningful views. The Results index and details are shells populated from upcoming tournaments.
 
-- **SAFE TO DELETE** — `components/Button.tsx`: zero-byte empty file.
-- **SAFE TO DELETE** — `components/HeroActions.tsx`: inactive CTA experiment; no imports.
-- **SAFE TO DELETE** — `components/HomeDashboard.tsx`: inactive homepage composition wrapper; the homepage imports its child sections directly.
-- **SAFE TO DELETE** — `components/HomeHighlights.tsx`: older/inactive homepage composition wrapper; the homepage already implements the equivalent two-column section directly.
-- **SAFE TO DELETE** — `components/ui/Header.tsx`: inactive alternate header; `components/Header.tsx` is the imported implementation.
-- **SAFE TO DELETE** — `components/ui/button.tsx`: generated UI primitive with no consumers.
+### Extra, duplicate, and ambiguous routes
 
-These files are proven unused by the current import graph and successful build. If they represent designs the project owner wants to preserve, archive them outside the production source tree before deletion.
+- `/how-it-works` is an approved concept but is implemented as an ungrouped top-level route. The sitemap puts it under FAQ & Rules. It also embeds a full FAQ, blurring two approved entries.
+- `/api/feedback` is an undocumented supporting endpoint. It is not a public content page and is actively required by FeedbackWidget; keep it unless the contact architecture changes.
+- `/results/[slug]` is appropriate for individual results, but Schedule labels links to it “Event Info.” This conflates the approved Schedule/Event Information branch with Results.
+- No duplicate filesystem route resolves to the same URL.
 
-### Duplicate Components and Old Experiments
+### Broken internal links
 
-- **SAFE TO DELETE** — `components/ui/Header.tsx` duplicates the role, navigation data, logo, CTA, and login link of active `components/Header.tsx`; it differs mainly in layout/styling and is not imported.
-- **SAFE TO DELETE** — `HomeDashboard` and `HomeHighlights` are superseded composition experiments. Active `app/page.tsx` directly composes the same child components.
-- **SAFE TO DELETE** — `HeroActions` is a standalone CTA-strip experiment not used by `Hero` or the homepage.
-- **REVIEW** — `components/ui/button.tsx` is the only consumer of `@base-ui/react`, `class-variance-authority`, `clsx`, `tailwind-merge`, and `lib/utils.ts`. Removing the primitive creates a larger dependency/config cleanup opportunity described below.
+| Target | Sources | Finding |
+|---|---|---|
+| `/standings` | `components/AOYStandings.tsx` | Missing approved route |
+| `/tournaments/eagle-mountain-lake` | `components/FeaturedTournament.tsx` | Missing and not an approved route pattern |
+| `/register` and `/register?tournament=…` | FeaturedTournament, Schedule, How It Works | Missing; registration should be under Event Information |
+| `/rules` | How It Works | Missing; Official Rules belongs under FAQ & Rules |
+| `/login` | Both Header files | Missing and not yet approved as a public Phase 2 route |
+| `/contact` | Footer | Missing approved route |
+| `#schedule`, `#standings`, `#rules`, `#sponsors`, `#register` | Header/Footer | No matching IDs on Home |
+| `#` | Header/Footer Home and social links | Placeholder; does not navigate to an approved destination |
 
-## Dead Imports
+`#results` is the only valid homepage fragment among the shared navigation targets. `/schedule`, `/results`, `/how-it-works`, and `/results/[slug]` have active incoming links. Therefore, there is no dynamic route with no active entry point: `/results/[slug]` is reached from Schedule and Results for all three tournament slugs.
 
-- **KEEP** — ESLint reports no unused imports in the checked TypeScript/TSX source.
-- **KEEP** — TypeScript reports no type errors.
-- **REVIEW** — TypeScript does not enable `noUnusedLocals` or `noUnusedParameters`; current ESLint coverage found no dead imports, but enabling those compiler checks later would strengthen enforcement.
-- **REVIEW** — `lucide-react` has no source import anywhere.
-- **REVIEW** — `autoprefixer` has no source or PostCSS configuration reference.
-- **REVIEW** — `@base-ui/react`, `class-variance-authority`, `clsx`, and `tailwind-merge` are reachable only through the unused `components/ui/button.tsx` chain.
-- **REVIEW** — `shadcn` is present as a runtime dependency although it appears to be used as project tooling/configuration; confirm whether it should remain installed and whether it belongs in dependencies or devDependencies.
+### Placeholder pages
 
-## Data
+- `app/results/page.tsx`: all cards display “Coming Soon.”
+- `app/results/[slug]/page.tsx`: only a “Results Coming Soon” shell; no standings, weight, payouts, or Big Bass data.
+- `app/how-it-works/page.tsx`: substantial content, but registration/rules calls to action are broken.
+- Schedule is functional content, although its Event Info and Register destinations are incorrect/missing.
 
-### Active Data
+## 3. Component Analysis
 
-- **KEEP** — `data/tournaments.ts` is imported by Schedule, Results, and dynamic result detail.
-- **KEEP** — `data/tournamentData.ts` is imported by `WinnersCircle`.
+### Imported components
 
-### Stale Mock Data and Placeholder Data
+The nine active reusable components are Header, Footer, FeedbackWidget, PageHeader, Hero, LatestTournamentNews, FeaturedTournament, WinnersCircle, and AOYStandings. Their exact active parent relationships are documented in the structure table above.
 
-- **REVIEW** — `AOYStandings.tsx` contains hard-coded standings and a separate hard-coded upcoming schedule. This is presentation mock data and duplicates the role of `data/tournaments.ts`.
-- **REVIEW** — `WinnersCircle.tsx` contains a hard-coded top-five results array while also consuming `data/tournamentData.ts`.
-- **REVIEW** — `FeaturedTournament.tsx` hard-codes its event date, venue, entry details, and route instead of deriving the featured event from `data/tournaments.ts`.
-- **REVIEW** — `data/tournamentData.ts` is explicitly placeholder content: all winners are “Coming Soon,” weights/points are empty, and multiple winner slots share one placeholder image.
-- **REVIEW** — All events in `data/tournaments.ts` are upcoming, registration-open, and results-unavailable. Confirm these flags against the actual operational source before launch.
-- **REVIEW** — `status`, `livestream`, and `heroImage` exist in the tournament model but are not currently rendered. `heroImage` values point to a nonexistent `/images/lakes/` directory.
-- **REVIEW** — `resultsPage`, `bronzePot`, `silverPot`, and `goldPot` are present in `currentTournament` but are not read by active UI.
-- **REVIEW** — The roadmap refers to a nine-event season, while the active tournament array contains three events. Confirm whether the data is intentionally partial.
+### Never imported / experimental
 
-### Data Consolidation Opportunities
-
-- **REVIEW** — Use `data/tournaments.ts` as the single public tournament source until a database/admin system replaces it.
-- **REVIEW** — Derive the featured tournament and homepage upcoming schedule from that source rather than maintaining separate constants.
-- **REVIEW** — Define result/AOY data separately from components so future WeighFish parsing and AOY recalculation do not require editing presentation files.
-- **REVIEW** — Keep Big Bass within each tournament result, matching the approved sitemap and planned integration flow.
+- `components/Button.tsx` is empty and never imported.
+- `components/HomeDashboard.tsx` and `components/HomeHighlights.tsx` are unused competing homepage compositions.
+- `components/HeroActions.tsx` is a complete but unused action-bar experiment.
+- `components/ui/Header.tsx` is an unused competing Header with similar navigation.
+- `components/ui/button.tsx` and `lib/utils.ts` form an unused generated UI dependency chain.
 
-## Assets
+### Duplicate components and sharing opportunities
 
-### Active Assets
+- `components/Header.tsx` and `components/ui/Header.tsx` duplicate header/navigation responsibility. The active one should become global; the inactive one should not coexist after review.
+- `HomeDashboard` and `HomeHighlights` overlap the direct composition already present in `app/page.tsx`.
+- Schedule data is duplicated inside `AOYStandings.tsx`; it should derive from `data/tournaments.ts`.
+- FeaturedTournament hard-codes the event date, lake, launch site, and URLs instead of selecting the `featured` tournament from `data/tournaments.ts`.
+- Header and Footer duplicate navigation definitions and disagree on destinations. A small shared navigation definition would prevent drift.
+- Results and Schedule each implement tournament presentations inline. A shared tournament summary component may become appropriate once Event Information is implemented, but creating it now is not required.
+- `PageHeader` should be used by other major pages as required by UI Standards.
 
-- **KEEP** — `app/favicon.ico`.
-- **KEEP** — `public/images/logo.png`.
-- **KEEP** — `public/images/featured-tournament.png`.
-- **KEEP** — `public/images/hero/hero-locked-v10.png`.
-- **KEEP** — `public/images/tournament-hero.png` (used by Results index and likely intended for result detail).
-- **KEEP** — `public/images/results/overall-winner.jpg` and `public/images/results/big-bass.jpg`.
-- **KEEP** — `public/images/placeholders/tournament-coming-soon.png`.
-
-### Unused Images — Safe Runtime Cleanup
-
-- **SAFE TO DELETE** — `public/file.svg`.
-- **SAFE TO DELETE** — `public/globe.svg`.
-- **SAFE TO DELETE** — `public/next.svg`.
-- **SAFE TO DELETE** — `public/vercel.svg`.
-- **SAFE TO DELETE** — `public/window.svg`.
-- **SAFE TO DELETE** — `public/images/placeholders/big-bass.jpg`.
-- **SAFE TO DELETE** — `public/images/placeholders/overall-winner.jpg`.
-
-The two placeholder JPGs are unreferenced and byte-for-byte identical to the retained tournament placeholder and both active result images.
-
-### Unused Images and Archives — Design Review
-
-- **REVIEW** — `public/images/all-in-flyer.png`.
-- **REVIEW** — `public/images/homepage-mockup.png`.
-- **REVIEW** — `public/images/homepage-v2.png`.
-- **REVIEW** — `public/images/trophy-inaugural.png` and `trophy-inaugural-v2.png`.
-- **REVIEW** — `public/images/winners-circle-template.png`.
-- **REVIEW** — `public/images/winners-circle-title.png`, `winners-circle-title-v3.png`, and `winners-circle-title-v4.png`.
-- **REVIEW** — `public/images/hero/hero-image.png`, `hero-locked-v6.png`, `hero-locked-v7.png`, `hero-locked-v8.png`, `hero-locked-v9.png`, and `hero-title.png`.
-- **REVIEW** — `public/images/hero/all-in-feedback-footer.zip`.
-
-The PNGs have distinct hashes and appear to be design revisions or source experiments, so code references alone cannot prove they have no archival value. The ZIP is particularly important to review: it is publicly deployable under `public/`, contains an install guide and source copies of `FeedbackWidget`, `Footer`, and the feedback API route, and two archived source files differ from the live versions. Move it outside `public/` if it must be retained.
-
-### Duplicate Assets
-
-- **SAFE TO DELETE** — The two unused placeholder JPGs named above are exact duplicates of active/retained assets.
-- **KEEP** — `results/overall-winner.jpg`, `results/big-bass.jpg`, and `placeholders/tournament-coming-soon.png` are also byte-identical, but all three paths are actively referenced and currently express distinct semantic roles. Consolidate references before deleting any of these three.
-- **REVIEW** — Hero, trophy, and winners-circle version files are not byte-identical; they require visual comparison and an archival decision.
-
-### Missing Asset References
-
-- **REVIEW** — `app/results/[slug]/page.tsx` requests `/images/tournament-hero.jpg`, but only `/images/tournament-hero.png` exists.
-- **REVIEW** — Tournament `heroImage` fields request three nonexistent `/images/lakes/*.jpg` assets. The fields are dormant today, so this does not break the current render.
-
-## Broken Links and Placeholder Code
-
-### Missing Live Routes
+The high-confidence component removals are the empty Button and unused alternate compositions. The generated UI Button chain is safe only if the project does not intend to adopt it imminently; it is classified high-confidence because no active source imports it.
 
-- **REVIEW** — `/standings` from `AOYStandings`.
-- **REVIEW** — `/tournaments/eagle-mountain-lake` from `FeaturedTournament`.
-- **REVIEW** — `/register` from `FeaturedTournament` and How It Works.
-- **REVIEW** — `/rules` from How It Works.
-- **REVIEW** — `/login` from `Header`.
-- **REVIEW** — `/contact` from `Footer`.
-- **REVIEW** — `/register?tournament=...` from Schedule.
+## 4. Data Analysis
 
-### Dead Fragments and Placeholders
+### Active sources and duplication
 
-- **REVIEW** — Homepage/header/footer links target `#schedule`, `#standings`, `#rules`, `#sponsors`, and `#register`, but those IDs do not exist. `#results` is the only matching section ID.
-- **REVIEW** — Home and all three social links use bare `#` placeholders.
-- **REVIEW** — Root metadata remains the Create Next App default.
-- **REVIEW** — `next.config.ts` contains only its generated placeholder comment.
-- **REVIEW** — README ends with “Coming Soon” despite active pages now existing.
-- **REVIEW** — Results detail always renders “Results Coming Soon,” independent of tournament status or `resultsAvailable`.
-- **REVIEW** — Results index is a card-heavy shell, which should be checked against the approved minimal, typography-driven UI standards.
-- **REVIEW** — How It Works has extensive embedded content and data arrays; extract shared/maintainable content only if it will be reused or administered.
+`data/tournaments.ts` is the closest thing to a canonical schedule source and powers Schedule plus both Results routes. `data/tournamentData.ts` separately models the current tournament and winner placeholders. AOYStandings and FeaturedTournament contain additional private, hard-coded copies of the schedule/event data.
 
-### Feedback Configuration
+Conflicts include:
 
-- **KEEP** — The feedback widget and API route are active and build successfully.
-- **REVIEW** — The API route hard-codes the recipient address and Resend onboarding sender even though `.env.local` defines `FEEDBACK_TO_EMAIL` and `FEEDBACK_FROM_EMAIL`. Align configuration before production.
-- **REVIEW** — The endpoint validates presence but not email format, message length, payload type, rate limits, spam, or abuse controls.
-- **REVIEW** — The archived ZIP contains older feedback source, increasing maintenance ambiguity and exposing downloadable source under `public/`.
+- Eagle Mountain is named `Eagle Mountain` in `tournaments.ts`, `Eagle Mountain Lake` in `tournamentData.ts`, and `Eagle Mountain Lake` in FeaturedTournament.
+- Canonical slug is `eagle-mountain-2026`, while FeaturedTournament links to `/tournaments/eagle-mountain-lake`.
+- Tournament date is ISO text in `tournaments.ts`, display text in `tournamentData.ts`/AOYStandings, and a timezone-bearing `Date` constant in FeaturedTournament.
+- All three tournaments have `resultsAvailable: false`, but the Results index still treats each upcoming tournament as a result card.
+- `heroImage` is populated for every tournament with nonexistent asset paths.
 
-## Configuration and Dependency Consolidation
+### Placeholder, mock, and malformed content
 
-- **KEEP** — `package.json`, `package-lock.json`, `tsconfig.json`, `eslint.config.mjs`, `next.config.ts`, `components.json`, and at least one PostCSS configuration are required project controls.
-- **REVIEW** — `postcss.config.js` and `postcss.config.mjs` configure the same plugin in different module formats. Confirm which filename is canonical, retain one, and validate a clean build.
-- **REVIEW** — `tailwind.config.js` is an empty/minimal Tailwind 3-style content config while Tailwind CSS 4 is configured through CSS and `components.json` specifies no config file. Confirm no editor/tooling workflow consumes it before removal.
-- **REVIEW** — After removing the unused UI button, assess removal of `@base-ui/react`, `class-variance-authority`, `clsx`, `tailwind-merge`, and `lib/utils.ts` as one verified cleanup group.
-- **REVIEW** — Assess unused `lucide-react` and `autoprefixer` separately.
-- **KEEP** — `tw-animate-css` and shadcn CSS imports are active in `app/globals.css`; do not remove packages or CSS imports independently.
-- **KEEP** — `next-env.d.ts` and `tsconfig.tsbuildinfo` are generated and ignored. They need not be committed; normal tooling may recreate them.
-- **KEEP** — `.env.local` is ignored and contains required integration keys. Preserve it securely and never commit its values.
+- AOY standings (`Smith / Jones`, `Davis / Lee`, `Brown`) are unsourced mock values and conflict with Project Status, which marks AOY not started.
+- WinnersCircle contains a hard-coded `topFiveResults` with generic `Angler 1`–`Angler 5` and blank weights.
+- `currentTournament` supplies “Coming Soon” for champion, Big Bass, AOY leader, and all pot winners.
+- Five placeholder/result image files have the exact same SHA-256 hash despite different roles and extensions.
+- Feedback sends `category` from the client but the API silently ignores it.
+- Feedback accepts any nonempty email string server-side; browser validation does not protect direct API calls.
 
-## Build / Lint / TypeScript Findings
+There are no syntax errors, TypeScript-invalid structures, or unused exported data symbols. The problems are semantic/staleness issues rather than malformed TypeScript.
 
-- **KEEP** — `npm ls --depth=0` passed with a complete installed dependency tree.
-- **KEEP** — `npm run lint` passed on 2026-07-20.
-- **KEEP** — `npx tsc --noEmit` passed on 2026-07-20.
-- **KEEP** — `npm run build` passed on 2026-07-20 using Next.js 16.2.10. Google Fonts network access was allowed so `next/font` could fetch Geist and Geist Mono.
-- **REVIEW** — Passing checks do not detect missing application routes, dead fragments, missing public images, placeholder business data, or unused whole files; those were found through the separate repository graph/content audit.
+## 5. Asset Analysis
 
-## Safe to Delete
+### Referenced assets
 
-No deletion was performed. For the current runtime, these are classified **SAFE TO DELETE**:
+The referenced/existing and referenced/missing assets are fully listed in Section 1.
 
-1. `components/Button.tsx`
-2. `components/HeroActions.tsx`
-3. `components/HomeDashboard.tsx`
-4. `components/HomeHighlights.tsx`
-5. `components/ui/Header.tsx`
-6. `components/ui/button.tsx`
-7. `public/file.svg`
-8. `public/globe.svg`
-9. `public/next.svg`
-10. `public/vercel.svg`
-11. `public/window.svg`
-12. `public/images/placeholders/big-bass.jpg`
-13. `public/images/placeholders/overall-winner.jpg`
+### Unused assets
 
-Before any future deletion, verify the exact working-tree state, archive anything intentionally retained, remove associated dependencies only as a separate step, and rerun all checks.
+The repository contains 24 files under `public/` with no static reference in `app/`, `components/`, or `data/`:
 
-## Manual Review Required
+- Starter SVGs: `file.svg`, `globe.svg`, `next.svg`, `vercel.svg`, `window.svg`
+- Design/source candidates: `images/all-in-flyer.png`, `homepage-mockup.png`, `homepage-v2.png`
+- Trophy variants: `trophy-inaugural.png`, `trophy-inaugural-v2.png`
+- Winners-circle variants: `winners-circle-template.png`, `winners-circle-title.png`, `winners-circle-title-v3.png`, `winners-circle-title-v4.png`
+- Hero source/variants: `hero-image.png`, `hero-locked-v6.png` through `hero-locked-v9.png`, `hero-title.png`
+- Temporary archive: `images/hero/all-in-feedback-footer.zip`
+- Redundant placeholders: `images/placeholders/big-bass.jpg`, `images/placeholders/overall-winner.jpg`
+
+The mockups and design variants may be source material, so absence of a code reference alone is not enough to delete them without owner review. The ZIP is not a web-delivered site asset and should not live under `public/`.
+
+### Duplicate images
+
+These five files are byte-for-byte identical (SHA-256 `646DE262…CCB0C`):
+
+- `public/images/placeholders/big-bass.jpg`
+- `public/images/placeholders/overall-winner.jpg`
+- `public/images/placeholders/tournament-coming-soon.png`
+- `public/images/results/big-bass.jpg`
+- `public/images/results/overall-winner.jpg`
+
+The first two are unreferenced and safe to remove. The three referenced copies should be consolidated only as part of an intentional placeholder/data cleanup, because changing their paths modifies active code.
+
+## 6. Code Quality
+
+| Check | Result |
+|---|---|
+| `npm run lint` | Pass; zero reported errors/warnings |
+| `npx tsc --noEmit` | Pass; zero TypeScript errors |
+| `npm run build` | Pass with network access; Next.js 16.2.10 compiled and generated 8 static pages |
+| Initial sandboxed build | Failed only because `next/font` could not fetch Geist and Geist Mono from Google Fonts |
+| Broken import search | No missing module imports found; compiler/build pass |
+| Internal link search | Broken targets listed in Section 2 |
+| Static asset reference search | Four missing paths listed in Section 1 |
+
+No unused imports, unused variables, or dead local functions were reported by ESLint/TypeScript. No commented-out experimental code was found; comments are section labels. Dead code exists at the file/component graph level, which the compiler does not flag.
+
+Additional quality findings:
+
+- `app/layout.tsx` still has Create Next App metadata (`title: "Create Next App"`, generated description).
+- Both `postcss.config.js` and `postcss.config.mjs` configure the same plugin; retaining two formats is unnecessary and can create ambiguity.
+- `tailwind.config.js` is a Tailwind 3-style content config in a Tailwind 4 project and may be redundant; review before removal because tooling conventions can vary.
+- `components/FeedbackWidget.tsx` uses `FormEvent` as a value import instead of `import type`; valid, but a minor consistency improvement.
+- The feedback API contains a personal destination address and Resend onboarding sender in source. This is operational configuration rather than a secret, but should be reviewed before production.
+- Global navigation and metadata do not yet satisfy the approved global architecture.
+
+## 7. Approved Architecture Comparison
+
+| Approved item | Repository state |
+|---|---|
+| Home | Implemented |
+| Schedule | Implemented; downstream routes missing |
+| Event Information → Registration → Confirmation | Missing; result detail is incorrectly used as Event Info |
+| Results: current and past | Shell only |
+| Big Bass stored within tournament result | Placeholder shown on Home; not stored/displayed in result detail |
+| AOY Standings | Missing route; mock Home excerpt only |
+| FAQ & Rules → How It Works / Official Rules / FAQ | Only standalone `/how-it-works`; FAQ embedded there; rules missing |
+| Sponsors | Missing |
+| Contact | Missing page; modal/API exists |
+| Shared Header | Not global |
+| Shared Footer | Implemented globally |
+| Shared PageHeader | Exists, used only by Schedule |
+| Privacy / Terms / social links | Missing or placeholder |
+
+Explicit confirmations:
+
+- **No separate archive image gallery exists.** This matches the approved exclusion.
+- **No separate Big Bass page exists.** This matches the approved exclusion.
+- **Big Bass must stay with each tournament’s results.** Current result details mention it but do not yet store or display it; the Home WinnersCircle is only a teaser.
+- **Safety requirements must stay inside Official Rules.** No safety route or Official Rules route currently exists; do not create a separate safety page.
+- **FAQ and How It Works belong under FAQ & Rules.** The current standalone `/how-it-works` route and embedded FAQ need architectural review when that approved section is implemented.
+
+## 8. Cleanup Classification
 
-- **REVIEW** — All pre-existing modified, deleted, and untracked application work before committing.
-- **REVIEW** — Tracked deletions of `SeasonBanner.tsx`, `SeasonStrip.tsx`, and `data/AITT 2026-2027 Schedule.docx`; these files are absent now but their deletions have not been committed.
-- **REVIEW** — All design-version images and the public ZIP archive.
-- **REVIEW** — Broken routes, fragments, social placeholders, and missing image paths.
-- **REVIEW** — Static mock/placeholder data and duplicated tournament/event facts.
-- **REVIEW** — Header/PageHeader placement and consistency across major pages.
-- **REVIEW** — PostCSS/Tailwind configuration duplication and transitively unused packages.
-- **REVIEW** — Feedback recipient/sender configuration and production hardening.
-
-## Must Keep
-
-- **KEEP** — Every active route file and root layout/global CSS/favicon.
-- **KEEP** — Every active component and both active data modules.
-- **KEEP** — Active assets listed above.
-- **KEEP** — Package manifest/lockfile and framework/compiler/lint configuration until specific consolidation is proven separately.
-- **KEEP** — `.gitignore`, secure local environment configuration, root `AGENTS.md`, and project documentation.
-- **KEEP** — User changes already present in the working tree unless separately reviewed and approved.
-
-## Complete File Disposition
-
-This appendix accounts for every inspected project-owned file. Generated/dependency/Git trees are accounted for by scope rather than enumerated.
-
-### Root and Configuration
-
-- **KEEP** — `.env.local`, `.gitignore`, `AGENTS.md`, `README.md`, `components.json`, `eslint.config.mjs`, `next.config.ts`, `next-env.d.ts`, `package.json`, `package-lock.json`, `tsconfig.json`, `tsconfig.tsbuildinfo`.
-- **REVIEW** — `CLAUDE.md`, `postcss.config.js`, `postcss.config.mjs`, `tailwind.config.js`.
-
-### Application
-
-- **KEEP** — `app/api/feedback/route.ts`, `app/favicon.ico`, `app/globals.css`, `app/how-it-works/page.tsx`, `app/layout.tsx`, `app/page.tsx`, `app/results/[slug]/page.tsx`, `app/results/page.tsx`, `app/schedule/page.tsx`.
-
-### Components and Library
-
-- **KEEP** — `components/AOYStandings.tsx`, `FeaturedTournament.tsx`, `FeedbackWidget.tsx`, `Footer.tsx`, `Header.tsx`, `Hero.tsx`, `LatestTournamentNews.tsx`, `PageHeader.tsx`, `WinnersCircle.tsx`.
-- **KEEP** — `lib/utils.ts` until the inactive UI-button dependency group is reviewed.
-- **SAFE TO DELETE** — `components/Button.tsx`, `HeroActions.tsx`, `HomeDashboard.tsx`, `HomeHighlights.tsx`, `components/ui/Header.tsx`, `components/ui/button.tsx`.
-
-### Data
-
-- **KEEP** — `data/tournamentData.ts`, `data/tournaments.ts`; their contents require the placeholder/consolidation reviews described above.
-
-### Documentation
-
-- **KEEP** — `docs/DevelopmentRoadmap.md`, `MasterSiteMap.md`, `ProjectStatus.md`, `RepositoryAudit.md`, `UI-Standards.md`, `WeighFishIntegration.md`.
-
-### Public Assets
-
-- **KEEP** — `public/images/featured-tournament.png`, `logo.png`, `tournament-hero.png`, `hero/hero-locked-v10.png`, `placeholders/tournament-coming-soon.png`, `results/big-bass.jpg`, `results/overall-winner.jpg`.
-- **SAFE TO DELETE** — `public/file.svg`, `globe.svg`, `next.svg`, `vercel.svg`, `window.svg`, `images/placeholders/big-bass.jpg`, `images/placeholders/overall-winner.jpg`.
-- **REVIEW** — `public/images/all-in-flyer.png`, `homepage-mockup.png`, `homepage-v2.png`, `trophy-inaugural.png`, `trophy-inaugural-v2.png`, `winners-circle-template.png`, `winners-circle-title.png`, `winners-circle-title-v3.png`, `winners-circle-title-v4.png`, `hero/all-in-feedback-footer.zip`, `hero/hero-image.png`, `hero/hero-locked-v6.png`, `hero/hero-locked-v7.png`, `hero/hero-locked-v8.png`, `hero/hero-locked-v9.png`, `hero/hero-title.png`.
-
-## Recommended Cleanup Order
-
-1. **REVIEW** — Snapshot and approve the existing dirty working tree, especially the three tracked deletions, before mixing cleanup with feature work.
-2. **REVIEW** — Fix live broken links, dead fragments, missing asset paths, default metadata, and feedback configuration using only approved sitemap routes.
-3. **REVIEW** — Establish `data/tournaments.ts` as the temporary single tournament source and consolidate Featured Tournament, AOY schedule, and winner/result mock data around a maintainable model.
-4. **SAFE TO DELETE** — Remove the six unused TSX files as one focused change after a final reference search.
-5. **REVIEW** — If the unused UI button is removed, evaluate and remove its now-unneeded utility/dependency chain; separately review `lucide-react`, `autoprefixer`, and `shadcn` placement.
-6. **SAFE TO DELETE** — Remove the five starter SVGs and two unused exact-copy placeholder JPGs.
-7. **REVIEW** — Visually inventory design variants. Keep approved masters in an archive outside `public/`, then remove obsolete deployed revisions. Move the source ZIP out of `public/` if retained.
-8. **REVIEW** — Consolidate PostCSS configuration and confirm whether `tailwind.config.js` is still needed.
-9. **REVIEW** — Move the canonical Header into shared layout and extend `PageHeader` reuse only after the global navigation/page-header design is approved.
-10. **KEEP** — After every cleanup group, rerun `npm run lint`, `npx tsc --noEmit`, `npm run build`, route/link checks, and the asset-reference scan.
+Each row is one counted cleanup item. “Safe” means there is strong repository evidence of no active use; it does not override the project rule to prove unused status again immediately before deletion.
+
+### SAFE TO DELETE — 15 items
+
+| Full path | Why / evidence | Confidence | Recommendation |
+|---|---|---|---|
+| `components/Button.tsx` | Empty, zero-line file; no imports | High | SAFE TO DELETE |
+| `components/HomeDashboard.tsx` | Never imported; duplicates active Home composition | High | SAFE TO DELETE |
+| `components/HomeHighlights.tsx` | Never imported; duplicates active Home composition | High | SAFE TO DELETE |
+| `components/HeroActions.tsx` | Never imported or rendered | High | SAFE TO DELETE |
+| `components/ui/Header.tsx` | Never imported; duplicate of active Header | High | SAFE TO DELETE |
+| `components/ui/button.tsx` | Never imported by active source | High | SAFE TO DELETE |
+| `lib/utils.ts` | Used only by unused UI button; no active consumer | High | SAFE TO DELETE |
+| `public/file.svg` | Unreferenced Create Next App asset | High | SAFE TO DELETE |
+| `public/globe.svg` | Unreferenced Create Next App asset | High | SAFE TO DELETE |
+| `public/next.svg` | Unreferenced Create Next App asset | High | SAFE TO DELETE |
+| `public/vercel.svg` | Unreferenced Create Next App asset | High | SAFE TO DELETE |
+| `public/window.svg` | Unreferenced Create Next App asset | High | SAFE TO DELETE |
+| `public/images/placeholders/big-bass.jpg` | Unreferenced and byte-identical to four other placeholders | High | SAFE TO DELETE |
+| `public/images/placeholders/overall-winner.jpg` | Unreferenced and byte-identical to four other placeholders | High | SAFE TO DELETE |
+| `public/images/hero/all-in-feedback-footer.zip` | Unreferenced temporary archive exposed under `public/` | High | SAFE TO DELETE |
+
+### REVIEW — 28 items
+
+| Full path | Why / evidence | Confidence | Recommendation |
+|---|---|---|---|
+| `app/how-it-works/page.tsx` | Approved content at a top-level route; embeds FAQ and links to missing routes | High | REVIEW |
+| `app/results/page.tsx` | Placeholder-only results structure built from upcoming tournaments | High | REVIEW |
+| `app/results/[slug]/page.tsx` | Placeholder result shell; used incorrectly as Event Info; missing hero JPG | High | REVIEW |
+| `app/api/feedback/route.ts` | Active but undocumented support route; ignores category and has provisional mail settings | Medium | REVIEW |
+| `app/layout.tsx` | Starter metadata and Header not global | High | REVIEW |
+| `components/Header.tsx` | Active, but broken/placeholder links and only rendered on Home | High | REVIEW |
+| `components/Footer.tsx` | Active, but broken fragments, missing Contact, placeholder social links | High | REVIEW |
+| `components/AOYStandings.tsx` | Contains stale mock standings and duplicated schedule data | High | REVIEW |
+| `components/FeaturedTournament.tsx` | Hard-coded duplicate event data and broken routes | High | REVIEW |
+| `components/WinnersCircle.tsx` | Placeholder Top 5/results and duplicate placeholder imagery | High | REVIEW |
+| `data/tournamentData.ts` | Duplicates canonical tournament data and contains only placeholder winners | High | REVIEW |
+| `data/tournaments.ts` | Canonical active data, but all three `heroImage` paths are missing | High | REVIEW |
+| `postcss.config.js` | Duplicates `postcss.config.mjs` | High | REVIEW |
+| `postcss.config.mjs` | Duplicates `postcss.config.js`; determine canonical format | High | REVIEW |
+| `tailwind.config.js` | Potentially redundant legacy-style config in Tailwind 4 | Medium | REVIEW |
+| `docs/RepositoryMap.md` | Secondary architecture report contains interpretations that should not outrank MasterSiteMap | Medium | REVIEW |
+| `public/images/all-in-flyer.png` | Unreferenced; may be retained source/marketing art | Medium | REVIEW |
+| `public/images/homepage-mockup.png` | Unreferenced temporary/design mockup | High | REVIEW |
+| `public/images/homepage-v2.png` | Unreferenced temporary/design mockup | High | REVIEW |
+| `public/images/trophy-inaugural.png` | Unreferenced design variant | Medium | REVIEW |
+| `public/images/trophy-inaugural-v2.png` | Unreferenced design variant | Medium | REVIEW |
+| `public/images/winners-circle-template.png` | Unreferenced design template | Medium | REVIEW |
+| `public/images/winners-circle-title.png` | Unreferenced design variant | Medium | REVIEW |
+| `public/images/winners-circle-title-v3.png` | Unreferenced design variant | Medium | REVIEW |
+| `public/images/winners-circle-title-v4.png` | Unreferenced design variant | Medium | REVIEW |
+| `public/images/hero/hero-image.png` | Unreferenced hero source/variant | Medium | REVIEW |
+| `public/images/hero/hero-locked-v6.png` | Unreferenced superseded hero variant | High | REVIEW |
+| `public/images/hero/hero-locked-v7.png` | Unreferenced superseded hero variant | High | REVIEW |
+
+The remaining unreferenced hero variants are counted below as KEEP because the numbered progression and current v10 make provenance uncertain without visual/owner confirmation.
+
+### KEEP — 10 items
+
+| Full path | Why / evidence | Confidence | Recommendation |
+|---|---|---|---|
+| `public/images/hero/hero-locked-v8.png` | Unreferenced but near-current source variant; retain pending visual provenance review | Low | KEEP |
+| `public/images/hero/hero-locked-v9.png` | Immediate predecessor to active v10; likely useful source/fallback | Medium | KEEP |
+| `public/images/hero/hero-title.png` | Unreferenced but likely compositing source for current hero | Low | KEEP |
+| `public/images/hero/hero-locked-v10.png` | Actively rendered by Home Hero | High | KEEP |
+| `public/images/logo.png` | Actively rendered by Header | High | KEEP |
+| `public/images/featured-tournament.png` | Actively rendered by FeaturedTournament | High | KEEP |
+| `public/images/tournament-hero.png` | Actively rendered by Results index; may also replace broken `.jpg` reference | High | KEEP |
+| `public/images/placeholders/tournament-coming-soon.png` | Actively referenced by current tournament data | High | KEEP |
+| `public/images/results/overall-winner.jpg` | Actively rendered by WinnersCircle | High | KEEP |
+| `public/images/results/big-bass.jpg` | Actively rendered by WinnersCircle | High | KEEP |
+
+Missing files are defects, not cleanup candidates, so they are not counted as classification items. The classification likewise does not label required source-of-truth documents or ordinary active source files as cleanup candidates merely to inflate KEEP totals.
+
+## 9. Cleanup Order
+
+### Batch 1: High-confidence safe removals
+
+After one final import/reference check, remove the 15 SAFE TO DELETE items above. Run lint, TypeScript, and build. This is the recommended first cleanup batch because it does not require sitemap or content decisions.
+
+### Batch 2: Old experimental pages and components
+
+Visually review and then resolve retained design variants/mockups. Confirm the active Header, remove any remaining competing implementation, and decide whether unused imagery belongs in non-public project storage rather than `public/`.
+
+### Batch 3: Route and architecture cleanup
+
+Implement only approved routes in sitemap order: Event Information/Registration/Confirmation, AOY, FAQ & Rules children, Sponsors, Contact, Privacy, and Terms. Move or map How It Works under FAQ & Rules, keep results separate from event information, make Header global, and replace all broken/placeholder navigation. Do not invent `/tournaments/...`, a separate Big Bass page, gallery, or safety page.
+
+### Batch 4: Data cleanup
+
+Make `data/tournaments.ts` the single tournament source (or replace it with one equally simple canonical model). Remove duplicated event constants, replace mock AOY/results data with clearly typed empty states, store Big Bass inside each tournament result, fix missing image paths, and reconcile event names/slugs/dates.
+
+### Batch 5: Folder and naming cleanup
+
+Choose one PostCSS config, evaluate the Tailwind config, normalize image naming/extensions, consolidate identical placeholders, and move source mockups/archives out of publicly served folders if they must be retained.
+
+## 10. Verification Record
+
+- Reviewed 77 maintained repository files present at audit start, including the pre-existing `docs/RepositoryAudit.md`; generated/dependency internals were excluded.
+- Enumerated routes using both filesystem inspection and successful Next.js build output.
+- Traced every static `import`, internal `href`, image `src`, CSS `url()`, and data image path under `app/`, `components/`, `data/`, and `lib/`.
+- Compared referenced asset paths with the `public/` filesystem.
+- Hashed every public file with SHA-256 to identify exact duplicates.
+- Ran `npm run lint`: pass.
+- Ran `npx tsc --noEmit`: pass.
+- Ran `npm run build`: pass with network access. Initial restricted run failed only on Google Fonts retrieval.
+- Confirmed Git working tree was clean before writing this report.
+
+## Final Counts
+
+- Audit completed
+- Number of files reviewed: **77**
+- Number of SAFE TO DELETE items: **15**
+- Number of REVIEW items: **28**
+- Number of KEEP items: **10**
+- Recommended first cleanup batch: **Batch 1 — High-confidence safe removals (15 items), followed by lint, TypeScript, and build verification**
