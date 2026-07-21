@@ -11,6 +11,8 @@
 
 - ✔ Repository Cleanup v0.2 (Batches 1–4)
 - ✔ Data Consolidation (Repository Cleanup Batch 3)
+- ✔ v0.3 Tournament Experience — Schedule page
+- ✔ v0.3 Tournament Experience — Tournament Details page
 
 - ✔ Foundation
 - ✔ Homepage
@@ -19,12 +21,12 @@
 
 ## In Progress
 
-- ◐ Schedule
+- ◐ v0.3 Tournament Experience
 
 ## Not Started
 
-- ○ Event Information
 - ○ Registration
+- ○ Registration Confirmation
 - ○ Results
 - ○ AOY
 - ○ FAQ & Rules
@@ -42,5 +44,5 @@
 
 ## Next Recommended Task
 
-- Begin the **Schedule / Tournament Experience** milestone by completing the
-  Schedule and then Event Information according to the approved master sitemap.
+- Continue the **Tournament Experience** milestone with Registration according
+  to the approved master sitemap.

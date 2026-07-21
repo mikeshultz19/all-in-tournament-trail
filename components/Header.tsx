@@ -3,6 +3,7 @@ import Link from "next/link";
 
 const navItems = [
   { label: "Home", href: "/" },
+  { label: "Watch", href: "/watch" },
   { label: "Results", href: "/results" },
   { label: "Schedule", href: "/schedule" },
   { label: "Standings" },
@@ -10,7 +11,7 @@ const navItems = [
   { label: "Sponsors" },
 ];
 
-export default function Header() {
+export default function Header({ activeItem }: { activeItem?: string }) {
   return (
     <>
       <header className="fixed inset-x-0 top-0 z-[100] w-full border-b border-zinc-800 bg-black/95 backdrop-blur">
@@ -32,7 +33,12 @@ export default function Header() {
                 <Link
                   key={item.label}
                   href={item.href}
-                  className="whitespace-nowrap text-sm font-black uppercase tracking-[0.08em] text-zinc-100 transition duration-200 hover:text-red-500"
+                  aria-current={activeItem === item.label ? "page" : undefined}
+                  className={`whitespace-nowrap text-sm font-black uppercase tracking-[0.08em] transition duration-200 hover:text-red-500 ${
+                    activeItem === item.label
+                      ? "text-red-500"
+                      : "text-zinc-100"
+                  }`}
                 >
                   {item.label}
                 </Link>
@@ -56,12 +62,12 @@ export default function Header() {
               How It Works
             </Link>
 
-            <span
-              aria-disabled="true"
-              className="cursor-not-allowed rounded-md bg-red-950 px-5 py-3 text-sm font-black uppercase tracking-wide text-zinc-400"
+            <Link
+              href="/register"
+              className="rounded-md bg-red-700 px-5 py-3 text-sm font-black uppercase tracking-wide text-white transition hover:bg-red-600"
             >
               Register
-            </span>
+            </Link>
 
             <span
               aria-disabled="true"
@@ -79,12 +85,12 @@ export default function Header() {
               How It Works
             </Link>
 
-            <span
-              aria-disabled="true"
-              className="cursor-not-allowed rounded-md bg-red-950 px-4 py-2.5 text-xs font-black uppercase tracking-wide text-zinc-400"
+            <Link
+              href="/register"
+              className="rounded-md bg-red-700 px-4 py-2.5 text-xs font-black uppercase tracking-wide text-white transition hover:bg-red-600"
             >
               Register
-            </span>
+            </Link>
           </div>
         </div>
       </header>

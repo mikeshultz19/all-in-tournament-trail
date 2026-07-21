@@ -96,6 +96,7 @@ Next.js.
 - `docs/RepositoryAudit.md` — cleanup audit and batch record
 - `docs/RepositoryMap.md` — current maintained-file map
 - `docs/DevelopmentRoadmap.md` — milestone roadmap
+- `docs/VersionHistory.md` — completed and planned release milestones
 - `docs/ProjectStatus.md` — current project and milestone status
 - `docs/DecisionLog.md` — approved architectural and maintenance decisions
 - `docs/DataModel.md` — static typed data ownership

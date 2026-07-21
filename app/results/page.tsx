@@ -1,10 +1,13 @@
 import Image from "next/image";
 import Link from "next/link";
+import Header from "@/components/Header";
 import { getTournamentImage, tournaments } from "@/data/tournaments";
 
 export default function ResultsPage() {
   return (
     <main className="min-h-screen bg-black text-white">
+      <Header />
+
       {/* Hero */}
       <section className="border-b border-white/10 bg-[#0d0d0d]">
         <div className="mx-auto max-w-7xl px-6 py-16">

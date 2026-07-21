@@ -1,9 +1,14 @@
 import Link from "next/link";
+import Header from "@/components/Header";
+import { REGISTRATION_PRICING } from "@/data/registration";
+
+const price = (amount: number, additional = false) =>
+  `${additional ? "+" : ""}$${amount}`;
 
 const entryOptions = [
   {
     name: "Free Entry",
-    price: "$0",
+    price: price(REGISTRATION_PRICING.freeEntry),
     eyebrow: "Open Entry",
     description:
       "Compete in the tournament without paying a tournament entry fee.",
@@ -18,7 +23,7 @@ const entryOptions = [
   },
   {
     name: "Base Entry",
-    price: "$60",
+    price: price(REGISTRATION_PRICING.baseEntry),
     eyebrow: "Open Entry",
     description:
       "Enter the main tournament competition. Membership is not required.",
@@ -33,7 +38,7 @@ const entryOptions = [
   },
   {
     name: "Bronze Pot",
-    price: "+$40",
+    price: price(REGISTRATION_PRICING.bronze, true),
     eyebrow: "Members Only",
     description:
       "A separate payout competition for members choosing the Bronze Pot.",
@@ -48,7 +53,7 @@ const entryOptions = [
   },
   {
     name: "Silver Pot",
-    price: "+$100",
+    price: price(REGISTRATION_PRICING.silver, true),
     eyebrow: "Members Only",
     description:
       "A higher-entry competition with its own independent payout pool.",
@@ -63,13 +68,13 @@ const entryOptions = [
   },
   {
     name: "Gold Pot",
-    price: "+$500",
+    price: price(REGISTRATION_PRICING.gold, true),
     eyebrow: "Members Only",
     description:
       "The premium competition for anglers pursuing the largest potential payout.",
     features: [
       "Separate payout pool",
-      "Pays 1 in 7",
+      "Pays 1 in 5",
       "Base Entry required",
       "Choose one pot per event",
     ],
@@ -82,25 +87,25 @@ const waysToWin = [
   {
     title: "Base Tournament",
     description:
-      "The main tournament payout available to anglers and teams that pay the $60 Base Entry.",
+      `The main tournament payout available to anglers and teams that pay the ${price(REGISTRATION_PRICING.baseEntry)} Base Entry.`,
     label: "Main Field",
   },
   {
     title: "Bronze Pot",
     description:
-      "An independent members-only payout competition with its own payout pool.",
+      "An independent members-only payout competition with its own payout pool. Pays 1 in 5 — one payout place for every five entries in the pot.",
     label: "Members",
   },
   {
     title: "Silver Pot",
     description:
-      "A separate higher-entry members-only payout competition.",
+      "A separate higher-entry members-only payout competition. Pays 1 in 5 — one payout place for every five entries in the pot.",
     label: "Members",
   },
   {
     title: "Gold Pot",
     description:
-      "The premium members-only payout competition for anglers seeking the largest potential reward.",
+      "The premium members-only payout competition for anglers seeking the largest potential reward. Pays 1 in 5 — one payout place for every five entries in the pot.",
     label: "Members",
   },
   {
@@ -112,8 +117,8 @@ const waysToWin = [
   {
     title: "Insurance Pot",
     description:
-      "Pays starting with the first eligible Base entry out of the money and continues until the pot runs out.",
-    label: "Optional",
+      "Pays first out of the money from the Base Entry Pot until the available Insurance Pot money is exhausted.",
+    label: `${price(REGISTRATION_PRICING.insurance)} Optional`,
   },
   {
     title: "AOY Points",
@@ -137,12 +142,12 @@ const faqs = [
   {
     question: "Do I have to be a member?",
     answer:
-      "No. Membership is not required for the Free Entry option or the $60 Base Entry. Membership is required for AOY eligibility, Championship qualification, Bronze, Silver and Gold Pots, the Insurance Pot, and other member opportunities.",
+      `No. Membership is not required for the Free Entry option or the ${price(REGISTRATION_PRICING.baseEntry)} Base Entry. Annual Membership is ${price(REGISTRATION_PRICING.annualMembership)} per angler and is required for AOY eligibility, Championship qualification, Bronze, Silver and Gold Pots, the Insurance Pot, and other member opportunities.`,
   },
   {
-    question: "What does the $60 Base Entry include?",
+    question: `What does the ${price(REGISTRATION_PRICING.baseEntry)} Base Entry include?`,
     answer:
-      "The $60 Base Entry places an angler or team into the main tournament payout competition. Base entries are eligible for Base payouts and may also enter Big Bass. Eligible members may choose one additional Bronze, Silver, or Gold Pot.",
+      `The ${price(REGISTRATION_PRICING.baseEntry)} Base Entry places an angler or team into the main tournament payout competition. Base entries are eligible for Base payouts and may also enter Big Bass. Eligible members may choose one additional Bronze, Silver, or Gold Pot.`,
   },
   {
     question: "Can I compete by myself?",
@@ -157,7 +162,7 @@ const faqs = [
   {
     question: "Can I choose any pot?",
     answer:
-      "Eligible members who have paid the Base Entry may choose Bronze, Silver, or Gold based on their preferred entry level. Each pot is a separate competition with its own payout pool.",
+      "Eligible members who have paid the Base Entry may choose Bronze, Silver, or Gold based on their preferred entry level. Each pot is a separate competition with its own payout pool and pays 1 in 5 — one payout place for every five entries in that pot.",
   },
   {
     question: "Can I enter more than one pot?",
@@ -167,12 +172,12 @@ const faqs = [
   {
     question: "Do I still compete in the Base Tournament when I choose a pot?",
     answer:
-      "Yes. Bronze, Silver, and Gold are additional independent competitions. An entry must first pay the $60 Base Entry and then may choose one eligible pot.",
+      `Yes. Bronze, Silver, and Gold are additional independent competitions. An entry must first pay the ${price(REGISTRATION_PRICING.baseEntry)} Base Entry and then may choose one eligible pot.`,
   },
   {
     question: "How does the Insurance Pot work?",
     answer:
-      "The optional Insurance Pot begins paying with the first eligible entry that finishes immediately outside the Base payout. Payments continue through the next eligible positions until the Insurance Pot is exhausted.",
+      `The ${price(REGISTRATION_PRICING.insurance)} optional Insurance Pot pays first out of the money from the Base Entry Pot until the available Insurance Pot money is exhausted. Payment continues in finishing order until those funds are depleted.`,
   },
   {
     question: "Can a Free Entry purchase the Insurance Pot?",
@@ -197,7 +202,7 @@ const faqs = [
   {
     question: "What does membership include?",
     answer:
-      "Membership provides access to AOY eligibility, Championship qualification, the Bronze, Silver, and Gold Pots, the Insurance Pot, tournament-week practice eligibility, and additional member opportunities.",
+      `The ${price(REGISTRATION_PRICING.annualMembership)} per angler Annual Membership provides access to AOY eligibility, Championship qualification, the Bronze, Silver, and Gold Pots, the Insurance Pot, tournament-week practice eligibility, and additional member opportunities.`,
   },
   {
     question: "When does the off-limits period begin?",
@@ -224,19 +229,13 @@ const faqs = [
 export default function HowItWorksPage() {
   return (
     <main className="min-h-screen bg-black text-white">
+      <Header />
+
       <section className="relative overflow-hidden border-b border-white/10 bg-[#0d0d0d]">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_75%_20%,rgba(185,154,63,0.12),transparent_35%),linear-gradient(to_bottom,transparent,rgba(0,0,0,0.8))]" />
 
         <div className="relative mx-auto max-w-[1300px] px-4 py-14 sm:px-6 sm:py-16 lg:py-20">
-          <Link
-            href="/"
-            className="inline-flex items-center gap-2 text-xs font-black uppercase tracking-[0.2em] text-[#d0ae4c] transition hover:text-red-500"
-          >
-            <span aria-hidden="true">←</span>
-            Return to Home
-          </Link>
-
-          <p className="mt-8 text-xs font-black uppercase tracking-[0.3em] text-red-500">
+          <p className="text-xs font-black uppercase tracking-[0.3em] text-red-500">
             All-In Tournament Trail
           </p>
 
@@ -276,7 +275,7 @@ export default function HowItWorksPage() {
           <SectionHeading
             eyebrow="Choose Your Entry"
             title="Choose How You Want to Fish"
-            description="Enter for free and compete for Big Bass, or pay the $60 Base Entry for access to the main tournament payout. Eligible members may also choose one additional Bronze, Silver, or Gold Pot."
+            description={`Enter for free and compete for Big Bass, or pay the ${price(REGISTRATION_PRICING.baseEntry)} Base Entry for access to the main tournament payout. Eligible members may also choose one additional Bronze, Silver, or Gold Pot.`}
           />
 
           <div className="mt-8 grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-5">

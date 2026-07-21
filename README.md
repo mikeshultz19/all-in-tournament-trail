@@ -18,4 +18,5 @@ The All In Tournament Trail is a unique bass fishing tournament series that allo
 The project uses Next.js 16, React 19, TypeScript, and Tailwind CSS 4. The
 approved site structure is documented in `docs/MasterSiteMap.md`; registration,
 full results, AOY, rules, sponsors, contact, and policy pages remain scheduled
-for future development.
+for future development. Major completed and planned milestones are recorded in
+`docs/VersionHistory.md`.

@@ -1,7 +1,16 @@
-import PageHeader from "@/components/PageHeader";
-import { tournaments } from "@/data/tournaments";
+import Image from "next/image";
+import Link from "next/link";
 
-function formatDate(date: string) {
+import Header from "@/components/Header";
+import {
+  getTournamentImage,
+  tournaments,
+  type Tournament,
+} from "@/data/tournaments";
+
+const REGISTRATION_ROUTE = "/register";
+
+function formatDate(date: string): string {
   return new Date(`${date}T12:00:00`).toLocaleDateString("en-US", {
     month: "short",
     day: "numeric",
@@ -9,146 +18,97 @@ function formatDate(date: string) {
   });
 }
 
+function TournamentRow({ tournament }: { tournament: Tournament }) {
+  const thumbnailImage =
+    tournament.thumbnailImage ?? getTournamentImage(tournament);
+
+  return (
+    <article className="grid gap-5 border-b border-[#4A3A12] px-4 py-6 lg:grid-cols-[180px_minmax(250px,1fr)_110px_130px_140px] lg:items-center lg:gap-6 lg:px-5 lg:py-5">
+      <div>
+        <p className="mb-2 text-xs font-bold uppercase tracking-[0.14em] text-[#D4A017] lg:hidden">
+          Lake
+        </p>
+        <div className="relative h-40 w-full overflow-hidden rounded-md bg-[#111111] lg:h-[104px] lg:w-[180px]">
+          <Image
+            src={thumbnailImage}
+            alt={`${tournament.lake} lake`}
+            fill
+            sizes="(max-width: 1023px) calc(100vw - 72px), 180px"
+            className="object-cover"
+          />
+          <div className="absolute inset-x-0 top-0 bg-gradient-to-b from-black/90 to-transparent px-3 pb-8 pt-2.5 sm:px-4 sm:pt-3">
+            <h3 className="text-sm font-bold uppercase leading-tight tracking-wide text-white">
+              {tournament.name}
+            </h3>
+          </div>
+        </div>
+      </div>
+
+      <div className="min-w-0">
+        <p className="mb-2 text-xs font-bold uppercase tracking-[0.14em] text-[#D4A017] lg:hidden">
+          About This Tournament
+        </p>
+        <p className="text-sm leading-6 text-[#B8B8B8]">
+          {tournament.description}
+        </p>
+      </div>
+
+      <div>
+        <p className="mb-2 text-xs font-bold uppercase tracking-[0.14em] text-[#D4A017] lg:hidden">
+          Date
+        </p>
+        <time
+          dateTime={tournament.date}
+          className="text-sm font-bold uppercase text-[#F2F2F2]"
+        >
+          {formatDate(tournament.date)}
+        </time>
+      </div>
+
+      <div>
+        <p className="mb-2 text-xs font-bold uppercase tracking-[0.14em] text-[#D4A017] lg:hidden">
+          Launch
+        </p>
+        <p className="text-sm font-semibold leading-5 text-[#F2F2F2] lg:text-center">
+          {tournament.venue ?? "To Be Announced"}
+        </p>
+      </div>
+
+      <Link
+        href={REGISTRATION_ROUTE}
+        className="inline-flex min-h-11 w-full items-center justify-center rounded-sm bg-[#D4A017] px-5 py-3 text-center text-xs font-black uppercase tracking-[0.12em] text-[#0B0B0B] transition hover:bg-[#e2b229] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#D4A017]"
+      >
+        Register Now
+      </Link>
+    </article>
+  );
+}
+
 export default function SchedulePage() {
   return (
-    <main className="min-h-screen bg-black text-white">
-      {/* PAGE HEADER */}
-<PageHeader
-  title="2026–2027 Schedule"
-  subtitle="Review the full tournament information before registering."
-/>
+    <main className="min-h-screen bg-[#0B0B0B] text-[#F2F2F2]">
+      <Header />
 
-      {/* EVENT INFORMATION */}
-      <section className="mx-auto max-w-7xl px-5 py-10 sm:px-6">
-        <div className="mb-6">
-          <div className="flex items-center gap-4">
-            <h2 className="shrink-0 text-xl font-black uppercase tracking-wide sm:text-2xl">
-              Event Information
-            </h2>
-
-            <div className="h-px flex-1 bg-white/15" />
-          </div>
-
-          <p className="mt-2 text-sm text-neutral-400">
-            Review the full tournament information before registering.
-          </p>
+      <section className="border-b border-[#4A3A12] bg-[#111111]">
+        <div className="mx-auto max-w-[1400px] px-5 py-9 sm:px-6 sm:py-11">
+          <h1 className="text-3xl font-black uppercase tracking-[0.04em] text-[#D4A017] sm:text-4xl">
+            Tournament Schedule
+          </h1>
         </div>
+      </section>
 
-        {/* DESKTOP SCHEDULE */}
-        <div className="hidden md:block">
-          <div className="grid grid-cols-[70px_155px_1.25fr_1fr_125px_140px] items-center gap-5 border-b border-white/25 px-3 pb-3 text-xs font-black uppercase tracking-[0.16em] text-neutral-500">
-            <span>Event</span>
-            <span>Date</span>
+      <section className="mx-auto max-w-[1400px] px-5 py-8 sm:px-6 sm:py-10">
+        <div className="overflow-hidden border border-[#4A3A12] bg-[#111111]">
+          <div className="hidden grid-cols-[180px_minmax(250px,1fr)_110px_130px_140px] items-center gap-6 border-b border-[#4A3A12] px-5 py-4 text-xs font-black uppercase tracking-[0.14em] text-[#D4A017] lg:grid">
             <span>Lake</span>
-            <span>City</span>
-            <span>Event Info</span>
-            <span className="text-right">Register</span>
+            <span>About This Tournament</span>
+            <span>Date</span>
+            <span className="text-center">Launch</span>
+            <span className="text-center">Register</span>
           </div>
 
-          <div>
-            {tournaments.map((tournament, index) => (
-              <article
-                key={tournament.slug}
-                className="grid grid-cols-[70px_155px_1.25fr_1fr_125px_140px] items-center gap-5 border-b border-white/15 px-3 py-6 transition hover:bg-white/[0.025]"
-              >
-                <span className="text-2xl font-black text-red-500">
-                  {String(index + 1).padStart(2, "0")}
-                </span>
-
-                <span className="text-sm font-bold uppercase text-neutral-200">
-                  {formatDate(tournament.date)}
-                </span>
-
-                <div>
-                  <h3 className="text-lg font-black uppercase tracking-wide">
-                    {tournament.lake}
-                  </h3>
-
-                  <p className="mt-1 text-xs text-neutral-500">
-                    {tournament.venue}
-                  </p>
-                </div>
-
-                <span className="text-sm font-semibold uppercase text-neutral-300">
-                  {tournament.city}, TX
-                </span>
-
-                <span
-                  aria-disabled="true"
-                  className="w-fit cursor-not-allowed border-b border-neutral-800 pb-1 text-sm font-semibold text-neutral-600"
-                >
-                  View Info
-                </span>
-
-                <div className="text-right">
-                  {tournament.registrationStatus === "open" ? (
-                    <span
-                      aria-disabled="true"
-                      className="inline-flex min-w-32 cursor-not-allowed items-center justify-center bg-red-950 px-5 py-3 text-xs font-black uppercase tracking-[0.14em] text-neutral-400"
-                    >
-                      Register
-                    </span>
-                  ) : (
-                    <span className="inline-flex min-w-32 items-center justify-center border border-white/15 px-5 py-3 text-xs font-black uppercase tracking-[0.14em] text-neutral-600">
-                      Closed
-                    </span>
-                  )}
-                </div>
-              </article>
-            ))}
-          </div>
-        </div>
-
-        {/* MOBILE SCHEDULE */}
-        <div className="divide-y divide-white/15 border-t border-white/20 md:hidden">
-          {tournaments.map((tournament, index) => (
-            <article key={tournament.slug} className="py-6">
-              <div className="flex items-start gap-4">
-                <span className="text-2xl font-black leading-none text-red-500">
-                  {String(index + 1).padStart(2, "0")}
-                </span>
-
-                <div className="min-w-0 flex-1">
-                  <p className="text-xs font-black uppercase tracking-widest text-neutral-500">
-                    {formatDate(tournament.date)}
-                  </p>
-
-                  <h3 className="mt-2 text-xl font-black uppercase">
-                    {tournament.lake}
-                  </h3>
-
-                  <p className="mt-1 text-sm text-neutral-400">
-                    {tournament.city}, TX
-                  </p>
-
-                  <p className="mt-1 text-sm text-neutral-500">
-                    {tournament.venue}
-                  </p>
-
-                  <div className="mt-5 flex items-center justify-between gap-4">
-                    <span
-                      aria-disabled="true"
-                      className="cursor-not-allowed border-b border-neutral-800 pb-1 text-sm font-semibold text-neutral-600"
-                    >
-                      View Event Info
-                    </span>
-
-                    {tournament.registrationStatus === "open" ? (
-                      <span
-                        aria-disabled="true"
-                        className="cursor-not-allowed bg-red-950 px-5 py-3 text-xs font-black uppercase tracking-wider text-neutral-400"
-                      >
-                        Register
-                      </span>
-                    ) : (
-                      <span className="border border-white/15 px-5 py-3 text-xs font-black uppercase tracking-wider text-neutral-600">
-                        Closed
-                      </span>
-                    )}
-                  </div>
-                </div>
-              </div>
-            </article>
+          {tournaments.map((tournament) => (
+            <TournamentRow key={tournament.slug} tournament={tournament} />
           ))}
         </div>
       </section>
