@@ -11,6 +11,12 @@ standards or create a broader design system.
 | Use | Avoid in public UI | Notes |
 |---|---|---|
 | Tournament Entry | Base Entry | Required for every registration. |
+| Tournament Entries | Public Registrations, Registration Records, Entry Database | Preferred public entry-list page title. |
+| Tournament Conditions | Weather Widget | Combines status, Safe Light, and tournament-date forecast. |
+| Team Entries | Teams Registered | Tournament Entries summary label. |
+| Solo Entries | Individual Entries | Tournament Entries summary label. |
+| Register Now | Submit Registration | Primary homepage action while registration is open. |
+| Registration closes | Registration cutoff | Introduces the exact published deadline. |
 | Insurance Pot | Insurance | Use the full name for the selectable pot. |
 | Tournament Director | Admin | “Admin Portal” may remain the product-area name. |
 | Safe Light | Launch Time | Final launch timing remains the Tournament Director’s decision. |
@@ -49,7 +55,7 @@ Prefer:
 - Continue
 - Save
 - Cancel
-- View Registrations
+- View Tournament Entries
 
 Avoid “Submit Form,” “Execute,” and “Save Record.” Button labels should describe
 the action an angler or Tournament Director expects.
@@ -86,6 +92,36 @@ be ambiguous, following the existing registration and operations conventions.
 - Keep labels visible rather than relying on placeholder text.
 - Use plain language.
 - Preserve keyboard and screen-reader usability.
+
+## Public Entry Lists
+
+- Use a compact table rather than cards when large entry sets are expected.
+- Keep summary statistics concise and scan-friendly.
+- Keep detailed entry and optional-pot statistics on the Tournament Entries
+  page. Use concise registration and entry-list calls to action on the homepage.
+- Use these summary labels: Tournament Entries, Team Entries, Solo Entries,
+  Big Bass, Bronze, Silver, Gold, and Insurance Pot.
+- Do not shorten Insurance Pot to Insurance.
+
+## Tournament Conditions
+
+- Use Tournament Conditions, Tournament Status, Safe Light, Tournament
+  Forecast, Wind, Gusts, Rain, and Weather data by AccuWeather.
+- Keep homepage weather compact and secondary to primary tournament content.
+- Do not use weather color alone as a safety indicator.
+- Do not present provider output as an official tournament decision.
+- Prefer text plus a restrained status indicator, and always include the status
+  text so color is not the only signal.
+- Keep **Register Now** visually dominant over forecast content and secondary
+  links.
+- Use **Weather data by AccuWeather** as visible linked attribution whenever
+  provider data appears.
+
+## Homepage Announcements
+
+- Keep **Latest News & Announcements** visible and visually distinct on mobile
+  and desktop as the primary public communication surface.
+- Keep Tournament Conditions compact in the established Safe Light area.
 
 ## Scope
 

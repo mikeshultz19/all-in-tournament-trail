@@ -7,7 +7,7 @@ export default function LatestTournamentNews({ tournament }: { tournament: Tourn
       <div className="mx-auto max-w-[1300px]">
         <div className="mb-3 flex items-center gap-4">
           <h2 id="tournament-status-heading" className="shrink-0 text-xl font-black uppercase tracking-tight text-white sm:text-2xl">
-            Tournament Status &amp; Announcements
+            Latest News &amp; Announcements
           </h2>
           <div className="h-px flex-1 bg-gradient-to-r from-red-600 via-red-600/40 to-transparent" />
         </div>

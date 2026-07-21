@@ -205,33 +205,65 @@ into WeighFish. The website does not verify or track this process.
 Post-tournament membership reconciliation is a later implementation phase and
 is not part of the current CSV-import workflow.
 
-## 9. Public Early Registrations Page
+## 9. Public Tournament Entries Page
 
-Create a simple public Early Registrations page and add a clear link to it from
-the Home page. The page helps potential anglers see current tournament
-participation before registering.
+The read-only **Tournament Entries** page uses a compact, spreadsheet-style
+table that remains usable for 100 or more entries. A compact summary appears
+above the table, and the page is linked from the Home and Registration pages.
+The summary values are calculated from the current registration records and
+show:
 
-It should show:
+- Total Tournament Entry count
+- Team Entry count
+- Solo Entry count
+- Big Bass participation count
+- Bronze participation count
+- Silver participation count
+- Gold participation count
+- Insurance Pot participation count
+- Registration closing date and exact time, when available
 
-- Selected tournament
-- Total number of preregistered entries
-- Team or angler display names
-- Registration timestamp
-- Tournament Entry as the required entry
-- Bronze, Silver, or Gold selection
-- Insurance Pot selection
+The table shows:
+
+- Public display names for Angler 1 and Angler 2, or `Solo`
+- Exact registration timestamp in `America/Chicago`
 - Big Bass selection
+- At most one member Bonus Pot selection: Bronze, Silver, or Gold
+- Insurance Pot selection
 
-It must not expose:
+Entries are sorted by registration timestamp from oldest to newest. Tournament
+Entry is required and implicit for every valid registration, so it is not shown
+as a redundant column.
 
-- Email addresses
-- Phone numbers
-- Street addresses
-- Full tax information
-- Payment identifiers
-- Private administrative notes
+Visible optional-pot participation gives anglers a clear view of the field and
+may encourage additional pot participation.
 
-The public page must be read-only. Keep its design simple and easy to scan.
+The public model is an explicit privacy-safe projection. It must not expose
+email addresses, phone numbers, street addresses, full tax information,
+payment or membership-payment details, administrative notes, internal or
+database IDs, reconciliation data, or WeighFish data. The page receives only
+approved public fields rather than full private registration records.
+
+### Homepage Tournament Dashboard
+
+The Home page is the primary public tournament dashboard. It presents the
+next relevant tournament name, lake, date, launch location, current
+registration state, and the strongest available registration action before
+secondary content. When registration is open, the primary action is **Register
+Now** and the companion action is **View Tournament Entries**. When it is
+closed, the page states **Registration Closed** and does not present an active
+registration link.
+
+The dashboard includes the dynamically derived total Tournament Entries, Team
+Entries, Solo Entries, Big Bass, Bronze, Silver, Gold, and Insurance Pot
+counts. It also displays the exact early-registration deadline in
+`America/Chicago`, plus concise links to the existing tournament details,
+Rules, and Results surfaces. Zero values remain visible and understandable.
+
+Only the explicit privacy-safe public entry projection may supply homepage
+counts. Names, email addresses, phone numbers, street addresses, payment
+details, administrative notes, internal identifiers, and other private
+registration data must not be passed to or rendered by the homepage.
 
 ## 10. Estimated Safe Light
 
@@ -266,6 +298,23 @@ The Tournament Director must be able to manually override the calculated
 estimate.
 
 ## 11. Weather Monitoring and Tournament Decisions
+
+The Home page uses a compact **Tournament Conditions** panel that combines the
+current Tournament Status, application-calculated Safe Light, and supplemental
+AccuWeather forecast data for the tournament date and configured location.
+Safe Light remains controlled by the calculation and override rules in section
+10; AccuWeather astronomy values do not replace it. Forecast data never changes
+Tournament Status automatically. Delays, postponements, cancellations, and
+other operational decisions remain under Tournament Director authority.
+
+Forecast data may be pending outside the provider's forecast horizon or
+temporarily unavailable. Missing configuration, invalid provider responses,
+and provider failures must not prevent the Home page, Tournament Status, or
+Safe Light from rendering. Displayed weather update times use
+`America/Chicago`. Wherever AccuWeather data appears, visible linked **Weather
+data by AccuWeather** attribution is required. An official logo may be used
+only when obtained and licensed from AccuWeather; it must not be invented,
+redrawn, or imitated.
 
 Weather strongly affects tournament operations. The Tournament Director uses
 the following weather applications as primary decision references:
@@ -501,7 +550,7 @@ Future implementation should:
 - Use Tournament Entry in all public and business-facing copy. The stable
   internal code identifier `baseEntry` may remain in implementation.
 - Keep public and private data clearly separated
-- Keep the public Early Registrations page simple
+- Keep the public Tournament Entries page simple
 - Make weather and status notices easy to update
 - Make tournament-morning operations fast and easy
 - Support future database and payment integrations without rewriting the
@@ -515,5 +564,5 @@ Currently unresolved business decisions are:
 - Exact tournament-morning registration cutoff policy
 - Whether paper registrations will later be entered manually into the Admin
   Portal
-- Whether the public Early Registrations page shows full team names or
+- Whether the public Tournament Entries page shows full team names or
   abbreviated names

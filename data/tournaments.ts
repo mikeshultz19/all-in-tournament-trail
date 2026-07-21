@@ -40,6 +40,8 @@ export interface Tournament {
   heroImage: string | null;
   thumbnailImage: string | null;
   livestreamAvailable: boolean;
+  /** Stable provider location key; populate from an AccuWeather location lookup. */
+  accuWeatherLocationKey: string | null;
 }
 
 export const TOURNAMENT_IMAGE_FALLBACK = "/images/tournament-hero.png";
@@ -58,6 +60,7 @@ type TournamentSeed = Omit<
   | "earlyRegistrationDeadlineTime"
   | "tournamentMorningRegistrationOpensAt"
   | "tournamentMorningRegistrationClosesAt"
+  | "accuWeatherLocationKey"
 > &
   Partial<
     Pick<
@@ -71,6 +74,7 @@ type TournamentSeed = Omit<
       | "earlyRegistrationDeadlineTime"
       | "tournamentMorningRegistrationOpensAt"
       | "tournamentMorningRegistrationClosesAt"
+      | "accuWeatherLocationKey"
     >
   >;
 
@@ -92,6 +96,7 @@ const tournamentSeeds: readonly TournamentSeed[] = [
     heroImage: "/images/lakes/eagle-mountain.jfif",
     thumbnailImage: "/images/lakes/eagle-mountain.jfif",
     livestreamAvailable: false,
+    accuWeatherLocationKey: null,
   },
   {
     slug: "squaw-creek-2026",
@@ -110,6 +115,7 @@ const tournamentSeeds: readonly TournamentSeed[] = [
     heroImage: "/images/lakes/squaw-creek.jfif",
     thumbnailImage: "/images/lakes/squaw-creek.jfif",
     livestreamAvailable: false,
+    accuWeatherLocationKey: null,
   },
   {
     slug: "ray-hubbard-2026",
@@ -128,6 +134,7 @@ const tournamentSeeds: readonly TournamentSeed[] = [
     heroImage: "/images/lakes/ray-hubbard.jfif",
     thumbnailImage: "/images/lakes/ray-hubbard.jfif",
     livestreamAvailable: false,
+    accuWeatherLocationKey: null,
   },
   {
     slug: "granbury-2027",
@@ -146,6 +153,7 @@ const tournamentSeeds: readonly TournamentSeed[] = [
     heroImage: "/images/lakes/granbury.jfif",
     thumbnailImage: "/images/lakes/granbury.jfif",
     livestreamAvailable: false,
+    accuWeatherLocationKey: null,
   },
   {
     slug: "squaw-creek-2027",
@@ -164,6 +172,7 @@ const tournamentSeeds: readonly TournamentSeed[] = [
     heroImage: "/images/lakes/squaw-creek.jfif",
     thumbnailImage: "/images/lakes/squaw-creek.jfif",
     livestreamAvailable: false,
+    accuWeatherLocationKey: null,
   },
   {
     slug: "eagle-mountain-2027",
@@ -182,6 +191,7 @@ const tournamentSeeds: readonly TournamentSeed[] = [
     heroImage: "/images/lakes/eagle-mountain.jfif",
     thumbnailImage: "/images/lakes/eagle-mountain.jfif",
     livestreamAvailable: false,
+    accuWeatherLocationKey: null,
   },
   {
     slug: "ray-roberts-2027",
@@ -200,6 +210,7 @@ const tournamentSeeds: readonly TournamentSeed[] = [
     heroImage: "/images/lakes/ray-roberts.jfif",
     thumbnailImage: "/images/lakes/ray-roberts.jfif",
     livestreamAvailable: false,
+    accuWeatherLocationKey: null,
   },
   {
     slug: "tawakoni-2027",
@@ -218,6 +229,7 @@ const tournamentSeeds: readonly TournamentSeed[] = [
     heroImage: "/images/lakes/tawakoni.jfif",
     thumbnailImage: "/images/lakes/tawakoni.jfif",
     livestreamAvailable: false,
+    accuWeatherLocationKey: null,
   },
   {
     slug: "lewisville-2027",
@@ -236,6 +248,7 @@ const tournamentSeeds: readonly TournamentSeed[] = [
     heroImage: "/images/lakes/lewisville-lake.jfif",
     thumbnailImage: "/images/lakes/lewisville-lake.jfif",
     livestreamAvailable: false,
+    accuWeatherLocationKey: null,
   },
   {
     slug: "ray-roberts-2027-07",
@@ -254,6 +267,7 @@ const tournamentSeeds: readonly TournamentSeed[] = [
     heroImage: "/images/lakes/ray-roberts.jfif",
     thumbnailImage: "/images/lakes/ray-roberts.jfif",
     livestreamAvailable: false,
+    accuWeatherLocationKey: null,
   },
 ];
 
@@ -276,6 +290,7 @@ export const tournaments: readonly Tournament[] = tournamentSeeds.map(
       tournament.tournamentMorningRegistrationOpensAt ?? null,
     tournamentMorningRegistrationClosesAt:
       tournament.tournamentMorningRegistrationClosesAt ?? null,
+    accuWeatherLocationKey: tournament.accuWeatherLocationKey ?? null,
   }),
 );
 

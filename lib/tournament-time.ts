@@ -102,6 +102,18 @@ export function formatTournamentTimestamp(timestamp: string): string {
   }).format(new Date(timestamp));
 }
 
+export function formatPublicRegistrationTimestamp(timestamp: string): string {
+  return new Intl.DateTimeFormat("en-US", {
+    timeZone: TOURNAMENT_TIME_ZONE,
+    month: "long",
+    day: "numeric",
+    year: "numeric",
+    hour: "numeric",
+    minute: "2-digit",
+    hour12: true,
+  }).format(new Date(timestamp));
+}
+
 export function isValidTournamentTime(time: string | null): time is string {
   return time !== null && TIME_PATTERN.test(time);
 }

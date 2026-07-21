@@ -6,6 +6,8 @@ import {
   getTournamentImage,
   type Tournament,
 } from "@/data/tournaments";
+import { TOURNAMENT_STATUS_LABELS } from "@/lib/tournament-operations";
+import type { TournamentOperationsViewModel } from "@/lib/tournament-view-model";
 
 type Countdown = {
   days: number;
@@ -28,7 +30,13 @@ function calculateCountdown(date: string): Countdown {
   };
 }
 
-export default function FeaturedTournament({ tournament }: { tournament: Tournament | null }) {
+export default function FeaturedTournament({
+  tournament,
+  operations,
+}: {
+  tournament: Tournament | null;
+  operations?: TournamentOperationsViewModel | null;
+}) {
   const [countdown, setCountdown] = useState<Countdown>({
     days: 0,
     hours: 0,
@@ -65,6 +73,11 @@ export default function FeaturedTournament({ tournament }: { tournament: Tournam
     );
   }
 
+  const registrationOpen = operations?.registrationCanSubmit ?? (
+    tournament.registrationStatus === "open" &&
+    !["cancelled", "postponed"].includes(tournament.tournamentStatus)
+  );
+
   return (
     <article className="overflow-hidden rounded-md border border-yellow-700/50 bg-[#080808]">
 
@@ -86,9 +99,7 @@ export default function FeaturedTournament({ tournament }: { tournament: Tournam
       >
         <div className="absolute inset-0 bg-gradient-to-t from-black via-black/10 to-transparent" />
 
-        <p className="absolute bottom-3 left-4 text-[9px] font-black uppercase tracking-[0.2em] text-yellow-400">
-          Tournament Stop 01
-        </p>
+        <p className="absolute bottom-3 left-4 text-[9px] font-black uppercase tracking-[0.2em] text-yellow-400">Next Tournament</p>
       </div>
 
       {/* Info */}
@@ -104,6 +115,15 @@ export default function FeaturedTournament({ tournament }: { tournament: Tournam
               "en-US",
               { month: "long", day: "numeric", year: "numeric" },
             )}
+          </p>
+          <p className="mt-2 text-sm text-zinc-300">
+            {tournament.lake}
+            {tournament.venue ? ` · ${tournament.venue}` : ""}
+            {tournament.city ? ` · ${tournament.city}, Texas` : ""}
+          </p>
+          <p className="mt-3 inline-flex items-center gap-2 border border-white/15 px-2.5 py-1 text-[10px] font-black uppercase tracking-[0.12em] text-zinc-200">
+            <span aria-hidden="true" className="h-1.5 w-1.5 rounded-full bg-[#D4A017]" />
+            Tournament Status: {TOURNAMENT_STATUS_LABELS[tournament.tournamentStatus]}
           </p>
         </div>
 
@@ -144,7 +164,7 @@ export default function FeaturedTournament({ tournament }: { tournament: Tournam
             Event Info
           </span>
 
-          {tournament.registrationStatus === "open" && !["cancelled", "postponed"].includes(tournament.tournamentStatus) ? (
+          {registrationOpen ? (
             <Link
               href={`/register?tournament=${tournament.slug}`}
               className="bg-red-700 px-2 py-2.5 text-center text-[9px] font-black uppercase tracking-[0.08em] text-white transition hover:bg-red-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#D4A017]"
@@ -153,10 +173,31 @@ export default function FeaturedTournament({ tournament }: { tournament: Tournam
             </Link>
           ) : (
             <span aria-disabled="true" className="cursor-not-allowed bg-red-950 px-2 py-2.5 text-center text-[9px] font-black uppercase tracking-[0.08em] text-zinc-400">
-              {tournament.registrationStatus === "closed" ? "Registration Closed" : "Registration Unavailable"}
+              {tournament.registrationStatus === "closed" || operations?.registrationPeriod === "fully_closed" ? "Registration Closed" : "Registration Unavailable"}
             </span>
           )}
         </div>
+
+        <Link
+          href="/registrations"
+          className="mt-3 block border border-[#4A3A12] px-3 py-2.5 text-center text-[9px] font-black uppercase tracking-[0.1em] text-yellow-400 transition hover:border-yellow-600 hover:text-yellow-300 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#D4A017]"
+        >
+          View Tournament Entries
+        </Link>
+
+        {operations && (
+          <p className="mt-3 text-center text-xs leading-5 text-zinc-400">
+            {registrationOpen ? (
+              <>Registration closes <time dateTime={operations.earlyRegistrationDeadlineIso}>{operations.earlyRegistrationDeadline}</time></>
+            ) : operations.registrationReason}
+          </p>
+        )}
+
+        <nav aria-label="Tournament resources" className="mt-4 flex flex-wrap justify-center gap-x-5 gap-y-2 border-t border-white/10 pt-4 text-[10px] font-black uppercase tracking-[0.12em]">
+          <Link href="/schedule" className="text-zinc-300 transition hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#D4A017]">Tournament Details</Link>
+          <Link href="/how-it-works" className="text-zinc-300 transition hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#D4A017]">Rules</Link>
+          <Link href="/results" className="text-zinc-300 transition hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#D4A017]">Results</Link>
+        </nav>
 
       </div>
 

@@ -18,6 +18,7 @@ export interface TournamentOperationsViewModel {
   effectiveDate: string;
   formattedEffectiveDate: string;
   earlyRegistrationDeadline: string;
+  earlyRegistrationDeadlineIso: string;
   tournamentMorningWindow: string | null;
   registrationCanSubmit: boolean;
   registrationPeriod:
@@ -47,6 +48,7 @@ export function getTournamentOperationsViewModel(
     earlyRegistrationDeadline: formatTournamentTimestamp(
       registration.earlyRegistrationDeadline.toISOString(),
     ),
+    earlyRegistrationDeadlineIso: registration.earlyRegistrationDeadline.toISOString(),
     tournamentMorningWindow:
       registration.morningOpensAt && registration.morningClosesAt
         ? `${formatTournamentTime(registration.morningOpensAt)}–${formatTournamentTime(registration.morningClosesAt)}`

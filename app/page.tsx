@@ -4,14 +4,23 @@ import LatestTournamentNews from "@/components/LatestTournamentNews";
 import FeaturedTournament from "@/components/FeaturedTournament";
 import WinnersCircle from "@/components/WinnersCircle";
 import AOYStandings from "@/components/AOYStandings";
-import SafeLightCard from "@/components/SafeLightCard";
+import TournamentConditions from "@/components/TournamentConditions";
 import { tournaments } from "@/data/tournaments";
 import { getNextRelevantTournament } from "@/lib/tournament-operations";
 import { getTournamentOperationsViewModel } from "@/lib/tournament-view-model";
+import { getAccuWeatherTournamentForecast } from "@/lib/accuweather";
 
-export default function HomePage() {
+export const revalidate = 10800;
+
+export default async function HomePage() {
   const tournament = getNextRelevantTournament(tournaments);
   const operations = tournament ? getTournamentOperationsViewModel(tournament) : null;
+  const weather = tournament && operations
+    ? await getAccuWeatherTournamentForecast({
+        tournamentDate: operations.effectiveDate,
+        locationKey: tournament.accuWeatherLocationKey,
+      })
+    : null;
 
   return (
     <main className="min-h-screen overflow-x-hidden bg-black text-white">
@@ -25,8 +34,8 @@ export default function HomePage() {
           <div className="grid grid-cols-1 gap-8 xl:grid-cols-2">
             <div className="space-y-6">
               <LatestTournamentNews tournament={tournament} />
-              {operations ? (
-                <SafeLightCard safeLight={operations.safeLight} compact />
+              {tournament && operations && weather ? (
+                <TournamentConditions tournament={tournament} safeLight={operations.safeLight} weather={weather} />
               ) : (
                 <div className="border border-white/10 bg-[#111111] p-5 text-sm text-neutral-400">
                   Estimated safe light will appear when the next tournament is scheduled.
@@ -34,7 +43,10 @@ export default function HomePage() {
               )}
             </div>
 
-            <FeaturedTournament tournament={tournament ?? null} />
+            <FeaturedTournament
+              tournament={tournament ?? null}
+              operations={operations}
+            />
           </div>
         </div>
       </section>
