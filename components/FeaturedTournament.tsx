@@ -1,9 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import {
-  getFeaturedTournament,
   getTournamentImage,
+  type Tournament,
 } from "@/data/tournaments";
 
 type Countdown = {
@@ -27,8 +28,7 @@ function calculateCountdown(date: string): Countdown {
   };
 }
 
-export default function FeaturedTournament() {
-  const tournament = getFeaturedTournament();
+export default function FeaturedTournament({ tournament }: { tournament: Tournament | null }) {
   const [countdown, setCountdown] = useState<Countdown>({
     days: 0,
     hours: 0,
@@ -144,16 +144,18 @@ export default function FeaturedTournament() {
             Event Info
           </span>
 
-          <span
-            aria-disabled="true"
-            className="cursor-not-allowed bg-red-950 px-2 py-2.5 text-center text-[9px] font-black uppercase tracking-[0.08em] text-zinc-400"
-          >
-            {tournament.registrationStatus === "open"
-              ? "Register Now"
-              : tournament.registrationStatus === "closed"
-                ? "Registration Closed"
-                : "Registration Unavailable"}
-          </span>
+          {tournament.registrationStatus === "open" && !["cancelled", "postponed"].includes(tournament.tournamentStatus) ? (
+            <Link
+              href={`/register?tournament=${tournament.slug}`}
+              className="bg-red-700 px-2 py-2.5 text-center text-[9px] font-black uppercase tracking-[0.08em] text-white transition hover:bg-red-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#D4A017]"
+            >
+              Register Now
+            </Link>
+          ) : (
+            <span aria-disabled="true" className="cursor-not-allowed bg-red-950 px-2 py-2.5 text-center text-[9px] font-black uppercase tracking-[0.08em] text-zinc-400">
+              {tournament.registrationStatus === "closed" ? "Registration Closed" : "Registration Unavailable"}
+            </span>
+          )}
         </div>
 
       </div>

@@ -18,6 +18,14 @@ The project currently uses typed static modules as a temporary public data layer
 | `status` | Event lifecycle: `upcoming`, `live`, `unofficial`, or `official`. |
 | `registrationStatus` | Registration state: `open`, `closed`, or `unavailable`. |
 | `registrationUrl` | Registration destination when one exists; `null` means no destination is currently available. |
+| `tournamentStatus` | Current public operational status: `scheduled`, `weather_watch`, `delayed`, `postponed`, `cancelled`, or `rescheduled`. |
+| `statusMessage` | Current official public announcement; no status history is stored. |
+| `statusUpdatedAt` | Absolute timestamp for the current status update; displayed in `America/Chicago`. |
+| `rescheduledDate` | Replacement tournament date when the status is `rescheduled`. |
+| `safeLightOverride` | Optional Tournament Official override in local `HH:mm` format. |
+| `safeLightOverridePublicMessage` | Optional public explanation for the override; private administrative notes are never included. |
+| `earlyRegistrationDeadlineTime` | Local early-registration cutoff, currently 9:00 PM. |
+| `tournamentMorningRegistrationOpensAt` / `ClosesAt` | Optional configurable tournament-morning window. |
 | `resultsAvailable` | Whether public results may be shown. |
 | `featured` | Explicit homepage feature selection flag. |
 | `heroImage` | Optional event-specific image. |
@@ -25,7 +33,23 @@ The project currently uses typed static modules as a temporary public data layer
 
 `getFeaturedTournament()` chooses the explicitly featured record and falls back to the next upcoming record. If neither exists, consumers render a safe unavailable state. `getUpcomingTournaments()` returns upcoming records in date order, and `getTournamentBySlug()` resolves event/result routes.
 
-Registration controls use `registrationStatus`. An `open` status does not create a link unless `registrationUrl` is also present. No current registration URL has been recorded. `getTournamentImage()` returns `heroImage` when present and otherwise uses `/images/tournament-hero.png`.
+Operational status and schedule fields remain in the same centralized
+tournament records. `lib/tournament-operations.ts` provides the replaceable
+selection and registration-policy boundary. `lib/safe-light.ts` uses `suncalc`
+with the centralized Fort Worth reference location; `lib/tournament-time.ts`
+owns deterministic `America/Chicago` conversion and formatting.
+
+Registration controls combine `registrationStatus`, the current operational
+status, and the configured registration windows. The existing `/register`
+route is the public registration destination; `registrationUrl` remains
+available for a future external destination if one is approved.
+Every registration structurally includes Tournament Entry. Future public
+registration records should show Tournament Entry as present and may
+additionally show Big Bass,
+one of Bronze, Silver, or Gold, and Insurance; they must not model a zero-cost
+participation entry. Internal code may retain the `baseEntry` identifier.
+`getTournamentImage()` returns `heroImage` when present and otherwise uses
+`/images/tournament-hero.png`.
 
 ## Tournament Result model
 

@@ -109,7 +109,7 @@ Build the complete tournament workflow.
 
 - Pre-event experience
 - Post-event experience
-- Registration workflow
+- Complete operational registration workflow
 - Registration confirmation page
 
 ---

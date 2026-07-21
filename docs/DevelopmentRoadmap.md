@@ -2,9 +2,14 @@
 
 ## Current Milestone — Schedule / Tournament Experience
 
-Repository Cleanup v0.2 is complete. The next active work is to finish Schedule
-and proceed to Event Information in approved sitemap order. Registration work
-follows Event Information; this milestone has not begun as part of cleanup.
+Repository Cleanup v0.2 is complete, and the Schedule, Tournament Details, and
+initial public Registration experiences now exist. The full operational
+registration workflow, confirmation experience, and supporting administration
+remain incomplete.
+
+Registration, tournament operations, weather/status communication, and the
+related Rules and FAQ content must follow
+`docs/TOURNAMENT_OPERATIONS_AND_REGISTRATION_PROCESS.md`.
 
 ## Phase 1 — Foundation
 
@@ -34,6 +39,8 @@ follows Event Information; this milestone has not begun as part of cleanup.
 - Sponsor manager
 - News manager
 - Registration manager
+- Tournament status and announcement controls
+- Estimated-safe-light override
 
 ## Phase 4 — Automation
 

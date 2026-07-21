@@ -1,6 +1,5 @@
 export const REGISTRATION_PRICING = {
   annualMembership: 40,
-  freeEntry: 0,
   baseEntry: 60,
   bronze: 40,
   silver: 100,

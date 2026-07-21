@@ -7,31 +7,17 @@ const price = (amount: number, additional = false) =>
 
 const entryOptions = [
   {
-    name: "Free Entry",
-    price: price(REGISTRATION_PRICING.freeEntry),
-    eyebrow: "Open Entry",
-    description:
-      "Compete in the tournament without paying a tournament entry fee.",
-    features: [
-      "No tournament entry fee",
-      "Eligible for Big Bass",
-      "Not eligible for Base payouts",
-      "Not eligible for Bronze, Silver, or Gold",
-    ],
-    accent: "border-white/25",
-    priceColor: "text-white",
-  },
-  {
-    name: "Base Entry",
+    name: "Tournament Entry",
     price: price(REGISTRATION_PRICING.baseEntry),
     eyebrow: "Open Entry",
     description:
-      "Enter the main tournament competition. Membership is not required.",
+      "Required for every solo and team tournament registration. Membership is not required.",
     features: [
       "Anyone can enter",
       "Pays 1 in 5",
       "Team or solo entry",
       "Eligible for Base payouts",
+      "Required to register",
     ],
     accent: "border-red-500/70",
     priceColor: "text-red-500",
@@ -45,7 +31,7 @@ const entryOptions = [
     features: [
       "Separate payout pool",
       "Pays 1 in 5",
-      "Base Entry required",
+      "Tournament Entry required",
       "Choose one pot per event",
     ],
     accent: "border-[#9b6a3d]/70",
@@ -60,7 +46,7 @@ const entryOptions = [
     features: [
       "Separate payout pool",
       "Pays 1 in 5",
-      "Base Entry required",
+      "Tournament Entry required",
       "Choose one pot per event",
     ],
     accent: "border-neutral-400/60",
@@ -75,7 +61,7 @@ const entryOptions = [
     features: [
       "Separate payout pool",
       "Pays 1 in 5",
-      "Base Entry required",
+      "Tournament Entry required",
       "Choose one pot per event",
     ],
     accent: "border-[#b99a3f]/80",
@@ -87,7 +73,7 @@ const waysToWin = [
   {
     title: "Base Tournament",
     description:
-      `The main tournament payout available to anglers and teams that pay the ${price(REGISTRATION_PRICING.baseEntry)} Base Entry.`,
+      `The main tournament payout available to anglers and teams with the required ${price(REGISTRATION_PRICING.baseEntry)} Tournament Entry.`,
     label: "Main Field",
   },
   {
@@ -111,13 +97,13 @@ const waysToWin = [
   {
     title: "Big Bass",
     description:
-      "An additional opportunity for the heaviest individual bass. Free Entries may participate in Big Bass.",
+      "An optional add-on for the heaviest individual bass. Big Bass is not a standalone tournament entry.",
     label: "Bonus",
   },
   {
     title: "Insurance Pot",
     description:
-      "Pays first out of the money from the Base Entry Pot until the available Insurance Pot money is exhausted.",
+      "Pays first out of the money from the Tournament Entry Pot until the available Insurance Pot money is exhausted.",
     label: `${price(REGISTRATION_PRICING.insurance)} Optional`,
   },
   {
@@ -130,24 +116,24 @@ const waysToWin = [
 
 const faqs = [
   {
-    question: "Can I fish for free?",
+    question: "What time should I arrive, and what is Estimated Safe Light?",
     answer:
-      "Yes. The Free Entry option allows an angler or team to compete without paying a tournament entry fee. A Free Entry may participate in Big Bass but is not eligible for Base Tournament payouts or the Bronze, Silver, or Gold Pots.",
+      "Estimated Safe Light is the official Fort Worth sunrise for the tournament date minus 30 minutes. It is an approximation for planning. Be on the water and prepared to launch before that time; Tournament Officials determine final launch timing.",
   },
   {
-    question: "What can a Free Entry win?",
+    question: "How are weather decisions made?",
     answer:
-      "A Free Entry is eligible for Big Bass only. It is not eligible for Base payouts, Bronze, Silver, Gold, Insurance Pot payouts, AOY points, Championship qualification, or other member-only benefits.",
+      "The Tournament Director uses AccuWeather and Weather Underground as primary weather references. Wind gusts of 30 MPH or greater will normally result in a delay or postponement. Lightning, severe storms, flooding, unsafe ramps, unsafe water, dense fog, closures, or other dangerous conditions may also affect the tournament. The Tournament Director has final authority over safety decisions. Tournament Status & Announcements on this website is the official source for public updates.",
   },
   {
     question: "Do I have to be a member?",
     answer:
-      `No. Membership is not required for the Free Entry option or the ${price(REGISTRATION_PRICING.baseEntry)} Base Entry. Annual Membership is ${price(REGISTRATION_PRICING.annualMembership)} per angler and is required for AOY eligibility, Championship qualification, Bronze, Silver and Gold Pots, the Insurance Pot, and other member opportunities.`,
+      `No. Membership is not required for the ${price(REGISTRATION_PRICING.baseEntry)} Tournament Entry. Annual Membership is ${price(REGISTRATION_PRICING.annualMembership)} per angler and is required for AOY eligibility, Championship qualification, Bronze, Silver and Gold Pots, the Insurance Pot, and other member opportunities. Both team members must be current members for team benefits.`,
   },
   {
-    question: `What does the ${price(REGISTRATION_PRICING.baseEntry)} Base Entry include?`,
+    question: `What does the ${price(REGISTRATION_PRICING.baseEntry)} Tournament Entry include?`,
     answer:
-      `The ${price(REGISTRATION_PRICING.baseEntry)} Base Entry places an angler or team into the main tournament payout competition. Base entries are eligible for Base payouts and may also enter Big Bass. Eligible members may choose one additional Bronze, Silver, or Gold Pot.`,
+      `The required ${price(REGISTRATION_PRICING.baseEntry)} Tournament Entry places an angler or team into the main tournament payout competition. Big Bass is optional. Eligible members may also choose one Bronze, Silver, or Gold bonus pot and the Insurance Pot.`,
   },
   {
     question: "Can I compete by myself?",
@@ -162,7 +148,7 @@ const faqs = [
   {
     question: "Can I choose any pot?",
     answer:
-      "Eligible members who have paid the Base Entry may choose Bronze, Silver, or Gold based on their preferred entry level. Each pot is a separate competition with its own payout pool and pays 1 in 5 — one payout place for every five entries in that pot.",
+      "Eligible members with Tournament Entry may choose Bronze, Silver, or Gold based on their preferred entry level. Each bonus pot is a separate competition with its own payout pool and pays 1 in 5 — one payout place for every five entries in that pot.",
   },
   {
     question: "Can I enter more than one pot?",
@@ -172,27 +158,17 @@ const faqs = [
   {
     question: "Do I still compete in the Base Tournament when I choose a pot?",
     answer:
-      `Yes. Bronze, Silver, and Gold are additional independent competitions. An entry must first pay the ${price(REGISTRATION_PRICING.baseEntry)} Base Entry and then may choose one eligible pot.`,
+      `Yes. Bronze, Silver, and Gold are additional independent competitions. An entry must include the ${price(REGISTRATION_PRICING.baseEntry)} Tournament Entry and may then choose one eligible bonus pot.`,
   },
   {
     question: "How does the Insurance Pot work?",
     answer:
-      `The ${price(REGISTRATION_PRICING.insurance)} optional Insurance Pot pays first out of the money from the Base Entry Pot until the available Insurance Pot money is exhausted. Payment continues in finishing order until those funds are depleted.`,
-  },
-  {
-    question: "Can a Free Entry purchase the Insurance Pot?",
-    answer:
-      "No. The Insurance Pot is available only to eligible members who have entered the Base Tournament.",
+      `The ${price(REGISTRATION_PRICING.insurance)} optional Insurance Pot pays first out of the money from the Tournament Entry Pot until the available Insurance Pot money is exhausted. Payment continues in finishing order until those funds are depleted.`,
   },
   {
     question: "How are AOY standings calculated?",
     answer:
       "Eligible member entries earn points based on their tournament finishes. Each entry's six highest point totals determine its final AOY score.",
-  },
-  {
-    question: "Can a Free Entry earn AOY points?",
-    answer:
-      "No. A Free Entry does not earn AOY points and does not count toward Championship qualification.",
   },
   {
     question: "How do I qualify for the Championship?",
@@ -248,8 +224,8 @@ export default function HowItWorksPage() {
           </p>
 
           <p className="mt-5 max-w-2xl text-base leading-7 text-neutral-300 sm:text-lg">
-            Fish for free and compete for Big Bass, or enter the Base
-            Tournament and choose the competition level that fits your budget.
+            Tournament Entry is required for every registration. Add Big Bass or an
+            eligible member-only pot to choose your competition level.
           </p>
 
           <div className="mt-8 flex flex-col gap-3 sm:flex-row">
@@ -275,10 +251,10 @@ export default function HowItWorksPage() {
           <SectionHeading
             eyebrow="Choose Your Entry"
             title="Choose How You Want to Fish"
-            description={`Enter for free and compete for Big Bass, or pay the ${price(REGISTRATION_PRICING.baseEntry)} Base Entry for access to the main tournament payout. Eligible members may also choose one additional Bronze, Silver, or Gold Pot.`}
+            description={`Every registration includes the required ${price(REGISTRATION_PRICING.baseEntry)} Tournament Entry. Big Bass is optional, and eligible members may add one Bronze, Silver, or Gold bonus pot plus the Insurance Pot.`}
           />
 
-          <div className="mt-8 grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-5">
+          <div className="mt-8 grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
             {entryOptions.map((option) => (
               <article
                 key={option.name}
@@ -411,8 +387,8 @@ export default function HowItWorksPage() {
             </h2>
 
             <p className="mt-3 max-w-2xl text-neutral-400">
-              Fish for free or register for the Base Tournament and compete for
-              additional payout opportunities.
+              Register with the required Tournament Entry and choose any eligible
+              optional payout opportunities.
             </p>
           </div>
 

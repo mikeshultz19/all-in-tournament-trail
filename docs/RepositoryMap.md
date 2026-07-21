@@ -29,7 +29,9 @@ future routes are not represented here as existing files.
 - `components/FeedbackWidget.tsx` — root-layout feedback form
 - `components/PageHeader.tsx` — shared major-page heading
 - `components/Hero.tsx` — homepage hero
-- `components/LatestTournamentNews.tsx` — homepage news section
+- `components/LatestTournamentNews.tsx` — homepage Tournament Status & Announcements section
+- `components/TournamentStatusAnnouncement.tsx` — shared accessible current-status notice
+- `components/SafeLightCard.tsx` — shared Estimated Safe Light presentation
 - `components/FeaturedTournament.tsx` — canonical featured-event consumer
 - `components/WinnersCircle.tsx` — homepage tournament-results preview
 - `components/AOYStandings.tsx` — homepage AOY preview
@@ -42,6 +44,11 @@ to approved feature/architecture work.
 - `data/tournaments.ts` — canonical typed public tournament facts and selectors
 - `data/tournamentResults.ts` — typed result records, including nested Big Bass
 - `data/aoyStandings.ts` — typed AOY standings
+- `config/tournament-operations.ts` — Fort Worth safe-light reference and operational time zone
+- `lib/safe-light.ts` — isolated internal sunrise and safe-light calculation
+- `lib/tournament-time.ts` — `America/Chicago` date conversion and formatting
+- `lib/tournament-operations.ts` — status labels, registration gating, and next-tournament selection
+- `lib/tournament-view-model.ts` — serializable server-derived operational display data
 - `lib/utils.ts` — `cn` class composition helper for the configured shadcn workflow
 
 ## Active public assets
@@ -102,6 +109,9 @@ Next.js.
 - `docs/DataModel.md` — static typed data ownership
 - `docs/UI-Standards.md` — visual and UI standards
 - `docs/WeighFishIntegration.md` — future integration planning only
+- `docs/TOURNAMENT_OPERATIONS_AND_REGISTRATION_PROCESS.md` — authoritative
+  registration, tournament operations, weather/status, privacy, Rules, FAQ,
+  and Tournament Director workflow specification
 
 ## Configuration and package files
 

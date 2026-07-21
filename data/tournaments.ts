@@ -6,6 +6,14 @@ export type TournamentStatus =
 
 export type RegistrationStatus = "open" | "closed" | "unavailable";
 
+export type TournamentOperationalStatus =
+  | "scheduled"
+  | "weather_watch"
+  | "delayed"
+  | "postponed"
+  | "cancelled"
+  | "rescheduled";
+
 export interface Tournament {
   slug: string;
   name: string;
@@ -18,6 +26,15 @@ export interface Tournament {
   status: TournamentStatus;
   registrationStatus: RegistrationStatus;
   registrationUrl: string | null;
+  tournamentStatus: TournamentOperationalStatus;
+  statusMessage: string;
+  statusUpdatedAt: string;
+  rescheduledDate: string | null;
+  safeLightOverride: string | null;
+  safeLightOverridePublicMessage: string | null;
+  earlyRegistrationDeadlineTime: string;
+  tournamentMorningRegistrationOpensAt: string | null;
+  tournamentMorningRegistrationClosesAt: string | null;
   resultsAvailable: boolean;
   featured: boolean;
   heroImage: string | null;
@@ -30,7 +47,34 @@ export const TOURNAMENT_IMAGE_FALLBACK = "/images/tournament-hero.png";
 const TOURNAMENT_DESCRIPTION =
   "Eagle Mountain Lake is one of North Texas’ premier fisheries, known for its healthy population of largemouth, spotted, and white bass. With miles of shoreline, creek arms, and deep ledges, it offers something for every angler.";
 
-export const tournaments: readonly Tournament[] = [
+type TournamentSeed = Omit<
+  Tournament,
+  | "tournamentStatus"
+  | "statusMessage"
+  | "statusUpdatedAt"
+  | "rescheduledDate"
+  | "safeLightOverride"
+  | "safeLightOverridePublicMessage"
+  | "earlyRegistrationDeadlineTime"
+  | "tournamentMorningRegistrationOpensAt"
+  | "tournamentMorningRegistrationClosesAt"
+> &
+  Partial<
+    Pick<
+      Tournament,
+      | "tournamentStatus"
+      | "statusMessage"
+      | "statusUpdatedAt"
+      | "rescheduledDate"
+      | "safeLightOverride"
+      | "safeLightOverridePublicMessage"
+      | "earlyRegistrationDeadlineTime"
+      | "tournamentMorningRegistrationOpensAt"
+      | "tournamentMorningRegistrationClosesAt"
+    >
+  >;
+
+const tournamentSeeds: readonly TournamentSeed[] = [
   {
     slug: "eagle-mountain-2026",
     name: "Eagle Mountain",
@@ -213,6 +257,28 @@ export const tournaments: readonly Tournament[] = [
   },
 ];
 
+export const tournaments: readonly Tournament[] = tournamentSeeds.map(
+  (tournament): Tournament => ({
+    ...tournament,
+    tournamentStatus: tournament.tournamentStatus ?? "scheduled",
+    statusMessage:
+      tournament.statusMessage ??
+      "Tournament preparations are on schedule. Register during the published registration windows.",
+    statusUpdatedAt:
+      tournament.statusUpdatedAt ?? "2026-07-21T12:00:00.000Z",
+    rescheduledDate: tournament.rescheduledDate ?? null,
+    safeLightOverride: tournament.safeLightOverride ?? null,
+    safeLightOverridePublicMessage:
+      tournament.safeLightOverridePublicMessage ?? null,
+    earlyRegistrationDeadlineTime:
+      tournament.earlyRegistrationDeadlineTime ?? "21:00",
+    tournamentMorningRegistrationOpensAt:
+      tournament.tournamentMorningRegistrationOpensAt ?? null,
+    tournamentMorningRegistrationClosesAt:
+      tournament.tournamentMorningRegistrationClosesAt ?? null,
+  }),
+);
+
 export function getUpcomingTournaments(): readonly Tournament[] {
   return tournaments
     .filter((tournament) => tournament.status === "upcoming")
@@ -228,6 +294,12 @@ export function getFeaturedTournament(): Tournament | undefined {
 
 export function getTournamentBySlug(slug: string): Tournament | undefined {
   return tournaments.find((tournament) => tournament.slug === slug);
+}
+
+export function getEffectiveTournamentDate(tournament: Tournament): string {
+  return tournament.tournamentStatus === "rescheduled" && tournament.rescheduledDate
+    ? tournament.rescheduledDate
+    : tournament.date;
 }
 
 export function getTournamentImage(tournament: Tournament): string {

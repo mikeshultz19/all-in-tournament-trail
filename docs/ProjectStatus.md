@@ -1,48 +1,154 @@
-# Project Status
+# All-In Tournament Trail
 
-- **Last updated date:** 2026-07-20
-- **Overall completion estimate:** 45%
+## Project Status
 
-```text
-██████████░░░░░░░░░░ 45%
-```
+- **Last Updated:** 2026-07-21
+- **Current Version:** v0.3
+- **Overall Progress:** Phase 3 of 8 in progress
 
-## Completed
+---
 
-- ✔ Repository Cleanup v0.2 (Batches 1–4)
-- ✔ Data Consolidation (Repository Cleanup Batch 3)
-- ✔ v0.3 Tournament Experience — Schedule page
-- ✔ v0.3 Tournament Experience — Tournament Details page
+# Current Phase
 
-- ✔ Foundation
-- ✔ Homepage
-- ✔ Shared Components
-- ✔ Repository Cleanup Batch 2
+## Phase 3 – Public Early Registrations
 
-## In Progress
+**Status:** In Progress
 
-- ◐ v0.3 Tournament Experience
+**Current Goal:** Build the public preregistration page using live registration
+data while protecting private information.
 
-## Not Started
+**Prerequisite completed before continuing Phase 3:**
 
-- ○ Registration
-- ○ Registration Confirmation
-- ○ Results
-- ○ AOY
-- ○ FAQ & Rules
-- ○ Sponsors
-- ○ Contact
+- Removed Free Entry from the tournament-entry model.
+- Tournament Entry is now required for every registration.
+- Replaced Base Entry with Tournament Entry in all public-facing terminology.
+- Organized registration options into Tournament Registration, Optional Side
+  Pots, and Member Bonus Pots.
+- Updated registration pricing and validation copy, Rules, FAQ, tests, and the
+  authoritative operations documentation.
+- Added a concise UI terminology and style guide.
+- Phase 3 implementation was not part of this prerequisite work.
 
-## Future
+---
 
-- ○ Admin Portal
-- ○ WeighFish Automation
+# Completed Phases
 
-## Blockers
+## ✅ Phase 1 – Project Documentation
 
-- None documented.
+Completed:
 
-## Next Recommended Task
+- Tournament Operations document
+- Registration workflow
+- WeighFish workflow
+- Membership rules
+- Weather policy
+- Safe Light specification
+- Tournament Status specification
 
-- Continue the **Tournament Experience** milestone with Registration according
-  to the approved master sitemap.
+---
+
+## ✅ Phase 2 – Tournament Status & Safe Light
+
+Completed:
+
+- Tournament Status model
+- Tournament Status & Announcements
+- Estimated Safe Light
+- Home page integration
+- Registration page integration
+- Weather FAQ
+- Rules updates
+- Automated tests
+
+---
+
+# Remaining Phases
+
+## Phase 3 – Public Early Registrations
+
+Planned:
+
+- Public registration page
+- Team display
+- Entry counts
+- Privacy filtering
+- Home page link
+
+---
+
+## ⚪ Phase 4 – Registration Persistence
+
+Planned:
+
+- Database
+- Registration storage
+- Payment status
+- Membership linkage
+
+---
+
+## ⚪ Phase 5 – Membership System
+
+Planned:
+
+- Member records
+- Annual renewals
+- Eligibility validation
+
+---
+
+## ⚪ Phase 6 – Admin Portal
+
+Planned:
+
+- Secure login
+- Registration management
+- Tournament management
+- Weather announcements
+- Safe Light override
+
+---
+
+## ⚪ Phase 7 – WeighFish CSV Import
+
+Planned:
+
+- CSV upload
+- Results publishing
+- AOY updates
+- Tournament history
+
+---
+
+## ⚪ Phase 8 – Post-Tournament Reconciliation
+
+Planned:
+
+- Compare WeighFish vs registrations
+- Compare WeighFish vs membership
+- Detect duplicates
+- Detect typos
+- Detect missing memberships
+- Review queue
+- Manual merge tools
+
+---
+
+# Open Business Decisions
+
+- Refund vs Credit policy
+- Exact morning registration cutoff
+- Public team-name format
+- Automatic member creation rules
+
+---
+
+# Future Enhancements
+
+Ideas not yet scheduled:
+
+- Email notifications
+- SMS notifications
+- QR Code check-in
+- Live leaderboard
+- Mobile scoring

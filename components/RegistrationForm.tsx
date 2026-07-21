@@ -3,13 +3,13 @@
 import { FormEvent, useMemo, useRef, useState } from "react";
 
 import PaymentOptions from "@/components/PaymentOptions";
+import SafeLightCard from "@/components/SafeLightCard";
+import TournamentStatusAnnouncement from "@/components/TournamentStatusAnnouncement";
 import { REGISTRATION_PRICING } from "@/data/registration";
 import { tournaments } from "@/data/tournaments";
+import type { TournamentOperationsViewModel } from "@/lib/tournament-view-model";
+import { getRegistrationPricing, hasFullMembershipEligibility, validateRegistrationSelections, type MemberPot, type Membership, type RegistrationType } from "@/lib/registration";
 
-type RegistrationType = "solo" | "team";
-type Membership = "current" | "joining" | "non-member";
-type EntryType = "free" | "base";
-type MemberPot = "bronze" | "silver" | "gold";
 type AnglerKey = "angler1" | "angler2";
 type Angler = {
   firstName: string;
@@ -28,7 +28,7 @@ type RegistrationPayload = {
   registrationType: RegistrationType;
   tournamentSlug: string;
   anglers: RegistrationAngler[];
-  entryType: EntryType;
+  baseEntry: true;
   memberPot: MemberPot | null;
   bigBass: boolean;
   insurance: boolean;
@@ -46,7 +46,7 @@ const OPTIONAL_POTS = [
   { id: "silver", name: "Silver Pot", price: REGISTRATION_PRICING.silver, description: "Members-only Silver payout competition. Pays 1 in 5." },
   { id: "gold", name: "Gold Pot", price: REGISTRATION_PRICING.gold, description: "Members-only premium Gold payout competition. Pays 1 in 5." },
   { id: "big-bass", name: "Big Bass", price: REGISTRATION_PRICING.bigBass, description: "Open to every entry for the event's heaviest bass." },
-  { id: "insurance", name: "Insurance Pot", price: REGISTRATION_PRICING.insurance, description: "Pays first out of the money from the Base Entry Pot until the available Insurance Pot money is exhausted." },
+  { id: "insurance", name: "Insurance Pot", price: REGISTRATION_PRICING.insurance, description: "Pays first out of the money from the Tournament Entry Pot until the available Insurance Pot money is exhausted." },
 ] as const;
 
 function money(value: number) { return `$${value.toFixed(2)}`; }
@@ -103,37 +103,35 @@ function AnglerSection({ anglerKey, title, angler, errors, onChange }: { anglerK
   </fieldset>;
 }
 
-export default function RegistrationForm() {
+export default function RegistrationForm({
+  operationsBySlug,
+  initialSlug,
+}: {
+  operationsBySlug: Record<string, TournamentOperationsViewModel>;
+  initialSlug?: string;
+}) {
   const formRef = useRef<HTMLFormElement>(null);
   const [registrationType, setRegistrationType] = useState<RegistrationType>("solo");
   const [anglers, setAnglers] = useState<Record<AnglerKey, Angler>>({ angler1: { ...EMPTY_ANGLER }, angler2: { ...EMPTY_ANGLER } });
   const [errors, setErrors] = useState<Errors>({});
-  const [slug, setSlug] = useState(tournaments[0].slug);
-  const [entryType, setEntryType] = useState<EntryType>("base");
+  const [slug, setSlug] = useState(initialSlug ?? tournaments[0].slug);
   const [memberPot, setMemberPot] = useState<MemberPot | null>(null);
   const [bigBass, setBigBass] = useState(false);
   const [insurance, setInsurance] = useState(false);
   const [submitMessage, setSubmitMessage] = useState("");
   const [, setRegistrationRecord] = useState<RegistrationPayload | null>(null);
   const tournament = tournaments.find((item) => item.slug === slug) ?? tournaments[0];
+  const operations = operationsBySlug[tournament.slug];
   const activeKeys = useMemo<AnglerKey[]>(() => registrationType === "team" ? ["angler1", "angler2"] : ["angler1"], [registrationType]);
-  const fullMembershipEligibility = activeKeys.every((key) => anglers[key].membership === "current" || anglers[key].membership === "joining");
-  const memberPotsEnabled = fullMembershipEligibility && entryType === "base";
+  const memberships = activeKeys.map((key) => anglers[key].membership).filter((membership): membership is Membership => membership !== null);
+  const fullMembershipEligibility = hasFullMembershipEligibility({ registrationType, memberships });
+  const memberPotsEnabled = fullMembershipEligibility;
 
-  const lineItems = useMemo(() => {
-    const items: { name: string; price: number }[] = [];
-    activeKeys.forEach((key, index) => { if (anglers[key].membership === "joining") items.push({ name: `${index === 0 ? "Angler 1" : "Angler 2"} Membership`, price: REGISTRATION_PRICING.annualMembership }); });
-    items.push({ name: entryType === "free" ? "Free Entry" : "Base Entry", price: entryType === "free" ? 0 : REGISTRATION_PRICING.baseEntry });
-    if (memberPot) items.push({ name: `${memberPot[0].toUpperCase()}${memberPot.slice(1)} Pot`, price: REGISTRATION_PRICING[memberPot] });
-    if (bigBass) items.push({ name: "Big Bass", price: REGISTRATION_PRICING.bigBass });
-    if (insurance) items.push({ name: "Insurance Pot", price: REGISTRATION_PRICING.insurance });
-    return items;
-  }, [activeKeys, anglers, entryType, memberPot, bigBass, insurance]);
-  const subtotal = lineItems.reduce((sum, item) => sum + item.price, 0);
-  const fee = Number((subtotal * REGISTRATION_PRICING.processingRate).toFixed(2));
-  const total = subtotal + fee;
+  const pricing = getRegistrationPricing({ registrationType, baseEntry: true, memberships, memberPot: fullMembershipEligibility ? memberPot : null, bigBass, insurance: fullMembershipEligibility && insurance });
+  const { lineItems, subtotal, processingFee: fee, total } = pricing;
   const currentErrors = activeKeys.reduce<Errors>((all, key) => ({ ...all, ...validateAngler(key, anglers[key]) }), {});
-  const canSubmit = Object.keys(currentErrors).length === 0 && (!(memberPot || insurance) || memberPotsEnabled);
+  const formIsValid = Object.keys(currentErrors).length === 0 && (!(memberPot || insurance) || memberPotsEnabled);
+  const canSubmit = formIsValid && operations.registrationCanSubmit;
 
   function updateAngler(key: AnglerKey, field: keyof Angler, value: string) {
     setAnglers((current) => ({ ...current, [key]: { ...current[key], [field]: value } }));
@@ -150,13 +148,15 @@ export default function RegistrationForm() {
     setSubmitMessage("");
   }
 
-  function chooseEntry(value: EntryType) { setEntryType(value); if (value === "free") { setMemberPot(null); setInsurance(false); } }
-
   function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const nextErrors = activeKeys.reduce<Errors>((all, key) => ({ ...all, ...validateAngler(key, anglers[key]) }), {});
     setErrors(nextErrors);
-    if (Object.keys(nextErrors).length || !canSubmit) {
+    if (!operations.registrationCanSubmit) {
+      setSubmitMessage(operations.registrationReason);
+      return;
+    }
+    if (Object.keys(nextErrors).length || !formIsValid) {
       setSubmitMessage("Complete all required angler information before payment.");
       const firstKey = Object.keys(nextErrors)[0];
       requestAnimationFrame(() => formRef.current?.querySelector<HTMLElement>(`[name="${firstKey}"]`)?.focus());
@@ -173,11 +173,11 @@ export default function RegistrationForm() {
       state: anglers[key].state.trim().toUpperCase(),
       zipCode: anglers[key].zipCode.trim(),
     }));
-    const registrationPayload = {
+    const registrationPayload: RegistrationPayload = {
       registrationType,
       tournamentSlug: slug,
       anglers: normalizedAnglers,
-      entryType,
+      baseEntry: true,
       memberPot,
       bigBass,
       insurance,
@@ -185,12 +185,14 @@ export default function RegistrationForm() {
       processingFee: fee,
       total,
     };
+    const selectionErrors = validateRegistrationSelections({ registrationType, baseEntry: registrationPayload.baseEntry, memberships, memberPot, bigBass, insurance });
+    if (selectionErrors.length) { setSubmitMessage(selectionErrors.join(" ")); return; }
     setRegistrationRecord(registrationPayload);
     setAnglers((current) => ({ ...current, angler1: normalizedAnglers[0], angler2: registrationType === "team" ? normalizedAnglers[1] : { ...EMPTY_ANGLER } }));
     setSubmitMessage("Stripe Checkout is not connected yet. Your selections are ready for payment.");
   }
 
-  const disabledReason = entryType === "free" ? "Requires Base Entry and full membership eligibility" : registrationType === "team" ? "Both anglers must be members to receive team member benefits." : "Membership is required for this option";
+  const disabledReason = registrationType === "team" ? "Both anglers must be members to receive team member benefits." : "Membership is required for this option";
 
   return <form ref={formRef} noValidate className="mx-auto grid max-w-[1400px] gap-10 px-5 py-10 sm:px-6 lg:grid-cols-[minmax(0,1fr)_380px] lg:items-start lg:gap-12 lg:py-14" onSubmit={submit}>
     <div className="space-y-10">
@@ -207,11 +209,39 @@ export default function RegistrationForm() {
         <p className="mt-5 border-l-2 border-[#D4A017] pl-4 text-sm leading-6 text-[#B8B8B8]"><strong className="font-semibold text-white">Memberships unlock access to</strong> <strong className="font-bold text-white">Bronze</strong>, <strong className="font-bold text-white">Silver</strong>, <strong className="font-bold text-white">Gold</strong>, <strong className="font-bold text-white">the Insurance Pot</strong>, <strong className="font-bold text-white">AOY points</strong>, and <strong className="font-bold text-white">Championship eligibility</strong>.</p>
       </section>
 
-      <section aria-labelledby="tournament-heading" className="border-t border-[#4A3A12] pt-8"><h2 id="tournament-heading" className="text-xl font-black uppercase tracking-[0.05em] text-[#D4A017]">Tournament Selection</h2><label className="mt-5 block"><span className="mb-2 block text-xs font-black uppercase tracking-[0.12em] text-[#C6C6C6]">Select Tournament</span><select value={slug} onChange={(event) => setSlug(event.target.value)} className="min-h-12 w-full rounded-sm border border-[#3A3A3A] bg-[#111] px-4 text-white outline-none focus:border-[#D4A017]">{tournaments.map((item) => <option key={item.slug} value={item.slug}>{item.lake} — {formatDate(item.date)}</option>)}</select></label><div className="mt-4 border border-[#4A3A12] bg-[#111] px-5 py-4" aria-label="Tournament summary"><dl className="grid gap-4 sm:grid-cols-3 sm:gap-0 sm:divide-x sm:divide-[#3A3A3A]"><div className="sm:pr-5"><dt className="text-xs font-black uppercase tracking-[0.12em] text-[#D4A017]">Tournament</dt><dd className="mt-1 font-bold text-white">{tournament.lake}</dd></div><div className="sm:px-5"><dt className="text-xs font-black uppercase tracking-[0.12em] text-[#D4A017]">Date</dt><dd className="mt-1 font-bold text-white">{formatDate(tournament.date)}</dd></div><div className="sm:pl-5"><dt className="text-xs font-black uppercase tracking-[0.12em] text-[#D4A017]">Launch</dt><dd className="mt-1 font-bold text-white">{tournament.venue ?? "To Be Announced"}{tournament.city ? `, ${tournament.city}` : ""}</dd></div></dl></div></section>
+      <section aria-labelledby="tournament-heading" className="border-t border-[#4A3A12] pt-8">
+        <h2 id="tournament-heading" className="text-xl font-black uppercase tracking-[0.05em] text-[#D4A017]">Tournament Selection</h2>
+        <label className="mt-5 block">
+          <span className="mb-2 block text-xs font-black uppercase tracking-[0.12em] text-[#C6C6C6]">Select Tournament</span>
+          <select value={slug} onChange={(event) => { setSlug(event.target.value); setSubmitMessage(""); }} className="min-h-12 w-full rounded-sm border border-[#3A3A3A] bg-[#111] px-4 text-white outline-none focus:border-[#D4A017]">
+            {tournaments.map((item) => <option key={item.slug} value={item.slug}>{item.lake} — {operationsBySlug[item.slug]?.formattedEffectiveDate ?? formatDate(item.date)}</option>)}
+          </select>
+        </label>
+        <div className="mt-4 border border-[#4A3A12] bg-[#111] px-5 py-4" aria-label="Tournament summary">
+          <dl className="grid gap-4 sm:grid-cols-3 sm:gap-0 sm:divide-x sm:divide-[#3A3A3A]">
+            <div className="sm:pr-5"><dt className="text-xs font-black uppercase tracking-[0.12em] text-[#D4A017]">Tournament</dt><dd className="mt-1 font-bold text-white">{tournament.lake}</dd></div>
+            <div className="sm:px-5"><dt className="text-xs font-black uppercase tracking-[0.12em] text-[#D4A017]">Date</dt><dd className="mt-1 font-bold text-white">{operations.formattedEffectiveDate}</dd></div>
+            <div className="sm:pl-5"><dt className="text-xs font-black uppercase tracking-[0.12em] text-[#D4A017]">Launch</dt><dd className="mt-1 font-bold text-white">{tournament.venue ?? "To Be Announced"}{tournament.city ? `, ${tournament.city}` : ""}</dd></div>
+          </dl>
+        </div>
+        <dl className="mt-4 grid gap-3 border-y border-[#333] py-4 text-sm sm:grid-cols-2">
+          <div><dt className="font-black uppercase tracking-wide text-[#D4A017]">Early registration deadline</dt><dd className="mt-1 text-neutral-300">{operations.earlyRegistrationDeadline}</dd></div>
+          <div><dt className="font-black uppercase tracking-wide text-[#D4A017]">Tournament-morning registration</dt><dd className="mt-1 text-neutral-300">{operations.tournamentMorningWindow ?? "Times have not been configured for this tournament."}</dd></div>
+        </dl>
+        <div className="mt-5 space-y-4">
+          <TournamentStatusAnnouncement tournament={tournament} compact={tournament.tournamentStatus === "scheduled"} />
+          <SafeLightCard safeLight={operations.safeLight} />
+          <p className={`border-l-2 pl-4 text-sm font-semibold ${operations.registrationCanSubmit ? "border-[#D4A017] text-neutral-300" : "border-red-500 text-red-200"}`} role="status">
+            {operations.registrationReason}
+          </p>
+        </div>
+      </section>
 
-      <section aria-labelledby="entry-heading" className="border-t border-[#4A3A12] pt-8"><h2 id="entry-heading" className="text-xl font-black uppercase tracking-[0.05em] text-[#D4A017]">Entry Type</h2><div className="mt-5 grid gap-4 sm:grid-cols-2">{([{ id: "free", name: "Free Entry", price: 0, description: "Can add Big Bass. No Base payout or member pots." }, { id: "base", name: "Base Entry", price: REGISTRATION_PRICING.baseEntry, description: "Main payout entry. Required for member pots and Insurance." }] as const).map((option) => <label key={option.id} className="cursor-pointer border border-[#333] bg-[#111] p-5 has-checked:border-[#D4A017]"><span className="flex items-center justify-between gap-4"><span className="flex items-center gap-3"><input type="radio" name="entry" checked={entryType === option.id} onChange={() => chooseEntry(option.id)} className="size-5 accent-[#D4A017]" /><strong className="uppercase text-white">{option.name}</strong></span><strong className="text-[#D4A017]">{money(option.price)}</strong></span><span className="mt-3 block text-sm leading-5 text-[#999]">{option.description}</span></label>)}</div></section>
+      <section aria-labelledby="entry-heading" className="border-t border-[#4A3A12] pt-8"><h2 id="entry-heading" className="text-xl font-black uppercase tracking-[0.05em] text-[#D4A017]">Tournament Registration</h2><div className="mt-5 border border-[#D4A017] bg-[#111] p-5" aria-label="Tournament Entry, required"><span className="flex items-center justify-between gap-4"><strong className="uppercase text-white">Tournament Entry <span className="text-xs text-[#D4A017]">Required</span></strong><strong className="text-[#D4A017]">{money(REGISTRATION_PRICING.baseEntry)}</strong></span><p className="mt-3 text-sm leading-5 text-[#B8B8B8]">Automatically included with every solo and team registration. Optional add-ons cannot be entered without it.</p></div></section>
 
-      <section aria-labelledby="optional-heading" className="border-t border-[#4A3A12] pt-8"><h2 id="optional-heading" className="text-xl font-black uppercase tracking-[0.05em] text-[#D4A017]">Optional Pots</h2><div className="mt-5 divide-y divide-[#333] border-y border-[#333]">{OPTIONAL_POTS.map((option) => { const isBigBass = option.id === "big-bass"; const disabled = !isBigBass && !memberPotsEnabled; const checked = isBigBass ? bigBass : option.id === "insurance" ? insurance : memberPot === option.id; return <label key={option.id} className={`flex items-start gap-4 py-5 ${disabled ? "cursor-not-allowed opacity-60" : "cursor-pointer"}`}><input type="checkbox" checked={checked} disabled={disabled} onChange={() => { if (isBigBass) setBigBass(!bigBass); else if (option.id === "insurance") setInsurance(!insurance); else setMemberPot(memberPot === option.id ? null : option.id); }} className="mt-1 size-5 shrink-0 accent-[#D4A017]" /><span className="min-w-0 flex-1"><span className="block font-black uppercase tracking-wide text-white">{option.name}</span><span className="mt-1 block text-sm leading-5 text-[#8E8E8E]">{option.description}</span>{disabled && <span className="mt-2 block text-xs font-bold uppercase tracking-wide text-[#D4A017]">{disabledReason}</span>}</span><span className="font-black text-[#D4A017]">{money(option.price)}</span></label>; })}</div><p className="mt-4 text-sm text-[#999]">Bronze, Silver, and Gold do not stack. Choose one per tournament.</p></section>
+      <section aria-labelledby="side-pots-heading" className="border-t border-[#4A3A12] pt-8"><h2 id="side-pots-heading" className="text-xl font-black uppercase tracking-[0.05em] text-[#D4A017]">Optional Side Pots</h2><div className="mt-5 divide-y divide-[#333] border-y border-[#333]">{OPTIONAL_POTS.filter((option) => option.id === "big-bass" || option.id === "insurance").map((option) => { const isBigBass = option.id === "big-bass"; const disabled = !isBigBass && !memberPotsEnabled; const checked = isBigBass ? bigBass : insurance; return <label key={option.id} className={`flex items-start gap-4 py-5 ${disabled ? "cursor-not-allowed opacity-60" : "cursor-pointer"}`}><input type="checkbox" checked={checked} disabled={disabled} onChange={() => { if (isBigBass) setBigBass(!bigBass); else setInsurance(!insurance); }} className="mt-1 size-5 shrink-0 accent-[#D4A017]" /><span className="min-w-0 flex-1"><span className="block font-black uppercase tracking-wide text-white">{option.name}</span><span className="mt-1 block text-sm leading-5 text-[#8E8E8E]">{option.description}</span>{disabled && <span className="mt-2 block text-xs font-bold uppercase tracking-wide text-[#D4A017]">{disabledReason}</span>}</span><span className="font-black text-[#D4A017]">{money(option.price)}</span></label>; })}</div></section>
+
+      <section aria-labelledby="bonus-pots-heading" className="border-t border-[#4A3A12] pt-8"><h2 id="bonus-pots-heading" className="text-xl font-black uppercase tracking-[0.05em] text-[#D4A017]">Member Bonus Pots</h2><div className="mt-5 divide-y divide-[#333] border-y border-[#333]">{OPTIONAL_POTS.filter((option) => option.id === "bronze" || option.id === "silver" || option.id === "gold").map((option) => { const disabled = !memberPotsEnabled; const checked = memberPot === option.id; return <label key={option.id} className={`flex items-start gap-4 py-5 ${disabled ? "cursor-not-allowed opacity-60" : "cursor-pointer"}`}><input type="checkbox" checked={checked} disabled={disabled} onChange={() => setMemberPot(memberPot === option.id ? null : option.id)} className="mt-1 size-5 shrink-0 accent-[#D4A017]" /><span className="min-w-0 flex-1"><span className="block font-black uppercase tracking-wide text-white">{option.name}</span><span className="mt-1 block text-sm leading-5 text-[#8E8E8E]">{option.description}</span>{disabled && <span className="mt-2 block text-xs font-bold uppercase tracking-wide text-[#D4A017]">{disabledReason}</span>}</span><span className="font-black text-[#D4A017]">{money(option.price)}</span></label>; })}</div><p className="mt-4 text-sm text-[#999]">Choose only one member bonus pot: Bronze, Silver, or Gold.</p></section>
     </div>
 
     <aside className="border border-[#4A3A12] bg-[#111] p-6 lg:sticky lg:top-32"><h2 className="text-xl font-black uppercase tracking-[0.05em] text-[#D4A017]">Registration Summary</h2><div className="mt-6 space-y-4 text-sm">{lineItems.map((item) => <div key={item.name} className="flex justify-between gap-4 text-[#B8B8B8]"><span>{item.name}</span><span>{money(item.price)}</span></div>)}</div><div className="mt-6 space-y-3 border-t border-[#3A3A3A] pt-5 text-sm"><div className="flex justify-between text-[#B8B8B8]"><span>Processing Fee</span><span>{money(fee)}</span></div><div className="flex justify-between border-t border-[#3A3A3A] pt-4 text-lg font-black uppercase text-white"><span>Total Due</span><span className="text-[#D4A017]">{money(total)}</span></div></div><div className="mt-8"><PaymentOptions total={total} canSubmit={canSubmit} validationMessage={submitMessage} /></div></aside>
