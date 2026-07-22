@@ -1,0 +1,46 @@
+import { renderToStaticMarkup } from "react-dom/server";
+import { describe, expect, it } from "vitest";
+
+import SchedulePage from "@/app/schedule/page";
+import FeaturedTournament from "@/components/FeaturedTournament";
+import { tournaments } from "@/data/tournaments";
+import { getTournamentDisplay } from "@/lib/tournament-display";
+
+describe("shared tournament display data", () => {
+  it("maps stored tournament fields for both public views", () => {
+    const tournament = {
+      ...tournaments[0],
+      date: "2026-11-01",
+      venue: "Test Ramp",
+      city: "Test City",
+      state: "Texas",
+      startTimeDisplay: "Safe Light",
+      stopFishingTime: "15:00",
+      launchType: "NUMBERED_START" as const,
+    };
+
+    expect(getTournamentDisplay(tournament)).toMatchObject({
+      date: "Nov 1, 2026",
+      dayOfWeek: "Sunday",
+      ramp: "Test Ramp",
+      location: "Test City, Texas",
+      hours: "Safe Light – 3:00 PM",
+      stopFishing: "Stop Fishing: 3:00 PM",
+      launchType: "Numbered Start",
+    });
+
+    const homepage = renderToStaticMarkup(<FeaturedTournament tournament={tournament} />);
+    for (const value of ["Test Ramp", "Test City, Texas", "Safe Light – 3:00 PM", "Stop Fishing: 3:00 PM", "Numbered Start"]) {
+      expect(homepage).toContain(value);
+    }
+  });
+
+  it("renders schedule values from the same tournament source", () => {
+    const schedule = renderToStaticMarkup(<SchedulePage />);
+    const display = getTournamentDisplay(tournaments[0]);
+
+    for (const value of [display.date, display.ramp, display.location, display.hours, display.stopFishing, display.launchType]) {
+      expect(schedule).toContain(value);
+    }
+  });
+});

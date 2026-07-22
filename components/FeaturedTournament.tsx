@@ -8,6 +8,7 @@ import {
   type Tournament,
 } from "@/data/tournaments";
 import { TOURNAMENT_STATUS_LABELS } from "@/lib/tournament-operations";
+import { getTournamentDisplay } from "@/lib/tournament-display";
 import type { TournamentOperationsViewModel } from "@/lib/tournament-view-model";
 import { getTournamentEntrySummary, type TournamentEntrySummary } from "@/lib/public-early-entry";
 
@@ -83,6 +84,7 @@ export default function FeaturedTournament({
     tournament.registrationStatus === "open" &&
     !["cancelled", "postponed"].includes(tournament.tournamentStatus)
   );
+  const display = getTournamentDisplay(tournament);
 
   return (
     <article className="overflow-hidden rounded-md border border-yellow-700/50 bg-[#080808]">
@@ -161,28 +163,49 @@ export default function FeaturedTournament({
           </div>
         </div>
 
-        {/* Buttons */}
-        <div className="mt-4 grid grid-cols-2 gap-2">
-          <span
-            aria-disabled="true"
-            className="cursor-not-allowed border border-zinc-800 px-2 py-2.5 text-center text-[9px] font-black uppercase tracking-[0.08em] text-zinc-600"
-          >
-            Event Info
-          </span>
-
+        {/* Registration */}
+        <div className="mt-4 flex w-full justify-center">
           {registrationOpen ? (
             <Link
               href={`/register?tournament=${tournament.slug}`}
-              className="bg-red-700 px-2 py-2.5 text-center text-[9px] font-black uppercase tracking-[0.08em] text-white transition hover:bg-red-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#D4A017]"
+              className="w-full bg-red-700 px-4 py-3 text-center text-[10px] font-black uppercase tracking-[0.08em] text-white transition hover:bg-red-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#D4A017]"
             >
               Register Now
             </Link>
           ) : (
-            <span aria-disabled="true" className="cursor-not-allowed bg-red-950 px-2 py-2.5 text-center text-[9px] font-black uppercase tracking-[0.08em] text-zinc-400">
+            <span aria-disabled="true" className="w-full cursor-not-allowed bg-red-950 px-4 py-3 text-center text-[10px] font-black uppercase tracking-[0.08em] text-zinc-400">
               {tournament.registrationStatus === "closed" || operations?.registrationPeriod === "fully_closed" ? "Registration Closed" : "Registration Unavailable"}
             </span>
           )}
         </div>
+
+        <section aria-labelledby="tournament-information-heading" className="mt-4 border border-[#4A3A12] bg-[#0d0d0d]">
+          <h4 id="tournament-information-heading" className="border-b border-[#4A3A12] px-4 py-3 text-center text-[10px] font-black uppercase tracking-[0.16em] text-[#D4A017]">
+            Tournament Information
+          </h4>
+          <dl className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4">
+            <div className="border-b border-white/10 p-4 sm:border-r xl:border-b-0">
+              <dt className="text-[9px] font-black uppercase tracking-[0.14em] text-[#D4A017]">Date</dt>
+              <dd className="mt-2 text-sm font-bold text-white"><time dateTime={operations?.effectiveDate ?? tournament.date}>{display.date}</time></dd>
+              <dd className="mt-1 text-xs text-zinc-400">{display.dayOfWeek}</dd>
+            </div>
+            <div className="border-b border-white/10 p-4 xl:border-b-0 xl:border-r">
+              <dt className="text-[9px] font-black uppercase tracking-[0.14em] text-[#D4A017]">Ramp</dt>
+              <dd className="mt-2 text-sm font-bold text-white">{display.ramp}</dd>
+              <dd className="mt-1 text-xs text-zinc-400">{display.location}</dd>
+            </div>
+            <div className="border-b border-white/10 p-4 sm:border-r sm:border-b-0">
+              <dt className="text-[9px] font-black uppercase tracking-[0.14em] text-[#D4A017]">Hours</dt>
+              <dd className="mt-2 text-sm font-bold text-white">{display.hours}</dd>
+              <dd className="mt-1 text-xs text-zinc-400">{display.stopFishing}</dd>
+            </div>
+            <div className="p-4">
+              <dt className="text-[9px] font-black uppercase tracking-[0.14em] text-[#D4A017]">Launch Type</dt>
+              <dd className="mt-2 text-sm font-bold text-white">{display.launchType}</dd>
+              <dd className="mt-1 text-xs leading-4 text-zinc-400">Subject to change by Tournament Director</dd>
+            </div>
+          </dl>
+        </section>
 
         <Link
           href="/registrations"
@@ -198,12 +221,6 @@ export default function FeaturedTournament({
             ) : operations.registrationReason}
           </p>
         )}
-
-        <nav aria-label="Tournament resources" className="mt-4 flex flex-wrap justify-center gap-x-5 gap-y-2 border-t border-white/10 pt-4 text-[10px] font-black uppercase tracking-[0.12em]">
-          <Link href="/schedule" className="text-zinc-300 transition hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#D4A017]">Tournament Details</Link>
-          <Link href="/how-it-works" className="text-zinc-300 transition hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#D4A017]">Rules</Link>
-          <Link href="/results" className="text-zinc-300 transition hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#D4A017]">Results</Link>
-        </nav>
 
         <EarlyRegistrationStats {...earlyRegistrationSummary} unavailable={earlyRegistrationStatsUnavailable} />
 

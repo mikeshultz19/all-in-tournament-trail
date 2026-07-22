@@ -70,6 +70,8 @@ describe("Tournament Conditions", () => {
     expect(html).toContain("Scheduled");
     expect(html).toContain("Safe Light");
     expect(html).toContain(operations.safeLight.time);
+    expect(html).toContain('data-icon-src="/icons/sun-safe-light.svg"');
+    expect(html).toContain('aria-hidden="true"');
     expect(html).toContain("Tournament forecast will be available closer to the event.");
     expect(html).toContain("sm:grid-cols-");
   });
@@ -126,8 +128,18 @@ describe("Tournament Conditions", () => {
     }
     expect(html).toContain("Registration closes");
     expect(html).toContain('href="/register?tournament=eagle-mountain-2026"');
-    expect(html).toContain('href="/how-it-works"');
-    expect(html).toContain('href="/results"');
+    expect(html).toContain("Tournament Information");
+    expect(html).toContain("Safe Light – 3:00 PM");
+    expect(html).toContain("Stop Fishing: 3:00 PM");
+    expect(html).toContain("Trailering");
+    expect(html).toContain("Azle, Texas");
+    expect(html).toContain("w-full bg-red-700");
+    expect(html).not.toContain("Event Info");
+    expect(html).not.toContain("Tournament Details");
+    const featuredSource = readFileSync("components/FeaturedTournament.tsx", "utf8");
+    expect(featuredSource).not.toContain("Tournament resources");
+    expect(featuredSource).not.toContain('href="/how-it-works"');
+    expect(featuredSource).not.toContain('href="/results"');
     expect(html).not.toContain("private4@example.com");
     expect(html).not.toContain("private-payment-004");
     expect(html).toContain("overflow-x-hidden");

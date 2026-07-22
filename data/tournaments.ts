@@ -6,6 +6,8 @@ export type TournamentStatus =
 
 export type RegistrationStatus = "open" | "closed" | "unavailable";
 
+export type TournamentLaunchType = "TRAILERING" | "NUMBERED_START";
+
 export type TournamentOperationalStatus =
   | "scheduled"
   | "weather_watch"
@@ -21,7 +23,11 @@ export interface Tournament {
   lake: string;
   venue: string | null;
   city: string | null;
+  state: string;
   date: string;
+  startTimeDisplay: string;
+  stopFishingTime: string;
+  launchType: TournamentLaunchType;
   description: string;
   status: TournamentStatus;
   registrationStatus: RegistrationStatus;
@@ -61,6 +67,10 @@ type TournamentSeed = Omit<
   | "tournamentMorningRegistrationOpensAt"
   | "tournamentMorningRegistrationClosesAt"
   | "accuWeatherLocationKey"
+  | "state"
+  | "startTimeDisplay"
+  | "stopFishingTime"
+  | "launchType"
 > &
   Partial<
     Pick<
@@ -75,6 +85,10 @@ type TournamentSeed = Omit<
       | "tournamentMorningRegistrationOpensAt"
       | "tournamentMorningRegistrationClosesAt"
       | "accuWeatherLocationKey"
+      | "state"
+      | "startTimeDisplay"
+      | "stopFishingTime"
+      | "launchType"
     >
   >;
 
@@ -291,6 +305,10 @@ export const tournaments: readonly Tournament[] = tournamentSeeds.map(
     tournamentMorningRegistrationClosesAt:
       tournament.tournamentMorningRegistrationClosesAt ?? null,
     accuWeatherLocationKey: tournament.accuWeatherLocationKey ?? null,
+    state: tournament.state ?? "Texas",
+    startTimeDisplay: tournament.startTimeDisplay ?? "Safe Light",
+    stopFishingTime: tournament.stopFishingTime ?? "15:00",
+    launchType: tournament.launchType ?? "TRAILERING",
   }),
 );
 

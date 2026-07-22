@@ -7,20 +7,16 @@ import {
   tournaments,
   type Tournament,
 } from "@/data/tournaments";
+import { getOnlineRegistrationEligibility } from "@/lib/online-registration";
+import { getTournamentDisplay } from "@/lib/tournament-display";
 
 const REGISTRATION_ROUTE = "/register";
-
-function formatDate(date: string): string {
-  return new Date(`${date}T12:00:00`).toLocaleDateString("en-US", {
-    month: "short",
-    day: "numeric",
-    year: "numeric",
-  });
-}
 
 function TournamentRow({ tournament }: { tournament: Tournament }) {
   const thumbnailImage =
     tournament.thumbnailImage ?? getTournamentImage(tournament);
+  const registration = getOnlineRegistrationEligibility(tournament);
+  const display = getTournamentDisplay(tournament);
 
   return (
     <article className="grid gap-5 border-b border-[#4A3A12] px-4 py-6 lg:grid-cols-[180px_minmax(250px,1fr)_110px_130px_140px] lg:items-center lg:gap-6 lg:px-5 lg:py-5">
@@ -51,6 +47,22 @@ function TournamentRow({ tournament }: { tournament: Tournament }) {
         <p className="text-sm leading-6 text-[#B8B8B8]">
           {tournament.description}
         </p>
+        <dl className="mt-4 grid grid-cols-1 gap-x-5 gap-y-3 border-t border-white/10 pt-4 sm:grid-cols-2 xl:grid-cols-4">
+          <div>
+            <dt className="text-[10px] font-black uppercase tracking-[0.12em] text-[#D4A017]">Ramp</dt>
+            <dd className="mt-1 text-xs font-semibold text-[#F2F2F2]">{display.ramp}</dd>
+            <dd className="mt-0.5 text-xs text-[#B8B8B8]">{display.location}</dd>
+          </div>
+          <div>
+            <dt className="text-[10px] font-black uppercase tracking-[0.12em] text-[#D4A017]">Hours</dt>
+            <dd className="mt-1 text-xs font-semibold text-[#F2F2F2]">{display.hours}</dd>
+            <dd className="mt-0.5 text-xs text-[#B8B8B8]">{display.stopFishing}</dd>
+          </div>
+          <div>
+            <dt className="text-[10px] font-black uppercase tracking-[0.12em] text-[#D4A017]">Launch Type</dt>
+            <dd className="mt-1 text-xs font-semibold text-[#F2F2F2]">{display.launchType}</dd>
+          </div>
+        </dl>
       </div>
 
       <div>
@@ -61,7 +73,7 @@ function TournamentRow({ tournament }: { tournament: Tournament }) {
           dateTime={tournament.date}
           className="text-sm font-bold uppercase text-[#F2F2F2]"
         >
-          {formatDate(tournament.date)}
+          {display.date}
         </time>
       </div>
 
@@ -74,12 +86,10 @@ function TournamentRow({ tournament }: { tournament: Tournament }) {
         </p>
       </div>
 
-      <Link
-        href={REGISTRATION_ROUTE}
+      {registration.canRegister ? <Link
+        href={`${REGISTRATION_ROUTE}?tournament=${tournament.slug}`}
         className="inline-flex min-h-11 w-full items-center justify-center rounded-sm bg-[#D4A017] px-5 py-3 text-center text-xs font-black uppercase tracking-[0.12em] text-[#0B0B0B] transition hover:bg-[#e2b229] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#D4A017]"
-      >
-        Register Now
-      </Link>
+      >{registration.label}</Link> : <span aria-disabled="true" title={registration.reason} className="inline-flex min-h-11 w-full cursor-not-allowed items-center justify-center rounded-sm border border-neutral-700 px-3 py-3 text-center text-xs font-black uppercase tracking-[0.08em] text-neutral-500">{registration.label}</span>}
     </article>
   );
 }
