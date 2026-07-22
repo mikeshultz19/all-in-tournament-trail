@@ -248,6 +248,13 @@ signature where permitted by law. The liability waiver remains a draft pending
 qualified legal review, and final waiver and refund-policy language requires
 business and legal approval before production payment.
 
+Waiver Version 1.0 expressly addresses participant responsibility for vessel
+operation and on-water decisions, including accidents, weather, navigation,
+equipment failure, participant negligence, and third-party conduct. No
+tournament schedule or deadline requires unsafe vessel operation, and AITT
+cannot continuously supervise every participant. These provisions remain
+subject to qualified Texas legal review and applicable-law limitations.
+
 The current submission contract carries `rulesVersion`, `waiverVersion`,
 `acknowledgedAt`, and `acknowledgmentAccepted`. The quote boundary validates
 the accepted versions, but it does not claim durable storage. Phase 4 must

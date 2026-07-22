@@ -75,6 +75,8 @@
 - Kept Team and Individual / Solo as the only registration types and removed active co-angler terminology.
 - Preserved the compact 3% Card Processing Fee summary and disabled Square execution boundary.
 - Added focused policy-route, version, acknowledgment, team-field, and registration validation coverage.
+- Expanded waiver Version 1.0 to address on-water accidents, participant negligence, independent weather and navigation decisions, vessel and equipment responsibility, third-party conduct, and limits on continuous Tournament Official supervision.
+- Preserved non-waivable rights and the requirement for qualified Texas legal review before waiver adoption.
 
 ### Registration Page Simplification
 

@@ -15,6 +15,15 @@ Use this document to record approved project decisions that affect architecture,
 
 ## Decisions
 
+### 2026-07-22 — Strengthen the participant liability waiver for on-water risk
+
+- **Status:** Approved Draft Pending Legal Review
+- **Context:** The Version 1.0 waiver needed clearer treatment of boating accidents, participant negligence, vessel operation, weather and navigation decisions, equipment failures, third-party conduct, and the limits of Tournament Official supervision.
+- **Decision:** Expand the authoritative waiver without changing Version 1.0. Make each participant responsible for independent on-water judgment and safe vessel operation; state that no schedule, deadline, prize, or instruction requires unsafe operation; preserve legally non-waivable rights; and retain hidden drafting annotations for qualified Texas counsel. Team and Individual / Solo remain the only registration types.
+- **Reasoning:** Clear participant responsibilities and balanced applicable-law limitations improve informed electronic acknowledgment without promising immunity or displacing AITT's legal safety obligations.
+- **Impact:** `docs/LIABILITY_WAIVER.md`, `/liability-waiver`, the shared policy renderer, waiver tests, and registration-policy documentation.
+- **Follow-up:** Qualified Texas counsel must review express-negligence conspicuousness, released parties, indemnification, minors, venue, and electronic acceptance before adoption.
+
 ### 2026-07-22 — Publish registration policies from their Markdown sources
 
 - **Status:** Approved

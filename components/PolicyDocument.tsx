@@ -53,6 +53,15 @@ function parseBlocks(source: string): Block[] {
       continue;
     }
 
+    if (line.startsWith("<!--")) {
+      while (index < lines.length) {
+        const commentLine = lines[index].trim();
+        index += 1;
+        if (commentLine.endsWith("-->") || commentLine.includes("-->")) break;
+      }
+      continue;
+    }
+
     if (/^\*\*(?:Version|Status|Effective Date|Last Updated):\*\*/.test(line)) {
       index += 1;
       continue;
