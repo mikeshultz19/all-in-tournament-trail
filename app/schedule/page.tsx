@@ -47,7 +47,11 @@ function TournamentRow({ tournament }: { tournament: Tournament }) {
         <p className="text-sm leading-6 text-[#B8B8B8]">
           {tournament.description}
         </p>
-        <dl className="mt-4 grid grid-cols-1 gap-x-5 gap-y-3 border-t border-white/10 pt-4 sm:grid-cols-2 xl:grid-cols-4">
+        <dl className="mt-4 grid grid-cols-1 gap-x-5 gap-y-3 border-t border-white/10 pt-4 sm:grid-cols-2 xl:grid-cols-5">
+          <div>
+            <dt className="text-[10px] font-black uppercase tracking-[0.12em] text-[#D4A017]">Date</dt>
+            <dd className="mt-1 text-xs font-semibold text-[#F2F2F2]"><time dateTime={tournament.date}>{display.date}</time></dd>
+          </div>
           <div>
             <dt className="text-[10px] font-black uppercase tracking-[0.12em] text-[#D4A017]">Ramp</dt>
             <dd className="mt-1 text-xs font-semibold text-[#F2F2F2]">{display.ramp}</dd>
@@ -61,6 +65,10 @@ function TournamentRow({ tournament }: { tournament: Tournament }) {
           <div>
             <dt className="text-[10px] font-black uppercase tracking-[0.12em] text-[#D4A017]">Launch Type</dt>
             <dd className="mt-1 text-xs font-semibold text-[#F2F2F2]">{display.launchType}</dd>
+          </div>
+          <div>
+            <dt className="text-[10px] font-black uppercase tracking-[0.12em] text-[#D4A017]">Morning Registration</dt>
+            <dd className="mt-1 text-xs font-semibold text-[#F2F2F2]">{display.morningRegistration}</dd>
           </div>
         </dl>
       </div>

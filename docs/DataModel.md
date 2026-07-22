@@ -65,4 +65,9 @@ Empty arrays, `null` awards/weights, and `published: false` represent the curren
 - `data/tournaments.ts` is the temporary canonical public event source.
 - `data/tournamentResults.ts` separately owns tournament results and Big Bass.
 - `data/aoyStandings.ts` separately owns AOY standings.
+- `data/sponsors.ts` is the temporary canonical sponsor source. Sponsor records
+  contain `name`, `logo`, optional `websiteUrl`, `active`, `showOnHomepage`,
+  `majorSponsor`, and `displayOrder`; the homepage projection includes only
+  active major sponsors selected for homepage display and sorts them by display
+  order.
 - A future admin system or WeighFish integration is expected to replace these static modules while retaining their clear event/result/AOY boundaries.

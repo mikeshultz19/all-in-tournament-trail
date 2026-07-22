@@ -5,6 +5,10 @@ import FeaturedTournament from "@/components/FeaturedTournament";
 import WinnersCircle from "@/components/WinnersCircle";
 import AOYStandings from "@/components/AOYStandings";
 import TournamentConditions from "@/components/TournamentConditions";
+import SponsorHome from "@/components/SponsorHome";
+import EarlyRegistrationStats from "@/components/EarlyRegistrationStats";
+import PaymentAnnouncement from "@/components/PaymentAnnouncement";
+import { getHomepageSponsors } from "@/data/sponsors";
 import { tournaments } from "@/data/tournaments";
 import { getNextRelevantTournament } from "@/lib/tournament-operations";
 import { getTournamentOperationsViewModel } from "@/lib/tournament-view-model";
@@ -33,34 +37,48 @@ export default async function HomePage() {
         locationKey: tournament.accuWeatherLocationKey,
       })
     : null;
+  const homepageSponsors = getHomepageSponsors();
 
   return (
     <main className="min-h-screen overflow-x-hidden bg-black text-white">
-      <Header />
+      <Header newsTicker={<LatestTournamentNews tournament={tournament} />} />
 
       <Hero />
+
+      <div className="mx-auto w-full max-w-[1700px] px-4 pt-8 lg:px-8">
+        <PaymentAnnouncement />
+      </div>
 
       {/* Tournament operations + Featured Tournament */}
       <section className="border-t border-zinc-900 bg-black">
         <div className="mx-auto max-w-[1700px] px-4 py-10 lg:px-8">
-          <div className="grid grid-cols-1 gap-8 xl:grid-cols-2">
-            <div className="space-y-6">
-              <LatestTournamentNews tournament={tournament} />
-              {tournament && operations && weather ? (
-                <TournamentConditions tournament={tournament} safeLight={operations.safeLight} weather={weather} />
-              ) : (
-                <div className="border border-white/10 bg-[#111111] p-5 text-sm text-neutral-400">
-                  Estimated safe light will appear when the next tournament is scheduled.
-                </div>
-              )}
+          <div className="grid grid-cols-1 gap-6 xl:grid-cols-2 xl:items-start">
+            <div className="contents xl:flex xl:flex-col xl:gap-6">
+              <div className="order-2 xl:order-none">
+                {tournament && operations && weather ? (
+                  <TournamentConditions tournament={tournament} safeLight={operations.safeLight} weather={weather} />
+                ) : (
+                  <div className="border border-white/10 bg-[#111111] p-5 text-sm text-neutral-400">
+                    Estimated safe light will appear when the next tournament is scheduled.
+                  </div>
+                )}
+              </div>
+              <div className="order-5 xl:order-none xl:flex-1">
+                <SponsorHome sponsors={homepageSponsors} />
+              </div>
             </div>
 
-            <FeaturedTournament
-              tournament={tournament ?? null}
-              operations={operations}
-              earlyRegistrationSummary={earlyRegistrationSummary}
-              earlyRegistrationStatsUnavailable={earlyRegistrationStatsUnavailable}
-            />
+            <div className="contents xl:flex xl:flex-col xl:gap-6">
+              <div className="order-1 xl:order-none">
+                <FeaturedTournament
+                  tournament={tournament ?? null}
+                  operations={operations}
+                />
+              </div>
+              <div className="order-4 border border-[#4A3A12] bg-[#0d0d0d] p-4 xl:order-none">
+                <EarlyRegistrationStats {...earlyRegistrationSummary} unavailable={earlyRegistrationStatsUnavailable} />
+              </div>
+            </div>
           </div>
         </div>
       </section>

@@ -13,6 +13,7 @@ export interface TournamentDisplay {
   hours: string;
   stopFishing: string;
   launchType: string;
+  morningRegistration: string;
 }
 
 function formatTime(time: string): string {
@@ -46,5 +47,8 @@ export function getTournamentDisplay(tournament: Tournament): TournamentDisplay 
     hours: `${tournament.startTimeDisplay} – ${stopFishing}`,
     stopFishing: `Stop Fishing: ${stopFishing}`,
     launchType: TOURNAMENT_LAUNCH_TYPE_LABELS[tournament.launchType],
+    morningRegistration: tournament.tournamentMorningRegistrationOpensAt
+      ? formatTime(tournament.tournamentMorningRegistrationOpensAt)
+      : "To Be Announced",
   };
 }

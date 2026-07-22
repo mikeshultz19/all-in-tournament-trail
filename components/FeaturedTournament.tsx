@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import EarlyRegistrationStats from "@/components/EarlyRegistrationStats";
 import {
   getTournamentImage,
   type Tournament,
@@ -10,7 +9,6 @@ import {
 import { TOURNAMENT_STATUS_LABELS } from "@/lib/tournament-operations";
 import { getTournamentDisplay } from "@/lib/tournament-display";
 import type { TournamentOperationsViewModel } from "@/lib/tournament-view-model";
-import { getTournamentEntrySummary, type TournamentEntrySummary } from "@/lib/public-early-entry";
 
 type Countdown = {
   days: number;
@@ -36,13 +34,9 @@ function calculateCountdown(date: string): Countdown {
 export default function FeaturedTournament({
   tournament,
   operations,
-  earlyRegistrationSummary = getTournamentEntrySummary([]),
-  earlyRegistrationStatsUnavailable = false,
 }: {
   tournament: Tournament | null;
   operations?: TournamentOperationsViewModel | null;
-  earlyRegistrationSummary?: TournamentEntrySummary;
-  earlyRegistrationStatsUnavailable?: boolean;
 }) {
   const [countdown, setCountdown] = useState<Countdown>({
     days: 0,
@@ -183,7 +177,7 @@ export default function FeaturedTournament({
           <h4 id="tournament-information-heading" className="border-b border-[#4A3A12] px-4 py-3 text-center text-[10px] font-black uppercase tracking-[0.16em] text-[#D4A017]">
             Tournament Information
           </h4>
-          <dl className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4">
+          <dl className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-5">
             <div className="border-b border-white/10 p-4 sm:border-r xl:border-b-0">
               <dt className="text-[9px] font-black uppercase tracking-[0.14em] text-[#D4A017]">Date</dt>
               <dd className="mt-2 text-sm font-bold text-white"><time dateTime={operations?.effectiveDate ?? tournament.date}>{display.date}</time></dd>
@@ -204,6 +198,11 @@ export default function FeaturedTournament({
               <dd className="mt-2 text-sm font-bold text-white">{display.launchType}</dd>
               <dd className="mt-1 text-xs leading-4 text-zinc-400">Subject to change by Tournament Director</dd>
             </div>
+            <div className="border-t border-white/10 p-4 sm:col-span-2 xl:col-span-1 xl:border-l xl:border-t-0">
+              <dt className="text-[9px] font-black uppercase tracking-[0.14em] text-[#D4A017]">Morning Registration</dt>
+              <dd className="mt-2 text-sm font-bold text-white">{display.morningRegistration}</dd>
+              <dd className="mt-1 text-xs leading-4 text-zinc-400">In person at the ramp</dd>
+            </div>
           </dl>
         </section>
 
@@ -221,8 +220,6 @@ export default function FeaturedTournament({
             ) : operations.registrationReason}
           </p>
         )}
-
-        <EarlyRegistrationStats {...earlyRegistrationSummary} unavailable={earlyRegistrationStatsUnavailable} />
 
       </div>
 

@@ -301,7 +301,7 @@ export const tournaments: readonly Tournament[] = tournamentSeeds.map(
     earlyRegistrationDeadlineTime:
       tournament.earlyRegistrationDeadlineTime ?? "21:00",
     tournamentMorningRegistrationOpensAt:
-      tournament.tournamentMorningRegistrationOpensAt ?? null,
+      tournament.tournamentMorningRegistrationOpensAt ?? "05:00",
     tournamentMorningRegistrationClosesAt:
       tournament.tournamentMorningRegistrationClosesAt ?? null,
     accuWeatherLocationKey: tournament.accuWeatherLocationKey ?? null,

@@ -35,11 +35,11 @@ describe("approved payment content", () => {
     expect(html).toContain('href="/how-it-works#frequently-asked-questions"');
     expect(html.indexOf(tournaments[0].statusMessage)).toBeLessThan(html.indexOf("Card and Apple Pay Now Available"));
     expect(html).not.toMatch(/Venmo|Stripe/i);
-    expect(readFileSync("components/LatestTournamentNews.tsx", "utf8")).toContain("<PaymentAnnouncement />");
     const announcementSource = readFileSync("components/PaymentAnnouncement.tsx", "utf8");
     expect(announcementSource).not.toMatch(/https?:\/\/.*(?:apple|logo)/i);
     expect(html).not.toContain("apple-pay-mark");
     expect(html).toContain("Apple Pay");
+    expect(readFileSync("app/page.tsx", "utf8")).toContain("<PaymentAnnouncement />");
   });
 
   it("documents an official local Apple Pay asset path while retaining text fallback", () => {
