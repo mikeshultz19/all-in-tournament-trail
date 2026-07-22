@@ -6,7 +6,6 @@ import WinnersCircle from "@/components/WinnersCircle";
 import AOYStandings from "@/components/AOYStandings";
 import TournamentConditions from "@/components/TournamentConditions";
 import SponsorHome from "@/components/SponsorHome";
-import EarlyRegistrationStats from "@/components/EarlyRegistrationStats";
 import { getHomepageSponsors } from "@/data/sponsors";
 import { tournaments } from "@/data/tournaments";
 import { getNextRelevantTournament } from "@/lib/tournament-operations";
@@ -44,12 +43,23 @@ export default async function HomePage() {
 
       <Hero />
 
-      {/* Tournament operations + Featured Tournament */}
+      {/* Homepage information + Featured Tournament */}
       <section id="tournament-grid" className="border-t border-zinc-900 bg-black">
         <div className="mx-auto w-full max-w-[1700px] px-4 py-10 lg:px-8">
           <div data-homepage-tournament-grid className="grid min-w-0 grid-cols-1 items-start gap-6 lg:grid-cols-2">
-            <div data-tournament-column="left" className="contents lg:flex lg:flex-col lg:gap-6">
-              <div className="order-2 min-w-0 lg:order-none">
+            <div data-tournament-column="right" className="min-w-0 lg:col-start-2 lg:row-start-1">
+              <FeaturedTournament
+                tournament={tournament ?? null}
+                operations={operations}
+                earlyRegistrationSummary={earlyRegistrationSummary}
+                earlyRegistrationStatsUnavailable={earlyRegistrationStatsUnavailable}
+              />
+            </div>
+
+            <div data-tournament-column="left" className="flex min-w-0 flex-col gap-6 lg:col-start-1 lg:row-start-1">
+              <LatestTournamentNews tournament={tournament} />
+              <SponsorHome sponsors={homepageSponsors} />
+              <div className="min-w-0">
                 {tournament && operations && weather ? (
                   <TournamentConditions tournament={tournament} safeLight={operations.safeLight} weather={weather} />
                 ) : (
@@ -58,27 +68,10 @@ export default async function HomePage() {
                   </div>
                 )}
               </div>
-              <div className="order-4 min-w-0 lg:order-none lg:flex-1">
-                <SponsorHome sponsors={homepageSponsors} />
-              </div>
-            </div>
-
-            <div data-tournament-column="right" className="contents lg:flex lg:flex-col lg:gap-6">
-              <div className="order-1 min-w-0 lg:order-none">
-                <FeaturedTournament
-                  tournament={tournament ?? null}
-                  operations={operations}
-                />
-              </div>
-              <div className="order-3 min-w-0 border border-[#4A3A12] bg-[#0d0d0d] p-4 lg:order-none">
-                <EarlyRegistrationStats {...earlyRegistrationSummary} unavailable={earlyRegistrationStatsUnavailable} />
-              </div>
             </div>
           </div>
         </div>
       </section>
-
-      <LatestTournamentNews tournament={tournament} />
 
       <WinnersCircle />
 

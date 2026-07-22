@@ -9,6 +9,8 @@ import {
 import { TOURNAMENT_STATUS_LABELS } from "@/lib/tournament-operations";
 import { getTournamentDisplay } from "@/lib/tournament-display";
 import type { TournamentOperationsViewModel } from "@/lib/tournament-view-model";
+import EarlyRegistrationStats from "@/components/EarlyRegistrationStats";
+import type { TournamentEntrySummary } from "@/lib/public-early-entry";
 
 type Countdown = {
   days: number;
@@ -34,9 +36,13 @@ function calculateCountdown(date: string): Countdown {
 export default function FeaturedTournament({
   tournament,
   operations,
+  earlyRegistrationSummary,
+  earlyRegistrationStatsUnavailable = false,
 }: {
   tournament: Tournament | null;
   operations?: TournamentOperationsViewModel | null;
+  earlyRegistrationSummary?: TournamentEntrySummary;
+  earlyRegistrationStatsUnavailable?: boolean;
 }) {
   const [countdown, setCountdown] = useState<Countdown>({
     days: 0,
@@ -222,6 +228,13 @@ export default function FeaturedTournament({
               <>Registration closes <time dateTime={operations.earlyRegistrationDeadlineIso}>{operations.earlyRegistrationDeadline}</time></>
             ) : operations.registrationReason}
           </p>
+        )}
+
+        {earlyRegistrationSummary && (
+          <EarlyRegistrationStats
+            {...earlyRegistrationSummary}
+            unavailable={earlyRegistrationStatsUnavailable}
+          />
         )}
 
       </div>

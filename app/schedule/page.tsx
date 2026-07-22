@@ -19,7 +19,7 @@ function TournamentRow({ tournament }: { tournament: Tournament }) {
   const display = getTournamentDisplay(tournament);
 
   return (
-    <article className="grid gap-5 border-b border-[#4A3A12] px-4 py-6 lg:grid-cols-[180px_minmax(250px,1fr)_110px_130px_140px] lg:items-center lg:gap-6 lg:px-5 lg:py-5">
+    <article className="grid gap-5 border-b border-[#4A3A12] px-4 py-6 lg:grid-cols-[180px_minmax(0,1fr)_140px] lg:items-center lg:gap-6 lg:px-5 lg:py-5">
       <div>
         <p className="mb-2 text-xs font-bold uppercase tracking-[0.14em] text-[#D4A017] lg:hidden">
           Lake
@@ -73,27 +73,6 @@ function TournamentRow({ tournament }: { tournament: Tournament }) {
         </dl>
       </div>
 
-      <div>
-        <p className="mb-2 text-xs font-bold uppercase tracking-[0.14em] text-[#D4A017] lg:hidden">
-          Date
-        </p>
-        <time
-          dateTime={tournament.date}
-          className="text-sm font-bold uppercase text-[#F2F2F2]"
-        >
-          {display.date}
-        </time>
-      </div>
-
-      <div>
-        <p className="mb-2 text-xs font-bold uppercase tracking-[0.14em] text-[#D4A017] lg:hidden">
-          Launch
-        </p>
-        <p className="text-sm font-semibold leading-5 text-[#F2F2F2] lg:text-center">
-          {tournament.venue ?? "To Be Announced"}
-        </p>
-      </div>
-
       {registration.canRegister ? <Link
         href={`${REGISTRATION_ROUTE}?tournament=${tournament.slug}`}
         className="inline-flex min-h-11 w-full items-center justify-center rounded-sm bg-[#D4A017] px-5 py-3 text-center text-xs font-black uppercase tracking-[0.12em] text-[#0B0B0B] transition hover:bg-[#e2b229] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#D4A017]"
@@ -117,11 +96,9 @@ export default function SchedulePage() {
 
       <section className="mx-auto max-w-[1400px] px-5 py-8 sm:px-6 sm:py-10">
         <div className="overflow-hidden border border-[#4A3A12] bg-[#111111]">
-          <div className="hidden grid-cols-[180px_minmax(250px,1fr)_110px_130px_140px] items-center gap-6 border-b border-[#4A3A12] px-5 py-4 text-xs font-black uppercase tracking-[0.14em] text-[#D4A017] lg:grid">
+          <div className="hidden grid-cols-[180px_minmax(0,1fr)_140px] items-center gap-6 border-b border-[#4A3A12] px-5 py-4 text-xs font-black uppercase tracking-[0.14em] text-[#D4A017] lg:grid">
             <span>Lake</span>
             <span>About This Tournament</span>
-            <span>Date</span>
-            <span className="text-center">Launch</span>
             <span className="text-center">Register</span>
           </div>
 
