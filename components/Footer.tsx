@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import SiteCraftBadge from "@/components/SiteCraftBadge";
 
 function openFeedback() {
   window.dispatchEvent(new Event("open-feedback"));
@@ -93,9 +94,17 @@ export default function Footer() {
         </div>
       </div>
 
-      <div className="border-t border-zinc-900 px-5 py-5 text-center text-xs uppercase tracking-wider text-zinc-500">
-        © {new Date().getFullYear()} All-In Tournament Trail. All rights
-        reserved.
+      <div className="border-t border-zinc-900 px-5 py-5">
+        <div className="mx-auto grid max-w-[1400px] items-center gap-4 text-center text-xs uppercase tracking-wider text-zinc-500 lg:grid-cols-[1fr_auto_1fr] lg:text-left">
+          <p>
+            © {new Date().getFullYear()} All-In Tournament Trail. All rights
+            reserved.
+          </p>
+          <div aria-hidden="true" />
+          <div className="flex justify-center lg:justify-end">
+            <SiteCraftBadge />
+          </div>
+        </div>
       </div>
     </footer>
   );

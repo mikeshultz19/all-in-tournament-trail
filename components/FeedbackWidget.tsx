@@ -1,6 +1,7 @@
 "use client";
 
 import { FormEvent, useEffect, useState } from "react";
+import { usePathname } from "next/navigation";
 
 const categories = [
   "General Question",
@@ -9,11 +10,23 @@ const categories = [
   "Website Issue",
   "Suggestion",
   "Sponsor Inquiry",
+  "Website Design & Development",
   "Other",
 ];
 
 export default function FeedbackWidget() {
-  const [isOpen, setIsOpen] = useState(false);
+  const pathname = usePathname();
+
+  return (
+    <FeedbackWidgetContent
+      key={pathname}
+      initiallyOpen={pathname === "/contact"}
+    />
+  );
+}
+
+function FeedbackWidgetContent({ initiallyOpen }: { initiallyOpen: boolean }) {
+  const [isOpen, setIsOpen] = useState(initiallyOpen);
   const [status, setStatus] = useState<
     "idle" | "sending" | "success" | "error"
   >("idle");
