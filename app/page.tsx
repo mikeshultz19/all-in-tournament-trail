@@ -7,7 +7,6 @@ import AOYStandings from "@/components/AOYStandings";
 import TournamentConditions from "@/components/TournamentConditions";
 import SponsorHome from "@/components/SponsorHome";
 import EarlyRegistrationStats from "@/components/EarlyRegistrationStats";
-import PaymentAnnouncement from "@/components/PaymentAnnouncement";
 import { getHomepageSponsors } from "@/data/sponsors";
 import { tournaments } from "@/data/tournaments";
 import { getNextRelevantTournament } from "@/lib/tournament-operations";
@@ -41,13 +40,11 @@ export default async function HomePage() {
 
   return (
     <main className="min-h-screen overflow-x-hidden bg-black text-white">
-      <Header newsTicker={<LatestTournamentNews tournament={tournament} />} />
+      <Header />
 
       <Hero />
 
-      <div className="mx-auto w-full max-w-[1700px] px-4 pt-8 lg:px-8">
-        <PaymentAnnouncement />
-      </div>
+      <LatestTournamentNews tournament={tournament} />
 
       {/* Tournament operations + Featured Tournament */}
       <section className="border-t border-zinc-900 bg-black">

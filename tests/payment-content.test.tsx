@@ -39,7 +39,12 @@ describe("approved payment content", () => {
     expect(announcementSource).not.toMatch(/https?:\/\/.*(?:apple|logo)/i);
     expect(html).not.toContain("apple-pay-mark");
     expect(html).toContain("Apple Pay");
-    expect(readFileSync("app/page.tsx", "utf8")).toContain("<PaymentAnnouncement />");
+    const pageSource = readFileSync("app/page.tsx", "utf8");
+    const newsSource = readFileSync("components/LatestTournamentNews.tsx", "utf8");
+    expect(newsSource).toContain("<PaymentAnnouncement />");
+    expect(pageSource.indexOf("<Hero />")).toBeLessThan(pageSource.indexOf("<LatestTournamentNews"));
+    expect(pageSource.indexOf("<LatestTournamentNews")).toBeLessThan(pageSource.indexOf("{/* Tournament operations"));
+    expect(readFileSync("components/Header.tsx", "utf8")).not.toMatch(/LatestTournamentNews|newsTicker/);
   });
 
   it("documents an official local Apple Pay asset path while retaining text fallback", () => {

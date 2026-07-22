@@ -1,6 +1,5 @@
 import Image from "next/image";
 import Link from "next/link";
-import type { ReactNode } from "react";
 
 const navItems = [
   { label: "Home", href: "/" },
@@ -12,12 +11,11 @@ const navItems = [
   { label: "Sponsors" },
 ];
 
-export default function Header({ activeItem, newsTicker }: { activeItem?: string; newsTicker?: ReactNode }) {
+export default function Header({ activeItem }: { activeItem?: string }) {
   return (
     <>
       <header className="fixed inset-x-0 top-0 z-[100] w-full border-b border-zinc-800 bg-black/95 backdrop-blur">
-        {newsTicker}
-        <div className="mx-auto flex max-w-[1800px] items-center gap-4 px-4 py-3 lg:px-5">
+        <div className="mx-auto flex w-full max-w-[1800px] items-center gap-4 px-4 py-3 lg:px-5">
           <Link href="/" className="flex shrink-0 items-center">
             <Image
               src="/images/logo.png"
@@ -99,7 +97,7 @@ export default function Header({ activeItem, newsTicker }: { activeItem?: string
 
       <div
         aria-hidden="true"
-        className={newsTicker ? "h-[132px] sm:h-[144px] lg:h-[156px]" : "h-[92px] sm:h-[104px] lg:h-[116px]"}
+        className="h-[92px] sm:h-[104px] lg:h-[116px]"
       />
     </>
   );

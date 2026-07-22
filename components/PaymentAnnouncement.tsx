@@ -12,7 +12,7 @@ export default function PaymentAnnouncement() {
       </p>
       <h3
         id="payment-update-heading"
-        className="mt-2 text-xl font-black uppercase tracking-tight text-white sm:text-2xl"
+        className="mt-2 break-words text-lg font-black uppercase tracking-tight text-white sm:text-2xl"
       >
         Card and Apple Pay Now Available
       </h3>
@@ -35,10 +35,10 @@ export default function PaymentAnnouncement() {
         </span>
       </div>
 
-      <p className="mt-4 max-w-3xl text-sm leading-6 text-neutral-300">
+      <p className="mt-4 max-w-3xl break-words text-sm leading-6 text-neutral-300">
         Register early online or pay at tournament-morning registration using a credit card, debit card, or Apple Pay. Apple Pay is available on supported devices and browsers. Payments are processed securely through Square.
       </p>
-      <p className="mt-2 max-w-3xl text-sm leading-6 text-neutral-400">
+      <p className="mt-2 max-w-3xl break-words text-sm leading-6 text-neutral-400">
         A 3% Card Processing Fee applies to all card and digital-wallet payments. Cash is accepted during tournament-morning registration with no processing fee. Supported contactless wallets can be used through the Square reader.
       </p>
       <p className="mt-3 text-xs font-black uppercase tracking-[0.12em] text-neutral-300">
