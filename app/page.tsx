@@ -9,12 +9,24 @@ import { tournaments } from "@/data/tournaments";
 import { getNextRelevantTournament } from "@/lib/tournament-operations";
 import { getTournamentOperationsViewModel } from "@/lib/tournament-view-model";
 import { getAccuWeatherTournamentForecast } from "@/lib/accuweather";
+import { getPublicEarlyEntries } from "@/data/early-registrations";
+import { getTournamentEntrySummary, type TournamentEntrySummary } from "@/lib/public-early-entry";
 
 export const revalidate = 10800;
 
 export default async function HomePage() {
   const tournament = getNextRelevantTournament(tournaments);
   const operations = tournament ? getTournamentOperationsViewModel(tournament) : null;
+  let earlyRegistrationStatsUnavailable = false;
+  let earlyRegistrationSummary: TournamentEntrySummary = getTournamentEntrySummary([]);
+
+  if (tournament) {
+    try {
+      earlyRegistrationSummary = getTournamentEntrySummary(getPublicEarlyEntries(tournament.slug));
+    } catch {
+      earlyRegistrationStatsUnavailable = true;
+    }
+  }
   const weather = tournament && operations
     ? await getAccuWeatherTournamentForecast({
         tournamentDate: operations.effectiveDate,
@@ -46,6 +58,8 @@ export default async function HomePage() {
             <FeaturedTournament
               tournament={tournament ?? null}
               operations={operations}
+              earlyRegistrationSummary={earlyRegistrationSummary}
+              earlyRegistrationStatsUnavailable={earlyRegistrationStatsUnavailable}
             />
           </div>
         </div>

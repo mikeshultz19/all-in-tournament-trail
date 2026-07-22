@@ -5,6 +5,7 @@ import EarlyRegistrationsPage from "@/app/registrations/page";
 import EarlyEntriesTable from "@/components/EarlyEntriesTable";
 import FeaturedTournament from "@/components/FeaturedTournament";
 import TournamentEntrySummary from "@/components/TournamentEntrySummary";
+import EarlyRegistrationStats from "@/components/EarlyRegistrationStats";
 import { earlyRegistrationRecords, getPublicEarlyEntries } from "@/data/early-registrations";
 import { tournaments } from "@/data/tournaments";
 import { getTournamentEntrySummary, toPublicEarlyEntry } from "@/lib/public-early-entry";
@@ -13,6 +14,23 @@ import { formatPublicRegistrationTimestamp } from "@/lib/tournament-time";
 const entries = getPublicEarlyEntries("eagle-mountain-2026");
 
 describe("Tournament Entries", () => {
+  it("renders the compact registration dashboard from the shared summary", () => {
+    const html = renderToStaticMarkup(<EarlyRegistrationStats {...getTournamentEntrySummary(entries)} />);
+    expect(html).toContain("Early Registration Status");
+    expect(html).toContain("Total Entries");
+    expect(html).toContain("Insurance Pot");
+    expect(html).toContain("Solo Entries");
+    expect(html).toContain("Team Entries");
+  });
+
+  it("keeps the dashboard visible when empty and distinguishes data errors", () => {
+    const summary = getTournamentEntrySummary([]);
+    expect(renderToStaticMarkup(<EarlyRegistrationStats {...summary} />)).toContain("Be the first to register online.");
+    const unavailable = renderToStaticMarkup(<EarlyRegistrationStats {...summary} unavailable />);
+    expect(unavailable).toContain("temporarily unavailable");
+    expect(unavailable).not.toContain("Total Entries");
+  });
+
   it("renders the public page and a semantic spreadsheet-style table", () => {
     const html = renderToStaticMarkup(<EarlyRegistrationsPage />);
     expect(html).toContain("Tournament Entries");

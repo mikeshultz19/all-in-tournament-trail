@@ -2,12 +2,14 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import EarlyRegistrationStats from "@/components/EarlyRegistrationStats";
 import {
   getTournamentImage,
   type Tournament,
 } from "@/data/tournaments";
 import { TOURNAMENT_STATUS_LABELS } from "@/lib/tournament-operations";
 import type { TournamentOperationsViewModel } from "@/lib/tournament-view-model";
+import { getTournamentEntrySummary, type TournamentEntrySummary } from "@/lib/public-early-entry";
 
 type Countdown = {
   days: number;
@@ -33,9 +35,13 @@ function calculateCountdown(date: string): Countdown {
 export default function FeaturedTournament({
   tournament,
   operations,
+  earlyRegistrationSummary = getTournamentEntrySummary([]),
+  earlyRegistrationStatsUnavailable = false,
 }: {
   tournament: Tournament | null;
   operations?: TournamentOperationsViewModel | null;
+  earlyRegistrationSummary?: TournamentEntrySummary;
+  earlyRegistrationStatsUnavailable?: boolean;
 }) {
   const [countdown, setCountdown] = useState<Countdown>({
     days: 0,
@@ -198,6 +204,8 @@ export default function FeaturedTournament({
           <Link href="/how-it-works" className="text-zinc-300 transition hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#D4A017]">Rules</Link>
           <Link href="/results" className="text-zinc-300 transition hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#D4A017]">Results</Link>
         </nav>
+
+        <EarlyRegistrationStats {...earlyRegistrationSummary} unavailable={earlyRegistrationStatsUnavailable} />
 
       </div>
 
