@@ -81,7 +81,7 @@ export default function FeaturedTournament({
   const display = getTournamentDisplay(tournament);
 
   return (
-    <article className="overflow-hidden rounded-md border border-yellow-700/50 bg-[#080808]">
+    <article className="w-full min-w-0 max-w-full overflow-hidden rounded-md border border-yellow-700/50 bg-[#080808]">
 
       {/* Header */}
       <div className="flex h-11 items-center gap-3 border-b border-yellow-700/30 px-4">
@@ -135,11 +135,11 @@ export default function FeaturedTournament({
             Countdown to Takeoff
           </p>
 
-          <div className="grid grid-cols-4 border-y border-yellow-700/25 py-3">
+          <div className="grid grid-cols-[repeat(4,minmax(0,1fr))] border-y border-yellow-700/25 py-3">
             {countdownItems.map((item, index) => (
               <div
                 key={item.label}
-                className={`text-center ${
+                className={`min-w-0 text-center ${
                   index !== countdownItems.length - 1
                     ? "border-r border-yellow-700/25"
                     : ""
@@ -200,7 +200,10 @@ export default function FeaturedTournament({
             </div>
             <div className="border-t border-white/10 p-4 sm:col-span-2 xl:col-span-1 xl:border-l xl:border-t-0">
               <dt className="text-[9px] font-black uppercase tracking-[0.14em] text-[#D4A017]">Morning Registration</dt>
-              <dd className="mt-2 text-sm font-bold text-white">{display.morningRegistration}</dd>
+              <dd className="mt-2 text-sm font-bold text-white">
+                <span className="block text-xs font-normal text-zinc-400">Opens at</span>
+                {display.morningRegistration}
+              </dd>
               <dd className="mt-1 text-xs leading-4 text-zinc-400">In person at the ramp</dd>
             </div>
           </dl>

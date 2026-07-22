@@ -44,14 +44,12 @@ export default async function HomePage() {
 
       <Hero />
 
-      <LatestTournamentNews tournament={tournament} />
-
       {/* Tournament operations + Featured Tournament */}
-      <section className="border-t border-zinc-900 bg-black">
-        <div className="mx-auto max-w-[1700px] px-4 py-10 lg:px-8">
-          <div className="grid grid-cols-1 gap-6 xl:grid-cols-2 xl:items-start">
-            <div className="contents xl:flex xl:flex-col xl:gap-6">
-              <div className="order-2 xl:order-none">
+      <section id="tournament-grid" className="border-t border-zinc-900 bg-black">
+        <div className="mx-auto w-full max-w-[1700px] px-4 py-10 lg:px-8">
+          <div data-homepage-tournament-grid className="grid min-w-0 grid-cols-1 items-start gap-6 lg:grid-cols-2">
+            <div data-tournament-column="left" className="contents lg:flex lg:flex-col lg:gap-6">
+              <div className="order-2 min-w-0 lg:order-none">
                 {tournament && operations && weather ? (
                   <TournamentConditions tournament={tournament} safeLight={operations.safeLight} weather={weather} />
                 ) : (
@@ -60,25 +58,27 @@ export default async function HomePage() {
                   </div>
                 )}
               </div>
-              <div className="order-5 xl:order-none xl:flex-1">
+              <div className="order-4 min-w-0 lg:order-none lg:flex-1">
                 <SponsorHome sponsors={homepageSponsors} />
               </div>
             </div>
 
-            <div className="contents xl:flex xl:flex-col xl:gap-6">
-              <div className="order-1 xl:order-none">
+            <div data-tournament-column="right" className="contents lg:flex lg:flex-col lg:gap-6">
+              <div className="order-1 min-w-0 lg:order-none">
                 <FeaturedTournament
                   tournament={tournament ?? null}
                   operations={operations}
                 />
               </div>
-              <div className="order-4 border border-[#4A3A12] bg-[#0d0d0d] p-4 xl:order-none">
+              <div className="order-3 min-w-0 border border-[#4A3A12] bg-[#0d0d0d] p-4 lg:order-none">
                 <EarlyRegistrationStats {...earlyRegistrationSummary} unavailable={earlyRegistrationStatsUnavailable} />
               </div>
             </div>
           </div>
         </div>
       </section>
+
+      <LatestTournamentNews tournament={tournament} />
 
       <WinnersCircle />
 

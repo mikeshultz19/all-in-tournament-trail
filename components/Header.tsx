@@ -15,7 +15,7 @@ export default function Header({ activeItem }: { activeItem?: string }) {
   return (
     <>
       <header className="fixed inset-x-0 top-0 z-[100] w-full border-b border-zinc-800 bg-black/95 backdrop-blur">
-        <div className="mx-auto flex w-full max-w-[1800px] items-center gap-4 px-4 py-3 lg:px-5">
+        <div className="mx-auto flex w-full max-w-[1800px] items-center gap-2 px-4 py-3 sm:gap-4 lg:px-5">
           <Link href="/" className="flex shrink-0 items-center">
             <Image
               src="/images/logo.png"
@@ -23,11 +23,11 @@ export default function Header({ activeItem }: { activeItem?: string }) {
               width={210}
               height={80}
               priority
-              className="h-auto w-[145px] sm:w-[175px] lg:w-[205px]"
+              className="h-auto w-[120px] sm:w-[175px] xl:w-[205px]"
             />
           </Link>
 
-          <nav className="hidden min-w-0 flex-1 items-center justify-center gap-4 lg:flex xl:gap-5">
+          <nav className="hidden min-w-0 flex-1 items-center justify-center gap-4 xl:flex xl:gap-5">
             {navItems.map((item) =>
               item.href ? (
                 <Link
@@ -54,7 +54,7 @@ export default function Header({ activeItem }: { activeItem?: string }) {
             )}
           </nav>
 
-          <div className="ml-auto hidden shrink-0 items-center gap-4 lg:flex">
+          <div className="ml-auto hidden shrink-0 items-center gap-4 xl:flex">
             <Link
               href="/how-it-works"
               className="whitespace-nowrap text-sm font-black uppercase tracking-[0.12em] text-yellow-400 transition duration-200 hover:text-yellow-300 hover:drop-shadow-[0_0_8px_rgba(250,204,21,0.45)]"
@@ -77,7 +77,7 @@ export default function Header({ activeItem }: { activeItem?: string }) {
             </span>
           </div>
 
-          <div className="ml-auto flex shrink-0 items-center gap-2 lg:hidden">
+          <div className="ml-auto flex shrink-0 items-center gap-2 xl:hidden">
             <Link
               href="/how-it-works"
               className="hidden whitespace-nowrap text-xs font-black uppercase tracking-[0.08em] text-yellow-400 transition hover:text-yellow-300 sm:block"

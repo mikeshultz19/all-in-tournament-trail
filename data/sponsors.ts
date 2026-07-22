@@ -3,10 +3,10 @@ export type Sponsor = {
   name: string;
   logo: string;
   websiteUrl?: string;
-  active: boolean;
-  showOnHomepage: boolean;
-  majorSponsor: boolean;
-  displayOrder: number;
+  active?: boolean | null;
+  showOnHomepage?: boolean | null;
+  majorSponsor?: boolean | null;
+  displayOrder?: number | null;
 };
 
 // This is the current sponsor repository. A future admin data source can replace
@@ -17,11 +17,18 @@ export function getHomepageSponsors(items: Sponsor[] = sponsors): Sponsor[] {
   return items
     .filter(
       (sponsor) =>
-        sponsor.active && sponsor.showOnHomepage && sponsor.majorSponsor,
+        sponsor.id.trim().length > 0 &&
+        sponsor.name.trim().length > 0 &&
+        sponsor.logo.trim().length > 0 &&
+        sponsor.active !== false &&
+        sponsor.showOnHomepage !== false &&
+        sponsor.majorSponsor !== false,
     )
     .toSorted((a, b) =>
-      a.displayOrder === b.displayOrder
+      (a.displayOrder ?? Number.MAX_SAFE_INTEGER) ===
+      (b.displayOrder ?? Number.MAX_SAFE_INTEGER)
         ? a.name.localeCompare(b.name)
-        : a.displayOrder - b.displayOrder,
+        : (a.displayOrder ?? Number.MAX_SAFE_INTEGER) -
+          (b.displayOrder ?? Number.MAX_SAFE_INTEGER),
     );
 }

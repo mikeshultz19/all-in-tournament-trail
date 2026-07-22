@@ -29,6 +29,24 @@ describe("homepage sponsors", () => {
     expect(result.map(({ id }) => id)).toEqual(["first", "second"]);
   });
 
+  it("keeps legacy sponsors with missing flags eligible and places unsorted records last", () => {
+    const result = getHomepageSponsors([
+      sponsor({ id: "legacy", name: "Legacy", active: null, showOnHomepage: null, majorSponsor: null, displayOrder: null }),
+      sponsor({ id: "ordered", name: "Ordered", displayOrder: 2 }),
+    ]);
+
+    expect(result.map(({ id }) => id)).toEqual(["ordered", "legacy"]);
+  });
+
+  it("skips an invalid sponsor without hiding valid sponsors", () => {
+    const html = renderToStaticMarkup(
+      <SponsorHome sponsors={[sponsor({ id: "invalid", logo: "" }), sponsor()]} />,
+    );
+
+    expect(html).toContain("Major One logo");
+    expect(html).not.toContain("invalid logo");
+  });
+
   it("renders no empty panel when there are no qualifying sponsors", () => {
     expect(renderToStaticMarkup(<SponsorHome sponsors={[]} />)).toBe("");
     expect(

@@ -43,7 +43,8 @@ describe("approved payment content", () => {
     const newsSource = readFileSync("components/LatestTournamentNews.tsx", "utf8");
     expect(newsSource).toContain("<PaymentAnnouncement />");
     expect(pageSource.indexOf("<Hero />")).toBeLessThan(pageSource.indexOf("<LatestTournamentNews"));
-    expect(pageSource.indexOf("<LatestTournamentNews")).toBeLessThan(pageSource.indexOf("{/* Tournament operations"));
+    expect(pageSource.indexOf("{/* Tournament operations")).toBeLessThan(pageSource.indexOf("<LatestTournamentNews"));
+    expect((pageSource.match(/<LatestTournamentNews/g) ?? [])).toHaveLength(1);
     expect(readFileSync("components/Header.tsx", "utf8")).not.toMatch(/LatestTournamentNews|newsTicker/);
   });
 

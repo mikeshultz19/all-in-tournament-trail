@@ -145,6 +145,52 @@ describe("Tournament Conditions", () => {
     expect(html).toContain("overflow-x-hidden");
   });
 
+  it("places the shared tournament grid directly before Latest News", async () => {
+    const html = renderToStaticMarkup(await HomePage());
+    const heroIndex = html.indexOf('alt="All In Tournament Trail"');
+    const gridIndex = html.indexOf('data-homepage-tournament-grid="true"');
+    const featuredIndex = html.indexOf("Featured Tournament");
+    const conditionsIndex = html.indexOf("Tournament Conditions");
+    const newsIndex = html.indexOf('data-homepage-news="true"');
+
+    expect(heroIndex).toBeGreaterThan(-1);
+    expect(gridIndex).toBeGreaterThan(heroIndex);
+    expect(featuredIndex).toBeGreaterThan(gridIndex);
+    expect(conditionsIndex).toBeGreaterThan(gridIndex);
+    expect(newsIndex).toBeGreaterThan(featuredIndex);
+    expect(newsIndex).toBeGreaterThan(conditionsIndex);
+    expect(html.slice(gridIndex, newsIndex)).toContain('data-tournament-column="left"');
+    expect(html.slice(gridIndex, newsIndex)).toContain('data-tournament-column="right"');
+  });
+
+  it("renders Payment Update once inside Latest News and nowhere in Header or Hero", async () => {
+    const html = renderToStaticMarkup(await HomePage());
+    const newsIndex = html.indexOf('data-homepage-news="true"');
+    const paymentMatches = html.match(/Payment Update/g) ?? [];
+
+    expect(paymentMatches).toHaveLength(1);
+    expect(html.indexOf("Payment Update")).toBeGreaterThan(newsIndex);
+    expect(readFileSync("components/Header.tsx", "utf8")).not.toContain("LatestTournamentNews");
+    expect(readFileSync("components/Hero.tsx", "utf8")).not.toContain("LatestTournamentNews");
+  });
+
+  it("keeps all five admin-managed tournament information boxes", () => {
+    const html = renderToStaticMarkup(<FeaturedTournament tournament={tournament} operations={operations} />);
+
+    for (const label of ["Date", "Ramp", "Hours", "Launch Type", "Morning Registration"]) {
+      expect(html).toContain(`>${label}</dt>`);
+    }
+    expect(html).toContain("Opens at");
+    expect(html).toContain("5:00 AM");
+  });
+
+  it("does not use full-bleed layout utilities in homepage sections", () => {
+    for (const file of ["app/page.tsx", "components/LatestTournamentNews.tsx", "components/SponsorHome.tsx"]) {
+      const source = readFileSync(file, "utf8");
+      expect(source).not.toMatch(/w-screen|100vw|min-w-\[100vw\]|full-bleed|-mx-|left-\[50%\]|-ml-\[50vw\]|max-w-none/);
+    }
+  });
+
   it("does not render an active registration action when registration is closed", () => {
     const closedTournament = { ...tournament, registrationStatus: "closed" as const };
     const closedOperations = getTournamentOperationsViewModel(closedTournament, new Date("2026-07-21T12:00:00Z"));

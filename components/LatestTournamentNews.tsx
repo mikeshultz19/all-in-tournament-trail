@@ -5,10 +5,11 @@ import type { Tournament } from "@/data/tournaments";
 export default function LatestTournamentNews({ tournament }: { tournament: Tournament | undefined }) {
   return (
     <section
-      className="overflow-x-hidden border-b border-zinc-900 bg-black px-4 py-8 sm:px-6 lg:px-8 lg:py-10"
+      data-homepage-news
+      className="border-b border-zinc-900 bg-black px-4 py-8 lg:px-8 lg:py-10"
       aria-labelledby="latest-news-heading"
     >
-      <div className="mx-auto w-full max-w-[calc(100vw-2rem)] sm:max-w-[1700px]">
+      <div className="mx-auto w-full max-w-[1700px]">
         <div className="mb-4 flex items-center gap-4">
           <h2
             id="latest-news-heading"
