@@ -1,6 +1,6 @@
 # Official Tournament Rules
 
-**Version:** 1.0
+**Version:** 1.1
 **Status:** Approved Draft
 **Effective Date:** (TBD)
 **Last Updated:** July 22, 2026
@@ -32,7 +32,8 @@ these rules, and material changes will be reflected in the version history.
 14. [Refund & Cancellation Policy](#refund-cancellation-policy)
 15. [Media](#media)
 16. [Privacy](#privacy)
-17. [Version History](#version-history)
+17. [Frequently Asked Questions](#frequently-asked-questions)
+18. [Version History](#version-history)
 
 <a id="introduction"></a>
 ## 1. Introduction
@@ -318,22 +319,42 @@ weather data does not make an automatic tournament decision.
 - Participants must comply with applicable fishing-license, length, limit,
   possession, and waterbody regulations.
 
-### Fish Care, Dead Fish, and Big Bass
+### Fish Care, Dead Fish, Short Fish, and Big Bass
 
 Participants must make every reasonable effort to keep fish alive and return
-them safely after weigh-in. The current website states a five-fish limit and
-live fish only. A dead fish is therefore not accepted as part of an official
-weigh-in or for Big Bass.
+them safely after weigh-in.
 
-**Pending approval:** AITT has not approved a separate numeric dead-fish weight
-penalty. No numeric deduction should be applied unless it is published in a
-later rulebook version.
+#### Short Fish
+
+Any fish that does not meet the tournament's minimum legal length will not be
+counted toward the tournament catch.
+
+A short fish:
+
+- Receives no tournament weight.
+- Does not count toward the legal tournament limit.
+- Is not eligible for Big Bass.
+
+#### Dead Fish
+
+A one (1) pound penalty will be deducted for each legal fish presented dead at
+weigh-in.
+
+Example:
+
+- Gross catch weight: 18.42 pounds
+- Legal dead fish: 2
+- Dead-fish penalty: 2.00 pounds
+- Official tournament weight: 16.42 pounds
+
+#### Big Bass
 
 Big Bass is an optional add-on to Tournament Entry and is not a standalone
-entry. A registration must enter Big Bass before the applicable registration
-cutoff for a live fish to be eligible. Official results support two Big Bass
-payouts. The Tournament Director determines eligibility from the official
-registration and weigh-in records.
+entry.
+
+Only legal live fish are eligible for the Big Bass award.
+
+Any fish presented dead at weigh-in is not eligible for Big Bass.
 
 ### Cell Phones and Communication
 
@@ -397,21 +418,33 @@ start for the participant's flight.
 ### Check-In and Late Arrival
 
 Participants must follow the announced check-in method and be checked in by
-their flight's official deadline. A participant who has an emergency or
-expects to be late must contact a Tournament Official as soon as safely
-possible.
+their assigned flight's official deadline.
 
-**Pending approval:** The repository does not establish a per-minute late
-penalty or maximum-lateness disqualification threshold. The Tournament
-Director will determine the event consequence under the authority granted in
-these rules until a specific schedule is approved and published.
+A one (1) pound penalty will be assessed for each minute an individual or team
+is late checking in, up to fifteen (15) minutes.
+
+Any individual or team arriving more than fifteen (15) minutes after its
+assigned check-in time will forfeit that day's catch and will not be permitted
+to weigh fish.
+
+Tournament Officials will determine the official check-in time using the
+tournament's designated official timekeeping device.
+
+Participants are responsible for knowing their assigned flight and check-in
+time.
+
+Participants must never operate a vessel in an unsafe manner in an attempt to
+avoid a late penalty. Safety always takes precedence over tournament
+competition.
 
 ### Weigh-In
 
 - Participants must report in person and follow the official check-in and
   weigh-in sequence.
 - Weigh-in order is based on official check-in.
-- The current published limit is five live fish.
+- The tournament limit is five legal fish.
+- A legal dead fish may be weighed subject to the one-pound penalty and is not
+  eligible for Big Bass.
 - WeighFish owns official scoring and results.
 - Participants must comply with fish-handling and release instructions.
 - Official results are published after weigh-in and required review.
@@ -493,9 +526,61 @@ display names, registration time, selected pots, results, and standings.
 Private contact information, street addresses, payment details,
 administrative notes, and internal identifiers must not be displayed publicly.
 
+<a id="frequently-asked-questions"></a>
+## 17. Frequently Asked Questions
+
+### What happens if I bring a short fish to the scales?
+
+Any fish that does not meet the tournament's minimum legal length will not be
+counted toward the tournament catch.
+
+A short fish:
+
+- Receives no tournament weight.
+- Does not count toward the legal tournament limit.
+- Is not eligible for Big Bass.
+
+### What is the penalty for a dead fish?
+
+A one (1) pound penalty will be deducted for each legal fish presented dead at
+weigh-in.
+
+Example:
+
+- Gross catch weight: 18.42 pounds
+- Legal dead fish: 2
+- Dead-fish penalty: 2.00 pounds
+- Official tournament weight: 16.42 pounds
+
+### Are dead fish eligible for Big Bass?
+
+No.
+
+Only legal live fish are eligible for the Big Bass award.
+
+### What happens if I am late to check-in?
+
+A one (1) pound penalty will be assessed for each minute an individual or team
+is late checking in, up to fifteen (15) minutes.
+
+Any individual or team arriving more than fifteen (15) minutes after its
+assigned check-in time will forfeit that day's catch and will not be permitted
+to weigh fish.
+
+Tournament Officials will determine the official check-in time using the
+tournament's designated official timekeeping device.
+
+Participants are responsible for knowing their assigned flight and check-in
+time.
+
+Participants must never operate a vessel in an unsafe manner in an attempt to
+avoid a late penalty. Safety always takes precedence over tournament
+competition.
+
 <a id="version-history"></a>
-## Version History
+## 18. Version History
 
 | Version | Date | Summary |
 | --- | --- | --- |
+| 1.1 | July 22, 2026 | Added approved short-fish, dead-fish, Big Bass, and late check-in rules and FAQ guidance. |
 | 1.0 | July 22, 2026 | Initial website rulebook. |

@@ -116,6 +116,16 @@ const waysToWin = [
 
 const faqs = [
   {
+    question: "How do Early Online Registration payments work?",
+    answer:
+      "Early Online Registration requires immediate payment through Square. Credit and debit cards are accepted, and Apple Pay is available on supported devices and browsers. A 3% Card Processing Fee applies to every card and digital-wallet payment. Registration is not confirmed until Square reports a successful payment. Production online checkout remains unavailable until secure registration persistence and server-side payment confirmation are complete.",
+  },
+  {
+    question: "How can I pay on tournament morning?",
+    answer:
+      "Tournament-morning registration is completed with a Tournament Director at the registration table. You may pay with cash or use a credit card, debit card, Apple Pay, or another supported contactless wallet through the Square reader. A 3% Card Processing Fee applies to card and digital-wallet payments. Cash is accepted only during tournament-morning registration and has no processing fee. The Tournament Director records the registration and payment method in WeighFish.",
+  },
+  {
     question: "What time should I arrive, and what is Estimated Safe Light?",
     answer:
       "Estimated Safe Light is the official Fort Worth sunrise for the tournament date minus 30 minutes. It is an approximation for planning. Be on the water and prepared to launch before that time; Tournament Officials determine final launch timing.",
@@ -196,6 +206,26 @@ const faqs = [
       "Tournament results are posted after each event. AOY calculations and standings will update from those posted results.",
   },
   {
+    question: "What happens if I bring a short fish to the scales?",
+    answer:
+      "Any fish that does not meet the tournament’s minimum legal length will not be counted toward the tournament catch. A short fish receives no tournament weight, does not count toward the legal tournament limit, and is not eligible for Big Bass.",
+  },
+  {
+    question: "What is the penalty for a dead fish?",
+    answer:
+      "A one-pound penalty will be deducted for each legal fish presented dead at weigh-in. For example, if a catch weighs 18.42 pounds and includes two legal dead fish, the two-pound penalty results in an official tournament weight of 16.42 pounds.",
+  },
+  {
+    question: "Are dead fish eligible for Big Bass?",
+    answer:
+      "No. Only legal live fish are eligible for the Big Bass award.",
+  },
+  {
+    question: "What happens if I am late to check-in?",
+    answer:
+      "A one-pound penalty will be assessed for each minute an individual or team is late checking in, up to 15 minutes. Any individual or team arriving more than 15 minutes after its assigned check-in time will forfeit that day’s catch and will not be permitted to weigh fish. Tournament Officials determine the official check-in time using the tournament’s designated official timekeeping device. Participants are responsible for knowing their assigned flight and check-in time. Participants must never operate a vessel unsafely to avoid a late penalty. Safety always takes precedence over tournament competition.",
+  },
+  {
     question: "Where can I find the complete rules?",
     answer:
       "This page provides a general explanation of how the trail works. The official Rules page controls all tournament procedures, eligibility requirements, penalties, payouts, practice restrictions, and tie-breaking decisions.",
@@ -236,12 +266,12 @@ export default function HowItWorksPage() {
               Register Now
             </span>
 
-            <span
-              aria-disabled="true"
-              className="inline-flex min-h-12 cursor-not-allowed items-center justify-center border border-white/10 bg-black px-7 py-3 text-sm font-black uppercase tracking-wider text-neutral-600"
+            <Link
+              href="/rules"
+              className="inline-flex min-h-12 items-center justify-center border border-white/20 bg-black px-7 py-3 text-sm font-black uppercase tracking-wider text-white transition hover:border-[#d0ae4c] hover:text-[#d0ae4c]"
             >
               View Official Rules
-            </span>
+            </Link>
           </div>
         </div>
       </section>
@@ -337,7 +367,7 @@ export default function HowItWorksPage() {
         </div>
       </section>
 
-      <section className="bg-black px-4 py-12 sm:px-6 lg:py-16">
+      <section id="frequently-asked-questions" className="scroll-mt-24 bg-black px-4 py-12 sm:px-6 lg:py-16">
         <div className="mx-auto max-w-[1000px]">
           <SectionHeading
             eyebrow="Questions & Answers"

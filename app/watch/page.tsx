@@ -39,7 +39,7 @@ export default function WatchPage() {
           <WatchInfoCard title="Weigh-In Info">
             <ul className="space-y-2 pl-4 marker:text-red-500">
               <li>Anglers must be in line in person to weigh in.</li>
-              <li>5 fish limit. Live fish only.</li>
+              <li>Five legal fish limit. Legal dead fish incur a one-pound penalty each and are not eligible for Big Bass.</li>
               <li>Weigh-in order is based on official check-in.</li>
               <li>Official results will be posted after weigh-in.</li>
             </ul>

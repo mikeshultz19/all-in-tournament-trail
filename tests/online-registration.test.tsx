@@ -77,7 +77,7 @@ describe("server-authoritative registration validation and pricing", () => {
     expect(acceptance.registrationId).toBe("draft-123");
     expect(acceptance.acknowledgedAt).toBe(NOW.toISOString());
     expect(acceptance.acknowledgmentAccepted).toBe(true);
-    expect(acceptance.rulesVersion).toBe("1.0");
+    expect(acceptance.rulesVersion).toBe("1.1");
     expect(acceptance.waiverVersion).toBe("1.0");
     expect(Object.keys(acceptance.policyVersions)).toEqual(["rules", "liability_waiver", "refund_policy", "payment_terms"]);
   });
@@ -154,7 +154,7 @@ describe("online payment presentation", () => {
     expect(html).not.toContain('id="acknowledgment-combined" type="checkbox" required="" checked=""');
     expect(html).toContain('aria-describedby="acknowledgment-requirement"');
     expect(html).toContain("Required before continuing to payment");
-    expect(html).toContain("Rules version 1.0; waiver version 1.0");
+    expect(html).toContain("Rules version 1.1; waiver version 1.0");
     expect(html).not.toContain("accurate information");
     expect(html).not.toContain("acknowledgment-rules");
   });

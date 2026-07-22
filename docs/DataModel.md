@@ -25,7 +25,7 @@ The project currently uses typed static modules as a temporary public data layer
 | `safeLightOverride` | Optional Tournament Official override in local `HH:mm` format. |
 | `safeLightOverridePublicMessage` | Optional public explanation for the override; private administrative notes are never included. |
 | `earlyRegistrationDeadlineTime` | Local early-registration cutoff, currently 9:00 PM. |
-| `tournamentMorningRegistrationOpensAt` / `ClosesAt` | Optional configurable tournament-morning window. |
+| `tournamentMorningRegistrationOpensAt` / `ClosesAt` | Optional public operating window for the in-person Tournament Director workflow in WeighFish; it does not open website registration. |
 | `resultsAvailable` | Whether public results may be shown. |
 | `featured` | Explicit homepage feature selection flag. |
 | `heroImage` | Optional event-specific image. |
@@ -39,10 +39,7 @@ selection and registration-policy boundary. `lib/safe-light.ts` uses `suncalc`
 with the centralized Fort Worth reference location; `lib/tournament-time.ts`
 owns deterministic `America/Chicago` conversion and formatting.
 
-Registration controls combine `registrationStatus`, the current operational
-status, and the configured registration windows. The existing `/register`
-route is the public registration destination; `registrationUrl` remains
-available for a future external destination if one is approved.
+Registration controls combine `registrationStatus`, the current operational status, and the Early Online Registration deadline. The existing `/register` route is the public early-online destination. After its deadline, the website directs anglers to the in-person Tournament Director workflow in WeighFish; configured morning hours never open website submission.
 Every registration structurally includes Tournament Entry. Future public
 registration records should show Tournament Entry as present and may
 additionally show Big Bass,

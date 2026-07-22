@@ -7,7 +7,7 @@ const navItems = [
   { label: "Results", href: "/results" },
   { label: "Schedule", href: "/schedule" },
   { label: "Standings" },
-  { label: "Rules" },
+  { label: "Rules", href: "/rules" },
   { label: "Sponsors" },
 ];
 
@@ -82,7 +82,7 @@ export default function Header({ activeItem }: { activeItem?: string }) {
               href="/how-it-works"
               className="hidden whitespace-nowrap text-xs font-black uppercase tracking-[0.08em] text-yellow-400 transition hover:text-yellow-300 sm:block"
             >
-              How It Works
+              How AITT Works
             </Link>
 
             <Link

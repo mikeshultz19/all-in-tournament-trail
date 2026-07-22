@@ -39,12 +39,14 @@ related Rules and FAQ content must follow
 - Sponsor manager
 - News manager
 - Registration manager
+- Secure Square payment confirmation for Early Online Registration
 - Tournament status and announcement controls
 - Estimated-safe-light override
 
 ## Phase 4 — Automation
 
 - WeighFish CSV upload
+- Protected validation and preview workflow; no live synchronization
 - Parse tournament results
 - Store Big Bass with tournament results
 - Update AOY

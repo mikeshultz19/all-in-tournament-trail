@@ -1,4 +1,5 @@
 import TournamentStatusAnnouncement from "@/components/TournamentStatusAnnouncement";
+import PaymentAnnouncement from "@/components/PaymentAnnouncement";
 import type { Tournament } from "@/data/tournaments";
 
 export default function LatestTournamentNews({ tournament }: { tournament: Tournament | undefined }) {
@@ -19,6 +20,7 @@ export default function LatestTournamentNews({ tournament }: { tournament: Tourn
             No upcoming tournament is currently scheduled. Check the schedule for future announcements.
           </div>
         )}
+        <PaymentAnnouncement />
       </div>
     </section>
   );

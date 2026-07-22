@@ -3,6 +3,7 @@ import { TOURNAMENT_STATUS_LABELS } from "@/lib/tournament-operations";
 import { formatTournamentTimestamp } from "@/lib/tournament-time";
 import type { SafeLightViewModel } from "@/lib/tournament-view-model";
 import type { TournamentWeatherResult } from "@/lib/tournament-weather";
+import TournamentInfoIcon from "@/components/TournamentInfoIcon";
 
 const STATUS_INDICATOR_STYLES = {
   scheduled: "bg-emerald-400",
@@ -44,10 +45,13 @@ export default function TournamentConditions({
       </div>
 
       <div className="grid gap-4 py-4 sm:grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)] sm:divide-x sm:divide-white/10">
-        <div>
-          <h3 className="text-xs font-black uppercase tracking-[0.12em] text-neutral-500">Safe Light</h3>
-          <p className="mt-1 text-2xl font-black text-white">{safeLight.time}</p>
-          <p className="mt-1 text-xs text-neutral-500">Approximately · Fort Worth sunrise {safeLight.officialSunrise}</p>
+        <div className="flex min-w-0 items-start gap-3">
+          <TournamentInfoIcon src="/icons/sun-safe-light.svg" className="size-8 text-[#D4A017] sm:size-9" />
+          <div className="min-w-0">
+            <h3 className="text-xs font-black uppercase tracking-[0.12em] text-neutral-500">Safe Light</h3>
+            <p className="mt-1 text-2xl font-black text-white">{safeLight.time}</p>
+            <p className="mt-1 text-xs text-neutral-500">Approximately · Fort Worth sunrise {safeLight.officialSunrise}</p>
+          </div>
         </div>
 
         <div className="sm:pl-4">

@@ -20,7 +20,7 @@ export type OnlineRegistrationState = (typeof REGISTRATION_STATES)[number];
 export type RegistrationPolicyKey = "rules" | "liability_waiver" | "refund_policy" | "payment_terms";
 
 export const REGISTRATION_POLICY_VERSIONS: Record<RegistrationPolicyKey, string> = {
-  rules: "1.0",
+  rules: "1.1",
   liability_waiver: "1.0",
   refund_policy: "pending-approval-2026-07-22",
   payment_terms: "2026-07-22",
