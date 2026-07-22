@@ -1,4 +1,8 @@
 import { REGISTRATION_PRICING } from "@/data/registration";
+import {
+  calculateCardProcessingFeeCents,
+  calculateCardTotalCents,
+} from "@/config/payment-policy";
 
 export type RegistrationType = "solo" | "team";
 export type Membership = "current" | "joining" | "non-member";
@@ -13,7 +17,7 @@ export type RegistrationSelections = {
   insurance: boolean;
 };
 
-export type RegistrationLineItem = { name: string; price: number };
+export type RegistrationLineItem = { name: string; priceCents: number };
 
 export function hasFullMembershipEligibility(selections: Pick<RegistrationSelections, "registrationType" | "memberships">) {
   const requiredAnglers = selections.registrationType === "team" ? 2 : 1;
@@ -57,14 +61,15 @@ export function getRegistrationPricing(selections: RegistrationSelections) {
 
   const lineItems: RegistrationLineItem[] = [];
   selections.memberships.forEach((membership, index) => {
-    if (membership === "joining") lineItems.push({ name: `Angler ${index + 1} Membership`, price: REGISTRATION_PRICING.annualMembership });
+    if (membership === "joining") lineItems.push({ name: `Angler ${index + 1} Membership`, priceCents: REGISTRATION_PRICING.annualMembership * 100 });
   });
-  lineItems.push({ name: "Tournament Entry", price: REGISTRATION_PRICING.baseEntry });
-  if (selections.memberPot) lineItems.push({ name: `${selections.memberPot[0].toUpperCase()}${selections.memberPot.slice(1)} Pot`, price: REGISTRATION_PRICING[selections.memberPot] });
-  if (selections.bigBass) lineItems.push({ name: "Big Bass", price: REGISTRATION_PRICING.bigBass });
-  if (selections.insurance) lineItems.push({ name: "Insurance Pot", price: REGISTRATION_PRICING.insurance });
+  lineItems.push({ name: "Tournament Entry", priceCents: REGISTRATION_PRICING.baseEntry * 100 });
+  if (selections.memberPot) lineItems.push({ name: `${selections.memberPot[0].toUpperCase()}${selections.memberPot.slice(1)} Pot`, priceCents: REGISTRATION_PRICING[selections.memberPot] * 100 });
+  if (selections.bigBass) lineItems.push({ name: "Big Bass", priceCents: REGISTRATION_PRICING.bigBass * 100 });
+  if (selections.insurance) lineItems.push({ name: "Insurance Pot", priceCents: REGISTRATION_PRICING.insurance * 100 });
 
-  const subtotal = lineItems.reduce((sum, item) => sum + item.price, 0);
-  const processingFee = Number((subtotal * REGISTRATION_PRICING.processingRate).toFixed(2));
-  return { lineItems, subtotal, processingFee, total: subtotal + processingFee };
+  const subtotalCents = lineItems.reduce((sum, item) => sum + item.priceCents, 0);
+  const cardProcessingFeeCents = calculateCardProcessingFeeCents(subtotalCents);
+  const totalCents = calculateCardTotalCents(subtotalCents);
+  return { lineItems, subtotalCents, cardProcessingFeeCents, totalCents };
 }

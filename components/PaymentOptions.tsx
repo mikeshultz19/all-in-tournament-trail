@@ -1,41 +1,38 @@
 interface PaymentOptionsProps {
-  total: number;
-  canSubmit: boolean;
+  total: string;
+  canReview: boolean;
+  reviewComplete?: boolean;
+  reviewing?: boolean;
+  checkoutAvailable?: boolean;
   validationMessage?: string;
 }
 
-export default function PaymentOptions({ total, canSubmit, validationMessage }: PaymentOptionsProps) {
+export default function PaymentOptions({
+  total,
+  canReview,
+  reviewComplete = false,
+  reviewing = false,
+  checkoutAvailable = false,
+  validationMessage,
+}: PaymentOptionsProps) {
   return (
-    <section aria-labelledby="payment-heading" className="border-t border-[#4A3A12] pt-8">
-      <h2 id="payment-heading" className="text-xl font-black uppercase tracking-[0.05em] text-[#D4A017]">
-        Payment
-      </h2>
-      <p className="mt-2 text-sm text-[#8E8E8E]">Secure checkout powered by Stripe</p>
-
-      <div className="mt-5 grid gap-3 sm:grid-cols-2">
-        <button type="button" disabled className="min-h-12 rounded-sm border border-[#3A3A3A] bg-black px-4 font-bold text-white disabled:cursor-not-allowed disabled:opacity-70">
-          Apple Pay
-        </button>
-        <button type="button" disabled className="min-h-12 rounded-sm border border-[#3A3A3A] bg-black px-4 font-bold text-white disabled:cursor-not-allowed disabled:opacity-70">
-          Google Pay
-        </button>
-      </div>
-
-      <div className="my-5 flex items-center gap-4 text-xs font-bold uppercase tracking-[0.18em] text-[#777]">
-        <span className="h-px flex-1 bg-[#333]" /> or pay with card <span className="h-px flex-1 bg-[#333]" />
-      </div>
-
-      <div className="rounded-sm border border-[#3A3A3A] bg-[#0B0B0B] px-4 py-4 text-sm text-[#777]">
-        Card payment will be available when Stripe Checkout is connected.
-      </div>
-
-      {validationMessage && (
-        <p className="mt-4 text-sm text-red-400" role="alert">{validationMessage}</p>
-      )}
-
-      <button type="submit" disabled={!canSubmit} className="mt-5 min-h-14 w-full rounded-sm bg-[#D4A017] px-6 py-4 text-sm font-black uppercase tracking-[0.14em] text-[#0B0B0B] transition hover:bg-[#e2b229] disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-[#D4A017]">
-        Pay ${total.toFixed(2)} &amp; Register
+    <section aria-labelledby="payment-handoff-heading">
+      <h3 id="payment-handoff-heading" className="sr-only">Payment handoff</h3>
+      {validationMessage && <p className="text-sm text-red-400" role="alert">{validationMessage}</p>}
+      <button
+        type="submit"
+        disabled={!canReview || reviewing}
+        className="mt-5 min-h-14 w-full rounded-sm bg-[#D4A017] px-6 py-4 text-sm font-black uppercase tracking-[0.12em] text-[#0B0B0B] transition hover:bg-yellow-400 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white disabled:cursor-not-allowed disabled:opacity-50"
+      >
+        {reviewing ? "Reviewing Registration…" : "Continue to Payment"}
       </button>
+      <p className="mt-3 text-center text-xs text-neutral-400">You’ll review and confirm before paying.</p>
+      <p className="mt-2 text-center text-xs text-neutral-500">Secure payment through Square</p>
+      {reviewComplete && !checkoutAvailable && (
+        <p className="mt-4 border border-[#333] bg-[#0B0B0B] p-3 text-xs leading-5 text-neutral-300" role="status">
+          Square checkout is not configured. No payment was attempted. Verified total: {total}.
+        </p>
+      )}
     </section>
   );
 }

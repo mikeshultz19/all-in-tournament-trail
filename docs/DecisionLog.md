@@ -15,6 +15,50 @@ Use this document to record approved project decisions that affect architecture,
 
 ## Decisions
 
+### 2026-07-22 — Publish registration policies from their Markdown sources
+
+- **Status:** Approved
+- **Context:** Registration must provide readable public Rules and Liability Waiver pages and record which policy versions an entrant accepted without maintaining duplicate page content.
+- **Decision:** Publish `/rules` from `docs/TOURNAMENT_RULES.md` and `/liability-waiver` from `docs/LIABILITY_WAIVER.md` through one shared server-side Markdown loader and renderer. Keep one unchecked combined acknowledgment, link both policies in new tabs, and carry `rulesVersion`, `waiverVersion`, `acknowledgedAt`, and `acknowledgmentAccepted` through the registration submission contract. Team and Individual / Solo are the only participation types; Angler 2 is a team participant, not a separate co-angler option.
+- **Reasoning:** One content source prevents policy drift, public routes support deep links and mobile reading, and explicit version evidence prepares registration persistence without claiming that Phase 1 stores consent durably.
+- **Impact:** `/rules`, `/liability-waiver`, `/register`, the quote contract, policy acceptance design, focused tests, and registration documentation.
+- **Follow-up:** Obtain qualified legal approval for the waiver and persist a trusted server acknowledgment timestamp and policy versions during Phase 4 before enabling Square payment.
+
+### 2026-07-22 — Use local information icons for deadline and Safe Light
+
+- **Status:** Approved
+- **Context:** The condensed registration header and homepage Safe Light display need clearer visual identification without adding more cards or remote dependencies.
+- **Decision:** Use the local calendar asset for the registration deadline and share the local sun asset across registration and homepage Safe Light displays. Render both as decorative CSS masks so the interface controls their red and gold colors while adjacent text remains the accessible source of truth.
+- **Reasoning:** One local source per icon keeps the treatment consistent, compact, colorable, and maintainable without duplicating assets or changing tournament calculations.
+- **Impact:** Registration header, homepage Tournament Conditions, shared Safe Light presentation, focused tests, and local assets under `public/icons`.
+
+### 2026-07-22 — Condense the tournament registration page
+
+- **Status:** Approved
+- **Context:** The registration page repeated deadline, tournament-morning, status, payment-policy, and payment-method information, making the form unnecessarily long and visually noisy.
+- **Decision:** Use a single responsive header for the page title, selected tournament deadline, and Estimated Safe Light; omit tournament-morning instructions and the verbose status card from the form; use one combined policy acknowledgment; and keep the order summary and pre-payment Square handoff minimal. Square supplies approved payment controls and method branding only at the actual Payment step.
+- **Reasoning:** The shorter hierarchy keeps required facts, fees, eligibility, validation, and legal evidence visible without duplicating operational guidance.
+- **Impact:** `/register`, the registration form and summary, acknowledgment evidence design, focused tests, and the Online Registration Workflow follow this presentation.
+- **Follow-up:** Add the actual Square interface only after the documented persistence, idempotency, recovery, credential, and legal-language prerequisites are complete.
+
+### 2026-07-22 — Adopt the Early Online Registration workflow and phased payment boundary
+
+- **Status:** Approved
+- **Context:** AITT needs a complete online registration experience without presenting an unsafe or simulated production payment path before persistence and verified Square confirmation exist.
+- **Decision:** AITT owns tournament selection, angler data, rules, options, pricing, acknowledgments, registration state, history, and confirmation. Square owns payment credentials and processing. WeighFish owns tournament-day operations. Phase 1 implements server-authoritative validation and quoting, price snapshots, lifecycle and recovery rules, the review experience, and a disabled payment-adapter boundary. Square checkout remains disabled until durable persistence, idempotent payment creation, and verified server-side finalization are complete.
+- **Reasoning:** A durable pending record and provider verification are required to recover successful payments, prevent duplicate registrations, preserve financial evidence, and avoid confirming from browser state.
+- **Impact:** Registration UI, tournament CTAs, pricing, persistence design, Square integration, confirmation, administration, testing, and launch operations follow [Online Registration Workflow](ONLINE_REGISTRATION_WORKFLOW.md).
+- **Follow-up:** Complete the Phase 2 prerequisites in the workflow before enabling Square sandbox or production checkout.
+
+### 2026-07-22 — Use Square for card and supported wallet payments
+
+- **Status:** Approved
+- **Context:** Early Online Registration needs immediate card payment, while tournament-morning operations already belong in WeighFish and should not be duplicated by AITT.
+- **Decision:** Square processes credit-card, debit-card, Apple Pay, and other supported contactless-wallet payments. Apple Pay is available on compatible devices and browsers online, and supported contactless wallets are accepted through the tournament-morning Square reader. A flat 3% Card Processing Fee applies equally to card and digital-wallet payments online and at the reader; morning cash has no fee. AITT owns Early Online Registration and confirms it only after successful Square payment. The Tournament Director owns Tournament-Morning Registration in WeighFish, including Cash or Card selection. The homepage advertises card and Apple Pay availability within Latest News & Announcements. Apple Pay branding must use only official, unmodified Apple-provided artwork under Apple's marketing guidelines; a text fallback is used until that artwork is approved and added. The AITT website does not operate a morning point of sale or live payment ledger. After the tournament, AITT will import the official WeighFish CSV through a future protected workflow.
+- **Reasoning:** Clear system ownership keeps AITT focused, avoids duplicate records and reconciliation, and preserves WeighFish as the official tournament-day system.
+- **Impact:** Payment operations, registration availability, public payment copy, fee calculations, future persistence, Square integration, and WeighFish import must follow this boundary.
+- **Follow-up:** Complete registration persistence before enabling production Square checkout; later implement the protected CSV import without real-time synchronization.
+
 ### 2026-07-21 — Keep detailed entry statistics off the homepage
 
 - **Status:** Approved

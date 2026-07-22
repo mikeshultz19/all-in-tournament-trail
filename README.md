@@ -13,21 +13,42 @@ The All In Tournament Trail is a unique bass fishing tournament series that allo
 - Tournament schedule
 - Tournament results index and per-tournament result shells
 - Public registration page and itemized registration summary
+- Public Official Tournament Rules and Participant Liability Waiver pages
 - Tournament watch page
 - How It Works and FAQ content
 - Site feedback form backed by Resend configuration
 
 The project uses Next.js 16, React 19, TypeScript, and Tailwind CSS 4. The
 approved site structure is documented in `docs/MasterSiteMap.md`. The complete
-operational registration workflow, registration confirmation, full results,
-AOY, rules, sponsors, contact, and policy pages remain scheduled for future
-development. Major completed and planned milestones are recorded in
-`docs/VersionHistory.md`.
+operational registration workflow and policy acknowledgment are implemented.
+Durable registration confirmation, full results, AOY, sponsors, contact, and
+remaining policy pages are scheduled for future development. Major completed
+and planned milestones are recorded in `docs/VersionHistory.md`.
 
 The authoritative requirements for registration, tournament-morning
 operations, weather decisions, public tournament status, and Tournament
 Director workflows are defined in
 `docs/TOURNAMENT_OPERATIONS_AND_REGISTRATION_PROCESS.md`.
+
+The complete Early Online Registration flow, responsibility boundaries,
+server-authoritative pricing, registration states, Square handoff, recovery
+behavior, confirmation requirements, and production prerequisites are defined
+in `docs/ONLINE_REGISTRATION_WORKFLOW.md`. Phase 1 server validation and review
+are implemented, but Square checkout remains disabled until durable
+registration persistence and verified server-side payment finalization exist.
+
+Early Online Registration will require immediate Square credit card, debit
+card, or supported Apple Pay payment with a 3% Card Processing Fee. Apple Pay
+availability depends on the angler's device and browser. Production checkout
+remains unavailable until registration persistence and secure server-side
+payment confirmation are implemented. Tournament-Morning Registration is
+conducted by the Tournament Director in WeighFish; cash has no fee, while card,
+Apple Pay, and other supported contactless-wallet payments use the Square
+reader with the same 3% fee. The public homepage advertises these approved
+payment options. See `public/brands/README.md` for the official Apple Pay mark
+asset requirements; only unmodified, Apple-provided artwork may be used. The
+protected post-tournament WeighFish CSV import is planned and not yet
+implemented.
 
 ### AccuWeather tournament forecast setup
 

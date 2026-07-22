@@ -23,8 +23,6 @@ export const TOURNAMENT_STATUS_LABELS: Record<
 
 export type RegistrationPeriod =
   | "early_online"
-  | "closed_between_periods"
-  | "tournament_morning"
   | "fully_closed";
 
 export interface RegistrationAvailability {
@@ -100,29 +98,11 @@ export function getRegistrationAvailability(
     };
   }
 
-  if (morningOpensAt && morningClosesAt && now >= morningOpensAt && now <= morningClosesAt) {
-    return {
-      ...base,
-      period: "tournament_morning",
-      canSubmit: true,
-      reason: "Tournament-morning registration is open.",
-    };
-  }
-
-  if (morningOpensAt && now < morningOpensAt) {
-    return {
-      ...base,
-      period: "closed_between_periods",
-      canSubmit: false,
-      reason: "Early online registration is closed. Tournament-morning registration has not opened yet.",
-    };
-  }
-
   return {
     ...base,
     period: "fully_closed",
     canSubmit: false,
-    reason: "Online registration is closed for this tournament.",
+    reason: "Early Online Registration is closed. Tournament-morning registration is completed in person with a Tournament Director through WeighFish.",
   };
 }
 

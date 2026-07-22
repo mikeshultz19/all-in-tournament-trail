@@ -1,5 +1,10 @@
 # Tournament Operations and Registration Process
 
+> Early Online Registration screen flow, lifecycle, pricing snapshot, Square
+> handoff, and recovery behavior are defined in
+> [Online Registration Workflow](ONLINE_REGISTRATION_WORKFLOW.md). This
+> document remains authoritative for tournament and Tournament Director rules.
+
 ## 1. Purpose
 
 This document defines the official registration, tournament-morning, weather,
@@ -14,8 +19,8 @@ The site supports:
 - Solo registration
 - Team registration
 
-For Team registration, information is collected independently for Angler 1 /
-Boater and Co-Angler. Each angler provides:
+For Team registration, information is collected independently for Angler 1
+and Angler 2. Each angler provides:
 
 - First name
 - Last name
@@ -39,7 +44,7 @@ for each angler. Membership choices are:
 - Purchase membership
 - Continue as a non-member
 
-For a team to receive member benefits, both the boater and co-angler must be
+For a team to receive member benefits, both registered anglers must be
 members. Member benefits include access to:
 
 - Bronze
@@ -94,30 +99,27 @@ Registrations submitted during this period are classified as
 `early_online`. Each submission must receive a server-generated timestamp that
 does not depend on the angler's browser clock.
 
-The website stores these registrations. Tournament officials use them to
-manually enter anglers into WeighFish as described in the WeighFish Workflow.
+The website stores these registrations only after successful Square card
+payment. Credit or debit card payment is required, cash is unavailable online,
+and a 3% Card Processing Fee applies to the card-payment subtotal. Tournament
+officials use the confirmed registrations as part of the pre-tournament
+WeighFish workflow.
 
 ## 6. Tournament-Morning Registration
 
-Tournament-morning registration is a normal registration option and must not
-be described as late registration.
+Tournament-Morning Registration is a normal walk-up registration option and
+must not be described as late registration. It is conducted by the Tournament
+Director at the registration table in WeighFish, not through the AITT website.
 
-Morning registration generally begins approximately two hours before
-estimated safe light. A common opening time may be around 5:00 AM, but the
-exact opening and closing times must be configurable for each tournament.
+The Tournament Director enters the team or individual in WeighFish and records
+Cash or Card. Cash has no processing fee. Card payments are processed
+separately through the Square reader and include the same 3% Card Processing
+Fee used online. A paper form is maintained only as emergency operational
+backup.
 
-Anglers may register tournament morning by:
-
-- Completing a paper form at the registration line
-- Registering on the website using a phone or other device
-
-Website registrations submitted during the configured morning window are
-classified as `tournament_morning`. They must receive a server-generated
-timestamp.
-
-Tournament officials use those timestamps and registration-period labels to
-identify registrations received after the previous evening's 9:00 PM early
-online registration deadline.
+AITT does not operate a morning point-of-sale screen, duplicate the WeighFish
+roster or cash-versus-card record, maintain a live morning Square ledger, or
+synchronize these systems in real time.
 
 ## 7. Registration Record Requirements
 
@@ -126,20 +128,21 @@ Every online registration must store enough information to identify:
 - Tournament
 - Solo or Team registration
 - Angler information
-- Co-Angler information when applicable
+- Angler 2 information for Team registration
 - Membership selections
 - Entry selections
 - Selected payout pots
 - Itemized charges
-- Total paid
-- Payment status
+- Card-payment subtotal, Card Processing Fee, and total charged for Early
+  Online Registration
+- Minimum Square payment reference and payment status for Early Online
+  Registration
 - Registration period
 - Server-generated submission timestamp
 
 Suggested `registrationPeriod` values:
 
 - `early_online`
-- `tournament_morning`
 
 Suggested `paymentStatus` values:
 
@@ -148,6 +151,10 @@ Suggested `paymentStatus` values:
 - `failed`
 - `refunded`
 - `partially_refunded`, if later needed
+
+These website payment fields apply to Early Online Registration only.
+Tournament-morning payment method remains owned by WeighFish, while Square
+remains authoritative for the associated card-reader transaction.
 
 ## 8. Tournament Director Admin Portal
 
@@ -160,10 +167,9 @@ The Admin Portal must allow the Tournament Director to:
 - Select a tournament
 - View all online registrations
 - Filter Early Online registrations
-- Filter Tournament-Morning registrations
 - See submission timestamps
 - See selected entry and payout pots
-- See payment status
+- See Early Online Registration payment status
 - Export registration information if needed
 - Update tournament status
 - Publish the current weather or tournament announcement
@@ -172,19 +178,24 @@ The Admin Portal must allow the Tournament Director to:
 
 ## WeighFish Workflow
 
-The website stores registrations. Tournament officials manually enter anglers
-into WeighFish. The website does not verify or track this process.
+AITT stores confirmed Early Online Registrations. WeighFish owns the
+tournament-day roster, Tournament-Morning Registration, check-in, weigh-in,
+scoring, official results, and official CSV export.
 
 ### Night Before
 
-- Retrieve Early Online registrations
-- Enter anglers into WeighFish manually
+- Retrieve confirmed Early Online Registrations
+- Enter or import those anglers into WeighFish using the supported operational
+  process
 
 ### Tournament Morning
 
-- Collect paper registrations
-- Review Tournament-Morning online registrations
-- Enter remaining anglers manually into WeighFish
+- Open WeighFish at the registration table
+- Enter each walk-up team or individual
+- Record Cash or Card in WeighFish
+- For Card, process payment through the Square reader with the 3% Card
+  Processing Fee
+- Use the paper form only if the normal operational workflow is unavailable
 
 ### Before Launch
 
@@ -194,13 +205,20 @@ into WeighFish. The website does not verify or track this process.
 ### After Tournament
 
 - Export the official WeighFish CSV
-- Upload the CSV into the website
+- Upload the CSV through AITT's future protected import workflow
+- Validate and preview before final import
 - The website updates:
   - Results
   - Standings
   - AOY
   - Tournament history
   - Any supported payout information
+
+The import must preserve the source filename, import timestamp, tournament
+association, and validation outcome. It may import payment method when the CSV
+provides that field. Unknown values remain available for review rather than
+being guessed. This protected import is planned and is not currently
+implemented.
 
 Post-tournament membership reconciliation is a later implementation phase and
 is not part of the current CSV-import workflow.
@@ -415,8 +433,8 @@ The Registration page must display:
 - Tournament date
 - Launch location
 - Early online registration deadline
-- Tournament-morning registration opening time
-- Tournament-morning registration cutoff
+- Tournament-morning registration instructions and any published operating
+  hours
 - Current registration status
 - Estimated safe light
 - Safe-light disclaimer
@@ -430,13 +448,15 @@ The Registration page must display:
 - Tournament Entry as a mandatory, non-removable line item
 - Member eligibility rules
 - Itemized Registration Summary
+- Registration Subtotal, Card Processing Fee (3%), and Total Charged
+- Notice that credit or debit card payment through Square is required online
+- Notice that registration is confirmed only after successful payment
+- Notice that cash is accepted only in person through the Tournament Director's
+  WeighFish workflow
 
-The page must determine whether registration is currently:
-
-- Early Online
-- Closed between registration periods
-- Tournament Morning
-- Fully Closed
+The page must determine whether Early Online Registration is open or closed.
+After the online deadline, it directs anglers to the in-person Tournament
+Director and WeighFish workflow rather than accepting a website submission.
 
 Registration availability must be based on server time, the `America/Chicago`
 time zone, and configured tournament deadlines.
@@ -453,8 +473,10 @@ The Rules page must explain:
 
 - Early Online Registration closes at 9:00 PM `America/Chicago` time on the
   evening before the tournament
-- Tournament-Morning Registration is a normal registration period
-- Morning registration times vary by tournament
+- Tournament-Morning Registration is a normal in-person registration period
+  operated by the Tournament Director in WeighFish
+- Cash has no processing fee; Square-reader card payments include the 3% Card
+  Processing Fee
 - Estimated Safe Light is the official Fort Worth sunrise for the tournament
   date minus 30 minutes, using the `America/Chicago` time zone
 - Estimated Safe Light is not a guaranteed launch schedule
@@ -475,10 +497,24 @@ Keep the FAQ concise by combining related questions.
 
 ### When can I register for a tournament?
 
-Early online registration closes at 9:00 PM local tournament time on the
-evening before the tournament. Tournament-morning registration is also a
-normal registration option. Morning hours vary by tournament and are published
-on the website.
+Early Online Registration closes at 9:00 PM local tournament time on the
+evening before the tournament and requires successful Square card payment.
+Tournament-Morning Registration is completed in person with the Tournament
+Director and recorded in WeighFish.
+
+### Is there a fee for paying by credit or debit card?
+
+Yes. AITT adds a 3% card-processing fee to all credit- and debit-card payments.
+This applies to Early Online Registration and to card payments made through the
+Square reader during Tournament-Morning Registration. Cash payments made at
+Tournament-Morning Registration do not include the Card Processing Fee.
+
+### How can I pay on tournament morning?
+
+Register with the Tournament Director at the registration table. Payment may
+be made with cash or with a credit or debit card through the Square reader.
+Card payments include the 3% Card Processing Fee, and the Tournament Director
+records the registration and payment method in WeighFish.
 
 ### What time should I arrive, and what is Estimated Safe Light?
 
@@ -545,6 +581,11 @@ Future implementation should:
 - Use the `America/Chicago` time zone with automatic daylight-saving
   adjustments
 - Enforce pricing and eligibility on the server
+- Calculate card amounts in integer cents; the Card Processing Fee is the
+  card-payment subtotal multiplied by 3%, rounded to the nearest cent with
+  half-cent results rounded upward
+- Recalculate online amounts on the server, use Square idempotency keys, and
+  confirm registration only after a successful Square payment
 - Always include Tournament Entry in registration pricing and reject standalone
   add-ons
 - Use Tournament Entry in all public and business-facing copy. The stable
@@ -552,7 +593,7 @@ Future implementation should:
 - Keep public and private data clearly separated
 - Keep the public Tournament Entries page simple
 - Make weather and status notices easy to update
-- Make tournament-morning operations fast and easy
+- Keep Tournament-Morning Registration in WeighFish and the Square reader
 - Support future database and payment integrations without rewriting the
   registration form
 
@@ -561,8 +602,6 @@ Future implementation should:
 Currently unresolved business decisions are:
 
 - Final refund-versus-credit policy for cancelled tournaments
-- Exact tournament-morning registration cutoff policy
-- Whether paper registrations will later be entered manually into the Admin
-  Portal
+- Exact Tournament-Morning Registration operating hours and cutoff policy
 - Whether the public Tournament Entries page shows full team names or
   abbreviated names

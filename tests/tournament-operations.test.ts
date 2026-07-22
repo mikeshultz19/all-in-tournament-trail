@@ -77,6 +77,17 @@ describe("tournament status and registration", () => {
     expect(availability.canSubmit).toBe(true);
   });
 
+  it("closes website registration after the early deadline and directs morning registration to WeighFish", () => {
+    const availability = getRegistrationAvailability(
+      tournament(),
+      new Date("2026-11-01T11:30:00Z"),
+    );
+    expect(availability.period).toBe("fully_closed");
+    expect(availability.canSubmit).toBe(false);
+    expect(availability.reason).toContain("completed in person");
+    expect(availability.reason).toContain("WeighFish");
+  });
+
   it("uses the rescheduled date for safe light and registration timing", () => {
     const rescheduled = tournament({ tournamentStatus: "rescheduled", rescheduledDate: "2027-03-14" });
     const operations = getTournamentOperationsViewModel(rescheduled, new Date("2027-03-12T12:00:00Z"));
