@@ -1,223 +1,66 @@
-# All-In Tournament Trail
-# Version History
+# All In Tournament Trail Version History
 
-This document records the major milestones in the development of the All-In Tournament Trail website.
+Use [Project Status](ProjectStatus.md) for current work and
+[Changelog](CHANGELOG.md) for dated changes.
 
----
-
-# v0.1 — Architecture Freeze & Documentation Baseline
+## v0.1 — Architecture and documentation baseline
 
 Status: Complete
 
-## Summary
+- Established repository architecture, standards, documentation, GitHub source
+  control, sitemap, and initial planning.
 
-Established the project's architecture, development standards, and documentation framework before major feature development.
-
-## Completed
-
-- Created repository documentation structure
-- Established AGENTS.md development guidelines
-- Created Master Site Map
-- Created Repository Map
-- Created Development Roadmap
-- Created Project Status tracker
-- Created UI Standards
-- Created WeighFish Integration planning document
-- Created Decision Log
-- Initialized Git version control
-- Created baseline repository snapshot
-- Pushed initial repository to GitHub
-
----
-
-# v0.2 — Repository Cleanup Complete
+## v0.2 — Repository cleanup
 
 Status: Complete
 
-## Summary
+- Consolidated application structure, assets, data boundaries, and
+  configuration.
 
-Refactored and cleaned the repository to create a stable, maintainable foundation before public feature development.
+## v0.3 — Public tournament experience
 
-## Completed
+Status: Complete for page design
 
-### Repository Audit
+- Built the public page designs, registration experience, policies, tournament
+  conditions, results shells, responsive behavior, and accessibility
+  foundation.
 
-- Performed full repository audit
-- Identified unused components
-- Identified duplicate assets
-- Identified placeholder data
-- Identified broken links
-- Classified cleanup items by risk
+## v0.4 — AITT Admin Center foundation
 
-### Cleanup Batch 1
+Status: Complete
 
-- Removed unused components
-- Removed obsolete UI experiments
-- Removed unused placeholder assets
-- Removed Create Next App starter assets
+- Built the Admin header, warning, Current Tournament context, selector,
+  Website Readiness, and four management areas.
+- Removed Sponsors from the tournament dashboard workflow.
 
-### Cleanup Batch 2
+## v0.5 — Supabase tournament foundation
 
-- Repaired broken internal links
-- Corrected missing asset references
-- Updated site metadata
-- Improved feedback configuration
-- Removed placeholder navigation targets
+Status: Complete for Tournament Information read/update
 
-### Cleanup Batch 3
+- Linked hosted Supabase, applied the tournaments migration, and seeded Lake
+  Fork Open.
+- Enabled RLS and public tournament reads.
+- Connected AITT Admin Center to live tournament data.
+- Verified Tournament Information updates and persistence after refresh.
+- Homepage/schedule integration remains in progress.
 
-- Consolidated tournament data
-- Established canonical tournament model
-- Separated tournament data from results data
-- Created reusable data selectors
-- Added DataModel documentation
-
-### Cleanup Batch 4
-
-- Archived historical design assets
-- Reviewed repository dependencies
-- Consolidated configuration
-- Updated Repository Map
-- Final repository verification
-- Production build verification
-
-## Outcome
-
-- Clean repository structure
-- Single tournament data model
-- Passing lint
-- Passing TypeScript
-- Passing production build
-- Repository ready for feature development
-
----
-
-# v0.3 — Tournament Experience
-
-Status: In Progress
-
-## Objectives
-
-Build the complete tournament workflow.
-
-### Completed
-
-- Schedule page
-- Tournament Details page
-
-### Planned
-
-- Pre-event experience
-- Post-event experience
-- Complete operational registration workflow
-- Registration confirmation page
-
----
-
-# v0.4 — Results & AOY
+## v0.6 — Authenticated administration
 
 Status: Planned
 
-## Objectives
+- Supabase Auth, protected Admin writes, removal of anonymous update access,
+  Announcements, and Conditions.
 
-Complete tournament results and season standings.
-
-### Planned
-
-- Results landing page
-- Tournament results
-- Big Bass integration
-- AOY standings
-- AOY calculations
-- Tournament history
-
----
-
-# v0.5 — Public Website Complete
+## v0.7 — Results and media
 
 Status: Planned
 
-## Objectives
+- WeighFish import, winner photos, Supabase Storage, results publishing, and
+  AOY automation.
 
-Complete all remaining public-facing pages.
-
-### Planned
-
-- FAQ
-- Official Rules
-- Sponsors
-- Contact
-- Privacy Policy
-- Terms of Service
-- Accessibility review
-- SEO optimization
-- Responsive polish
-
----
-
-# v0.6 — Administration Portal
+## v1.0 — Production release
 
 Status: Planned
 
-## Objectives
-
-Create the administrative tools required to manage tournaments.
-
-### Planned
-
-- Authentication
-- Tournament management
-- Results management
-- AOY management
-- Media management
-
----
-
-# v0.7 — WeighFish Integration
-
-Status: Planned
-
-## Objectives
-
-Automate tournament imports and standings.
-
-### Planned
-
-- WeighFish import pipeline
-- Automatic results import
-- AOY recalculation
-- Error reporting
-- Data validation
-
----
-
-# v1.0 — Production Release
-
-Status: Future
-
-## Objectives
-
-Launch the All-In Tournament Trail website.
-
-### Includes
-
-- Complete public website
-- Administration portal
-- WeighFish integration
-- Production deployment
-- Documentation finalized
-
----
-
-## Development Philosophy
-
-Every milestone should satisfy the following before completion:
-
-- Architecture reviewed
-- Documentation updated
-- Lint passing
-- TypeScript passing
-- Production build passing
-- Git committed
-- GitHub pushed
-- Ready for the next milestone
+- Vercel deployment, Cloudflare DNS, canonical-domain configuration, and
+  production-safe administration.

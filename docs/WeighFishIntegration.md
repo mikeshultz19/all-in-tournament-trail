@@ -22,4 +22,7 @@ WeighFish
 
 Unknown payment-method values remain available for review rather than being guessed. The workflow must detect duplicate imports and uncertain angler or team matches without automatically merging them. No real-time AITT, WeighFish, or Square synchronization is planned.
 
-Authentication, persistence, and a protected Admin Portal do not yet exist, so no public upload endpoint is implemented. Post-tournament membership reconciliation remains a later phase.
+AITT Admin Center and tournament persistence exist, but authentication, results
+persistence, and a protected import workflow do not. No public upload endpoint
+is implemented. The future import must use selected-tournament context.
+Post-tournament membership reconciliation remains a later phase.

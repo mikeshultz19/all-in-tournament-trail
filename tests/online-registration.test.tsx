@@ -115,7 +115,7 @@ describe("confirmation experience", () => {
 
 describe("online payment presentation", () => {
   const operationsBySlug = Object.fromEntries(tournaments.map((item) => [item.slug, getTournamentOperationsViewModel(item, NOW)]));
-  const html = renderToStaticMarkup(<RegistrationForm operationsBySlug={operationsBySlug} policyVersions={POLICY_VERSIONS} />);
+  const html = renderToStaticMarkup(<RegistrationForm tournaments={tournaments} operationsBySlug={operationsBySlug} policyVersions={POLICY_VERSIONS} />);
   it("does not offer cash as an online payment control", () => expect(html).not.toMatch(/value="cash"|name="paymentMethod"/i));
   it("does not advertise Venmo or Stripe", () => expect(html).not.toMatch(/Venmo|Stripe/i));
   it("provides the approved four-stage progress and clean payment boundary", () => {
@@ -165,7 +165,7 @@ describe("online payment presentation", () => {
     expect(html).not.toMatch(/Co-Angler/i);
   });
   it("shows team-only fields only for team registration", () => {
-    const teamHtml = renderToStaticMarkup(<RegistrationForm operationsBySlug={operationsBySlug} policyVersions={POLICY_VERSIONS} initialRegistrationType="team" />);
+    const teamHtml = renderToStaticMarkup(<RegistrationForm tournaments={tournaments} operationsBySlug={operationsBySlug} policyVersions={POLICY_VERSIONS} initialRegistrationType="team" />);
     expect(html).not.toContain("Team Details — Angler 2");
     expect(teamHtml).toContain("Team Details — Angler 2");
     expect(teamHtml).toContain('name="angler2.firstName"');

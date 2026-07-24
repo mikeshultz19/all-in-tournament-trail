@@ -11,6 +11,7 @@ import { getTournamentDisplay } from "@/lib/tournament-display";
 import type { TournamentOperationsViewModel } from "@/lib/tournament-view-model";
 import EarlyRegistrationStats from "@/components/EarlyRegistrationStats";
 import type { TournamentEntrySummary } from "@/lib/public-early-entry";
+import type { TournamentStatus } from "@/types/tournament";
 
 type Countdown = {
   days: number;
@@ -38,11 +39,13 @@ export default function FeaturedTournament({
   operations,
   earlyRegistrationSummary,
   earlyRegistrationStatsUnavailable = false,
+  lifecycleStatus,
 }: {
   tournament: Tournament | null;
   operations?: TournamentOperationsViewModel | null;
   earlyRegistrationSummary?: TournamentEntrySummary;
   earlyRegistrationStatsUnavailable?: boolean;
+  lifecycleStatus?: TournamentStatus;
 }) {
   const [countdown, setCountdown] = useState<Countdown>({
     days: 0,
@@ -131,7 +134,9 @@ export default function FeaturedTournament({
           </p>
           <p className="mt-3 inline-flex items-center gap-2 border border-white/15 px-2.5 py-1 text-[10px] font-black uppercase tracking-[0.12em] text-zinc-200">
             <span aria-hidden="true" className="h-1.5 w-1.5 rounded-full bg-[#D4A017]" />
-            Tournament Status: {TOURNAMENT_STATUS_LABELS[tournament.tournamentStatus]}
+            Tournament Status:{" "}
+            {lifecycleStatus ??
+              TOURNAMENT_STATUS_LABELS[tournament.tournamentStatus]}
           </p>
         </div>
 

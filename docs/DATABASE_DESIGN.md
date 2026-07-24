@@ -1,11 +1,19 @@
-# All-In Tournament Trail Database Design
+# All In Tournament Trail Database Design
+
+> **Current-state note (2026-07-23):** This document remains the proposed
+> registration, payment, membership, and results blueprint. It is not a
+> description of tables already deployed. The one implemented table is
+> `public.tournaments`, defined by
+> `supabase/migrations/202607230001_create_tournaments.sql` and documented in
+> [DataModel.md](DataModel.md). Supabase is connected and AITT Admin Center
+> reads live tournament records. All other tables below remain planned.
 
 *Phase 4.1 – Registration Persistence Blueprint*
 
 ## Purpose
 
-This document defines the data model before Supabase implementation begins. It
-is a blueprint, not executable SQL.
+This document defines the broader data model before those additional Supabase
+features begin. It is a blueprint, not executable SQL.
 
 The database will become the permanent source of truth for:
 
@@ -164,7 +172,7 @@ per season. Morning/ramp records may exist without email, and normalization
 helps find likely duplicates.
 
 Private contact and address data must never appear in the public entry
-projection. Duplicate records will sometimes occur; the Admin Portal should
+projection. Duplicate records will sometimes occur; AITT Admin Center should
 flag and reconcile them instead of merging them automatically based on unsafe
 assumptions.
 
@@ -311,7 +319,7 @@ flexible.
 
 ### `registration_audit_log` (Recommended Later)
 
-**Purpose:** Record meaningful registration changes during the Admin Portal
+**Purpose:** Record meaningful registration changes during AITT Admin Center
 phase. It is recommended, but not required for the first persistence milestone.
 
 | Column | General type | Requirement | Notes |

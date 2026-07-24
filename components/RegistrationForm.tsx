@@ -8,7 +8,7 @@ import SafeLightCard from "@/components/SafeLightCard";
 import TournamentInfoIcon from "@/components/TournamentInfoIcon";
 import { REGISTRATION_PRICING } from "@/data/registration";
 import { formatCurrencyFromCents } from "@/config/payment-policy";
-import { tournaments } from "@/data/tournaments";
+import type { Tournament } from "@/data/tournaments";
 import type { TournamentOperationsViewModel } from "@/lib/tournament-view-model";
 import { getRegistrationPricing, hasFullMembershipEligibility, validateRegistrationSelections, type MemberPot, type Membership, type RegistrationType } from "@/lib/registration";
 import type { RegistrationPriceSnapshot } from "@/lib/online-registration";
@@ -98,11 +98,13 @@ function AnglerSection({ anglerKey, title, angler, errors, onChange }: { anglerK
 }
 
 export default function RegistrationForm({
+  tournaments,
   operationsBySlug,
   initialSlug,
   policyVersions,
   initialRegistrationType = "solo",
 }: {
+  tournaments: readonly Tournament[];
   operationsBySlug: Record<string, TournamentOperationsViewModel>;
   initialSlug?: string;
   policyVersions: { rulesVersion: string; waiverVersion: string };

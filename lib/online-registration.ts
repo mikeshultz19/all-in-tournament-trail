@@ -176,9 +176,11 @@ export function validateOnlineRegistrationRequest(
   input: OnlineRegistrationRequest,
   now: Date = new Date(),
   eligibilityOptions: EligibilityOptions = {},
+  tournamentOverride?: Tournament,
 ): string[] {
   if (!input || typeof input !== "object") return ["Enter valid registration information."];
-  const tournament = getTournamentBySlug(input.tournamentSlug);
+  const tournament =
+    tournamentOverride ?? getTournamentBySlug(input.tournamentSlug);
   if (!tournament) return ["Select a valid tournament."];
   const eligibility = getOnlineRegistrationEligibility(tournament, now, {
     capacity: TOURNAMENT_REGISTRATION_CONFIG.capacity,
@@ -231,8 +233,17 @@ function getSafeSelectionErrors(selection: Parameters<typeof getRegistrationPric
   }
 }
 
-export function createAuthoritativeRegistrationQuote(input: OnlineRegistrationRequest, now: Date = new Date()): RegistrationPriceSnapshot {
-  const errors = validateOnlineRegistrationRequest(input, now);
+export function createAuthoritativeRegistrationQuote(
+  input: OnlineRegistrationRequest,
+  now: Date = new Date(),
+  tournamentOverride?: Tournament,
+): RegistrationPriceSnapshot {
+  const errors = validateOnlineRegistrationRequest(
+    input,
+    now,
+    {},
+    tournamentOverride,
+  );
   if (errors.length) throw new Error(errors.join(" "));
   const pricing = getRegistrationPricing({
     registrationType: input.registrationType,

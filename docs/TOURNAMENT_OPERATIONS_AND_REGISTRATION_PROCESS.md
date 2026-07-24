@@ -156,13 +156,14 @@ These website payment fields apply to Early Online Registration only.
 Tournament-morning payment method remains owned by WeighFish, while Square
 remains authoritative for the associated card-reader transaction.
 
-## 8. Tournament Director Admin Portal
+## 8. AITT Admin Center
 
-The Tournament Director must log in to a protected Admin Portal. Public users
+When Supabase Auth is implemented, the Tournament Director must log in to the
+protected AITT Admin Center. Public users
 must not have access to administrative controls or private registration
 details.
 
-The Admin Portal must allow the Tournament Director to:
+AITT Admin Center must eventually allow the Tournament Director to:
 
 - Select a tournament
 - View all online registrations

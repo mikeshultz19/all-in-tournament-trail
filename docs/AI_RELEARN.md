@@ -10,13 +10,20 @@ Its purpose is rapid recovery of project context, collaboration style, developme
 
 ## Project Identity
 
-- **Project:** All-In Tournament Trail (AITT)
+- **Project:** All In Tournament Trail (AITT)
 - **Purpose:** The official website for a bass fishing tournament series in which anglers choose their competition level through Bronze, Silver, and Gold Pots.
-- **Current phase:** Registration persistence and the Supabase/Admin Portal foundation are next. Always verify this in [ProjectStatus.md](ProjectStatus.md), the source of truth for current progress.
-- **Stack:** Next.js 16, React 19, TypeScript, and Tailwind CSS 4. Supabase is the planned persistent data store. Git/GitHub and Vercel support version control and deployment.
+- **Admin application:** AITT Admin Center.
+- **Current phase:** Tournament Information reads/updates and persistence after refresh are verified. News & Announcements is next, followed by Conditions, Results, and production security. Homepage/schedule integration and deployment remain follow-ups. Always verify this in [ProjectStatus.md](ProjectStatus.md).
+- **Stack:** Next.js 16, React 19, TypeScript, Tailwind CSS 4, and Supabase PostgreSQL. Prisma is not used. GitHub is connected. Supabase Auth and Storage and Vercel production hosting are planned. Cloudflare inbound email routing is verified; production DNS is not.
+- **Domain:** `allintrail.com` is registered and `https://allintrail.com` is canonical. Production deployment and DNS are not yet verified complete.
+- **Contact:** `info@allintrail.com` forwards through Cloudflare Email Routing
+  to Gmail. The Contact page and widget use `mailto:`; no server submission
+  endpoint exists.
 - **Repository goals:** Provide a maintainable public tournament website, implement documented registration and tournament operations, add simple administration, and eventually reconcile official WeighFish records for results and AOY.
 
-Use the [Master Site Map](MasterSiteMap.md) for approved routes, [Database Design](DATABASE_DESIGN.md) for the persistence blueprint, and [How the Website Works](HOW_THE_WEBSITE_WORKS.md) for a plain-language system overview.
+Use the [Master Site Map](MasterSiteMap.md) for approved routes,
+[Tournament Data Model](DataModel.md) for the implemented schema, and
+[Supabase Setup](SUPABASE_SETUP.md) for database operations.
 
 ## Participants and Roles
 

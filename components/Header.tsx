@@ -69,12 +69,12 @@ export default function Header({ activeItem }: { activeItem?: string }) {
               Register
             </Link>
 
-            <span
-              aria-disabled="true"
-              className="cursor-not-allowed rounded-md border border-zinc-800 px-5 py-3 text-sm font-black uppercase tracking-wide text-zinc-600"
+            <Link
+              href="/admin"
+              className="cursor-pointer rounded-md border border-zinc-800 px-5 py-3 text-sm font-black uppercase tracking-wide text-zinc-600 transition hover:border-zinc-600 hover:text-zinc-300 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-yellow-400"
             >
               Login
-            </span>
+            </Link>
           </div>
 
           <div className="ml-auto flex shrink-0 items-center gap-2 xl:hidden">
@@ -90,6 +90,13 @@ export default function Header({ activeItem }: { activeItem?: string }) {
               className="rounded-md bg-red-700 px-4 py-2.5 text-xs font-black uppercase tracking-wide text-white transition hover:bg-red-600"
             >
               Register
+            </Link>
+
+            <Link
+              href="/admin"
+              className="cursor-pointer rounded-md border border-zinc-800 px-4 py-2.5 text-xs font-black uppercase tracking-wide text-zinc-600 transition hover:border-zinc-600 hover:text-zinc-300 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-yellow-400"
+            >
+              Login
             </Link>
           </div>
         </div>

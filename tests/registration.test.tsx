@@ -69,7 +69,7 @@ describe("required Tournament Entry", () => {
 
   it("renders the public terminology and intended registration groups", () => {
     const operationsBySlug = Object.fromEntries(tournaments.map((tournament) => [tournament.slug, getTournamentOperationsViewModel(tournament, new Date("2026-07-21T12:00:00Z"))]));
-    const html = renderToStaticMarkup(<RegistrationForm operationsBySlug={operationsBySlug} policyVersions={{ rulesVersion: "1.0", waiverVersion: "1.0" }} />);
+    const html = renderToStaticMarkup(<RegistrationForm tournaments={tournaments} operationsBySlug={operationsBySlug} policyVersions={{ rulesVersion: "1.0", waiverVersion: "1.0" }} />);
     expect(html).toContain("Tournament Registration");
     expect(html).toContain("Tournament Entry");
     expect(html).toContain("Optional Side Pots");

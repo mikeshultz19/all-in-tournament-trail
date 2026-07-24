@@ -3,107 +3,67 @@
 import Link from "next/link";
 import SiteCraftBadge from "@/components/SiteCraftBadge";
 
-function openFeedback() {
-  window.dispatchEvent(new Event("open-feedback"));
+const footerLinks = [
+  { label: "Home", href: "/" },
+  { label: "Tournament Schedule", href: "/schedule" },
+  { label: "Results", href: "/results" },
+  { label: "Rules", href: "/rules" },
+  { label: "Contact", href: "/contact" },
+  {
+    label: "Facebook",
+    href: "https://www.facebook.com/groups/",
+    external: true,
+  },
+];
+
+function scrollToTop() {
+  window.scrollTo({ top: 0, behavior: "smooth" });
 }
 
 export default function Footer() {
   return (
-    <footer className="border-t border-zinc-800 bg-black text-zinc-300">
-      <div className="mx-auto grid max-w-[1400px] gap-10 px-5 py-12 sm:grid-cols-2 lg:grid-cols-4">
-        <div>
-          <h2 className="text-xl font-black uppercase tracking-wide text-white">
-            All-In Tournament Trail
-          </h2>
-          <p className="mt-3 max-w-sm text-sm leading-6 text-zinc-400">
-            Premier team bass fishing competition in North Texas.
-          </p>
-        </div>
-
-        <div>
-          <h3 className="text-sm font-black uppercase tracking-[0.18em] text-yellow-400">
-            Navigation
-          </h3>
-          <div className="mt-4 flex flex-col gap-3 text-sm">
-            <Link href="/" className="transition hover:text-red-500">
-              Home
-            </Link>
-            <Link href="/schedule" className="transition hover:text-red-500">
-              Schedule
-            </Link>
-            <Link href="/results" className="transition hover:text-red-500">
-              Results
-            </Link>
-            <span aria-disabled="true" className="cursor-not-allowed text-zinc-600">
-              Standings
-            </span>
-            <span aria-disabled="true" className="cursor-not-allowed text-zinc-600">
-              Rules
-            </span>
-          </div>
-        </div>
-
-        <div>
-          <h3 className="text-sm font-black uppercase tracking-[0.18em] text-yellow-400">
-            Resources
-          </h3>
-          <div className="mt-4 flex flex-col gap-3 text-sm">
-            <Link
-              href="/how-it-works"
-              className="transition hover:text-red-500"
+    <footer className="border-t border-zinc-800 bg-black text-zinc-400">
+      <nav
+        aria-label="Footer navigation"
+        className="mx-auto max-w-[1400px] px-3 py-2 sm:px-8"
+      >
+        <ul className="flex flex-wrap items-center justify-center gap-x-2.5 gap-y-1 text-[11px] leading-4 sm:gap-x-3 sm:text-xs">
+          {footerLinks.map((link, index) => (
+            <li
+              key={link.href}
+              className="flex items-center gap-x-2.5 sm:gap-x-3"
             >
-              How It Works
-            </Link>
-            <button type="button" onClick={openFeedback} className="w-fit text-left transition hover:text-red-500">
-              Contact Us
-            </button>
-            <button
-              type="button"
-              onClick={openFeedback}
-              className="w-fit text-left transition hover:text-red-500"
-            >
-              Feedback
-            </button>
-            <span aria-disabled="true" className="cursor-not-allowed text-zinc-600">
-              Sponsors
-            </span>
-          </div>
-        </div>
+              {index > 0 && (
+                <span aria-hidden="true" className="text-yellow-500/70">
+                  •
+                </span>
+              )}
+              <Link
+                href={link.href}
+                target={link.external ? "_blank" : undefined}
+                rel={link.external ? "noopener noreferrer" : undefined}
+                className="whitespace-nowrap transition-colors hover:text-red-500 focus-visible:text-red-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-yellow-400"
+              >
+                {link.label}
+              </Link>
+            </li>
+          ))}
+        </ul>
+      </nav>
 
-        <div>
-          <h3 className="text-sm font-black uppercase tracking-[0.18em] text-yellow-400">
-            Contact
-          </h3>
-          <div className="mt-4 flex flex-col gap-3 text-sm">
-            <a
-              href="mailto:support@allintournamenttrail.com"
-              className="break-all transition hover:text-red-500"
-            >
-              support@allintournamenttrail.com
-            </a>
-            <span aria-disabled="true" className="text-zinc-600">
-              Facebook
-            </span>
-            <span aria-disabled="true" className="text-zinc-600">
-              Instagram
-            </span>
-            <span aria-disabled="true" className="text-zinc-600">
-              YouTube
-            </span>
-          </div>
-        </div>
-      </div>
-
-      <div className="border-t border-zinc-900 px-5 py-5">
-        <div className="mx-auto grid max-w-[1400px] items-center gap-4 text-center text-xs uppercase tracking-wider text-zinc-500 lg:grid-cols-[1fr_auto_1fr] lg:text-left">
-          <p>
-            © {new Date().getFullYear()} All-In Tournament Trail. All rights
-            reserved.
-          </p>
-          <div aria-hidden="true" />
-          <div className="flex justify-center lg:justify-end">
+      <div className="border-t border-zinc-900 px-3 py-2 sm:px-8">
+        <div className="mx-auto grid max-w-[1400px] grid-cols-[1fr_auto_1fr] items-center gap-2 text-[9px] leading-tight text-zinc-500 sm:text-xs">
+          <p className="text-left">© 2025 All In Tournament Trail</p>
+          <div className="flex justify-center">
             <SiteCraftBadge />
           </div>
+          <button
+            type="button"
+            onClick={scrollToTop}
+            className="inline-flex items-center justify-self-end gap-1 text-right uppercase tracking-[0.08em] transition-colors hover:text-yellow-400 focus-visible:text-yellow-400 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-yellow-400 sm:tracking-[0.12em]"
+          >
+            <span aria-hidden="true">↑</span> Back to Top
+          </button>
         </div>
       </div>
     </footer>

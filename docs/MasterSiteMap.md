@@ -28,6 +28,21 @@ Sponsors
 Contact
 ```
 
+## AITT Admin Center
+
+The staff application is separate from public navigation:
+
+```text
+Admin Center
+  ├── Tournament Information
+  ├── News & Announcements
+  ├── Tournament Conditions
+  └── Tournament Results
+```
+
+The dashboard is scoped to a selected Current Tournament. Sponsors are not a
+tournament readiness item or management card.
+
 ## Global
 
 - Shared header

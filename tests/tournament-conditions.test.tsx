@@ -14,6 +14,15 @@ import {
 import { getTournamentOperationsViewModel } from "@/lib/tournament-view-model";
 import type { TournamentWeatherForecast } from "@/lib/tournament-weather";
 
+vi.mock("@/lib/tournaments", async () => {
+  const { databaseTournament } = await import(
+    "@/tests/tournament-db-fixture"
+  );
+  return {
+    getFeaturedTournament: vi.fn(async () => databaseTournament),
+  };
+});
+
 const tournament = tournaments[0];
 const operations = getTournamentOperationsViewModel(
   tournament,
@@ -132,7 +141,7 @@ describe("Tournament Conditions", () => {
     expect(html).toContain("Safe Light – 3:00 PM");
     expect(html).toContain("Stop Fishing: 3:00 PM");
     expect(html).toContain("Trailering");
-    expect(html).toContain("Azle, Texas");
+    expect(html).toContain(">Texas</dd>");
     expect(html).toContain("w-full bg-red-700");
     expect(html).not.toContain("Event Info");
     expect(html).not.toContain("Tournament Details");
@@ -158,7 +167,7 @@ describe("Tournament Conditions", () => {
     expect(featuredIndex).toBeGreaterThan(gridIndex);
     expect(conditionsIndex).toBeGreaterThan(gridIndex);
     expect(newsIndex).toBeGreaterThan(featuredIndex);
-    expect(newsIndex).toBeGreaterThan(conditionsIndex);
+    expect(conditionsIndex).toBeGreaterThan(newsIndex);
     expect(html.slice(gridIndex, newsIndex)).toContain('data-tournament-column="left"');
     expect(html.slice(gridIndex, newsIndex)).toContain('data-tournament-column="right"');
   });

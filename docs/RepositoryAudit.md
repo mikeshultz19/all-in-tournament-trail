@@ -1,5 +1,11 @@
 # Repository Audit
 
+> **Historical document:** This audit records the 2026-07-20 cleanup baseline.
+> It does not describe the current Supabase or AITT Admin Center state. For the
+> current repository, use [ProjectStatus.md](ProjectStatus.md) and
+> [RepositoryMap.md](RepositoryMap.md). Placeholder observations below are
+> preserved as dated audit findings, not current claims.
+
 ## Cleanup Batch 4 — Complete (2026-07-20)
 
 Repository polish is complete and establishes the v0.2 cleanup baseline. The
@@ -113,7 +119,16 @@ Source of truth: `AGENTS.md`, `docs/MasterSiteMap.md`, `docs/DevelopmentRoadmap.
 
 ## Executive Summary
 
-The repository is a working Next.js foundation, but it does not yet implement most of the approved public sitemap. The active application has Home, Schedule, Results, a dynamic result detail, a standalone How It Works page, and a feedback API. The production build succeeds, lint succeeds, and TypeScript succeeds. The main audit concerns are broken navigation, four missing referenced images, placeholder results/AOY content, duplicated and hard-coded tournament information, unused experimental components, and 24 unreferenced public files.
+> **Historical audit snapshot:** The following paragraph describes the
+> repository when this audit was originally performed and is not current-state
+> evidence. See [Project Status](ProjectStatus.md) for verified current status.
+
+At the time of the original audit, the repository was a working Next.js
+foundation that did not implement most of the approved sitemap. It had Home,
+Schedule, Results, a dynamic result detail, and How It Works. The original
+audit concerns included broken navigation, missing images, placeholder
+results/AOY content, duplicated tournament information, unused experiments,
+and unreferenced public files.
 
 The implementation also conflicts with the approved hierarchy in two places: `/how-it-works` is a top-level route instead of living under FAQ & Rules, and Schedule sends “Event Info” traffic to `/results/[slug]`. No separate archive gallery, Big Bass page, or safety page exists.
 
@@ -128,7 +143,7 @@ The implementation also conflicts with the approved hierarchy in two places: `/h
 | `/results` | `app/results/page.tsx` | Static page | Results index, currently “Coming Soon” |
 | `/results/[slug]` | `app/results/[slug]/page.tsx` | Dynamic page | Tournament result shell |
 | `/how-it-works` | `app/how-it-works/page.tsx` | Static page | How It Works plus embedded FAQ |
-| `/api/feedback` | `app/api/feedback/route.ts` | Dynamic POST API | Sends feedback through Resend |
+| Contact email endpoint | Removed 2026-07-23 | Not present | Contact now uses visitor-initiated email |
 | `/_not-found` | Framework generated | Static | Next.js not-found output; not a source route |
 
 ### Layouts
@@ -145,7 +160,7 @@ There are no nested layouts. The active Header is rendered only by `app/page.tsx
 |---|---:|---|
 | `components/Header.tsx` | Yes | Home only; should be promoted to the shared layout |
 | `components/Footer.tsx` | Yes | Shared through root layout |
-| `components/FeedbackWidget.tsx` | Yes | Shared through root layout; calls `/api/feedback` |
+| `components/FeedbackWidget.tsx` | Yes | Shared through root layout; opens a `mailto:` link to `info@allintrail.com` |
 | `components/PageHeader.tsx` | Yes | Schedule only; approved shared major-page heading |
 | `components/Hero.tsx` | Yes | Home hero |
 | `components/LatestTournamentNews.tsx` | Yes | Home news block |
@@ -211,7 +226,9 @@ Current Tournament Results and Past Tournament Results are not implemented as me
 ### Extra, duplicate, and ambiguous routes
 
 - `/how-it-works` is an approved concept but is implemented as an ungrouped top-level route. The sitemap puts it under FAQ & Rules. It also embeds a full FAQ, blurring two approved entries.
-- `/api/feedback` is an undocumented supporting endpoint. It is not a public content page and is actively required by FeedbackWidget; keep it unless the contact architecture changes.
+- The former feedback endpoint was removed on 2026-07-23. The Contact page and
+  widget now open the visitor's email application; there is no server-submitted
+  contact form.
 - `/results/[slug]` is appropriate for individual results, but Schedule labels links to it “Event Info.” This conflates the approved Schedule/Event Information branch with Results.
 - No duplicate filesystem route resolves to the same URL.
 
@@ -340,7 +357,9 @@ Additional quality findings:
 - Both `postcss.config.js` and `postcss.config.mjs` configure the same plugin; retaining two formats is unnecessary and can create ambiguity.
 - `tailwind.config.js` is a Tailwind 3-style content config in a Tailwind 4 project and may be redundant; review before removal because tooling conventions can vary.
 - `components/FeedbackWidget.tsx` uses `FormEvent` as a value import instead of `import type`; valid, but a minor consistency improvement.
-- The feedback API contains a personal destination address and Resend onboarding sender in source. This is operational configuration rather than a secret, but should be reviewed before production.
+- Contact email is inbound through Cloudflare Email Routing to the verified
+  Gmail destination. The website does not contain a transactional contact-email
+  sender.
 - Global navigation and metadata do not yet satisfy the approved global architecture.
 
 ## 7. Approved Architecture Comparison
@@ -400,7 +419,7 @@ Each row is one counted cleanup item. “Safe” means there is strong repositor
 | `app/how-it-works/page.tsx` | Approved content at a top-level route; embeds FAQ and links to missing routes | High | REVIEW |
 | `app/results/page.tsx` | Placeholder-only results structure built from upcoming tournaments | High | REVIEW |
 | `app/results/[slug]/page.tsx` | Placeholder result shell; used incorrectly as Event Info; missing hero JPG | High | REVIEW |
-| `app/api/feedback/route.ts` | Active but undocumented support route; ignores category and has provisional mail settings | Medium | REVIEW |
+| Former contact email endpoint | Removed 2026-07-23; widget uses visitor-initiated email | None | REMOVED |
 | `app/layout.tsx` | Starter metadata and Header not global | High | REVIEW |
 | `components/Header.tsx` | Active, but broken/placeholder links and only rendered on Home | High | REVIEW |
 | `components/Footer.tsx` | Active, but broken fragments, missing Contact, placeholder social links | High | REVIEW |
@@ -468,13 +487,15 @@ features, or architecture. Repairs made:
   `/contact`, and `/register?tournament=...`.
 - Kept AOY Standings, Event Info, Register, Official Rules, Sponsors, and Login
   visible but intentionally disabled until their approved routes are built.
-- Changed Footer Contact Us to open the existing feedback form.
+- Changed Footer Contact Us to open the then-current contact experience. The
+  current implementation uses visitor-initiated email.
 - Rendered Facebook, Instagram, and YouTube labels as non-clickable placeholders
   because no verified social URLs are documented.
 - Replaced default Create Next App metadata with the approved site title and
   description.
-- Moved feedback recipient and sender configuration to `FEEDBACK_TO_EMAIL` and
-  `FEEDBACK_FROM_EMAIL`, with a server configuration error when either is absent.
+- A later 2026-07-23 contact-architecture change removed the server email
+  endpoint and its environment configuration; this earlier audit action is no
+  longer current.
 - Revised the README's blanket “Coming Soon” statement to describe the active
   implementation factually.
 

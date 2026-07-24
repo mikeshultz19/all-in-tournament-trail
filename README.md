@@ -1,75 +1,138 @@
 # All In Tournament Trail
 
-Official website for the All In Tournament Trail.
+All In Tournament Trail (AITT) is a bass-fishing tournament website and staff
+administration application. The public site presents tournament information,
+registration guidance, conditions, results, rules, and standings. The staff
+application is named **AITT Admin Center**.
 
-## Fish Your Way. Bet Your Way. Win Your Way.
+- Canonical domain: <https://allintrail.com>
+- Source control: GitHub
+- Planned production hosting: Vercel
+- DNS and inbound email routing: Cloudflare
+- Backend: Supabase PostgreSQL, with Supabase Auth and Storage planned
 
-The All In Tournament Trail is a unique bass fishing tournament series that allows anglers to choose their own level of competition through separate Bronze, Silver, and Gold Pots.
+The domain is registered, but Vercel production deployment and custom-domain
+configuration are not yet complete. `www.allintrail.com` should redirect to the
+canonical domain when DNS and hosting are configured.
 
-### Current Website
+## Current status
 
-- Homepage with trail news, featured tournament information, AOY preview,
-  and tournament-result placeholders
-- Tournament schedule
-- Tournament results index and per-tournament result shells
-- Public registration page and itemized registration summary
-- Public Official Tournament Rules and Participant Liability Waiver pages
-- Tournament watch page
-- How It Works and FAQ content
-- Site feedback form backed by Resend configuration
+The public-site design and Admin dashboard design are complete. The first
+Supabase-backed feature is operational:
 
-The project uses Next.js 16, React 19, TypeScript, and Tailwind CSS 4. The
-approved site structure is documented in `docs/MasterSiteMap.md`. The complete
-operational registration workflow and policy acknowledgment are implemented.
-Durable registration confirmation, full results, AOY, sponsors, contact, and
-remaining policy pages are scheduled for future development. Major completed
-and planned milestones are recorded in `docs/VersionHistory.md`.
+- Migration `supabase/migrations/202607230001_create_tournaments.sql` has been
+  applied to the hosted project.
+- `public.tournaments` exists with Row Level Security enabled.
+- `supabase/seed.sql` has created the Lake Fork Open record.
+- AITT Admin Center loads real tournament data from Supabase.
+- Tournament Information reads and updates successfully, and saved changes
+  persist after refresh.
+- Cloudflare Email Routing forwards `info@allintrail.com` to the verified Gmail
+  destination.
 
-The authoritative requirements for registration, tournament-morning
-operations, weather decisions, public tournament status, and Tournament
-Director workflows are defined in
-`docs/TOURNAMENT_OPERATIONS_AND_REGISTRATION_PROCESS.md`.
+Tournament creation/deletion is not verified. Public homepage and schedule
+integration, production deployment, Supabase Auth, Storage, announcements,
+conditions, and results publishing are not verified complete. See
+[Project Status](docs/ProjectStatus.md).
 
-The complete Early Online Registration flow, responsibility boundaries,
-server-authoritative pricing, registration states, Square handoff, recovery
-behavior, confirmation requirements, and production prerequisites are defined
-in `docs/ONLINE_REGISTRATION_WORKFLOW.md`. Phase 1 server validation and review
-are implemented, but Square checkout remains disabled until durable
-registration persistence and verified server-side payment finalization exist.
+## Technology
 
-Early Online Registration will require immediate Square credit card, debit
-card, or supported Apple Pay payment with a 3% Card Processing Fee. Apple Pay
-availability depends on the angler's device and browser. Production checkout
-remains unavailable until registration persistence and secure server-side
-payment confirmation are implemented. Tournament-Morning Registration is
-conducted by the Tournament Director in WeighFish; cash has no fee, while card,
-Apple Pay, and other supported contactless-wallet payments use the Square
-reader with the same 3% fee. The public homepage advertises these approved
-payment options. See `public/brands/README.md` for the official Apple Pay mark
-asset requirements; only unmodified, Apple-provided artwork may be used. The
-protected post-tournament WeighFish CSV import is planned and not yet
-implemented.
+- Next.js 16 and React 19
+- TypeScript
+- Tailwind CSS 4
+- Supabase PostgreSQL
+- Vitest and Testing Library
+- Planned: Supabase Auth, Supabase Storage, and Vercel
 
-### AccuWeather tournament forecast setup
+The project is beginning on free service tiers.
 
-The homepage Tournament Conditions panel uses AccuWeather only when the next
-tournament is within the five-day forecast horizon. To enable live forecasts:
+## Local setup
 
-1. Create an AccuWeather developer account and subscription, then copy the API
-   key from the account dashboard.
-2. Copy `.env.example` to `.env.local` and set `ACCUWEATHER_API_KEY`. Keep the
-   key in the deployment platform's server-side environment settings in
-   production. Never commit or expose it as a `NEXT_PUBLIC_` value.
-3. Use AccuWeather's Locations API or developer console to obtain the stable
-   location key for each tournament location. Set `accuWeatherLocationKey` on
-   that tournament in `data/tournaments.ts`; do not use browser location
-   lookup.
-4. Keep the visible linked `Weather data by AccuWeather` attribution in the
-   Tournament Conditions panel. If an official logo is added later, obtain it
-   from AccuWeather's current brand resources, confirm the license permits its
-   use, and do not redraw or modify it.
+1. Install Node.js and npm.
+2. Clone the GitHub repository.
+3. Install dependencies:
 
-The panel shows a closer-to-event message outside the forecast horizon and a
-restrained unavailable message when the key, location key, or provider is
-unavailable. Safe Light and Tournament Status continue to render without
-AccuWeather. No browser-side weather request is used.
+   ```bash
+   npm install
+   ```
+
+4. Copy `.env.example` to `.env.local`.
+5. Set the server-side Supabase variables:
+
+   ```text
+   SUPABASE_URL=
+   SUPABASE_ANON_KEY=
+   ```
+
+   Do not commit real values. The publishable Supabase key is used as the
+   anonymous/public key. Never expose a secret or service-role key to browser
+   code or documentation.
+
+6. Start the development server:
+
+   ```bash
+   npm run dev
+   ```
+
+Restart Next.js after changing environment variables.
+
+## Contact
+
+The Contact page and floating Contact widget open the visitor's configured
+email application with a message addressed to `info@allintrail.com`. Cloudflare
+Email Routing handles inbound forwarding to Gmail. The website does not submit
+contact messages through a server endpoint and does not send transactional
+email.
+
+## Database setup
+
+Use the repository migration rather than manually creating table columns:
+
+```bash
+npx supabase login
+npx supabase link
+npx supabase db push --dry-run
+npx supabase db push
+```
+
+If the current CLI setup does not expose a working seed command, run
+`supabase/seed.sql` in the hosted project's SQL Editor. The seed is idempotent
+by tournament slug. Verify the `public.tournaments` table and the
+`lake-fork-open-2026` row afterward.
+
+Full setup and permission details are in
+[Supabase Setup](docs/SUPABASE_SETUP.md).
+
+## Development commands
+
+```bash
+npm run dev
+npm run lint
+npx tsc --noEmit
+npm test
+npm run build
+```
+
+## Temporary security warning
+
+The tournaments table currently permits anonymous reads and has a temporary
+anonymous table-level `UPDATE` privilege and RLS policy for development. That
+access is **not safe for production**. Before launch, implement Supabase Auth,
+require authenticated Admin users for writes, and revoke anonymous update
+access. Database grants and RLS policies are separate security layers; both
+must be correct.
+
+## Documentation
+
+- [Project Status](docs/ProjectStatus.md)
+- [Deployment and Hosting](docs/PROJECT_DEPLOYMENT_CHECKLIST.md)
+- [Supabase Setup](docs/SUPABASE_SETUP.md)
+- [Tournament Data Model](docs/DataModel.md)
+- [AITT Admin Center Workflow](docs/ADMIN_CENTER_WORKFLOW.md)
+- [Development Workflow](docs/AI_RELEARN.md)
+- [Security Notes](docs/SECURITY_NOTES.md)
+- [Roadmap](docs/DevelopmentRoadmap.md)
+- [Changelog](docs/CHANGELOG.md)
+- [Approved Master Sitemap](docs/MasterSiteMap.md)
+- [Registration Workflow](docs/ONLINE_REGISTRATION_WORKFLOW.md)
+- [Tournament Operations](docs/TOURNAMENT_OPERATIONS_AND_REGISTRATION_PROCESS.md)

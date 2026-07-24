@@ -15,6 +15,30 @@ Use this document to record approved project decisions that affect architecture,
 
 ## Decisions
 
+### 2026-07-23 — Establish the production platform and canonical domain
+
+- **Status:** Approved
+- **Context:** AITT needs a maintainable launch architecture and one public URL.
+- **Decision:** Use `https://allintrail.com` as the canonical domain, GitHub for source control, Vercel for planned production hosting, Cloudflare for registration/DNS where applicable, and Supabase for PostgreSQL with Auth and Storage planned. Begin on free tiers. Redirect `www` when deployment and DNS are configured.
+- **Impact:** Deployment, environment setup, security, and public URLs.
+- **Follow-up:** Complete Vercel deployment and Cloudflare DNS; neither is currently verified complete.
+
+### 2026-07-23 — Make Supabase tournaments the first live Admin data source
+
+- **Status:** Approved
+- **Context:** Tournament Information needs one durable source shared by Admin and public consumers.
+- **Decision:** Apply the repository tournaments migration, seed Lake Fork Open, and use the server-side Supabase client with `SUPABASE_URL` and `SUPABASE_ANON_KEY`. Keep public reads under RLS. Anonymous updates are temporary development access only.
+- **Impact:** `public.tournaments`, AITT Admin Center, future homepage and schedule integration.
+- **Follow-up:** Verify editing, add Auth, and replace anonymous update access before launch.
+
+### 2026-07-23 — Scope AITT Admin Center to the selected tournament
+
+- **Status:** Approved
+- **Context:** Staff must always know which tournament they are editing.
+- **Decision:** Show Current Tournament context, preserve the selected ID in Admin links, split readiness into before/after checklists, and use four management areas: Tournament Information, News & Announcements, Tournament Conditions, and Tournament Results. Sponsors are outside tournament readiness.
+- **Impact:** Admin dashboard, selector, readiness, and navigation.
+- **Follow-up:** Replace remaining placeholder readiness values as each feature is implemented.
+
 ### 2026-07-22 — Strengthen the participant liability waiver for on-water risk
 
 - **Status:** Approved Draft Pending Legal Review
@@ -254,9 +278,9 @@ Use this document to record approved project decisions that affect architecture,
   later amended.
 - **Reasoning:** A single source prevents pricing, terminology, timing,
   eligibility, privacy, Rules, and FAQ requirements from diverging across the
-  public site and Admin Portal.
+  public site and AITT Admin Center.
 - **Impact:** Future registration, Early Registrations, Rules, FAQ, tournament
-  status, weather notice, safe-light, Admin Portal, payment, and WeighFish work
+  status, weather notice, safe-light, AITT Admin Center, payment, and WeighFish work
   must conform to the specification.
 - **Follow-up:** Resolve the open business decisions recorded in section 20 of
   the specification before implementing behavior that depends on them.

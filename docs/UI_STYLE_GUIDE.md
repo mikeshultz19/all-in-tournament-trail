@@ -18,7 +18,7 @@ standards or create a broader design system.
 | Register Now | Submit Registration | Primary homepage action while registration is open. |
 | Registration closes | Registration cutoff | Introduces the exact published deadline. |
 | Insurance Pot | Insurance | Use the full name for the selectable pot. |
-| Tournament Director | Admin | “Admin Portal” may remain the product-area name. |
+| Tournament Director | Admin | Use “AITT Admin Center” for the product area. |
 | Safe Light | Launch Time | Final launch timing remains the Tournament Director’s decision. |
 | Tournament Status | Event Status | Use for public operational status. |
 | Early Registration | Early Online Registration when brevity is appropriate | Use the longer term when distinguishing submission methods. |
@@ -126,5 +126,5 @@ be ambiguous, following the existing registration and operations conventions.
 ## Scope
 
 This guide applies to public pages, registration, Rules and FAQ, confirmation
-screens, receipts and emails, user-facing Admin Portal wording, and future
+screens, receipts and emails, user-facing AITT Admin Center wording, and future
 features.

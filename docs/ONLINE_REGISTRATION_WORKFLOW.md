@@ -119,7 +119,7 @@ the current document versions from the same server-side loader, so the public
 policy content is not manually duplicated in page components.
 
 Production payment is disabled. The repository currently has no durable
-registration database, Supabase client, authenticated Admin Portal, membership
+registration database or authenticated Admin access, membership
 lookup service, Square SDK payment creation, verified Square webhook handler,
 or registration confirmation email service. The application must not imply
 that a disabled checkout created a registration or attempted payment.
@@ -389,7 +389,7 @@ The snapshot records what was presented and paid.
 | Square notification repeats | Record/process the provider event once; never create a duplicate registration. |
 | Capacity fills during checkout | Honor a valid active hold or reject before capture; never over-confirm capacity. |
 | Price changes during a draft | Expire the quote and require review of the newly calculated total. |
-| Payment succeeds; email fails | Keep the registration confirmed; record email failure and permit an authorized resend. |
+| Payment succeeds; email fails | Keep the registration confirmed; record email failure and permit an authorized redelivery. |
 | Payment and registration disagree | Preserve both records and enter Manual Review; do not silently overwrite history. |
 
 ## 10. Capacity and Temporary Holds
@@ -412,16 +412,18 @@ number, tournament, date, venue, anglers, selected options, Total Paid, Card
 Processing Fee, registration status, tournament-morning instructions, current
 policy link, and correction contact.
 
-The existing Resend usage is limited to the feedback route and is not a shared
-registration email service. Phase 2 must add a server-only email adapter,
-approved sender configuration, delivery-status metadata, retry behavior, and
-an authorized resend action. Email failure never reverses payment or
-confirmation.
+No transactional registration email service is currently implemented.
+Cloudflare Email Routing only forwards inbound contact email and is not an
+application email-sending API. Phase 2 must add an explicitly approved
+server-only email adapter, approved sender configuration, delivery-status
+metadata, retry behavior, and an authorized redelivery action. Email failure
+never reverses payment or confirmation.
 
 ## 12. Administrative Experience
 
-The repository has no Admin Portal or authentication implementation. Phase 2
-must add a protected, server-authorized registration view containing:
+AITT Admin Center exists for tournament administration, but authentication and
+registration administration are not implemented. Phase 2 must add a protected,
+server-authorized registration view containing:
 
 - Confirmation number, tournament, type, anglers, and date registered.
 - Selected options and price snapshot.
@@ -481,7 +483,7 @@ Before Square sandbox or production checkout is enabled:
 8. Verify Square callbacks or webhooks and make event processing idempotent.
 9. Implement payment-status retrieval for browser-interruption recovery.
 10. Implement confirmation lookup without exposing private records.
-11. Add the registration confirmation email adapter, delivery state, retry, and authorized resend.
+11. Add the registration confirmation email adapter, delivery state, retry, and authorized redelivery.
 12. Build Admin authentication, authorization, registration review, and reconciliation views.
 13. Add rate limiting, operational monitoring, alerting, and recovery runbooks.
 14. Complete Square sandbox, Apple Pay domain, failure, refresh, concurrency, accessibility, and end-to-end testing.

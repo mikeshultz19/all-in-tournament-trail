@@ -8,17 +8,18 @@ describe("SiteCraft footer credit", () => {
   const html = renderToStaticMarkup(<Footer />);
 
   it("renders one accessible badge linking to the Contact page", () => {
-    expect(html.match(/href="\/contact"/g)).toHaveLength(1);
+    expect(html.match(/href="\/contact"/g)).toHaveLength(2);
     expect(html).toContain("url=%2Fbrands%2Fsitecraft.png");
     expect(html).toContain('alt="SiteCraft Web Design"');
-    expect(html).not.toContain("<svg");
   });
 
-  it("preserves the existing footer destinations and avoids nested controls", () => {
-    for (const href of ["/", "/schedule", "/results", "/how-it-works"]) {
+  it("renders the compact navigation and avoids nested controls", () => {
+    for (const href of ["/", "/schedule", "/results", "/rules", "/contact"]) {
       expect(html).toContain(`href="${href}"`);
     }
-    expect(html).toContain("support@allintournamenttrail.com");
+    expect(html).toContain(">Facebook</a>");
+    expect(html).toContain('rel="noopener noreferrer"');
+    expect(html).toContain("Back to Top");
     expect(renderToStaticMarkup(<SiteCraftBadge />)).not.toContain("<button");
   });
 });

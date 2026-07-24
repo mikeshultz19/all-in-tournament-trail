@@ -4,15 +4,30 @@ import Link from "next/link";
 import Header from "@/components/Header";
 import {
   getTournamentImage,
-  tournaments,
-  type Tournament,
 } from "@/data/tournaments";
+import {
+  getTournaments,
+} from "@/lib/tournaments";
+import {
+  toPublicTournament,
+  type PublicTournamentRecord,
+} from "@/lib/tournament-record-adapter";
 import { getOnlineRegistrationEligibility } from "@/lib/online-registration";
 import { getTournamentDisplay } from "@/lib/tournament-display";
 
 const REGISTRATION_ROUTE = "/register";
 
-function TournamentRow({ tournament }: { tournament: Tournament }) {
+const lifecycleStatusStyles = {
+  Scheduled: "border-sky-500/40 text-sky-300",
+  "Registration Open": "border-emerald-500/40 text-emerald-300",
+  "Registration Closed": "border-neutral-500/40 text-neutral-300",
+  Postponed: "border-[#D4A017]/50 text-[#D4A017]",
+  Cancelled: "border-red-500/40 text-red-300",
+  "Tournament Day": "border-sky-500/40 text-sky-300",
+  "Results Published": "border-emerald-500/40 text-emerald-300",
+} as const;
+
+function TournamentRow({ tournament }: { tournament: PublicTournamentRecord }) {
   const thumbnailImage =
     tournament.thumbnailImage ?? getTournamentImage(tournament);
   const registration = getOnlineRegistrationEligibility(tournament);
@@ -47,6 +62,11 @@ function TournamentRow({ tournament }: { tournament: Tournament }) {
         <p className="text-sm leading-6 text-[#B8B8B8]">
           {tournament.description}
         </p>
+        <span
+          className={`mt-3 inline-flex border px-2.5 py-1 text-[10px] font-black uppercase tracking-[0.12em] ${lifecycleStatusStyles[tournament.lifecycleStatus]}`}
+        >
+          {tournament.lifecycleStatus}
+        </span>
         <dl className="mt-4 grid grid-cols-1 gap-x-5 gap-y-3 border-t border-white/10 pt-4 sm:grid-cols-2 xl:grid-cols-5">
           <div>
             <dt className="text-[10px] font-black uppercase tracking-[0.12em] text-[#D4A017]">Date</dt>
@@ -81,7 +101,19 @@ function TournamentRow({ tournament }: { tournament: Tournament }) {
   );
 }
 
-export default function SchedulePage() {
+export const dynamic = "force-dynamic";
+
+export default async function SchedulePage() {
+  let tournaments: PublicTournamentRecord[] = [];
+  let loadFailed = false;
+
+  try {
+    tournaments = (await getTournaments()).map(toPublicTournament);
+  } catch (error) {
+    console.error("Tournament schedule load failed.", error);
+    loadFailed = true;
+  }
+
   return (
     <main className="min-h-screen bg-[#0B0B0B] text-[#F2F2F2]">
       <Header />
@@ -102,9 +134,17 @@ export default function SchedulePage() {
             <span className="text-center">Register</span>
           </div>
 
-          {tournaments.map((tournament) => (
-            <TournamentRow key={tournament.slug} tournament={tournament} />
-          ))}
+          {tournaments.length > 0 ? (
+            tournaments.map((tournament) => (
+              <TournamentRow key={tournament.slug} tournament={tournament} />
+            ))
+          ) : (
+            <p className="px-5 py-10 text-center text-sm text-neutral-400">
+              {loadFailed
+                ? "We could not load the tournament schedule. Please try again."
+                : "No tournaments have been scheduled yet."}
+            </p>
+          )}
         </div>
       </section>
     </main>

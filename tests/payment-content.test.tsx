@@ -1,6 +1,15 @@
 import { readFileSync } from "node:fs";
 import { renderToStaticMarkup } from "react-dom/server";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
+
+vi.mock("@/lib/tournaments", async () => {
+  const { databaseTournament } = await import(
+    "@/tests/tournament-db-fixture"
+  );
+  return {
+    getFeaturedTournament: vi.fn(async () => databaseTournament),
+  };
+});
 
 import HowItWorksPage from "@/app/how-it-works/page";
 import HomePage from "@/app/page";
@@ -64,7 +73,7 @@ describe("approved payment content", () => {
         getTournamentOperationsViewModel(tournament, new Date("2026-07-21T12:00:00Z")),
       ]),
     );
-    const html = renderToStaticMarkup(<RegistrationForm operationsBySlug={operationsBySlug} policyVersions={{ rulesVersion: "1.0", waiverVersion: "1.0" }} />);
+    const html = renderToStaticMarkup(<RegistrationForm tournaments={tournaments} operationsBySlug={operationsBySlug} policyVersions={{ rulesVersion: "1.0", waiverVersion: "1.0" }} />);
     expect(html).toContain("Card Processing Fee (3%)");
     expect(html).toContain("Subtotal");
     expect(html).toContain("Final Total");

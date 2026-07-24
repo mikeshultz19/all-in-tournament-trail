@@ -26,9 +26,9 @@ export default function ContactPage() {
         </p>
         <a
           className="mt-6 inline-flex min-h-11 items-center text-sm font-bold text-[#D4A017] transition hover:text-yellow-300 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#D4A017]"
-          href="mailto:support@allintournamenttrail.com"
+          href="mailto:info@allintrail.com"
         >
-          support@allintournamenttrail.com
+          info@allintrail.com
         </a>
       </section>
     </main>

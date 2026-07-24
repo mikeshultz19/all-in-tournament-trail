@@ -1,10 +1,21 @@
 import { renderToStaticMarkup } from "react-dom/server";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
+
+vi.mock("@/lib/tournaments", async () => {
+  const { databaseTournament } = await import(
+    "@/tests/tournament-db-fixture"
+  );
+  return {
+    getTournaments: vi.fn(async () => [databaseTournament]),
+  };
+});
 
 import SchedulePage from "@/app/schedule/page";
 import FeaturedTournament from "@/components/FeaturedTournament";
 import { tournaments } from "@/data/tournaments";
 import { getTournamentDisplay } from "@/lib/tournament-display";
+import { toPublicTournament } from "@/lib/tournament-record-adapter";
+import { databaseTournament } from "@/tests/tournament-db-fixture";
 
 describe("shared tournament display data", () => {
   it("maps stored tournament fields for both public views", () => {
@@ -39,9 +50,11 @@ describe("shared tournament display data", () => {
     expect(homepage).toContain("5:00 AM");
   });
 
-  it("renders schedule values from the same tournament source", () => {
-    const schedule = renderToStaticMarkup(<SchedulePage />);
-    const display = getTournamentDisplay(tournaments[0]);
+  it("renders schedule values from the same tournament source", async () => {
+    const schedule = renderToStaticMarkup(await SchedulePage());
+    const display = getTournamentDisplay(
+      toPublicTournament(databaseTournament),
+    );
 
     for (const value of [display.date, display.ramp, display.location, display.hours, display.stopFishing, display.launchType]) {
       expect(schedule).toContain(value);

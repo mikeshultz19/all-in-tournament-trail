@@ -130,7 +130,9 @@ it uses and can customize it completely to match the All-In design.
 
 ### Supabase: The Online Filing Cabinet
 
-Supabase is the planned online filing cabinet for permanent project records.
+Supabase is the online filing cabinet for tournament records today. AITT Admin
+Center already reads live tournament data from `public.tournaments`.
+Registration, results, Auth, and Storage persistence remain planned.
 It will store information such as:
 
 - Members
@@ -165,9 +167,9 @@ stores and shares that history online.
 
 ### Vercel: The Website's Home on the Internet
 
-Vercel hosts the public website. When someone visits
-`allintournamenttrail.com`, Vercel delivers the website to that person's
-browser.
+Vercel is the planned production host. After deployment is verified, a visit to
+`allintrail.com` will load the website from Vercel. Production deployment is
+not yet verified complete.
 
 Vercel also knows how to build and run a Next.js project, making it the bridge
 between the code stored in the repository and the website used by visitors.
@@ -264,7 +266,7 @@ Supabase
         ↓
 Confirmation
         ↓
-Admin Portal
+AITT Admin Center
         ↓
 CSV Export
         ↓
@@ -278,7 +280,7 @@ AOY
 The registration form will send validated information to a Next.js Server
 Action. That server-side step will safely save the registration in Supabase.
 The visitor will receive confirmation, while authorized administrators will be
-able to manage the stored information through the Admin Portal.
+able to manage the stored information through AITT Admin Center.
 
 Early Online Registrations will be stored only after Square reports a successful credit or debit card payment. A 3% Card Processing Fee applies. Tournament-Morning Registration does not run through the AITT website; the Tournament Director enters walk-up teams or individuals in WeighFish and records Cash or Card. Card payments use the Square reader with the same fee, while cash has no fee.
 

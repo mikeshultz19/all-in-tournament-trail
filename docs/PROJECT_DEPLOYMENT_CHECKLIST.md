@@ -29,7 +29,32 @@ operations.
 - [Master Site Map](MasterSiteMap.md)
 - [README](../README.md)
 
-**Last Updated:** 2026-07-22
+**Last Updated:** 2026-07-23
+
+## Verified Platform Status
+
+- [x] Registered `allintrail.com`.
+- [x] Selected `https://allintrail.com` as the canonical domain.
+- [x] Connected source control to GitHub.
+- [x] Selected Vercel for planned production hosting.
+- [x] Selected Cloudflare for domain registration/DNS where applicable.
+- [x] Enabled Cloudflare Email Routing for `allintrail.com`.
+- [x] Created and tested inbound forwarding for `info@allintrail.com`.
+- [x] Connected the CLI and repository to hosted Supabase.
+- [x] Applied the tournaments migration and seeded Lake Fork Open.
+- [ ] Deploy to Vercel and configure production environment variables.
+- [ ] Complete Cloudflare production DNS and HTTPS configuration.
+- [ ] Redirect `www.allintrail.com` to `https://allintrail.com`.
+- [ ] Implement Supabase Auth and remove anonymous update access.
+
+Initial launch uses free service tiers. Provider selection and domain
+registration do not imply deployment is complete. See
+[Supabase Setup](SUPABASE_SETUP.md) for database commands.
+
+Cloudflare Email Routing handles inbound forwarding to the verified Gmail
+destination. It is not an application transactional-email service. The Contact
+page and widget open the visitor's email application; the website has no
+server-side contact submission endpoint.
 
 > **Operational use:** This document tracks readiness, ownership, and completion;
 > it does not replace the authoritative business rules and procedures in the

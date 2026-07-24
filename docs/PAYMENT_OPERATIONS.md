@@ -259,9 +259,10 @@ After archival, changes require an authorized correction entry. Reopening must p
 6. **Distribute and acknowledge.** Record the distribution date, method, recipient, and acknowledgement or other evidence when available.
 7. **Account for payouts.** Include issued, delivered, outstanding, voided, and corrected payouts in tournament reconciliation. Voids and reissues preserve the original history.
 
-## 16. Admin Portal Requirements
+## 16. AITT Admin Center Requirements
 
-The future protected Admin Portal must support the operating process with:
+The future authenticated payment area within AITT Admin Center must support the
+operating process with:
 
 - A tournament-specific payment queue.
 - Payment-status, registration-period, provider, date, and exception filters.

@@ -14,6 +14,51 @@
 - Follow the approved master sitemap in `docs/MasterSiteMap.md`.
 
 ==================================================
+CURRENT ARCHITECTURE — VERIFIED 2026-07-23
+==================================================
+
+- Public domain: `allintrail.com`
+- Canonical future production URL: `https://allintrail.com`
+- Admin application: AITT Admin Center
+- Backend: Supabase PostgreSQL
+- Prisma is not used.
+- Planned production hosting: Vercel; production deployment is not verified.
+- DNS and inbound email routing: Cloudflare
+- Public contact address: `info@allintrail.com`
+
+The Contact page and floating Contact widget use `mailto:` links to open the
+visitor's configured email application. Cloudflare Email Routing forwards
+inbound mail to the verified Gmail destination; it is not an application
+email-sending API. There is no server-side contact submission endpoint.
+
+Resend has been removed. Do not recreate `app/api/feedback`, add Resend, or add
+contact-email environment variables without explicit approval.
+
+AITT Admin Center reads live Tournament Information from Supabase, updates it
+successfully, and preserves saved values after refresh. Describe this as the
+verified Tournament Information read/update workflow, not full CRUD. Tournament
+creation and deletion are not verified.
+
+Anonymous `SELECT` and `UPDATE` table privileges currently support development.
+Anonymous `UPDATE` is temporary and must be replaced with authenticated Admin
+policies before production. Supabase Auth, Storage, News & Announcements,
+Tournament Conditions, Tournament Results, WeighFish import, and winner-photo
+uploads are not complete.
+
+==================================================
+NEXT IMPLEMENTATION ORDER
+==================================================
+
+2. News & Announcements
+3. Tournament Conditions
+4. Tournament Results
+5. Authentication and Production Security
+
+See `docs/ProjectStatus.md` and `docs/DevelopmentRoadmap.md` for the full,
+ordered work plan. Do not add Sponsors to the four tournament management areas
+or Website Readiness workflow.
+
+==================================================
 HOMEPAGE SPONSOR PANEL
 ==================================================
 
@@ -114,7 +159,9 @@ Allow administrators to:
 - choose whether it appears on the homepage
 - set its display order
 
-Changes made in the admin portal must automatically update SponsorHome.
+Future sponsor administration must remain separate from tournament readiness.
+If sponsor editing is implemented later, published changes must update
+SponsorHome without adding Sponsors to the four-card tournament dashboard.
 
 Do not hard-code sponsor names, images, or links into the homepage component.
 

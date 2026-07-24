@@ -7,8 +7,8 @@ import AOYStandings from "@/components/AOYStandings";
 import TournamentConditions from "@/components/TournamentConditions";
 import SponsorHome from "@/components/SponsorHome";
 import { getHomepageSponsors } from "@/data/sponsors";
-import { tournaments } from "@/data/tournaments";
-import { getNextRelevantTournament } from "@/lib/tournament-operations";
+import { getFeaturedTournament } from "@/lib/tournaments";
+import { toPublicTournament } from "@/lib/tournament-record-adapter";
 import { getTournamentOperationsViewModel } from "@/lib/tournament-view-model";
 import { getAccuWeatherTournamentForecast } from "@/lib/accuweather";
 import { getPublicEarlyEntries } from "@/data/early-registrations";
@@ -17,7 +17,17 @@ import { getTournamentEntrySummary, type TournamentEntrySummary } from "@/lib/pu
 export const revalidate = 10800;
 
 export default async function HomePage() {
-  const tournament = getNextRelevantTournament(tournaments);
+  let tournament = null;
+
+  try {
+    const featuredTournament = await getFeaturedTournament();
+    tournament = featuredTournament
+      ? toPublicTournament(featuredTournament)
+      : null;
+  } catch (error) {
+    console.error("Homepage featured tournament load failed.", error);
+  }
+
   const operations = tournament ? getTournamentOperationsViewModel(tournament) : null;
   let earlyRegistrationStatsUnavailable = false;
   let earlyRegistrationSummary: TournamentEntrySummary = getTournamentEntrySummary([]);
@@ -50,6 +60,7 @@ export default async function HomePage() {
             <div data-tournament-column="right" className="min-w-0 lg:col-start-2 lg:row-start-1">
               <FeaturedTournament
                 tournament={tournament ?? null}
+                lifecycleStatus={tournament?.lifecycleStatus}
                 operations={operations}
                 earlyRegistrationSummary={earlyRegistrationSummary}
                 earlyRegistrationStatsUnavailable={earlyRegistrationStatsUnavailable}
@@ -57,7 +68,7 @@ export default async function HomePage() {
             </div>
 
             <div data-tournament-column="left" className="flex min-w-0 flex-col gap-6 lg:col-start-1 lg:row-start-1">
-              <LatestTournamentNews tournament={tournament} />
+              <LatestTournamentNews tournament={tournament ?? undefined} />
               <SponsorHome sponsors={homepageSponsors} />
               <div className="min-w-0">
                 {tournament && operations && weather ? (
