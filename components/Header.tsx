@@ -59,7 +59,7 @@ export default function Header({ activeItem }: { activeItem?: string }) {
               href="/how-it-works"
               className="whitespace-nowrap text-sm font-black uppercase tracking-[0.12em] text-yellow-400 transition duration-200 hover:text-yellow-300 hover:drop-shadow-[0_0_8px_rgba(250,204,21,0.45)]"
             >
-              How It Works
+              How AITT Works
             </Link>
 
             <Link

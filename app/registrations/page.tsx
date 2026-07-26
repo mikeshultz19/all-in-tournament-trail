@@ -4,9 +4,9 @@ import EarlyEntriesTable from "@/components/EarlyEntriesTable";
 import Header from "@/components/Header";
 import PageHeader from "@/components/PageHeader";
 import TournamentEntrySummary from "@/components/TournamentEntrySummary";
-import { getPublicEarlyEntries } from "@/data/early-registrations";
-import { tournaments } from "@/data/tournaments";
-import { getNextRelevantTournament } from "@/lib/tournament-operations";
+import { getPublicEarlyEntriesForTournament } from "@/lib/tournament-registrations";
+import { getFeaturedTournament, getNextUpcomingTournament } from "@/lib/tournaments";
+import { toPublicTournament } from "@/lib/tournament-record-adapter";
 import { getTournamentOperationsViewModel } from "@/lib/tournament-view-model";
 import { getTournamentEntrySummary } from "@/lib/public-early-entry";
 
@@ -15,20 +15,26 @@ export const metadata: Metadata = {
   description: "View the current tournament field and optional pot participation.",
 };
 
-export default function EarlyRegistrationsPage() {
-  const tournament = getNextRelevantTournament(tournaments) ?? tournaments[0];
+export const dynamic = "force-dynamic";
 
-  if (!tournament) {
+export default async function EarlyRegistrationsPage() {
+  const dbTournament =
+    (await getFeaturedTournament()) ?? (await getNextUpcomingTournament());
+
+  if (!dbTournament) {
     return (
       <main className="min-h-screen bg-black text-white">
         <Header />
         <PageHeader title="Tournament Entries" compact />
-        <p className="mx-auto max-w-7xl px-5 py-12 text-neutral-300 sm:px-6">No tournament is currently available.</p>
+        <p className="mx-auto max-w-7xl px-5 py-12 text-neutral-300 sm:px-6">
+          No tournament is currently available.
+        </p>
       </main>
     );
   }
 
-  const entries = getPublicEarlyEntries(tournament.slug);
+  const tournament = toPublicTournament(dbTournament);
+  const entries = await getPublicEarlyEntriesForTournament(dbTournament.id);
   const summary = getTournamentEntrySummary(entries);
   const operations = getTournamentOperationsViewModel(tournament);
   const registrationHref = `/register?tournament=${tournament.slug}`;

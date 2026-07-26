@@ -1,5 +1,5 @@
 import { renderToStaticMarkup } from "react-dom/server";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 
 import EarlyRegistrationsPage from "@/app/registrations/page";
 import EarlyEntriesTable from "@/components/EarlyEntriesTable";
@@ -10,8 +10,18 @@ import { earlyRegistrationRecords, getPublicEarlyEntries } from "@/data/early-re
 import { tournaments } from "@/data/tournaments";
 import { getTournamentEntrySummary, toPublicEarlyEntry } from "@/lib/public-early-entry";
 import { formatPublicRegistrationTimestamp } from "@/lib/tournament-time";
+import { databaseTournament } from "@/tests/tournament-db-fixture";
 
 const entries = getPublicEarlyEntries("eagle-mountain-2026");
+
+vi.mock("@/lib/tournaments", () => ({
+  getFeaturedTournament: async () => databaseTournament,
+  getNextUpcomingTournament: async () => databaseTournament,
+}));
+
+vi.mock("@/lib/tournament-registrations", () => ({
+  getPublicEarlyEntriesForTournament: async () => entries,
+}));
 
 describe("Tournament Entries", () => {
   it("renders the compact registration dashboard from the shared summary", () => {
@@ -31,8 +41,8 @@ describe("Tournament Entries", () => {
     expect(unavailable).not.toContain("Total Entries");
   });
 
-  it("renders the public page and a semantic spreadsheet-style table", () => {
-    const html = renderToStaticMarkup(<EarlyRegistrationsPage />);
+  it("renders the public page and a semantic spreadsheet-style table", async () => {
+    const html = renderToStaticMarkup(await EarlyRegistrationsPage());
     expect(html).toContain("Tournament Entries");
     expect(html).toContain("<table");
     expect(html).toContain("<thead");
@@ -47,7 +57,7 @@ describe("Tournament Entries", () => {
     expect(html).toContain("View Tournament Entries");
   });
 
-  it("shows dynamically derived entry and optional-pot counts", () => {
+  it("shows dynamically derived entry and optional-pot counts", async () => {
     const summary = getTournamentEntrySummary(entries);
     expect(summary).toEqual({
       totalEntries: 4,
@@ -59,7 +69,7 @@ describe("Tournament Entries", () => {
       goldEntries: 1,
       insurancePotEntries: 2,
     });
-    const html = renderToStaticMarkup(<EarlyRegistrationsPage />);
+    const html = renderToStaticMarkup(await EarlyRegistrationsPage());
     expect(html).toContain("4 Tournament Entries");
     expect(html).toContain("3 Team Entries");
     expect(html).toContain("1 Solo Entry");

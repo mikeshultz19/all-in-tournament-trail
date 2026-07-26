@@ -25,6 +25,19 @@ Use the [Master Site Map](MasterSiteMap.md) for approved routes,
 [Tournament Data Model](DataModel.md) for the implemented schema, and
 [Supabase Setup](SUPABASE_SETUP.md) for database operations.
 
+### Permanent public financial display rule
+
+AITT never publishes total tournament revenue or gross income. The only public
+monetary total is `TOTAL PAID OUT TO ANGLERS`: the sum of the separately stored
+Bronze, Silver, Gold, and Insurance Pot payouts only. Weighfish Side Pots 1–3
+are Bronze, Silver, and Gold. Never add a combined or standard tournament
+payout to this public total. The Insurance Pot is calculated and paid in
+cash outside Weighfish, and Admin records only its final amount as
+`Insurance Pot Paid Out`. The public total excludes membership fees,
+registration revenue, sponsor income, administrative fees, director
+compensation, and gross tournament receipts. Do not add other public financial
+totals without explicit Product Owner approval.
+
 ## Participants and Roles
 
 ### User

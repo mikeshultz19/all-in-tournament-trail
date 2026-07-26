@@ -1,267 +1,621 @@
+import {
+  BadgeDollarSign,
+  ClipboardList,
+  Crown,
+  Fish,
+  Medal,
+  Shield,
+  Trophy,
+} from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { getFeaturedTournament } from "@/data/tournaments";
-import { getTournamentResultsBySlug } from "@/data/tournamentResults";
+import type { ComponentType, SVGProps } from "react";
 
-type PotType = "bronze" | "silver" | "gold";
+import styles from "@/components/WinnersCircle.module.css";
+import type {
+  LatestTournamentResults,
+  ResultEntry,
+} from "@/types/results";
 
-type PotCardProps = {
-  type: PotType;
-  name?: string;
-  weight?: number | null;
-};
+type Icon = ComponentType<SVGProps<SVGSVGElement>>;
+type SidePotName = "bronze" | "silver" | "gold";
 
-const potStyles = {
+const SIDE_POT_ORDER: SidePotName[] = ["bronze", "silver", "gold"];
+
+const SIDE_POT_THEMES: Record<
+  SidePotName,
+  { label: string; color: string; divider: string }
+> = {
   bronze: {
-    title: "Bronze Pot",
-    icon: "text-amber-600",
-    border: "border-amber-800/80",
+    label: "BRONZE SIDE POT WINNER",
+    color: "#CD7F32",
+    divider: "rgba(205,127,50,0.45)",
   },
   silver: {
-    title: "Silver Pot",
-    icon: "text-zinc-300",
-    border: "border-zinc-600/80",
+    label: "SILVER SIDE POT WINNER",
+    color: "#C0C0C0",
+    divider: "rgba(192,192,192,0.40)",
   },
   gold: {
-    title: "Gold Pot",
-    icon: "text-yellow-400",
-    border: "border-yellow-700/80",
+    label: "GOLD SIDE POT WINNER",
+    color: "#D4AF37",
+    divider: "rgba(212,175,55,0.45)",
   },
 };
 
-function TrophyIcon({ type }: { type: PotType }) {
+const BASE_PAYOUT_FALLBACKS: Record<number, number> = {
+  1: 2500,
+  2: 1500,
+  3: 1000,
+  4: 800,
+  5: 600,
+  6: 450,
+  7: 350,
+  8: 250,
+  9: 150,
+  10: 100,
+};
+
+function formatTournamentDate(value: string): string {
+  return new Intl.DateTimeFormat("en-US", {
+    timeZone: "America/Chicago",
+    month: "long",
+    day: "numeric",
+    year: "numeric",
+  }).format(new Date(value));
+}
+
+function formatCurrency(value: number): string {
+  return new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+    minimumFractionDigits: 0,
+  }).format(value);
+}
+
+function formatOrdinal(value: number): string {
+  const absValue = Math.abs(value);
+  const suffix =
+    absValue % 100 >= 11 && absValue % 100 <= 13
+      ? "th"
+      : absValue % 10 === 1
+        ? "st"
+        : absValue % 10 === 2
+          ? "nd"
+          : absValue % 10 === 3
+            ? "rd"
+            : "th";
+
+  return `${value}${suffix}`;
+}
+
+function getBasePayout(entry: ResultEntry): number {
+  return entry.baseWinnings && entry.baseWinnings > 0
+    ? entry.baseWinnings
+    : BASE_PAYOUT_FALLBACKS[entry.place] ?? 0;
+}
+
+function isSidePotEntry(
+  entry: ResultEntry,
+): entry is ResultEntry & { sidePot: SidePotName } {
   return (
-    <svg
-      viewBox="0 0 100 100"
-      aria-hidden="true"
-      className={`h-14 w-14 ${potStyles[type].icon}`}
-      fill="none"
-    >
-      <path
-        d="M28 16h44v18c0 16-9 29-22 35-13-6-22-19-22-35V16Z"
-        stroke="currentColor"
-        strokeWidth="4"
-        strokeLinejoin="round"
-      />
-
-      <path
-        d="M28 24H16v8c0 12 7 21 18 23M72 24h12v8c0 12-7 21-18 23"
-        stroke="currentColor"
-        strokeWidth="4"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-
-      <path
-        d="M50 69v12M36 84h28"
-        stroke="currentColor"
-        strokeWidth="4"
-        strokeLinecap="round"
-      />
-
-      <path
-        d="m50 27 4 8 9 1-7 6 2 9-8-5-8 5 2-9-7-6 9-1 4-8Z"
-        fill="currentColor"
-      />
-    </svg>
+    entry.kind === "sidePot" &&
+    (entry.sidePot === "bronze" ||
+      entry.sidePot === "silver" ||
+      entry.sidePot === "gold")
   );
 }
 
-function PotCard({ type, name, weight }: PotCardProps) {
-  const styles = potStyles[type];
+function isFinalEntry(entry: ResultEntry): boolean {
+  return !isSidePotEntry(entry);
+}
 
+function SectionHeading({
+  title,
+  icon: IconComponent,
+  centered = false,
+}: {
+  title: string;
+  icon: Icon;
+  centered?: boolean;
+}) {
   return (
-    <article
-      className={`flex min-h-[220px] flex-col items-center justify-center border bg-gradient-to-b from-zinc-900/70 to-black px-4 py-5 text-center ${styles.border}`}
-    >
-      <p
-        className={`text-xs font-black uppercase tracking-[0.14em] ${styles.icon}`}
+    <div className={centered ? "text-center" : ""}>
+      <div
+        className={`mt-1 flex items-center gap-2 ${
+          centered ? "justify-center" : ""
+        }`}
       >
-        {styles.title}
-      </p>
+        <IconComponent
+          aria-hidden="true"
+          className="size-4 shrink-0 text-[#c9aa4a]"
+        />
+        <h3 className="text-[0.98rem] font-black uppercase tracking-[0.14em] text-[#c9aa4a] sm:text-[1.05rem]">
+          {title}
+        </h3>
+      </div>
+    </div>
+  );
+}
 
-      <div className="mt-3">
-        <TrophyIcon type={type} />
+function TournamentHeader({
+  title,
+  subtitle,
+}: {
+  title: string;
+  subtitle?: string;
+}) {
+  return (
+    <header className="relative overflow-visible border-b border-[#8f762f]/60 bg-[#171717] px-4 pb-5 pt-8 shadow-[0_10px_30px_rgba(0,0,0,0.35)] sm:px-5">
+      <div
+        aria-hidden="true"
+        className="absolute inset-y-0 left-0 w-[44%] bg-[linear-gradient(90deg,rgba(90,16,32,0.46)_0%,rgba(90,16,32,0.14)_55%,transparent_100%)]"
+      />
+      <div
+        aria-hidden="true"
+        className="absolute inset-x-[12%] top-0 h-px bg-gradient-to-r from-transparent via-[#c9aa4a] to-transparent"
+      />
+      <div
+        aria-hidden="true"
+        className={`${styles.headerBadge} flex size-10 items-center justify-center rounded-full border border-[#8f762f]/70 bg-[#111111] text-[#c9aa4a] shadow-[0_8px_20px_rgba(0,0,0,0.45)]`}
+      >
+        <Trophy aria-hidden="true" className="size-4" />
       </div>
 
-      <h3 className="mt-4 text-base font-black uppercase leading-tight text-white">
-        {name || "Coming Soon"}
-      </h3>
+      <div className="relative flex min-h-12 items-center justify-center text-center">
+        <div>
+          <h2 className={styles.bannerTitle}>
+            {title}
+          </h2>
+          {subtitle ? (
+            <p className="mt-1 text-[0.72rem] font-semibold uppercase tracking-[0.14em] text-neutral-500 sm:text-[0.8rem]">
+              {subtitle}
+            </p>
+          ) : null}
+        </div>
+      </div>
+    </header>
+  );
+}
 
-      <p className="mt-2 text-sm font-bold text-zinc-200">
-        {weight === null || weight === undefined ? "—" : `${weight} lbs`}
-      </p>
-
-      <p
-        className={`mt-2 text-xs font-black uppercase tracking-wide ${styles.icon}`}
+function MediaCard({
+  image,
+  alt,
+  name,
+  weight,
+  centered = true,
+  priority = false,
+}: {
+  image: string;
+  alt: string;
+  name: string;
+  weight: number | null;
+  centered?: boolean;
+  priority?: boolean;
+}) {
+  return (
+    <article className={`w-full ${centered ? "text-center" : ""}`}>
+      <div
+        className={`${styles.resultImageFrame} mt-3 rounded-[4px] border border-[#8f762f]/70 shadow-[0_10px_24px_rgba(0,0,0,0.38)]`}
       >
-        1st Place
-      </p>
+        <Image
+          src={image}
+          alt={alt}
+          fill
+          sizes="(max-width: 768px) 100vw, 50vw"
+          className={styles.resultImage}
+          priority={priority}
+        />
+      </div>
+      <div className="pt-3">
+        <p className="text-[0.92rem] font-black uppercase tracking-[0.05em] text-[#F4EEE7] sm:text-[1rem]">
+          {name}
+        </p>
+        <p className="mt-0.5 text-[0.92rem] font-black tabular-nums text-[#c9aa4a] sm:text-[1rem]">
+          {weight === null ? "Not recorded" : `${weight.toFixed(2)} lbs`}
+        </p>
+      </div>
     </article>
   );
 }
 
-export default function WinnersCircle() {
-  const tournament = getFeaturedTournament();
-  const result = tournament
-    ? getTournamentResultsBySlug(tournament.slug)
-    : undefined;
-  const overallWinner = result?.winner?.team || "Coming Soon";
-  const bigBassWinner = result?.bigBass?.team || "Coming Soon";
-  const topFiveResults = result?.standings.slice(0, 5) ?? [];
+function StandingRow({
+  entry,
+}: {
+  entry: ResultEntry;
+}) {
+  const placeTone =
+    entry.place <= 3 ? "text-[#c9aa4a]" : "text-[#F4EEE7]";
+  const payout = getBasePayout(entry);
+
+  return (
+    <li className="border-b border-white/10 py-1 last:border-b-0">
+      <div className={`${styles.finalStandingsGrid} items-center gap-2.5`}>
+        <span
+          className={`text-left text-[0.56rem] font-black uppercase leading-4 tracking-[0.08em] ${placeTone}`}
+        >
+          {formatOrdinal(entry.place)}
+        </span>
+        <span className="min-w-0 whitespace-nowrap text-left text-[0.65rem] font-semibold leading-4 text-[#F4EEE7]">
+          {entry.team}
+        </span>
+        <span className="whitespace-nowrap text-right text-[0.65rem] font-semibold leading-4 tabular-nums text-neutral-500">
+          {entry.weight.toFixed(2)} lbs
+        </span>
+        <span className="whitespace-nowrap text-right text-[0.65rem] font-black leading-4 tabular-nums text-[#c9aa4a]">
+          {formatCurrency(payout)}
+        </span>
+      </div>
+    </li>
+  );
+}
+
+function SidePotRow({
+  winner,
+}: {
+  winner: ResultEntry & { sidePot: SidePotName };
+}) {
+  return (
+    <li className="border-b border-white/10 py-1.5 last:border-b-0">
+      <div className={styles.sidePotGrid}>
+        <span className="text-[0.62rem] font-black uppercase leading-4 tracking-[0.08em] text-neutral-500">
+          {formatOrdinal(winner.sidePotPlacement ?? winner.place)}
+        </span>
+        <span className="min-w-0 whitespace-nowrap text-left text-[0.65rem] font-semibold leading-4 text-[#F4EEE7]">
+          {winner.team}
+        </span>
+        <span className="whitespace-nowrap text-right text-[0.65rem] font-semibold leading-4 tabular-nums text-neutral-500">
+          {winner.weight.toFixed(2)} lbs
+        </span>
+        <span className="whitespace-nowrap text-right text-[0.65rem] font-black leading-4 tabular-nums text-[#c9aa4a]">
+          {formatCurrency(winner.sidePotPayout ?? 0)}
+        </span>
+      </div>
+    </li>
+  );
+}
+
+function SidePotSection({
+  sidePot,
+  winners,
+}: {
+  sidePot: SidePotName;
+  winners: Array<ResultEntry & { sidePot: SidePotName }>;
+}) {
+  const theme = SIDE_POT_THEMES[sidePot];
+
+  return (
+    <section
+      className="border-t pt-3"
+      style={{ borderTopColor: theme.divider }}
+    >
+      <div className="flex items-center gap-2">
+        <Medal
+          aria-hidden="true"
+          className="size-4 shrink-0"
+          style={{ color: theme.color }}
+        />
+        <h4
+          className="text-[0.72rem] font-black uppercase tracking-[0.12em]"
+          style={{ color: theme.color }}
+        >
+          {theme.label}
+        </h4>
+      </div>
+
+      <div className="mt-2">
+        <div className={`${styles.sidePotGrid} border-b border-white/10 pb-2 text-[0.65rem] font-black uppercase leading-4 tracking-[0.09em] text-neutral-500`}>
+          <span>Place</span>
+          <span>Team</span>
+          <span className="text-right">Weight</span>
+          <span className="text-right">Won</span>
+        </div>
+        <ol className="mt-1">
+          {winners.map((winner) => (
+            <SidePotRow
+              key={`${winner.sidePot}-${winner.sidePotPlacement ?? winner.place}-${winner.team}`}
+              winner={winner}
+            />
+          ))}
+        </ol>
+      </div>
+    </section>
+  );
+}
+
+function SummaryRow({
+  label,
+  value,
+  emphasis = false,
+}: {
+  label: string;
+  value: number;
+  emphasis?: boolean;
+}) {
+  return (
+    <div
+      className={`flex items-center justify-between gap-4 border-b border-white/10 py-1.5 last:border-b-0 ${
+        emphasis ? "border-[#c9aa4a]" : ""
+      }`}
+    >
+      <span
+        className={`text-[0.65rem] font-black uppercase leading-4 tracking-[0.1em] ${
+          emphasis ? "text-[#c9aa4a]" : "text-[#F4EEE7]"
+        }`}
+      >
+        {label}
+      </span>
+      <span
+        className={`whitespace-nowrap text-right font-black tabular-nums ${
+          emphasis ? "text-[1.05rem] text-[#c9aa4a]" : "text-[0.78rem] text-[#F4EEE7]"
+        }`}
+      >
+        {formatCurrency(value)}
+      </span>
+    </div>
+  );
+}
+
+function formatTournamentEntryPayout(
+  results: LatestTournamentResults["results"] | null,
+  finalEntries: ResultEntry[],
+): number {
+  if (results && results.total_payout > 0) {
+    return results.total_payout;
+  }
+
+  return finalEntries.reduce((sum, entry) => sum + getBasePayout(entry), 0);
+}
+
+function getSidePotPayout(
+  results: LatestTournamentResults["results"] | null,
+  sidePot: SidePotName,
+): number {
+  if (!results) return 0;
+
+  return results.entries
+    .filter((entry): entry is ResultEntry & { sidePot: SidePotName } =>
+      isSidePotEntry(entry) && entry.sidePot === sidePot,
+    )
+    .reduce((sum, winner) => sum + (winner.sidePotPayout ?? 0), 0);
+}
+
+function getBigBassPayout(
+  results: LatestTournamentResults["results"] | null,
+): number {
+  return (results as (LatestTournamentResults["results"] & {
+    big_bass_payout?: number;
+  }) | null)?.big_bass_payout ?? 650;
+}
+
+export default function WinnersCircle({
+  latestResults,
+}: {
+  latestResults: LatestTournamentResults | null;
+}) {
+  const finalEntries = latestResults
+    ? [...latestResults.results.entries]
+        .filter(isFinalEntry)
+        .sort((a, b) => a.place - b.place)
+    : [];
+  const displayFinalEntries = finalEntries.slice(0, 20);
+
+  const sidePotGroups = SIDE_POT_ORDER.map((sidePot) => ({
+    sidePot,
+    winners:
+      latestResults?.results.entries
+        .filter(
+          (entry): entry is ResultEntry & { sidePot: SidePotName } =>
+            isSidePotEntry(entry) && entry.sidePot === sidePot,
+        )
+        .sort(
+          (a, b) =>
+            (a.sidePotPlacement ?? a.place) - (b.sidePotPlacement ?? b.place),
+        ) ?? [],
+  }));
+
+  const results = latestResults?.results ?? null;
+  const tournamentEntryPayout = formatTournamentEntryPayout(results, finalEntries);
+  const bronzePayout = getSidePotPayout(latestResults?.results ?? null, "bronze");
+  const silverPayout = getSidePotPayout(latestResults?.results ?? null, "silver");
+  const goldPayout = getSidePotPayout(latestResults?.results ?? null, "gold");
+  const insurancePot = latestResults?.results.insurance_pot_payout ?? 0;
+  const bigBassPot = getBigBassPayout(latestResults?.results ?? null);
+  const totalPaidOut =
+    tournamentEntryPayout +
+    bronzePayout +
+    silverPayout +
+    goldPayout +
+    insurancePot +
+    bigBassPot;
+
+  const champion = finalEntries[0] ?? null;
+  const championImage =
+    latestResults?.championImage ?? "/images/results/overall-winner.jpg";
+  const bigBassImage =
+    latestResults?.bigBassImage ?? "/images/results/big-bass.jpg";
 
   return (
     <section
       id="results"
-      className="border-b border-yellow-900/40 bg-[#050505] px-4 pb-6 pt-4 sm:px-6"
+      className="border-b border-[#191612] bg-[#0B0A09] py-8"
     >
-      <div className="mx-auto max-w-[1300px]">
-        {/* Section heading */}
-        <div className="mb-3 flex items-center gap-4">
-          <h2 className="shrink-0 text-xl font-black uppercase tracking-tight text-white sm:text-2xl">
-            Latest Tournament Results
-          </h2>
-
-          <div className="h-px flex-1 bg-gradient-to-r from-red-600 via-red-600/40 to-transparent" />
-        </div>
-
-        <div className="grid gap-3 xl:grid-cols-[1.05fr_1.5fr_0.65fr_0.65fr_0.65fr_0.85fr]">
-          {/* Overall winner */}
-          <article className="overflow-hidden border border-yellow-700/70 bg-gradient-to-b from-zinc-900/70 to-black">
-            <p className="px-3 py-2 text-center text-xs font-black uppercase tracking-[0.14em] text-yellow-400">
-              Overall Winner
-            </p>
-
-            <div className="relative aspect-[4/3] w-full overflow-hidden border-y border-yellow-700/40">
-              <Image
-                src="/images/results/overall-winner.jpg"
-                alt={`${overallWinner}, overall tournament winner`}
-                fill
-                sizes="(max-width: 1280px) 100vw, 250px"
-                className="object-cover"
+      <div className={styles.showcaseContainer}>
+        <article className="overflow-visible border border-[#8f762f]/60 bg-[#111111] shadow-[0_10px_30px_rgba(0,0,0,0.35)]">
+          {latestResults ? (
+            <>
+              <TournamentHeader
+                title={latestResults.tournament.name}
+                subtitle={`${latestResults.tournament.lake} • ${formatTournamentDate(
+                  latestResults.tournament.tournament_date,
+                )}`}
               />
-            </div>
 
-            <div className="px-4 py-3 text-center">
-              <h3 className="text-lg font-black uppercase leading-tight text-white">
-                {overallWinner}
-              </h3>
+              <div className={`${styles.showcaseGrid} divide-y divide-white/10 md:divide-x md:divide-y-0`}>
+                <section className="flex min-w-0 flex-col border border-[#8f762f]/60 bg-[#111111] p-4 sm:p-5">
+                  <SectionHeading
+                    title="FINAL STANDINGS"
+                    icon={Trophy}
+                  />
 
-              <p className="mt-1 text-base font-black text-yellow-400">
-                {result?.winningWeight === null ||
-                result?.winningWeight === undefined
-                  ? "—"
-                  : `${result.winningWeight} lbs`}
-              </p>
-
-              <p className="mt-1 text-[10px] font-bold uppercase tracking-[0.12em] text-zinc-500">
-                {tournament?.lake ?? "Tournament To Be Announced"}
-              </p>
-            </div>
-          </article>
-
-          {/* Top 5 */}
-          <article className="flex border border-yellow-700/70 bg-gradient-to-b from-zinc-900/60 to-black">
-            <div className="flex w-full flex-col px-4 py-3">
-              <h3 className="border-b border-yellow-700/30 pb-2 text-center text-xs font-black uppercase tracking-[0.14em] text-yellow-400">
-                Top 5 Overall by Weight
-              </h3>
-
-              <div className="mt-3 flex flex-1 flex-col">
-                {Array.from({ length: 5 }, (_, index) => {
-                  const standing = topFiveResults[index];
-
-                  return (
                   <div
-                    key={standing?.rank ?? index + 1}
-                    className="grid grid-cols-[28px_1fr_auto] items-center gap-3 border-b border-white/5 py-3 text-sm"
+                    className={`${styles.finalStandingsGrid} mt-3 border-b border-white/10 pb-1.5 text-[0.65rem] font-black uppercase leading-4 tracking-[0.09em] text-neutral-500`}
                   >
-                    <span className="font-black text-zinc-300">
-                      {standing?.rank ?? index + 1}
-                    </span>
-
-                    <span
-                      className={`font-semibold ${
-                        (standing?.rank ?? index + 1) === 1
-                          ? "text-yellow-400"
-                          : "text-white"
-                      }`}
-                    >
-                      {standing?.team ?? "Coming Soon"}
-                    </span>
-
-                    <span className="font-semibold text-zinc-300">
-                      {standing?.weight === null ||
-                      standing?.weight === undefined
-                        ? "—"
-                        : `${standing.weight} lbs`}
-                    </span>
+                    <span>Place</span>
+                    <span>Team</span>
+                    <span className="text-right">Weight</span>
+                    <span className="text-right">Base Payout</span>
                   </div>
-                  );
-                })}
+
+                  <ol className="mt-1">
+                    {displayFinalEntries.map((entry) => (
+                      <StandingRow key={`${entry.place}-${entry.team}`} entry={entry} />
+                    ))}
+                  </ol>
+
+                  <Link
+                    href={latestResults.completeResultsUrl}
+                    className="mx-auto mt-4 inline-flex min-h-9 items-center justify-center border border-[#8f762f]/70 bg-[#171717] px-4 text-[0.68rem] font-black uppercase tracking-[0.12em] text-[#c9aa4a] transition hover:bg-[#111111] hover:text-[#F4EEE7] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#c9aa4a]"
+                  >
+                    View Complete Results
+                  </Link>
+                </section>
+
+                <section className="min-w-0 border border-[#8f762f]/60 bg-[#111111] p-4 sm:p-5">
+                  <SectionHeading
+                    title="OVERALL CHAMPION"
+                    icon={Crown}
+                    centered
+                  />
+
+                  <MediaCard
+                    image={championImage}
+                    alt={`Overall champion ${champion?.team ?? "winner"} at ${latestResults.tournament.name}`}
+                    name={champion?.team ?? "Winner"}
+                    weight={champion?.weight ?? null}
+                    priority
+                  />
+
+                  <div className="mt-5 border border-[#8f762f]/60 bg-[#111111] p-3">
+                    <SummaryRow label="Tournament Entry Payout" value={tournamentEntryPayout} />
+                    <SummaryRow label="Bronze Side Pot Payout" value={bronzePayout} />
+                    <SummaryRow label="Silver Side Pot Payout" value={silverPayout} />
+                    <SummaryRow label="Gold Side Pot Payout" value={goldPayout} />
+                    <SummaryRow label="Insurance Pot" value={insurancePot} />
+                    <SummaryRow label="Big Bass Pot" value={bigBassPot} />
+                    <div className="my-2 border-t border-[#c9aa4a]/60" />
+                    <SummaryRow
+                      label="TOTAL PAID OUT TO ALL ANGLERS"
+                      value={totalPaidOut}
+                      emphasis
+                    />
+                  </div>
+                </section>
+
+                <section
+                  className={`${styles.rightPanel} min-w-0 border border-[#8f762f]/60 bg-[#111111] p-4 sm:p-5`}
+                >
+                  <SectionHeading
+                    title="SIDE POTS & PAYOUTS"
+                    icon={BadgeDollarSign}
+                  />
+
+                  <div className="mt-4 space-y-4">
+                    {sidePotGroups.map((group) => (
+                      <SidePotSection
+                        key={group.sidePot}
+                        sidePot={group.sidePot}
+                        winners={group.winners}
+                      />
+                    ))}
+
+                    <section className="border-t border-[#c9aa4a]/50 pt-3">
+                      <div className="flex items-center gap-2">
+                        <Shield
+                          aria-hidden="true"
+                          className="size-4 shrink-0 text-[#C0C0C0]"
+                        />
+                        <h4 className="text-[0.72rem] font-black uppercase tracking-[0.12em] text-[#F4EEE7]">
+                          INSURANCE POT
+                        </h4>
+                      </div>
+                      <div className="mt-2 flex items-center justify-between gap-4 border-b border-white/10 pb-2">
+                        <span className="text-[0.58rem] font-black uppercase tracking-[0.09em] text-neutral-500">
+                          Amount
+                        </span>
+                        <span className="whitespace-nowrap text-right text-[0.78rem] font-black tabular-nums text-[#c9aa4a]">
+                          {formatCurrency(insurancePot)}
+                        </span>
+                      </div>
+                    </section>
+
+                    <section className="border-t border-[#c9aa4a]/45 pt-3">
+                      <div className="flex items-center justify-center gap-2">
+                        <Fish
+                          aria-hidden="true"
+                          className="size-4 shrink-0 text-[#c9aa4a]"
+                        />
+                        <h4 className="text-center text-[0.72rem] font-black uppercase tracking-[0.12em] text-[#c9aa4a]">
+                          BIG BASS WINNER
+                        </h4>
+                      </div>
+
+                      <div
+                        className={`${styles.resultImageFrame} mt-3 rounded-[4px] border border-[#8f762f]/70 shadow-[0_10px_24px_rgba(0,0,0,0.38)]`}
+                      >
+                        <Image
+                          src={bigBassImage}
+                          alt={`Big bass winner ${latestResults.results.big_bass_angler ?? "angler"} with tournament fish`}
+                          fill
+                          sizes="(max-width: 768px) 100vw, 33vw"
+                          className={styles.resultImage}
+                        />
+                      </div>
+
+                      <div className="pt-3 text-center">
+                        <p className="text-[0.92rem] font-black uppercase tracking-[0.05em] text-[#F4EEE7] sm:text-[1rem]">
+                          {latestResults.results.big_bass_angler ?? "Not recorded"}
+                        </p>
+                        <p className="mt-0.5 text-[0.92rem] font-black tabular-nums text-[#c9aa4a] sm:text-[1rem]">
+                          {latestResults.results.big_bass_weight === null
+                            ? "Not recorded"
+                            : `${latestResults.results.big_bass_weight.toFixed(2)} lbs`}
+                        </p>
+                      </div>
+                    </section>
+                  </div>
+                </section>
               </div>
+            </>
+          ) : (
+            <>
+              <TournamentHeader title="Latest Tournament Results" />
 
-              <Link
-                href="/results"
-                className="mx-auto mt-4 inline-flex min-h-9 items-center justify-center border border-yellow-600 px-6 py-2 text-[10px] font-black uppercase tracking-[0.12em] text-yellow-400 transition hover:bg-yellow-500 hover:text-black"
-              >
-                View Full Results
-                <span className="ml-2" aria-hidden="true">
-                  →
-                </span>
-              </Link>
-            </div>
-          </article>
-
-          {/* Pot winners */}
-          <PotCard
-            type="bronze"
-            name={result?.payouts[0]?.team}
-            weight={result?.payouts[0]?.weight}
-          />
-
-          <PotCard
-            type="silver"
-            name={result?.payouts[1]?.team}
-            weight={result?.payouts[1]?.weight}
-          />
-
-          <PotCard
-            type="gold"
-            name={result?.payouts[2]?.team}
-            weight={result?.payouts[2]?.weight}
-          />
-
-          {/* Big Bass */}
-          <article className="overflow-hidden border border-yellow-700/70 bg-gradient-to-b from-zinc-900/70 to-black">
-            <p className="px-3 py-2 text-center text-xs font-black uppercase tracking-[0.14em] text-amber-500">
-              Big Bass
-            </p>
-
-            <div className="relative aspect-[4/3] w-full overflow-hidden border-y border-yellow-700/40">
-              <Image
-                src="/images/results/big-bass.jpg"
-                alt={`${bigBassWinner} holding the tournament big bass`}
-                fill
-                sizes="(max-width: 1280px) 100vw, 200px"
-                className="object-cover"
-              />
-            </div>
-
-            <div className="px-3 py-3 text-center">
-              <h3 className="text-base font-black uppercase leading-tight text-white">
-                {bigBassWinner}
-              </h3>
-
-              <p className="mt-1 text-sm font-black text-yellow-400">
-                {result?.bigBass?.weight === null ||
-                result?.bigBass?.weight === undefined
-                  ? "—"
-                  : `${result.bigBass.weight} lbs`}
-              </p>
-            </div>
-          </article>
-        </div>
+              <div className="relative min-h-[330px] overflow-hidden">
+                <Image
+                  src="/images/results/overall-winner.jpg"
+                  alt=""
+                  fill
+                  sizes="(max-width: 1650px) 100vw, 1650px"
+                  className="object-cover"
+                />
+                <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(12,10,9,0.78),rgba(43,8,16,0.72))]" />
+                <div className="relative z-10 flex min-h-[330px] flex-col items-center justify-center px-6 py-12 text-center">
+                  <ClipboardList
+                    aria-hidden="true"
+                    className="size-10 text-[#c9aa4a]"
+                  />
+                  <h3 className="mt-4 text-xl font-black uppercase tracking-tight text-[#F4EEE7] sm:text-2xl">
+                    No Results Available
+                  </h3>
+                  <p className="mt-2 text-sm text-neutral-500">
+                    Results will appear here after the next tournament.
+                  </p>
+                </div>
+              </div>
+            </>
+          )}
+        </article>
       </div>
     </section>
   );

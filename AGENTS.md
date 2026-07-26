@@ -192,3 +192,28 @@ On mobile, stack the sections in this order:
 5. Major Sponsors
 
 Ensure the Contact tab does not overlap sponsor logos or content.
+
+==================================================
+PERMANENT PUBLIC FINANCIAL DISPLAY RULE
+==================================================
+
+AITT never publishes total tournament revenue or gross income. The only
+monetary total displayed publicly is `TOTAL PAID OUT TO ANGLERS`.
+
+That public payout total is the sum of the separately stored Bronze, Silver,
+Gold, and Insurance Pot payouts only. Weighfish Side Pots 1–3 map to Bronze,
+Silver, and Gold. The Insurance Pot is managed outside Weighfish and entered
+manually. Do not add any combined or standard tournament payout to this public
+total. The public total excludes
+membership fees, registration revenue, sponsor income, administrative fees,
+director compensation, and gross tournament receipts.
+
+AITT Admin Center separates `Weighfish Payouts` from `Manual Insurance Pot`.
+Weighfish Payouts contains distinct standard tournament, Bronze, Silver, and
+Gold payout fields; do not combine the three side pots into one editable field.
+Label the manual field `Insurance Pot Paid Out` and show their calculated sum
+as `Total Paid Out to Anglers`. The Insurance Pot is calculated and paid in
+cash outside Weighfish; the website stores only its final payout amount. Do not
+derive payouts from placements unless the stored results data supports a
+verified calculation. Do not add public revenue, income, receipt, or fee totals
+without explicit approval to reverse this permanent business rule.

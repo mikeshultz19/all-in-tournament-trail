@@ -50,7 +50,7 @@ const postTournamentItems: ReadinessChecklistItem[] = [
     href: "/admin/results",
   },
   {
-    label: "Publish Tournament Results",
+    label: "Save Tournament Results",
     complete: false,
     href: "/admin/results",
   },

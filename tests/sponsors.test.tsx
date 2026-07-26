@@ -2,7 +2,12 @@ import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
 
 import SponsorHome from "@/components/SponsorHome";
-import { getHomepageSponsors, type Sponsor } from "@/data/sponsors";
+import FeaturedSponsor from "@/components/home/FeaturedSponsor";
+import {
+  getHomepageSponsors,
+  sponsors,
+  type Sponsor,
+} from "@/data/sponsors";
 
 const sponsor = (overrides: Partial<Sponsor> = {}): Sponsor => ({
   id: "major-one",
@@ -12,6 +17,7 @@ const sponsor = (overrides: Partial<Sponsor> = {}): Sponsor => ({
   active: true,
   showOnHomepage: true,
   majorSponsor: true,
+  tier: "featured",
   displayOrder: 1,
   ...overrides,
 });
@@ -56,7 +62,7 @@ describe("homepage sponsors", () => {
     ).toBe("");
   });
 
-  it("sorts qualifying sponsors before rendering", () => {
+  it("renders presenting and secondary sponsors in display order", () => {
     const html = renderToStaticMarkup(
       <SponsorHome
         sponsors={[
@@ -66,7 +72,29 @@ describe("homepage sponsors", () => {
       />,
     );
 
+    expect(html).toContain("First logo");
+    expect(html).toContain("Second logo");
     expect(html.indexOf("First logo")).toBeLessThan(html.indexOf("Second logo"));
+  });
+
+  it("renders the configured sponsors in the approved order", () => {
+    const html = renderToStaticMarkup(<SponsorHome sponsors={sponsors} />);
+
+    expect(html.indexOf("Phoenix Boats logo")).toBeLessThan(
+      html.indexOf("Texas Boat Works logo"),
+    );
+    expect(html.indexOf("Texas Boat Works logo")).toBeLessThan(
+      html.indexOf("Fenix Parts logo"),
+    );
+    expect(html.indexOf("Fenix Parts logo")).toBeLessThan(
+      html.indexOf("Mad Dawg Graphics &amp; Design logo"),
+    );
+    expect(html).toContain("grid-cols-2");
+    expect(html).toContain("min-[640px]:grid-cols-4");
+    expect(html).toContain("max-h-[40px]");
+    expect(html).toContain("max-h-[42px]");
+    expect(html).toContain("max-h-[48px]");
+    expect(html).toContain("border-[#4A3A12]");
   });
 
   it("renders contained logos and safe optional website links", () => {
@@ -77,5 +105,27 @@ describe("homepage sponsors", () => {
     expect(html).toContain("object-contain");
     expect(html).toContain('target="_blank"');
     expect(html).toContain('rel="noopener noreferrer"');
+    expect(html).not.toContain("Sponsor information coming soon.");
+  });
+
+  it("supports optional fade styling without adding controls", () => {
+    const html = renderToStaticMarkup(
+      <FeaturedSponsor
+        featuredSponsors={[
+          {
+            id: "major-one",
+            name: "Major One",
+            image: "/sponsors/major-one.png",
+            tier: "presenting",
+            active: true,
+            displayOrder: 1,
+          },
+        ]}
+        enableFadeTransition
+      />,
+    );
+
+    expect(html).toContain("transition-opacity");
+    expect(html).not.toContain("<button");
   });
 });

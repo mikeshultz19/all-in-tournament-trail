@@ -177,7 +177,7 @@ export default function WebsiteReadiness({
         />
         <ChecklistSection
           title="After the Tournament"
-          description="Complete these items after weigh-in before publishing the official results."
+          description="Complete these items after weigh-in and save the official results."
           items={postTournamentItems}
           phase="after"
         />

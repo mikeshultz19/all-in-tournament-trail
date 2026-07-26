@@ -299,6 +299,19 @@ Authorized users need the following reports:
 
 Reports containing payment or personal information are private and access controlled.
 
+### Permanent public financial display boundary
+
+The reports above are private operational records. AITT never publishes total
+tournament revenue or gross income. The only monetary total displayed publicly
+is `TOTAL PAID OUT TO ANGLERS`. Calculate it from the separately stored
+Bronze, Silver, Gold, and Insurance Pot payouts only. Weighfish Side Pots 1, 2,
+and 3 are Bronze, Silver, and Gold. Do not add a combined or standard
+tournament payout to this public total. The Insurance Pot is
+calculated and paid in cash outside Weighfish, and Admin records only the final amount in
+`Insurance Pot Paid Out`. The public total excludes membership fees,
+registration revenue, sponsor income, administrative fees, director
+compensation, and gross tournament receipts.
+
 ## 19. Security
 
 - Grant the minimum financial permissions required for each role.

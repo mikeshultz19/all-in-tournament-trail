@@ -5,6 +5,7 @@ export const databaseTournament: Tournament = {
   name: "Eagle Mountain",
   slug: "eagle-mountain-2026",
   lake: "Eagle Mountain",
+  capacity: 50,
   tournament_date: "2026-11-01T06:00:00-06:00",
   ramp: "Twin Points Park",
   launch_type: "Trailering",

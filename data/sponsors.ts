@@ -3,6 +3,8 @@ export type Sponsor = {
   name: string;
   logo: string;
   websiteUrl?: string;
+  tier?: "presenting" | "featured";
+  logoScale?: "standard" | "compact" | "small";
   active?: boolean | null;
   showOnHomepage?: boolean | null;
   majorSponsor?: boolean | null;
@@ -11,7 +13,54 @@ export type Sponsor = {
 
 // This is the current sponsor repository. A future admin data source can replace
 // this export without coupling the homepage component to storage details.
-export const sponsors: Sponsor[] = [];
+export const sponsors: Sponsor[] = [
+  {
+    id: "texas-boat-works",
+    name: "Texas Boat Works",
+    logo: "/images/sponsors/texas-boat-works.png",
+    websiteUrl: "https://www.texasboatworks.com",
+    tier: "presenting",
+    active: true,
+    showOnHomepage: true,
+    majorSponsor: true,
+    displayOrder: 2,
+  },
+  {
+    id: "mad-dawg-graphics-design",
+    name: "Mad Dawg Graphics & Design",
+    logo: "/images/sponsors/mad-dawg-graphics-design.png",
+    tier: "featured",
+    logoScale: "standard",
+    active: true,
+    showOnHomepage: true,
+    majorSponsor: true,
+    displayOrder: 4,
+  },
+  {
+    id: "fenix-parts",
+    name: "Fenix Parts",
+    logo: "/images/sponsors/fenix-parts-logo-bright-green.png",
+    websiteUrl: "https://fenixparts.com",
+    tier: "featured",
+    logoScale: "compact",
+    active: true,
+    showOnHomepage: true,
+    majorSponsor: true,
+    displayOrder: 3,
+  },
+  {
+    id: "phoenix-boats",
+    name: "Phoenix Boats",
+    logo: "/images/sponsors/phoenix-boats.png",
+    websiteUrl: "https://www.phoenixbassboats.com",
+    tier: "featured",
+    logoScale: "small",
+    active: true,
+    showOnHomepage: true,
+    majorSponsor: true,
+    displayOrder: 1,
+  },
+];
 
 export function getHomepageSponsors(items: Sponsor[] = sponsors): Sponsor[] {
   return items

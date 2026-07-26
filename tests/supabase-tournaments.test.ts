@@ -6,7 +6,7 @@ describe("Supabase tournaments migration", () => {
     "supabase/migrations/202607230001_create_tournaments.sql",
     "utf8",
   );
-  const seed = readFileSync("supabase/seed.sql", "utf8");
+  const seed = readFileSync("lib/demo-seed.ts", "utf8");
 
   it("creates the constrained tournaments table and timestamps", () => {
     expect(migration).toContain("create table if not exists public.tournaments");
@@ -27,9 +27,10 @@ describe("Supabase tournaments migration", () => {
     expect(migration).not.toContain("service_role");
   });
 
-  it("seeds Lake Fork idempotently", () => {
-    expect(seed).toContain("'lake-fork-open-2026'");
-    expect(seed).toContain("on conflict (slug) do update");
-    expect(seed).toContain("'Registration Open'");
+  it("seeds Eagle Mountain idempotently", () => {
+    expect(seed).toContain('"eagle-mountain-2026"');
+    expect(seed).toContain("capacity: 50");
+    expect(seed).toContain('"Registration Open"');
+    expect(seed).toContain('"05:00"');
   });
 });

@@ -10,6 +10,7 @@ const tournaments: Tournament[] = [
     name: "Lake Fork Open",
     slug: "lake-fork-open-2026",
     lake: "Lake Fork",
+    capacity: 50,
     tournament_date: "2026-08-16T06:00:00-05:00",
     ramp: "Pope's Landing",
     launch_type: null,
@@ -30,6 +31,7 @@ const tournaments: Tournament[] = [
     name: "Sam Rayburn Open",
     slug: "sam-rayburn-open-2026",
     lake: "Sam Rayburn Reservoir",
+    capacity: 50,
     tournament_date: "2026-09-20T06:00:00-05:00",
     ramp: "Umphrey Family Pavilion",
     launch_type: null,
@@ -58,7 +60,7 @@ const postTournamentItems: ReadinessChecklistItem[] = [
   { label: "Import WeighFish Results", complete: false, href: "/admin/results" },
   { label: "Upload Tournament Winner Photo", complete: false, href: "/admin/results" },
   { label: "Upload Big Bass Winner Photo", complete: false, href: "/admin/results" },
-  { label: "Publish Tournament Results", complete: false, href: "/admin/results" },
+  { label: "Save Tournament Results", complete: false, href: "/admin/results" },
 ];
 
 export function renderAdminDashboardFixture(): string {

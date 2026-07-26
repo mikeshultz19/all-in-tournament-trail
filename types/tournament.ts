@@ -15,6 +15,7 @@ export interface Tournament {
   name: string;
   slug: string;
   lake: string;
+  capacity: number | null;
   tournament_date: string;
   ramp: string | null;
   launch_type: string | null;
@@ -36,6 +37,7 @@ export type TournamentUpdate = Partial<
     Tournament,
     | "name"
     | "lake"
+    | "capacity"
     | "tournament_date"
     | "ramp"
     | "launch_type"

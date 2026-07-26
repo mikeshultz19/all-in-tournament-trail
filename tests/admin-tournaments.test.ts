@@ -16,6 +16,7 @@ function tournament(
 ): Tournament {
   return {
     slug: values.id,
+    capacity: 50,
     launch_type: null,
     morning_registration: null,
     registration_opens: null,

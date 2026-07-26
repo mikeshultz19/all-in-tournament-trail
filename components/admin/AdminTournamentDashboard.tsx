@@ -127,7 +127,7 @@ export default function AdminTournamentDashboard({
     {
       title: "Tournament Results",
       description:
-        "Import WeighFish results, upload winner photos, review the standings and publish the official tournament results.",
+        "Enter the official standings and save changes to update the public website.",
       href: withTournamentContext("/admin/results", tournamentId),
       icon: Trophy,
       statusItems: [

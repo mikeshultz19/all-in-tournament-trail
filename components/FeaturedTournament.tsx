@@ -22,7 +22,7 @@ type Countdown = {
 
 function calculateCountdown(date: string): Countdown {
   const difference = Math.max(
-    new Date(`${date}T06:00:00-06:00`).getTime() - Date.now(),
+    new Date(`${date}T05:00:00-05:00`).getTime() - Date.now(),
     0,
   );
 

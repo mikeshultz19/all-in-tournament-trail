@@ -320,3 +320,29 @@ Use this document to record approved project decisions that affect architecture,
 - **Reasoning:** Stable slug relationships and separate typed modules remove duplicated facts while keeping each data concern replaceable by a future admin or WeighFish workflow.
 - **Impact:** Homepage tournament components, Schedule, Results, result detail routes, and static data ownership now share the same event identity without merging result or AOY values into event records.
 - **Follow-up:** Preserve these boundaries when implementing real result publication, AOY calculations, registration, or WeighFish imports.
+### 2026-07-24 — Restrict public financial display to angler payouts
+
+- **Status:** Approved — permanent business rule
+- **Context:** Public tournament results need a clear payout total without
+  disclosing AITT revenue, income, receipts, fees, or compensation.
+- **Decision:** AITT never publishes total tournament revenue or gross income.
+  The only monetary total displayed publicly is `TOTAL PAID OUT TO ANGLERS`.
+  Calculate it as the sum of the separately stored Bronze, Silver, Gold, and
+  Insurance Pot payouts only. Weighfish Side Pots 1–3 map to Bronze, Silver,
+  and Gold. Do not add a combined or standard tournament payout to this public
+  total. The total excludes membership fees, registration revenue,
+  sponsor income, administrative fees, director compensation, and gross
+  tournament receipts.
+- **Admin terminology:** Separate `Weighfish Payouts` and
+  `Manual Insurance Pot`; label the manual field `Insurance Pot Paid Out` and
+  the calculated read-only sum `Total Paid Out to Anglers`.
+- **Operational boundary:** Insurance Pot calculation and cash payout occur
+  outside Weighfish. The website stores only the final amount paid.
+- **Reasoning:** Visitors should see what AITT paid anglers without exposing or
+  implying private business revenue.
+- **Impact:** Public pages must not expose revenue, gross-income, receipt, fee,
+  sponsor-income, or compensation totals. Private authorized financial records
+  and reports remain access controlled.
+- **Follow-up:** Preserve this distinction in results, reporting, API, export,
+  and future finance work unless the Product Owner explicitly approves a
+  replacement rule.

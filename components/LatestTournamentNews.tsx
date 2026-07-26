@@ -1,8 +1,15 @@
 import PaymentAnnouncement from "@/components/PaymentAnnouncement";
 import TournamentStatusAnnouncement from "@/components/TournamentStatusAnnouncement";
 import type { Tournament } from "@/data/tournaments";
+import type { Announcement } from "@/types/announcement";
 
-export default function LatestTournamentNews({ tournament }: { tournament: Tournament | undefined }) {
+export default function LatestTournamentNews({
+  tournament,
+  announcements,
+}: {
+  tournament: Tournament | undefined;
+  announcements: readonly Announcement[];
+}) {
   return (
     <section
       data-homepage-news
@@ -31,6 +38,34 @@ export default function LatestTournamentNews({ tournament }: { tournament: Tourn
           </div>
         )}
         <PaymentAnnouncement />
+
+        {announcements.length > 0 && (
+          <div className="mt-4 grid gap-3">
+            {announcements.map((announcement) => (
+              <article
+                key={announcement.id}
+                className="border border-white/10 bg-[#111111] px-5 py-4"
+              >
+                <h3 className="text-base font-black uppercase tracking-tight text-red-500">
+                  {announcement.title}
+                </h3>
+                <p className="mt-2 whitespace-pre-line text-sm leading-6 text-neutral-200">
+                  {announcement.content}
+                </p>
+                <p className="mt-3 text-xs text-neutral-500">
+                  Updated{" "}
+                  <time dateTime={announcement.updated_at}>
+                    {new Intl.DateTimeFormat("en-US", {
+                      timeZone: "America/Chicago",
+                      dateStyle: "medium",
+                      timeStyle: "short",
+                    }).format(new Date(announcement.updated_at))}
+                  </time>
+                </p>
+              </article>
+            ))}
+          </div>
+        )}
       </div>
     </section>
   );

@@ -35,7 +35,7 @@ describe("Admin dashboard readiness", () => {
     );
     expect(markup).toContain("After the Tournament");
     expect(markup).toContain(
-      "Complete these items after weigh-in before publishing the official results.",
+      "Complete these items after weigh-in and save the official results.",
     );
     expect(markup).toContain("Conditions Updated");
     expect(markup).toContain("Upload Tournament Winner Photo");
@@ -93,7 +93,7 @@ describe("Admin dashboard readiness", () => {
     expect(markup).toContain("6:18 AM");
     expect(markup).toContain("Not Published");
     expect(markup).toContain(
-      "Import WeighFish results, upload winner photos, review the standings and publish the official tournament results.",
+      "Enter the official standings and save changes to update the public website.",
     );
   });
 
