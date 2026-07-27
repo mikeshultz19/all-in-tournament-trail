@@ -18,6 +18,7 @@ export async function getTournamentResults(
   tournamentId: string,
 ): Promise<TournamentResultsRecord | null> {
   const supabase = createSupabaseServerClient();
+
   const { data, error } = await supabase
     .from("tournament_results")
     .select("*")
@@ -25,9 +26,12 @@ export async function getTournamentResults(
     .maybeSingle();
 
   if (error) {
-    throw new ResultsDataError("We could not load tournament results.", {
-      cause: error,
-    });
+    throw new ResultsDataError(
+      "We could not load tournament results.",
+      {
+        cause: error,
+      },
+    );
   }
 
   return data as TournamentResultsRecord | null;
@@ -51,6 +55,7 @@ export async function saveTournamentResults(
   },
 ): Promise<TournamentResultsRecord> {
   const supabase = createSupabaseServerClient();
+
   const { data, error } = await supabase
     .from("tournament_results")
     .upsert(
@@ -66,19 +71,26 @@ export async function saveTournamentResults(
         big_bass_angler: details?.bigBassAngler ?? null,
         big_bass_team: details?.bigBassTeam ?? null,
         big_bass_weight: details?.bigBassWeight ?? null,
-        champion_image_url: details?.championImageUrl ?? null,
-        big_bass_image_url: details?.bigBassImageUrl ?? null,
+        champion_image_url:
+          details?.championImageUrl ?? null,
+        big_bass_image_url:
+          details?.bigBassImageUrl ?? null,
         published_at: new Date().toISOString(),
       },
-      { onConflict: "tournament_id" },
+      {
+        onConflict: "tournament_id",
+      },
     )
     .select("*")
     .single();
 
   if (error) {
-    throw new ResultsDataError("We could not save tournament results.", {
-      cause: error,
-    });
+    throw new ResultsDataError(
+      "We could not save tournament results.",
+      {
+        cause: error,
+      },
+    );
   }
 
   return data as TournamentResultsRecord;
@@ -88,15 +100,19 @@ export async function deleteTournamentResults(
   tournamentId: string,
 ): Promise<void> {
   const supabase = createSupabaseServerClient();
+
   const { error } = await supabase
     .from("tournament_results")
     .delete()
     .eq("tournament_id", tournamentId);
 
   if (error) {
-    throw new ResultsDataError("We could not delete tournament results.", {
-      cause: error,
-    });
+    throw new ResultsDataError(
+      "We could not delete tournament results.",
+      {
+        cause: error,
+      },
+    );
   }
 
   const { error: aoyError } = await supabase
@@ -105,53 +121,92 @@ export async function deleteTournamentResults(
     .eq("tournament_id", tournamentId);
 
   if (aoyError) {
-    throw new ResultsDataError("We could not clear tournament AOY points.", {
-      cause: aoyError,
-    });
+    throw new ResultsDataError(
+      "We could not clear tournament AOY points.",
+      {
+        cause: aoyError,
+      },
+    );
   }
 }
 
 export async function getLatestPublishedTournamentResults(): Promise<LatestTournamentResults | null> {
   const supabase = createSupabaseServerClient();
-  const [resultsResponse, tournamentsResponse] = await Promise.all([
-    supabase.from("tournament_results").select("*"),
-    supabase
+
+  /*
+   * Only tournaments officially marked Results Published
+   * are eligible for the homepage Winners Circle.
+   *
+   * This prevents the upcoming featured tournament from
+   * being mistaken for a completed event.
+   */
+  const { data: publishedTournaments, error: tournamentError } =
+    await supabase
       .from("tournaments")
       .select("*")
-      .order("tournament_date", { ascending: true }),
-  ]);
+      .eq("status", "Results Published")
+      .order("tournament_date", {
+        ascending: false,
+      });
 
-  if (resultsResponse.error || tournamentsResponse.error) {
-    throw new ResultsDataError("We could not load published results.", {
-      cause: resultsResponse.error ?? tournamentsResponse.error,
-    });
+  if (tournamentError) {
+    throw new ResultsDataError(
+      "We could not load published tournaments.",
+      {
+        cause: tournamentError,
+      },
+    );
   }
 
-  const results = resultsResponse.data as TournamentResultsRecord[];
-  const tournaments = tournamentsResponse.data;
-  const resultByTournament = new Map(
-    results.map((result) => [result.tournament_id, result]),
-  );
-  const tournament = tournaments
-    .filter((item) => resultByTournament.has(item.id))
-    .toSorted(
-      (a, b) =>
-        new Date(b.tournament_date).getTime() -
-        new Date(a.tournament_date).getTime(),
-    )[0];
+  if (
+    !publishedTournaments ||
+    publishedTournaments.length === 0
+  ) {
+    return null;
+  }
 
-  return tournament
-    ? {
-        tournament,
-        results: resultByTournament.get(tournament.id)!,
-        tournamentImage: tournament.hero_image_url,
-        championImage:
-          resultByTournament.get(tournament.id)!.champion_image_url ??
-          "/images/results/overall-winner.jpg",
-        bigBassImage:
-          resultByTournament.get(tournament.id)!.big_bass_image_url ??
-          "/images/results/big-bass.jpg",
-        completeResultsUrl: "/results",
-      }
-    : null;
+  /*
+   * Check published tournaments in date order until we find
+   * the newest one that actually has a results record.
+   */
+  for (const tournament of publishedTournaments) {
+    const { data: results, error: resultsError } =
+      await supabase
+        .from("tournament_results")
+        .select("*")
+        .eq("tournament_id", tournament.id)
+        .maybeSingle();
+
+    if (resultsError) {
+      throw new ResultsDataError(
+        "We could not load published results.",
+        {
+          cause: resultsError,
+        },
+      );
+    }
+
+    if (!results) {
+      continue;
+    }
+
+    const tournamentResults =
+      results as TournamentResultsRecord;
+
+    return {
+      tournament,
+      results: tournamentResults,
+      tournamentImage:
+        tournament.hero_image_url ?? null,
+      championImage:
+        tournamentResults.champion_image_url ??
+        "/images/results/overall-winner.jpg",
+      bigBassImage:
+        tournamentResults.big_bass_image_url ??
+        "/images/results/big-bass.jpg",
+      completeResultsUrl: "/results",
+    };
+  }
+
+  return null;
 }

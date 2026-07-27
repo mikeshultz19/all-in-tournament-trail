@@ -1,0 +1,125 @@
+{
+  "createdAt": "2026-07-27T00:20:22.661Z",
+  "tournaments": [
+    {
+      "id": "fc663082-1082-4ca1-a393-c6c036a63264",
+      "name": "Lake Fork Spring Open",
+      "slug": "lake-fork-spring-open-2026-demo",
+      "lake": "Lake Fork",
+      "tournament_date": "2026-04-12T11:00:00+00:00",
+      "ramp": null,
+      "launch_type": null,
+      "morning_registration": null,
+      "registration_opens": null,
+      "registration_closes": null,
+      "status": "Registration Closed",
+      "description": "Development-only tournament results preview.",
+      "hero_image_url": "/images/tournament-hero.png",
+      "is_featured": false,
+      "show_on_homepage": false,
+      "created_at": "2026-07-24T20:17:47.604152+00:00",
+      "updated_at": "2026-07-27T00:00:07.335499+00:00",
+      "updated_by": "DEVELOPMENT SEED",
+      "capacity": null
+    },
+    {
+      "id": "711ac338-beb1-42c3-a3e5-98841a86d166",
+      "name": "Lake Fork Open",
+      "slug": "lake-fork-open-2026",
+      "lake": "Lake Fork",
+      "tournament_date": "2026-08-16T11:00:00+00:00",
+      "ramp": "Pope's Landing",
+      "launch_type": null,
+      "morning_registration": null,
+      "registration_opens": null,
+      "registration_closes": "2026-08-15T23:00:00+00:00",
+      "status": "Registration Closed",
+      "description": "The featured All-In Tournament Trail stop at Lake Fork.",
+      "hero_image_url": null,
+      "is_featured": false,
+      "show_on_homepage": false,
+      "created_at": "2026-07-23T23:50:29.165153+00:00",
+      "updated_at": "2026-07-27T00:00:07.335499+00:00",
+      "updated_by": "AITT Staff",
+      "capacity": null
+    }
+  ],
+  "tournamentResults": [
+    {
+      "id": "99489c76-32bd-4787-9c4c-24d5e498252d",
+      "tournament_id": "fc663082-1082-4ca1-a393-c6c036a63264",
+      "entries": [
+        {
+          "team": "Jake Thompson / Cody Reed",
+          "place": 1,
+          "weight": 25.84
+        },
+        {
+          "team": "Mason Carter / Luke Bennett",
+          "place": 2,
+          "weight": 24.97,
+          "sidePot": "silver",
+          "sidePotWeight": 21.55
+        },
+        {
+          "team": "Travis Cole / Ryan Brooks",
+          "place": 3,
+          "weight": 23.62,
+          "sidePot": "gold",
+          "sidePotWeight": 23.11
+        },
+        {
+          "team": "Logan Price / Tyler Moore",
+          "place": 4,
+          "weight": 22.48,
+          "sidePot": "bronze",
+          "sidePotWeight": 18.42
+        },
+        {
+          "team": "Derek Collins / Adam Hayes",
+          "place": 5,
+          "weight": 21.97
+        },
+        {
+          "team": "Austin Perry / Blake Morgan",
+          "place": 6,
+          "weight": 20.94
+        },
+        {
+          "team": "Cole Sanders / Tyler Grant",
+          "place": 7,
+          "weight": 19.86
+        },
+        {
+          "team": "Noah Mitchell / Garrett Lane",
+          "place": 8,
+          "weight": 18.79
+        },
+        {
+          "team": "Wyatt Cooper / Chase Turner",
+          "place": 9,
+          "weight": 17.65
+        },
+        {
+          "team": "Evan Russell / Jordan Hayes",
+          "place": 10,
+          "weight": 16.92
+        }
+      ],
+      "published_at": "2026-04-12T23:00:00+00:00",
+      "created_at": "2026-07-24T20:17:47.604152+00:00",
+      "updated_at": "2026-07-24T21:17:16.984228+00:00",
+      "total_payout": 0,
+      "insurance_pot_payout": 1250,
+      "bronze_payout": 450,
+      "silver_payout": 900,
+      "gold_payout": 1800,
+      "big_bass_angler": "Ethan Walker",
+      "big_bass_weight": 8.91,
+      "big_bass_payout": null,
+      "big_bass_team": null,
+      "champion_image_url": null,
+      "big_bass_image_url": null
+    }
+  ]
+}

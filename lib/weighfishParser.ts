@@ -1,20 +1,81 @@
-export interface WeighfishCsvRow {
-  [header: string]: string;
+export interface WeighfishTournamentInfo {
+  tournament: string;
+  location: string;
+  date: string;
+  format: string;
+  days: string;
+}
+
+export interface WeighfishStatistics {
+  [label: string]: string;
+}
+
+export interface WeighfishResultRow {
+  place: number | null;
+  entryName: string;
+  fishCount: number;
+  totalWeight: number;
+  bigFishWeight: number;
+
+  basePayout: number;
+  bronzePayout: number;
+  silverPayout: number;
+  goldPayout: number;
+
+  bigBassPlace: number | null;
+  bigBassPayout: number;
+
+  cashPayout: number;
+  payoutBreakdown: string;
+  prizeDescription: string;
+}
+
+export interface WeighfishPayoutTotals {
+  base: number;
+  bronze: number;
+  silver: number;
+  gold: number;
+  bigBass: number;
+  total: number;
 }
 
 export interface WeighfishParseResult {
   valid: boolean;
   headers: string[];
-  rows: WeighfishCsvRow[];
+  rows: WeighfishResultRow[];
   errors: string[];
+  warnings: string[];
+
+  tournamentInfo: WeighfishTournamentInfo;
+  statistics: WeighfishStatistics;
+  payoutTotals: WeighfishPayoutTotals;
 }
 
 export interface WeighfishParserOptions {
   requiredHeaders?: readonly string[];
 }
 
+const DEFAULT_REQUIRED_HEADERS = [
+  "Place",
+  "Angler",
+  "# Fish",
+  "Total Weight (lbs)",
+  "Big Fish (lbs)",
+  "Cash Payout",
+  "Payout Breakdown",
+  "Prize Description",
+] as const;
+
+function normalizeText(value: string): string {
+  return value
+    .replace(/^\uFEFF/, "")
+    .trim()
+    .toLocaleLowerCase()
+    .replace(/\s+/g, " ");
+}
+
 function normalizeHeader(value: string): string {
-  return value.trim().toLocaleLowerCase();
+  return normalizeText(value).replace(/[^a-z0-9#]+/g, " ").trim();
 }
 
 function parseCsvCells(csv: string): {
@@ -23,6 +84,7 @@ function parseCsvCells(csv: string): {
 } {
   const records: string[][] = [];
   const errors: string[] = [];
+
   let record: string[] = [];
   let cell = "";
   let quoted = false;
@@ -39,6 +101,7 @@ function parseCsvCells(csv: string): {
       } else {
         cell += character;
       }
+
       continue;
     }
 
@@ -49,9 +112,16 @@ function parseCsvCells(csv: string): {
     }
 
     if ((character === "\n" || character === "\r") && !quoted) {
-      if (character === "\r" && csv[index + 1] === "\n") index += 1;
+      if (character === "\r" && csv[index + 1] === "\n") {
+        index += 1;
+      }
+
       record.push(cell);
-      if (record.some((value) => value.trim().length > 0)) records.push(record);
+
+      if (record.some((value) => value.trim().length > 0)) {
+        records.push(record);
+      }
+
       record = [];
       cell = "";
       continue;
@@ -60,12 +130,276 @@ function parseCsvCells(csv: string): {
     cell += character;
   }
 
-  if (quoted) errors.push("The CSV contains an unclosed quoted value.");
+  if (quoted) {
+    errors.push("The CSV contains an unclosed quoted value.");
+  }
 
   record.push(cell);
-  if (record.some((value) => value.trim().length > 0)) records.push(record);
 
-  return { records, errors };
+  if (record.some((value) => value.trim().length > 0)) {
+    records.push(record);
+  }
+
+  return {
+    records,
+    errors,
+  };
+}
+
+function parseNumber(value: string | undefined): number {
+  if (!value) return 0;
+
+  const cleaned = value
+    .replace(/[$,%]/g, "")
+    .replace(/[^\d.-]/g, "")
+    .trim();
+
+  if (!cleaned) return 0;
+
+  const parsed = Number(cleaned);
+  return Number.isFinite(parsed) ? parsed : 0;
+}
+
+function parseNullableInteger(value: string | undefined): number | null {
+  if (!value) return null;
+
+  const match = value.match(/\d+/);
+  if (!match) return null;
+
+  const parsed = Number.parseInt(match[0], 10);
+  return Number.isFinite(parsed) ? parsed : null;
+}
+
+function getCell(
+  record: string[],
+  headerIndexes: Map<string, number>,
+  aliases: readonly string[],
+): string {
+  for (const alias of aliases) {
+    const index = headerIndexes.get(normalizeHeader(alias));
+
+    if (index !== undefined) {
+      return record[index]?.trim() ?? "";
+    }
+  }
+
+  return "";
+}
+
+function extractNamedPayout(
+  payoutBreakdown: string,
+  labels: readonly string[],
+): number {
+  if (!payoutBreakdown.trim()) return 0;
+
+  for (const label of labels) {
+    const escapedLabel = label.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
+    const patterns = [
+      new RegExp(
+        `${escapedLabel}\\s*[:=-]?\\s*\\$?\\s*([\\d,]+(?:\\.\\d{1,2})?)`,
+        "i",
+      ),
+      new RegExp(
+        `\\$?\\s*([\\d,]+(?:\\.\\d{1,2})?)\\s*[-–—:]?\\s*${escapedLabel}`,
+        "i",
+      ),
+    ];
+
+    for (const pattern of patterns) {
+      const match = payoutBreakdown.match(pattern);
+
+      if (match?.[1]) {
+        return parseNumber(match[1]);
+      }
+    }
+  }
+
+  return 0;
+}
+
+function extractBigBassPlace(
+  payoutBreakdown: string,
+  prizeDescription: string,
+): number | null {
+  const combined = `${payoutBreakdown} ${prizeDescription}`;
+
+  const patterns = [
+    /\bbig\s*(?:fish|bass)\s*#?\s*(1|2)\b/i,
+    /\b(1st|2nd)\s+big\s*(?:fish|bass)\b/i,
+    /\bbig\s*(?:fish|bass)\s+(1st|2nd)\b/i,
+  ];
+
+  for (const pattern of patterns) {
+    const match = combined.match(pattern);
+    if (!match?.[1]) continue;
+
+    const value = normalizeText(match[1]);
+
+    if (value === "1" || value === "1st") return 1;
+    if (value === "2" || value === "2nd") return 2;
+  }
+
+  return null;
+}
+
+function extractBigBassPayout(
+  payoutBreakdown: string,
+  prizeDescription: string,
+): number {
+  const combined = `${payoutBreakdown} ${prizeDescription}`;
+
+  return extractNamedPayout(combined, [
+    "Big Fish 1",
+    "Big Fish #1",
+    "Big Bass 1",
+    "Big Bass #1",
+    "1st Big Fish",
+    "1st Big Bass",
+    "Big Fish 2",
+    "Big Fish #2",
+    "Big Bass 2",
+    "Big Bass #2",
+    "2nd Big Fish",
+    "2nd Big Bass",
+    "Big Fish",
+    "Big Bass",
+  ]);
+}
+
+function findResultsHeaderIndex(
+  records: string[][],
+  requiredHeaders: readonly string[],
+): number {
+  const normalizedRequired = requiredHeaders.map(normalizeHeader);
+
+  return records.findIndex((record) => {
+    const normalizedRecord = record.map(normalizeHeader);
+
+    return normalizedRequired.every((required) =>
+      normalizedRecord.includes(required),
+    );
+  });
+}
+
+function readTournamentInfo(
+  records: string[][],
+  resultsHeaderIndex: number,
+): WeighfishTournamentInfo {
+  const emptyInfo: WeighfishTournamentInfo = {
+    tournament: "",
+    location: "",
+    date: "",
+    format: "",
+    days: "",
+  };
+
+  for (let index = 0; index < resultsHeaderIndex - 1; index += 1) {
+    const possibleHeaders = records[index].map(normalizeHeader);
+
+    const tournamentIndex = possibleHeaders.indexOf(
+      normalizeHeader("Tournament"),
+    );
+    const locationIndex = possibleHeaders.indexOf(normalizeHeader("Location"));
+    const dateIndex = possibleHeaders.indexOf(normalizeHeader("Date"));
+    const formatIndex = possibleHeaders.indexOf(normalizeHeader("Format"));
+    const daysIndex = possibleHeaders.indexOf(normalizeHeader("Days"));
+
+    if (
+      tournamentIndex === -1 ||
+      locationIndex === -1 ||
+      dateIndex === -1
+    ) {
+      continue;
+    }
+
+    const values = records[index + 1] ?? [];
+
+    return {
+      tournament: values[tournamentIndex]?.trim() ?? "",
+      location: values[locationIndex]?.trim() ?? "",
+      date: values[dateIndex]?.trim() ?? "",
+      format:
+        formatIndex >= 0 ? values[formatIndex]?.trim() ?? "" : "",
+      days: daysIndex >= 0 ? values[daysIndex]?.trim() ?? "" : "",
+    };
+  }
+
+  return emptyInfo;
+}
+
+function readStatistics(
+  records: string[][],
+  resultsHeaderIndex: number,
+): WeighfishStatistics {
+  const statistics: WeighfishStatistics = {};
+
+  const statisticsHeadingIndex = records.findIndex(
+    (record, index) =>
+      index < resultsHeaderIndex &&
+      record.some(
+        (cell) => normalizeText(cell) === "tournament statistics",
+      ),
+  );
+
+  if (statisticsHeadingIndex === -1) {
+    return statistics;
+  }
+
+  for (
+    let index = statisticsHeadingIndex + 1;
+    index < resultsHeaderIndex;
+    index += 1
+  ) {
+    const nonEmptyCells = records[index]
+      .map((cell) => cell.trim())
+      .filter(Boolean);
+
+    if (nonEmptyCells.length < 2) continue;
+
+    for (
+      let cellIndex = 0;
+      cellIndex < nonEmptyCells.length - 1;
+      cellIndex += 2
+    ) {
+      const label = nonEmptyCells[cellIndex];
+      const value = nonEmptyCells[cellIndex + 1];
+
+      if (label && value) {
+        statistics[label] = value;
+      }
+    }
+  }
+
+  return statistics;
+}
+
+function createEmptyResult(
+  errors: string[],
+): WeighfishParseResult {
+  return {
+    valid: false,
+    headers: [],
+    rows: [],
+    errors,
+    warnings: [],
+    tournamentInfo: {
+      tournament: "",
+      location: "",
+      date: "",
+      format: "",
+      days: "",
+    },
+    statistics: {},
+    payoutTotals: {
+      base: 0,
+      bronze: 0,
+      silver: 0,
+      gold: 0,
+      bigBass: 0,
+      total: 0,
+    },
+  };
 }
 
 export function parseWeighfishCsv(
@@ -74,64 +408,239 @@ export function parseWeighfishCsv(
 ): WeighfishParseResult {
   const source = csv.replace(/^\uFEFF/, "");
   const { records, errors } = parseCsvCells(source);
+  const warnings: string[] = [];
 
   if (records.length === 0) {
-    return {
-      valid: false,
-      headers: [],
-      rows: [],
-      errors: ["The CSV is empty."],
-    };
+    return createEmptyResult(["The CSV is empty."]);
   }
 
-  const headers = records[0].map((header) => header.trim());
+  const requiredHeaders =
+    options.requiredHeaders ?? DEFAULT_REQUIRED_HEADERS;
+
+  const resultsHeaderIndex = findResultsHeaderIndex(
+    records,
+    requiredHeaders,
+  );
+
+  if (resultsHeaderIndex === -1) {
+    return createEmptyResult([
+      ...errors,
+      "The WeighFish results table could not be found.",
+      `Expected result columns: ${requiredHeaders.join(", ")}.`,
+    ]);
+  }
+
+  const headers = records[resultsHeaderIndex].map((header) =>
+    header.trim(),
+  );
+
   const normalizedHeaders = headers.map(normalizeHeader);
 
   if (headers.some((header) => !header)) {
-    errors.push("Every CSV column must have a header.");
+    errors.push("Every result column must have a header.");
   }
 
   const duplicateHeaders = normalizedHeaders.filter(
-    (header, index) => normalizedHeaders.indexOf(header) !== index,
+    (header, index) =>
+      header && normalizedHeaders.indexOf(header) !== index,
   );
+
   if (duplicateHeaders.length > 0) {
-    errors.push("The CSV contains duplicate column headers.");
+    errors.push("The results table contains duplicate column headers.");
   }
 
-  const missingHeaders = (options.requiredHeaders ?? []).filter(
-    (required) => !normalizedHeaders.includes(normalizeHeader(required)),
-  );
-  if (missingHeaders.length > 0) {
-    errors.push(`Missing required columns: ${missingHeaders.join(", ")}.`);
-  }
+  const headerIndexes = new Map<string, number>();
 
-  const rows: WeighfishCsvRow[] = [];
-  records.slice(1).forEach((values, index) => {
-    if (values.length !== headers.length) {
+  normalizedHeaders.forEach((header, index) => {
+    headerIndexes.set(header, index);
+  });
+
+  const rows: WeighfishResultRow[] = [];
+
+  const resultRecords = records.slice(resultsHeaderIndex + 1);
+
+  resultRecords.forEach((record, recordIndex) => {
+    const entryName = getCell(record, headerIndexes, [
+      "Angler",
+      "Team",
+      "Contestant",
+      "Entry",
+    ]);
+
+    const placeValue = getCell(record, headerIndexes, ["Place"]);
+
+    // WeighFish exports may include footer or summary rows in the first
+    // column. A real result entry must always have an angler/team name.
+    // Skip any row without one instead of treating it as a broken result.
+    if (!entryName) {
+      return;
+    }
+
+    if (record.length > headers.length) {
       errors.push(
-        `Row ${index + 2} has ${values.length} columns; expected ${headers.length}.`,
+        `Result row ${recordIndex + 1} has ${record.length} columns; expected ${headers.length}.`,
       );
       return;
     }
 
-    rows.push(
-      Object.fromEntries(
-        headers.map((header, headerIndex) => [
-          header,
-          values[headerIndex].trim(),
-        ]),
-      ),
+    const payoutBreakdown = getCell(record, headerIndexes, [
+      "Payout Breakdown",
+    ]);
+
+    const prizeDescription = getCell(record, headerIndexes, [
+      "Prize Description",
+    ]);
+
+    const cashPayout = parseNumber(
+      getCell(record, headerIndexes, ["Cash Payout"]),
     );
+
+    const bronzePayout = extractNamedPayout(payoutBreakdown, [
+      "Side Pot 1",
+      "Sidepot 1",
+      "Side Pot #1",
+    ]);
+
+    const silverPayout = extractNamedPayout(payoutBreakdown, [
+      "Side Pot 2",
+      "Sidepot 2",
+      "Side Pot #2",
+    ]);
+
+    const goldPayout = extractNamedPayout(payoutBreakdown, [
+      "Side Pot 3",
+      "Sidepot 3",
+      "Side Pot #3",
+    ]);
+
+    const bigBassPlace = extractBigBassPlace(
+      payoutBreakdown,
+      prizeDescription,
+    );
+
+    const bigBassPayout = extractBigBassPayout(
+      payoutBreakdown,
+      prizeDescription,
+    );
+
+    rows.push({
+      place: parseNullableInteger(placeValue),
+      entryName,
+      fishCount: Math.max(
+        0,
+        Math.trunc(
+          parseNumber(
+            getCell(record, headerIndexes, [
+              "# Fish",
+              "Fish",
+              "Fish Count",
+            ]),
+          ),
+        ),
+      ),
+      totalWeight: Math.max(
+        0,
+        parseNumber(
+          getCell(record, headerIndexes, [
+            "Total Weight (lbs)",
+            "Total Weight",
+            "Weight",
+          ]),
+        ),
+      ),
+      bigFishWeight: Math.max(
+        0,
+        parseNumber(
+          getCell(record, headerIndexes, [
+            "Big Fish (lbs)",
+            "Big Fish",
+            "Big Bass",
+          ]),
+        ),
+      ),
+
+      // Per our finalized All-In mapping:
+      // WeighFish Cash Payout = Base payout.
+      basePayout: cashPayout,
+      bronzePayout,
+      silverPayout,
+      goldPayout,
+
+      bigBassPlace,
+      bigBassPayout,
+
+      cashPayout,
+      payoutBreakdown,
+      prizeDescription,
+    });
   });
 
   if (rows.length === 0) {
-    errors.push("The CSV does not contain any result rows.");
+    errors.push("The CSV does not contain any tournament result entries.");
   }
+
+  const seenPlaces = new Set<number>();
+
+  for (const row of rows) {
+    if (row.place !== null) {
+      if (seenPlaces.has(row.place)) {
+        warnings.push(
+          `More than one entry is listed in place ${row.place}. This may represent an official tie.`,
+        );
+      }
+
+      seenPlaces.add(row.place);
+    }
+  }
+
+  const tournamentInfo = readTournamentInfo(
+    records,
+    resultsHeaderIndex,
+  );
+
+  const statistics = readStatistics(records, resultsHeaderIndex);
+
+  if (!tournamentInfo.tournament) {
+    warnings.push(
+      "The tournament name was not found in the WeighFish export.",
+    );
+  }
+
+  const payoutTotals = rows.reduce<WeighfishPayoutTotals>(
+    (totals, row) => {
+      totals.base += row.basePayout;
+      totals.bronze += row.bronzePayout;
+      totals.silver += row.silverPayout;
+      totals.gold += row.goldPayout;
+      totals.bigBass += row.bigBassPayout;
+
+      return totals;
+    },
+    {
+      base: 0,
+      bronze: 0,
+      silver: 0,
+      gold: 0,
+      bigBass: 0,
+      total: 0,
+    },
+  );
+
+  payoutTotals.total =
+    payoutTotals.base +
+    payoutTotals.bronze +
+    payoutTotals.silver +
+    payoutTotals.gold +
+    payoutTotals.bigBass;
 
   return {
     valid: errors.length === 0,
     headers,
     rows,
     errors,
+    warnings: [...new Set(warnings)],
+    tournamentInfo,
+    statistics,
+    payoutTotals,
   };
 }

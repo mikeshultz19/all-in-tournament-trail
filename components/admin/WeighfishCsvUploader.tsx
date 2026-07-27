@@ -1,247 +1,141 @@
 "use client";
 
-import { CheckCircle2, FileSpreadsheet, Upload } from "lucide-react";
-import {
-  type ChangeEvent,
-  type DragEvent,
-  useRef,
-  useState,
-} from "react";
+import { FileUp, UploadCloud } from "lucide-react";
+import { useRef, useState } from "react";
 
 import {
   parseWeighfishCsv,
   type WeighfishParseResult,
 } from "@/lib/weighfishParser";
 
-type UploadStatus = "idle" | "ready" | "success" | "error";
+interface WeighfishCsvUploaderProps {
+  onImport?: (result: WeighfishParseResult) => void;
+}
 
 export default function WeighfishCsvUploader({
   onImport,
-}: {
-  onImport?: (rows: Array<{ team: string; weight: string }>) => void;
-}) {
+}: WeighfishCsvUploaderProps) {
   const inputRef = useRef<HTMLInputElement>(null);
-  const [dragging, setDragging] = useState(false);
-  const [file, setFile] = useState<File | null>(null);
+  const [fileName, setFileName] = useState("");
   const [result, setResult] = useState<WeighfishParseResult | null>(null);
-  const [status, setStatus] = useState<UploadStatus>("idle");
+  const [reading, setReading] = useState(false);
 
-  async function loadFile(selectedFile: File) {
-    setFile(selectedFile);
+  async function handleFile(file: File | undefined) {
+    if (!file) return;
 
-    if (!selectedFile.name.toLocaleLowerCase().endsWith(".csv")) {
-      setResult({
-        valid: false,
-        headers: [],
-        rows: [],
-        errors: ["Choose a CSV file ending in .csv."],
-      });
-      setStatus("error");
-      return;
-    }
+    setReading(true);
+    setFileName(file.name);
 
     try {
-      const parsed = parseWeighfishCsv(await selectedFile.text());
+      const csv = await file.text();
+      const parsed = parseWeighfishCsv(csv);
+
       setResult(parsed);
-      setStatus(parsed.valid ? "ready" : "error");
+
+      if (parsed.valid) {
+        onImport?.(parsed);
+      }
     } catch {
       setResult({
         valid: false,
         headers: [],
         rows: [],
-        errors: ["We could not read that CSV. Choose another file."],
+        errors: ["The CSV file could not be read."],
+        warnings: [],
+        tournamentInfo: {
+          tournament: "",
+          location: "",
+          date: "",
+          format: "",
+          days: "",
+        },
+        statistics: {},
+        payoutTotals: {
+          base: 0,
+          bronze: 0,
+          silver: 0,
+          gold: 0,
+          bigBass: 0,
+          total: 0,
+        },
       });
-      setStatus("error");
-    }
-  }
-
-  function removeFile() {
-    setFile(null);
-    setResult(null);
-    setStatus("idle");
-    setDragging(false);
-    if (inputRef.current) inputRef.current.value = "";
-  }
-
-  function handleFileInput(event: ChangeEvent<HTMLInputElement>) {
-    const selectedFile = event.target.files?.[0];
-    if (selectedFile) void loadFile(selectedFile);
-  }
-
-  function handleDrop(event: DragEvent<HTMLDivElement>) {
-    event.preventDefault();
-    setDragging(false);
-    const selectedFile = event.dataTransfer.files[0];
-    if (selectedFile) void loadFile(selectedFile);
-  }
-
-  async function importResults() {
-    if (!file) return;
-    const parsed = parseWeighfishCsv(await file.text());
-    setResult(parsed);
-
-    if (parsed.valid) {
-      onImport?.(
-        parsed.rows.map((row) => ({
-          team: row.Team ?? row.team ?? "",
-          weight: row.Weight ?? row.weight ?? "",
-        })),
-      );
-      console.info("Parsed Weighfish CSV:", parsed);
-      setStatus("success");
-    } else {
-      setStatus("error");
+    } finally {
+      setReading(false);
     }
   }
 
   return (
-    <section
-      aria-labelledby="weighfish-import-heading"
-      className="mt-6 border border-white/10 bg-[#111111] p-5 sm:p-7"
-    >
-      <div className="border-b border-white/10 pb-4">
-        <h2
-          id="weighfish-import-heading"
-          className="text-xl font-black uppercase tracking-tight text-white"
-        >
-          Import Weighfish Results
-        </h2>
-        <p className="mt-2 max-w-2xl text-sm leading-6 text-neutral-400">
-          Upload the official Weighfish tournament CSV. The imported standings
-          will populate the Winners Circle and Complete Results.
-        </p>
+    <section className="border border-white/10 bg-[#111111] p-5 sm:p-7">
+      <div className="flex flex-wrap items-start justify-between gap-4">
+        <div>
+          <p className="text-xs font-black uppercase tracking-[0.2em] text-[#D4A017]">
+            WeighFish Import
+          </p>
+          <h2 className="mt-2 text-xl font-black uppercase tracking-tight text-white">
+            Upload Tournament CSV
+          </h2>
+          <p className="mt-2 max-w-2xl text-sm leading-6 text-neutral-400">
+            Upload the complete WeighFish CSV export. Standings, weights, Big Bass,
+            and payout totals will be imported automatically for the tournament
+            already selected above.
+          </p>
+        </div>
+
+        <FileUp aria-hidden="true" className="size-8 text-[#D4A017]" />
       </div>
 
-      {!file ? (
-        <div
-          onDragEnter={(event) => {
-            event.preventDefault();
-            setDragging(true);
-          }}
-          onDragOver={(event) => {
-            event.preventDefault();
-            setDragging(true);
-          }}
-          onDragLeave={(event) => {
-            if (!event.currentTarget.contains(event.relatedTarget as Node)) {
-              setDragging(false);
-            }
-          }}
-          onDrop={handleDrop}
-          className={`mt-5 flex min-h-56 flex-col items-center justify-center border-2 border-dashed px-6 py-10 text-center transition ${
-            dragging
-              ? "border-red-500 bg-red-950/30"
-              : "border-white/20 bg-[#0B0B0B]"
-          }`}
-        >
-          <Upload
-            aria-hidden="true"
-            className={`size-10 ${dragging ? "text-red-400" : "text-neutral-400"}`}
-          />
-          <p className="mt-4 text-lg font-black uppercase tracking-tight text-white">
-            Drag &amp; Drop CSV Here
-          </p>
-          <p className="my-3 text-xs font-bold uppercase tracking-[0.14em] text-neutral-500">
-            or
-          </p>
-          <button
-            type="button"
-            onClick={() => inputRef.current?.click()}
-            className="inline-flex min-h-11 items-center justify-center border border-red-600 px-5 text-xs font-black uppercase tracking-[0.12em] text-white transition hover:bg-red-700"
-          >
-            Browse for CSV
-          </button>
-          <p className="mt-3 text-xs text-neutral-500">Accepted file type: .csv</p>
-          <input
-            ref={inputRef}
-            type="file"
-            accept=".csv,text/csv"
-            onChange={handleFileInput}
-            className="sr-only"
-            aria-label="Choose Weighfish CSV"
-          />
-        </div>
-      ) : (
-        <div className="mt-5 border border-white/10 bg-[#0B0B0B] p-4 sm:p-5">
-          <div className="flex min-w-0 items-center gap-3">
-            {result?.valid ? (
-              <CheckCircle2
-                aria-hidden="true"
-                className="size-6 shrink-0 text-emerald-400"
-              />
-            ) : (
-              <FileSpreadsheet
-                aria-hidden="true"
-                className="size-6 shrink-0 text-red-400"
-              />
-            )}
-            <p className="min-w-0 truncate font-bold text-white">
-              {result?.valid ? "✓ " : ""}
-              {file.name}
-            </p>
-          </div>
+      <input
+        ref={inputRef}
+        type="file"
+        accept=".csv,text/csv"
+        className="sr-only"
+        onChange={(event) => {
+          void handleFile(event.target.files?.[0]);
+          event.target.value = "";
+        }}
+      />
 
-          <dl className="mt-4 grid gap-3 sm:grid-cols-2">
-            <div className="border border-white/10 px-4 py-3">
-              <dt className="text-[0.65rem] font-black uppercase tracking-[0.12em] text-neutral-500">
-                Rows Detected
-              </dt>
-              <dd className="mt-1 text-xl font-black text-white">
-                {result?.rows.length ?? 0}
-              </dd>
-            </div>
-            <div className="border border-white/10 px-4 py-3">
-              <dt className="text-[0.65rem] font-black uppercase tracking-[0.12em] text-neutral-500">
-                Teams Detected
-              </dt>
-              <dd className="mt-1 text-xl font-black text-white">
-                {result?.rows.length ?? 0}
-              </dd>
-            </div>
-          </dl>
+      <button
+        type="button"
+        disabled={reading}
+        onClick={() => inputRef.current?.click()}
+        className="mt-5 inline-flex min-h-12 items-center gap-2 bg-red-700 px-6 text-sm font-black uppercase tracking-[0.12em] text-white disabled:cursor-not-allowed disabled:opacity-60"
+      >
+        <UploadCloud aria-hidden="true" className="size-5" />
+        {reading ? "Reading CSV..." : "Choose WeighFish CSV"}
+      </button>
 
-          {result && result.errors.length > 0 && (
-            <div
-              role="alert"
-              className="mt-4 border border-red-500/40 bg-red-500/10 px-4 py-3 text-sm text-red-300"
-            >
-              <p className="font-bold">Review this CSV before importing:</p>
-              <ul className="mt-2 list-disc space-y-1 pl-5">
-                {result.errors.map((error) => (
-                  <li key={error}>{error}</li>
-                ))}
-              </ul>
-            </div>
-          )}
-
-          {status === "success" && (
-            <p
-              role="status"
-              className="mt-4 border border-emerald-500/40 bg-emerald-500/10 px-4 py-3 text-sm font-bold text-emerald-300"
-            >
-              Import Successful
-            </p>
-          )}
-
-          <div className="mt-5 flex flex-wrap gap-3">
-            <button
-              type="button"
-              disabled={!result?.valid}
-              onClick={() => void importResults()}
-              className="inline-flex min-h-11 items-center justify-center bg-red-700 px-5 text-xs font-black uppercase tracking-[0.12em] text-white disabled:cursor-not-allowed disabled:opacity-40"
-            >
-              Import Results
-            </button>
-            <button
-              type="button"
-              onClick={removeFile}
-              className="inline-flex min-h-11 items-center justify-center border border-white/20 px-5 text-xs font-black uppercase tracking-[0.12em] text-neutral-300 transition hover:border-white/40 hover:text-white"
-            >
-              Remove File
-            </button>
-          </div>
-        </div>
+      {fileName && (
+        <p className="mt-3 text-sm text-neutral-300">
+          Selected file: <strong className="text-white">{fileName}</strong>
+        </p>
       )}
+
+      {result?.errors.length ? (
+        <div
+          className="mt-4 border border-red-500/40 bg-red-500/10 p-4"
+          role="alert"
+        >
+          <p className="text-xs font-black uppercase tracking-[0.12em] text-red-300">
+            Import Failed
+          </p>
+          <ul className="mt-2 space-y-1 text-sm text-red-200">
+            {result.errors.map((error) => (
+              <li key={error}>• {error}</li>
+            ))}
+          </ul>
+        </div>
+      ) : null}
+
+      {result?.valid ? (
+        <div
+          className="mt-4 border border-emerald-500/40 bg-emerald-500/10 p-4 text-sm font-semibold text-emerald-200"
+          role="status"
+        >
+          Imported {result.rows.length} tournament result
+          {result.rows.length === 1 ? "" : "s"} successfully.
+        </div>
+      ) : null}
     </section>
   );
 }
