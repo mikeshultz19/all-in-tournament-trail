@@ -494,34 +494,30 @@ export function parseWeighfishCsv(
     const cashPayout = parseNumber(
       getCell(record, headerIndexes, ["Cash Payout"]),
     );
-
+const basePayout = extractNamedPayout(payoutBreakdown, [
+  "Main Pot",
+]);
     const bronzePayout = extractNamedPayout(payoutBreakdown, [
-      "Side Pot 1",
-      "Sidepot 1",
-      "Side Pot #1",
-    ]);
+  "Bronze",
+]);
 
-    const silverPayout = extractNamedPayout(payoutBreakdown, [
-      "Side Pot 2",
-      "Sidepot 2",
-      "Side Pot #2",
-    ]);
+const silverPayout = extractNamedPayout(payoutBreakdown, [
+  "Silver",
+]);
 
-    const goldPayout = extractNamedPayout(payoutBreakdown, [
-      "Side Pot 3",
-      "Sidepot 3",
-      "Side Pot #3",
-    ]);
+const goldPayout = extractNamedPayout(payoutBreakdown, [
+  "Gold",
+]);
 
-    const bigBassPlace = extractBigBassPlace(
-      payoutBreakdown,
-      prizeDescription,
-    );
+const bigBassPlace = extractBigBassPlace(
+  payoutBreakdown,
+  prizeDescription,
+);
 
-    const bigBassPayout = extractBigBassPayout(
-      payoutBreakdown,
-      prizeDescription,
-    );
+const bigBassPayout = extractBigBassPayout(
+  payoutBreakdown,
+  prizeDescription,
+);
 
     rows.push({
       place: parseNullableInteger(placeValue),
@@ -561,7 +557,7 @@ export function parseWeighfishCsv(
 
       // Per our finalized All-In mapping:
       // WeighFish Cash Payout = Base payout.
-      basePayout: cashPayout,
+      basePayout,
       bronzePayout,
       silverPayout,
       goldPayout,

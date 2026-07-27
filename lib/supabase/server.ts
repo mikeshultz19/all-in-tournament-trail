@@ -11,15 +11,16 @@ export function isSupabaseConfigured(): boolean {
 
 export function createSupabaseServerClient() {
   const url = process.env.SUPABASE_URL?.trim();
-  const anonKey = process.env.SUPABASE_ANON_KEY?.trim();
+  const serviceRoleKey =
+  process.env.SUPABASE_SERVICE_ROLE_KEY?.trim();
 
-  if (!url || !anonKey) {
+  if (!url || !serviceRoleKey) {
     throw new Error(
-      "Supabase is not configured. Set SUPABASE_URL and SUPABASE_ANON_KEY.",
+      "Supabase is not configured. Set SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY.",
     );
   }
 
-  return createClient(url, anonKey, {
+  return createClient(url, serviceRoleKey, {
     auth: {
       autoRefreshToken: false,
       detectSessionInUrl: false,

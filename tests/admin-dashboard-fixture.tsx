@@ -22,6 +22,21 @@ const tournaments: Tournament[] = [
     hero_image_url: null,
     is_featured: true,
     show_on_homepage: true,
+
+    insurance_payout: 0,
+    insurance_notes: null,
+    insurance_reviewed: false,
+    insurance_reviewed_at: null,
+champion_photo_url: null,
+champion_photo_path: null,
+big_bass_photo_url: null,
+big_bass_photo_path: null,
+photos_reviewed: false,
+photos_reviewed_at: null,
+
+    weighfish_imported: false,
+    weighfish_imported_at: null,
+
     created_at: "2026-07-01T12:00:00Z",
     updated_at: "2026-07-23T09:22:00-05:00",
     updated_by: "AITT Staff",
@@ -43,6 +58,21 @@ const tournaments: Tournament[] = [
     hero_image_url: null,
     is_featured: false,
     show_on_homepage: true,
+
+    insurance_payout: 0,
+    insurance_notes: null,
+    insurance_reviewed: false,
+    insurance_reviewed_at: null,
+champion_photo_path: null,
+big_bass_photo_path: null,
+    champion_photo_url: null,
+    big_bass_photo_url: null,
+    photos_reviewed: false,
+    photos_reviewed_at: null,
+
+    weighfish_imported: false,
+    weighfish_imported_at: null,
+
     created_at: "2026-07-01T12:00:00Z",
     updated_at: "2026-07-01T12:00:00Z",
     updated_by: null,
@@ -50,17 +80,49 @@ const tournaments: Tournament[] = [
 ];
 
 const preTournamentItems: ReadinessChecklistItem[] = [
-  { label: "Tournament Information Updated", complete: true, href: "/admin/tournament" },
-  { label: "Registration Information Complete", complete: true, href: "/admin/tournament" },
-  { label: "Announcements Reviewed", complete: true, href: "/admin/announcements" },
-  { label: "Conditions Updated", complete: false, href: "/admin/conditions" },
+  {
+    label: "Tournament Information Updated",
+    complete: true,
+    href: "/admin/tournament",
+  },
+  {
+    label: "Registration Information Complete",
+    complete: true,
+    href: "/admin/tournament",
+  },
+  {
+    label: "Announcements Reviewed",
+    complete: true,
+    href: "/admin/announcements",
+  },
+  {
+    label: "Conditions Updated",
+    complete: false,
+    href: "/admin/conditions",
+  },
 ];
 
 const postTournamentItems: ReadinessChecklistItem[] = [
-  { label: "Import WeighFish Results", complete: false, href: "/admin/results" },
-  { label: "Upload Tournament Winner Photo", complete: false, href: "/admin/results" },
-  { label: "Upload Big Bass Winner Photo", complete: false, href: "/admin/results" },
-  { label: "Save Tournament Results", complete: false, href: "/admin/results" },
+  {
+    label: "Import WeighFish Results",
+    complete: false,
+    href: "/admin/results",
+  },
+  {
+    label: "Upload Tournament Winner Photo",
+    complete: false,
+    href: "/admin/results",
+  },
+  {
+    label: "Upload Big Bass Winner Photo",
+    complete: false,
+    href: "/admin/results",
+  },
+  {
+    label: "Save Tournament Results",
+    complete: false,
+    href: "/admin/results",
+  },
 ];
 
 export function renderAdminDashboardFixture(): string {

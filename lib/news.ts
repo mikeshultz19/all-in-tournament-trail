@@ -18,15 +18,22 @@ function dataError(
   operation: string,
   error: unknown,
 ): AnnouncementDataError {
-  console.error(`Supabase announcement ${operation} failed.`, error);
+  console.error(
+    `Supabase announcement ${operation} failed.`,
+    error,
+  );
+
   return new AnnouncementDataError(
     `We could not ${operation} announcement information.`,
     { cause: error },
   );
 }
 
-export async function getAnnouncements(): Promise<Announcement[]> {
+export async function getAnnouncements(): Promise<
+  Announcement[]
+> {
   const supabase = createSupabaseServerClient();
+
   const { data, error } = await supabase
     .from("news")
     .select("*")
@@ -34,16 +41,22 @@ export async function getAnnouncements(): Promise<Announcement[]> {
     .order("created_at", { ascending: false });
 
   if (error) {
-    throw dataError("load", error);
+    console.error(
+      "Supabase announcement load failed.",
+      error,
+    );
+
+    return [];
   }
 
-  return data as Announcement[];
+  return (data ?? []) as Announcement[];
 }
 
 export async function getAnnouncementById(
   id: string,
 ): Promise<Announcement | null> {
   const supabase = createSupabaseServerClient();
+
   const { data, error } = await supabase
     .from("news")
     .select("*")
@@ -61,6 +74,7 @@ export async function createAnnouncement(
   values: AnnouncementInsert,
 ): Promise<Announcement> {
   const supabase = createSupabaseServerClient();
+
   const { data, error } = await supabase
     .from("news")
     .insert(values)
@@ -79,6 +93,7 @@ export async function updateAnnouncement(
   values: AnnouncementUpdate,
 ): Promise<Announcement> {
   const supabase = createSupabaseServerClient();
+
   const { data, error } = await supabase
     .from("news")
     .update(values)
@@ -97,7 +112,11 @@ export async function deleteAnnouncement(
   id: string,
 ): Promise<void> {
   const supabase = createSupabaseServerClient();
-  const { error } = await supabase.from("news").delete().eq("id", id);
+
+  const { error } = await supabase
+    .from("news")
+    .delete()
+    .eq("id", id);
 
   if (error) {
     throw dataError("delete", error);

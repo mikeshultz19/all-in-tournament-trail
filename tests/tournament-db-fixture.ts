@@ -18,6 +18,24 @@ export const databaseTournament: Tournament = {
   hero_image_url: "/images/lakes/eagle-mountain.jfif",
   is_featured: true,
   show_on_homepage: true,
+
+  insurance_payout: 0,
+  insurance_notes: null,
+  insurance_reviewed: false,
+  insurance_reviewed_at: null,
+
+  champion_photo_url: null,
+  champion_photo_path: null,
+
+  big_bass_photo_url: null,
+  big_bass_photo_path: null,
+
+  photos_reviewed: false,
+  photos_reviewed_at: null,
+
+  weighfish_imported: false,
+  weighfish_imported_at: null,
+
   created_at: "2026-07-01T12:00:00Z",
   updated_at: "2026-07-21T12:00:00Z",
   updated_by: "AITT Staff",

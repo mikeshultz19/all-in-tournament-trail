@@ -411,7 +411,8 @@ export default function WinnersCircle({
         .sort(
           (a, b) =>
             (a.sidePotPlacement ?? a.place) - (b.sidePotPlacement ?? b.place),
-        ) ?? [],
+        )
+        .slice(0, 1) ?? [],
   }));
 
   const results = latestResults?.results ?? null;

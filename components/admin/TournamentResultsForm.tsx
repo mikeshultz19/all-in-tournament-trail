@@ -292,7 +292,10 @@ export default function TournamentResultsForm({
           </div>
         </fieldset>
 
-        <WeighfishCsvUploader onImport={handleWeighfishImport} />
+      <WeighfishCsvUploader
+  tournamentId={tournament.id}
+  onImport={handleWeighfishImport}
+/> 
 
         {importedResult && (
           <section className="border border-[#D4A017]/35 bg-[#111111] p-5 sm:p-7">

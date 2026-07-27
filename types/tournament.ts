@@ -27,6 +27,19 @@ export interface Tournament {
   hero_image_url: string | null;
   is_featured: boolean;
   show_on_homepage: boolean;
+  insurance_payout: number | null;
+insurance_notes: string | null;
+insurance_reviewed: boolean;
+insurance_reviewed_at: string | null;
+champion_photo_url: string | null;
+champion_photo_path: string | null;
+big_bass_photo_url: string | null;
+big_bass_photo_path: string | null;
+photos_reviewed: boolean;
+photos_reviewed_at: string | null;
+weighfish_imported: boolean;
+weighfish_imported_at: string | null;
+
   created_at: string;
   updated_at: string;
   updated_by: string | null;
@@ -49,6 +62,19 @@ export type TournamentUpdate = Partial<
     | "hero_image_url"
     | "is_featured"
     | "show_on_homepage"
+| "insurance_payout"
+| "insurance_notes"
+| "insurance_reviewed"
+| "insurance_reviewed_at"
+| "champion_photo_url"
+| "champion_photo_path"
+| "big_bass_photo_url"
+| "big_bass_photo_path"
+| "photos_reviewed"
+| "photos_reviewed_at"
+| "weighfish_imported"
+| "weighfish_imported_at"
+
     | "updated_by"
   >
 >;
