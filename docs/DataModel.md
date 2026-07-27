@@ -1,3 +1,6 @@
+Version: 1.0
+Last Updated: July 27, 2026
+
 # Tournament Data Model
 
 Updated: 2026-07-23
@@ -86,3 +89,7 @@ Tournament results and AOY currently retain separate static/placeholder models.
 Announcements, conditions, registration persistence, results persistence,
 authentication, and Storage do not yet have completed Supabase data models.
 Sponsors are not part of tournament readiness or the four-card Admin workflow.
+
+
+---
+For an overview of the project, begin with **00_START_HERE.md**.

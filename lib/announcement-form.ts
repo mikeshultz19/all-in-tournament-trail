@@ -4,13 +4,12 @@ export const ANNOUNCEMENT_TITLE_MAX_LENGTH = 100;
 export const ANNOUNCEMENT_CONTENT_MAX_LENGTH = 500;
 
 export interface AnnouncementFormValues {
-  tournamentId: string | null;
   title: string;
   content: string;
+  isPinned: boolean;
 }
 
 export interface AnnouncementFormErrors {
-  tournamentId?: string;
   title?: string;
   content?: string;
 }
@@ -21,18 +20,13 @@ export interface AnnouncementFormState {
   errors: AnnouncementFormErrors;
 }
 
-const UUID_PATTERN =
-  /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
-
 export function announcementFormData(
   formData: FormData,
 ): AnnouncementFormValues {
-  const tournamentId = String(formData.get("tournamentId") ?? "").trim();
-
   return {
-    tournamentId: tournamentId || null,
     title: String(formData.get("title") ?? "").trim(),
     content: String(formData.get("content") ?? "").trim(),
+    isPinned: formData.get("isPinned") === "true",
   };
 }
 
@@ -40,10 +34,6 @@ export function validateAnnouncementForm(
   values: AnnouncementFormValues,
 ): AnnouncementFormErrors {
   const errors: AnnouncementFormErrors = {};
-
-  if (values.tournamentId && !UUID_PATTERN.test(values.tournamentId)) {
-    errors.tournamentId = "Choose a valid event scope.";
-  }
 
   if (!values.title) {
     errors.title = "Enter an announcement title.";
@@ -81,12 +71,9 @@ export function announcementFormToInsert(
   uniqueSuffix?: string,
 ): AnnouncementInsert {
   return {
-    ...(values.tournamentId
-      ? { tournament_id: values.tournamentId }
-      : {}),
     title: values.title,
     slug: announcementTitleToSlug(values.title, uniqueSuffix),
     content: values.content,
-    is_pinned: false,
+    is_pinned: values.isPinned,
   };
 }

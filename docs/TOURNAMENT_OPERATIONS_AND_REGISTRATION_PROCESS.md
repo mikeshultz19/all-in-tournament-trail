@@ -1,3 +1,6 @@
+Version: 1.0
+Last Updated: July 27, 2026
+
 # Tournament Operations and Registration Process
 
 > Early Online Registration screen flow, lifecycle, pricing snapshot, Square
@@ -606,3 +609,7 @@ Currently unresolved business decisions are:
 - Exact Tournament-Morning Registration operating hours and cutoff policy
 - Whether the public Tournament Entries page shows full team names or
   abbreviated names
+
+
+---
+For an overview of the project, begin with **00_START_HERE.md**.

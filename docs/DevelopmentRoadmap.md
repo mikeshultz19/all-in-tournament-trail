@@ -1,3 +1,6 @@
+Version: 1.0
+Last Updated: July 27, 2026
+
 # Development Roadmap
 
 Updated: 2026-07-23
@@ -45,7 +48,7 @@ areas.
 - Connect conditions to the public tournament experience.
 - Verify persistence.
 
-### Step 4 — Tournament Results
+### Step 4 — Tournament Manager
 
 - Review the current Results UI and existing data structures.
 - Define the results schema before implementation.
@@ -89,3 +92,7 @@ Production launch requires authenticated Admin writes, revoked anonymous
 `UPDATE`, verified production RLS and grants, production environment
 configuration, successful lint/TypeScript/tests/build, and verified Vercel,
 canonical-domain, DNS, redirect, accessibility, mobile, and smoke testing.
+
+
+---
+For an overview of the project, begin with **00_START_HERE.md**.

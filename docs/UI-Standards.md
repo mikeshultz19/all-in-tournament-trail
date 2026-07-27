@@ -1,3 +1,6 @@
+Version: 1.0
+Last Updated: July 27, 2026
+
 # UI Standards
 
 - Use black and charcoal backgrounds.
@@ -12,3 +15,7 @@
 - Keep schedule rows simple and typography-driven.
 - Mobile responsiveness is required.
 - Accessibility and readable contrast are required.
+
+
+---
+For an overview of the project, begin with **00_START_HERE.md**.

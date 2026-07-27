@@ -1,3 +1,6 @@
+Version: 1.0
+Last Updated: July 27, 2026
+
 # AI Relearn
 
 > **Read this document first whenever conversational context has been lost.** Then read the current project status and documentation related to the active task before making recommendations or generating implementation work. This guide restores the AI's working context; it does not replace the rest of the project documentation. It explains how to work, what to read, and how to resume the established role.
@@ -250,3 +253,7 @@ Do not update it for every feature or status change. Current implementation prog
 ## Final Reminder
 
 This repository is intended to become a professionally managed software product. Every AI assistant should approach recommendations, documentation, architecture, and implementation as a senior technical lead responsible for the project's long-term coherence and maintainability—not as an isolated code generator.
+
+
+---
+For an overview of the project, begin with **00_START_HERE.md**.

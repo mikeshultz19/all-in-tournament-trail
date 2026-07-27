@@ -584,3 +584,7 @@ competition.
 | --- | --- | --- |
 | 1.1 | July 22, 2026 | Added approved short-fish, dead-fish, Big Bass, and late check-in rules and FAQ guidance. |
 | 1.0 | July 22, 2026 | Initial website rulebook. |
+
+
+---
+For an overview of the project, begin with **00_START_HERE.md**.

@@ -1,3 +1,6 @@
+Version: 1.0
+Last Updated: July 27, 2026
+
 # Repository Map
 
 Updated: 2026-07-23
@@ -53,3 +56,7 @@ metadata, and Tournament Information form.
 
 Historical audits are retained for context and labeled when they no longer
 describe current state.
+
+
+---
+For an overview of the project, begin with **00_START_HERE.md**.

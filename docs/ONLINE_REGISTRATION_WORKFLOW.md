@@ -523,3 +523,7 @@ mandatory.
 - Completed: document-backed Official Rules and Participant Liability Waiver routes.
 - Completed: combined acknowledgment contract with rules and waiver version capture.
 - Pending: durable registration persistence and all Phase 2 items.
+
+
+---
+For an overview of the project, begin with **00_START_HERE.md**.

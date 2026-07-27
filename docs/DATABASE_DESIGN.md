@@ -1,3 +1,6 @@
+Version: 1.0
+Last Updated: July 27, 2026
+
 # All In Tournament Trail Database Design
 
 > **Current-state note (2026-07-23):** This document remains the proposed
@@ -582,3 +585,7 @@ Delay results, AOY, detailed auditing, and WeighFish import tables until their
 business rules are documented and approved. That keeps Phase 4 focused on
 reliable registration persistence without prematurely locking future workflows
 into the database.
+
+
+---
+For an overview of the project, begin with **00_START_HERE.md**.

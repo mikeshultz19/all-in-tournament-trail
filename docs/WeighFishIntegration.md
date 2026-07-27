@@ -1,3 +1,6 @@
+Version: 1.0
+Last Updated: July 27, 2026
+
 # WeighFish Integration
 
 Status: **Planned — not implemented.**
@@ -26,3 +29,7 @@ AITT Admin Center and tournament persistence exist, but authentication, results
 persistence, and a protected import workflow do not. No public upload endpoint
 is implemented. The future import must use selected-tournament context.
 Post-tournament membership reconciliation remains a later phase.
+
+
+---
+For an overview of the project, begin with **00_START_HERE.md**.

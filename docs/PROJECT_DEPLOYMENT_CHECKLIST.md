@@ -386,3 +386,7 @@ plan.
 - [ ] Evaluate electronic payout methods with appropriate approval controls.
 - [ ] Evaluate dedicated backup tablets and cellular service from a second carrier.
 - [ ] Evaluate formal seasonal equipment replacement and lifecycle planning.
+
+
+---
+For an overview of the project, begin with **00_START_HERE.md**.

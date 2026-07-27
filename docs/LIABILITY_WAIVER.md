@@ -468,3 +468,7 @@ conditions are unsafe.
 | Version | Date | Summary |
 | --- | --- | --- |
 | 1.0 | July 22, 2026 | Initial comprehensive participant liability waiver draft for legal review, including assumption of risk, participant responsibility, boating decisions, weather decisions, accidents, negligence, electronic acknowledgment, and document-version capture. |
+
+
+---
+For an overview of the project, begin with **00_START_HERE.md**.

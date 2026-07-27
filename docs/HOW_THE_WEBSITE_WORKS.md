@@ -1,3 +1,6 @@
+Version: 1.0
+Last Updated: July 27, 2026
+
 # How the All-In Tournament Trail Website Works
 
 *An Owner's Guide to Understanding the Technology Behind the Website*
@@ -478,3 +481,7 @@ shares the project, and Vercel delivers it to visitors.
 When all those parts work together, they create a fast, reliable, maintainable
 website that can continue growing for many years—just like the right collection
 of parts becomes a dependable tournament boat.
+
+
+---
+For an overview of the project, begin with **00_START_HERE.md**.

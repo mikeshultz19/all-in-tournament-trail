@@ -1,4 +1,8 @@
-import { ArrowRight, Check, Circle, CircleAlert } from "lucide-react";
+import {
+  ArrowRight,
+  Check,
+  CircleAlert,
+} from "lucide-react";
 import Link from "next/link";
 
 export interface ReadinessChecklistItem {
@@ -12,110 +16,123 @@ interface WebsiteReadinessProps {
   postTournamentItems: readonly ReadinessChecklistItem[];
 }
 
-interface ChecklistSectionProps {
-  title: string;
-  description: string;
-  items: readonly ReadinessChecklistItem[];
-  phase: "before" | "after";
-}
-
-function ChecklistItem({
+function PreTournamentControl({
   item,
-  phase,
 }: {
   item: ReadinessChecklistItem;
-  phase: ChecklistSectionProps["phase"];
 }) {
-  const statusLabel = item.complete
-    ? "Complete"
-    : phase === "before"
-      ? "Needs Attention"
-      : "Upcoming";
-
   const content = (
     <>
       <span
-        aria-hidden="true"
-        className={`flex size-6 shrink-0 items-center justify-center rounded-full border ${
+        className={`flex size-8 shrink-0 items-center justify-center rounded-full border ${
           item.complete
             ? "border-emerald-500/40 bg-emerald-500/10 text-emerald-400"
-            : "border-neutral-600 bg-white/[0.03] text-neutral-500"
+            : "border-[#D4A017]/40 bg-[#D4A017]/10 text-[#D4A017]"
         }`}
       >
         {item.complete ? (
-          <Check className="size-3.5" strokeWidth={2.5} />
+          <Check
+            aria-hidden="true"
+            className="size-4"
+            strokeWidth={2.5}
+          />
         ) : (
-          <Circle className="size-3" strokeWidth={2} />
+          <CircleAlert
+            aria-hidden="true"
+            className="size-4"
+          />
         )}
       </span>
+
       <span className="min-w-0 flex-1">
-        <span className="block text-sm font-semibold text-neutral-200">
+        <span className="block text-sm font-black uppercase text-white">
           {item.label}
         </span>
+
         <span
-          className={`mt-1 block text-xs font-bold ${
+          className={`mt-1 block text-xs font-semibold ${
             item.complete
-              ? "text-neutral-500"
-              : phase === "before"
-                ? "text-[#D4A017]"
-                : "text-neutral-500"
+              ? "text-emerald-400"
+              : "text-[#D4A017]"
           }`}
         >
-          {statusLabel}
+          {item.complete
+            ? "Ready — open to review or change"
+            : "Needs attention"}
         </span>
       </span>
-      {!item.complete && item.href && (
+
+      {item.href && (
         <ArrowRight
           aria-hidden="true"
-          className="size-4 shrink-0 text-neutral-600 transition group-hover:translate-x-0.5 group-hover:text-[#D4A017]"
+          className="size-4 shrink-0 text-neutral-600 transition group-hover:translate-x-1 group-hover:text-[#D4A017]"
         />
       )}
     </>
   );
 
+  if (item.href) {
+    return (
+      <Link
+        href={item.href}
+        className="group flex min-h-20 items-center gap-3 border border-white/10 bg-[#111111] p-4 transition hover:border-[#D4A017]/40 hover:bg-white/[0.03]"
+      >
+        {content}
+      </Link>
+    );
+  }
+
   return (
-    <li className="border-t border-white/10 first:border-t-0">
-      {!item.complete && item.href ? (
-        <Link
-          href={item.href}
-          aria-label={`${phase === "before" ? "Review" : "Open"} ${item.label}`}
-          className="group flex min-h-16 items-center gap-3 py-3 transition-colors hover:bg-white/[0.02] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#D4A017]"
-        >
-          {content}
-        </Link>
-      ) : (
-        <div className="flex min-h-16 items-center gap-3 py-3">{content}</div>
-      )}
-    </li>
+    <div className="flex min-h-20 items-center gap-3 border border-white/10 bg-[#111111] p-4">
+      {content}
+    </div>
   );
 }
 
-function ChecklistSection({
-  title,
-  description,
-  items,
-  phase,
-}: ChecklistSectionProps) {
+function PostTournamentStatus({
+  item,
+}: {
+  item: ReadinessChecklistItem;
+}) {
   return (
-    <section
-      aria-labelledby={`${phase}-tournament-heading`}
-      className={phase === "after" ? "bg-white/[0.02]" : undefined}
-    >
-      <div className="border-b border-white/10 px-6 py-5 sm:px-7">
-        <h2
-          id={`${phase}-tournament-heading`}
-          className="text-lg font-black uppercase tracking-tight text-white"
+    <div className="flex items-center gap-3 border-t border-white/10 px-4 py-4 first:border-t-0">
+      <span
+        className={`flex size-8 shrink-0 items-center justify-center rounded-full border ${
+          item.complete
+            ? "border-emerald-500/40 bg-emerald-500/10 text-emerald-400"
+            : "border-[#D4A017]/40 bg-[#D4A017]/10 text-[#D4A017]"
+        }`}
+      >
+        {item.complete ? (
+          <Check
+            aria-hidden="true"
+            className="size-4"
+            strokeWidth={2.5}
+          />
+        ) : (
+          <CircleAlert
+            aria-hidden="true"
+            className="size-4"
+          />
+        )}
+      </span>
+
+      <span className="min-w-0 flex-1">
+        <span className="block text-sm font-semibold text-neutral-200">
+          {item.label}
+        </span>
+
+        <span
+          className={`mt-1 block text-xs font-semibold ${
+            item.complete
+              ? "text-emerald-400"
+              : "text-[#D4A017]"
+          }`}
         >
-          {title}
-        </h2>
-        <p className="mt-2 text-sm leading-6 text-neutral-500">{description}</p>
-      </div>
-      <ul className="px-6 sm:px-7">
-        {items.map((item) => (
-          <ChecklistItem key={item.label} item={item} phase={phase} />
-        ))}
-      </ul>
-    </section>
+          {item.complete ? "Complete" : "Needs attention"}
+        </span>
+      </span>
+    </div>
   );
 }
 
@@ -123,64 +140,106 @@ export default function WebsiteReadiness({
   preTournamentItems,
   postTournamentItems,
 }: WebsiteReadinessProps) {
-  const setupComplete = preTournamentItems.every((item) => item.complete);
-  const setupLabel = setupComplete
-    ? "Tournament Setup Complete"
-    : "Tournament Setup Incomplete";
+  const preCompleteCount = preTournamentItems.filter(
+    (item) => item.complete,
+  ).length;
+
+  const postCompleteCount = postTournamentItems.filter(
+    (item) => item.complete,
+  ).length;
+
+  const postRemainingCount =
+    postTournamentItems.length - postCompleteCount;
 
   return (
-    <section
-      aria-labelledby="website-readiness-heading"
-      className="border border-white/10 bg-[#111111]"
-    >
-      <div className="border-b border-white/10 px-6 py-6 sm:px-7">
-        <h1
-          id="website-readiness-heading"
-          className="text-xs font-black uppercase tracking-[0.22em] text-red-500"
+    <section aria-labelledby="tournament-controls-heading">
+      <div>
+        <p className="text-xs font-black uppercase tracking-[0.2em] text-red-500">
+          Tournament Controls
+        </p>
+
+        <h2
+          id="tournament-controls-heading"
+          className="mt-1 text-xl font-black uppercase text-white"
         >
-          Website Readiness
-        </h1>
+          Tournament Setup
+        </h2>
 
-        <div className="mt-3 flex items-center gap-3">
-          <span
-            role="img"
-            aria-label={`Status: ${setupLabel}`}
-            className={`flex size-6 shrink-0 items-center justify-center rounded-full border transition-colors duration-300 ${
-              setupComplete
-                ? "border-emerald-500/40 bg-emerald-500/10 text-emerald-400"
-                : "border-[#D4A017]/50 bg-[#D4A017]/10 text-[#D4A017]"
-            }`}
-          >
-            {setupComplete ? (
-              <Check aria-hidden="true" className="size-3.5" strokeWidth={2.5} />
-            ) : (
-              <CircleAlert
-                aria-hidden="true"
-                className="size-3.5"
-                strokeWidth={2}
-              />
-            )}
-          </span>
-          <p className="text-xl font-black uppercase tracking-tight text-white sm:text-2xl">
-            {setupLabel}
-          </p>
-        </div>
-
+        <p className="mt-2 max-w-3xl text-sm leading-6 text-neutral-500">
+          These controls remain available through tournament day.
+          Open any item to review or change tournament information,
+          registration details, ramp information, or announcements.
+        </p>
       </div>
 
-      <div className="grid lg:grid-cols-2 lg:divide-x lg:divide-white/10">
-        <ChecklistSection
-          title="Before the Tournament"
-          description="Complete these items before tournament day."
-          items={preTournamentItems}
-          phase="before"
-        />
-        <ChecklistSection
-          title="After the Tournament"
-          description="Complete these items after weigh-in and save the official results."
-          items={postTournamentItems}
-          phase="after"
-        />
+      <div className="mt-4 flex flex-wrap items-center gap-3 text-sm">
+        <span className="border border-white/10 bg-[#111111] px-3 py-2 text-neutral-400">
+          <strong className="text-white">
+            {preCompleteCount}
+          </strong>{" "}
+          of{" "}
+          <strong className="text-white">
+            {preTournamentItems.length}
+          </strong>{" "}
+          currently ready
+        </span>
+
+        <span className="text-xs text-neutral-600">
+          Ready items can still be opened and changed.
+        </span>
+      </div>
+
+      <div className="mt-4 grid gap-3 md:grid-cols-3">
+        {preTournamentItems.map((item) => (
+          <PreTournamentControl
+            key={item.label}
+            item={item}
+          />
+        ))}
+      </div>
+
+      <div className="mt-8 border border-white/10 bg-[#111111]">
+        <div className="flex flex-col gap-3 border-b border-white/10 px-5 py-5 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <p className="text-xs font-black uppercase tracking-[0.18em] text-red-500">
+              After Weigh-In
+            </p>
+
+            <h2 className="mt-1 text-lg font-black uppercase text-white">
+              Post-Tournament Progress
+            </h2>
+
+            <p className="mt-2 max-w-2xl text-sm text-neutral-500">
+              This section is status only. Use the yellow Update
+              Tournament button above to complete these steps.
+            </p>
+          </div>
+
+          <span
+            className={`inline-flex w-fit border px-3 py-2 text-xs font-black uppercase ${
+              postRemainingCount === 0
+                ? "border-emerald-500/40 bg-emerald-500/10 text-emerald-400"
+                : "border-[#D4A017]/40 bg-[#D4A017]/10 text-[#D4A017]"
+            }`}
+          >
+            {postRemainingCount === 0
+              ? "Complete"
+              : `${postRemainingCount} ${
+                  postRemainingCount === 1
+                    ? "item"
+                    : "items"
+                } remaining`}
+          </span>
+        </div>
+
+        <div>
+          {postTournamentItems.map((item) => (
+            <PostTournamentStatus
+              key={item.label}
+              item={item}
+            />
+          ))}
+        </div>
       </div>
     </section>
   );

@@ -1,3 +1,6 @@
+Version: 1.0
+Last Updated: July 27, 2026
+
 # Repository Audit
 
 > **Historical document:** This audit records the 2026-07-20 cleanup baseline.
@@ -221,7 +224,7 @@ Home, Schedule, Results, and individual tournament result URLs are active. The f
 - Privacy Policy
 - Terms of Use
 
-Current Tournament Results and Past Tournament Results are not implemented as meaningful views. The Results index and details are shells populated from upcoming tournaments.
+Current Tournament Manager and Past Tournament Manager are not implemented as meaningful views. The Results index and details are shells populated from upcoming tournaments.
 
 ### Extra, duplicate, and ambiguous routes
 
@@ -536,3 +539,7 @@ Choose one PostCSS config, evaluate the Tailwind config, normalize image naming/
 - Number of REVIEW items: **28**
 - Number of KEEP items: **10**
 - Recommended first cleanup batch: **Batch 1 — High-confidence safe removals (15 items), followed by lint, TypeScript, and build verification**
+
+
+---
+For an overview of the project, begin with **00_START_HERE.md**.

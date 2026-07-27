@@ -1,3 +1,6 @@
+Version: 1.0
+Last Updated: July 27, 2026
+
 # Changelog
 
 ## 2026-07-23
@@ -34,3 +37,7 @@
   before production.
 - Revoke any obsolete Resend credential.
 - Do not deploy until Admin authentication and production RLS are verified.
+
+
+---
+For an overview of the project, begin with **00_START_HERE.md**.

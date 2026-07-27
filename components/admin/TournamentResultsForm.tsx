@@ -551,31 +551,59 @@ export default function TournamentResultsForm({
 
           <section className="mt-5 border border-white/10 bg-[#0B0B0B] p-4">
             <h2 className="text-sm font-black uppercase tracking-[0.12em] text-white">
-              Winner Photos and Big Bass
+              🏆 Winner Photos
             </h2>
 
-            <div className="mt-4 grid gap-5 sm:grid-cols-2">
-              <label className={labelClassName}>
-                Champion Photo URL
-                <input
-                  name="championImageUrl"
-                  type="text"
-                  inputMode="url"
-                  defaultValue={championImageUrl}
-                  className={inputClassName}
-                />
-              </label>
+            <p className="mt-2 text-sm text-neutral-400">
+              Upload the overall winner and Big Bass winner photos.
+            </p>
 
-              <label className={labelClassName}>
-                Big Bass Photo URL
+            <div className="mt-4 grid gap-6 sm:grid-cols-2">
+              <div className="rounded border border-white/10 bg-[#111111] p-4">
+                <h3 className="font-bold text-white">Overall Winner</h3>
+
+                <div className="mt-3 flex h-40 items-center justify-center rounded border border-dashed border-white/15 bg-black/20 text-sm text-neutral-500">
+                  Photo Preview
+                </div>
+
                 <input
-                  name="bigBassImageUrl"
-                  type="text"
-                  inputMode="url"
-                  defaultValue={bigBassImageUrl}
-                  className={inputClassName}
+                  name="overallWinnerPhoto"
+                  type="file"
+                  accept="image/*"
+                  className="mt-4 block w-full text-sm text-neutral-300"
                 />
-              </label>
+
+                <p className="mt-3 text-xs text-neutral-400">
+                  Rename photo to:
+                </p>
+
+                <p className="font-semibold text-[#D4A017]">
+                  {tournament.lake} Overall Winner.jpg
+                </p>
+              </div>
+
+              <div className="rounded border border-white/10 bg-[#111111] p-4">
+                <h3 className="font-bold text-white">Big Bass Winner</h3>
+
+                <div className="mt-3 flex h-40 items-center justify-center rounded border border-dashed border-white/15 bg-black/20 text-sm text-neutral-500">
+                  Photo Preview
+                </div>
+
+                <input
+                  name="bigBassWinnerPhoto"
+                  type="file"
+                  accept="image/*"
+                  className="mt-4 block w-full text-sm text-neutral-300"
+                />
+
+                <p className="mt-3 text-xs text-neutral-400">
+                  Rename photo to:
+                </p>
+
+                <p className="font-semibold text-[#D4A017]">
+                  {tournament.lake} Big Bass Winner.jpg
+                </p>
+              </div>
 
               <label className={labelClassName}>
                 Big Bass Angler

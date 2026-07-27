@@ -1,3 +1,6 @@
+Version: 1.0
+Last Updated: July 27, 2026
+
 # All In Tournament Trail Version History
 
 Use [Project Status](ProjectStatus.md) for current work and
@@ -64,3 +67,7 @@ Status: Planned
 
 - Vercel deployment, Cloudflare DNS, canonical-domain configuration, and
   production-safe administration.
+
+
+---
+For an overview of the project, begin with **00_START_HERE.md**.

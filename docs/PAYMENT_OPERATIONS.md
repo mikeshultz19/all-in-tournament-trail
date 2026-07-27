@@ -372,3 +372,7 @@ The Product Owner must approve the following before software or routine operatio
 | 1.2 | 2026-07-22 | Approved | Added Apple Pay and supported contactless-wallet operations, fee parity, and official-branding requirements. |
 | 1.1 | 2026-07-22 | Approved | Adopted Square for card payments, the 3% Card Processing Fee, and WeighFish-owned Tournament-Morning Registration. |
 | 1.0 | 2026-07-22 | Superseded | Initial draft. |
+
+
+---
+For an overview of the project, begin with **00_START_HERE.md**.

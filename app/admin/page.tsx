@@ -21,16 +21,6 @@ const preTournamentItems: ReadinessChecklistItem[] = [
     complete: true,
     href: "/admin/tournament",
   },
-  {
-    label: "Announcements Reviewed",
-    complete: true,
-    href: "/admin/announcements",
-  },
-  {
-    label: "Conditions Updated",
-    complete: false,
-    href: "/admin/conditions",
-  },
 ];
 
 const postTournamentItems: ReadinessChecklistItem[] = [

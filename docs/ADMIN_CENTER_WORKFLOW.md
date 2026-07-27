@@ -1,3 +1,6 @@
+Version: 1.0
+Last Updated: July 27, 2026
+
 # AITT Admin Center Workflow
 
 Updated: 2026-07-23
@@ -44,10 +47,10 @@ Setup is complete.
 
 ### After the Tournament
 
-- Import WeighFish Results
+- Import WeighFish
 - Upload Tournament Winner Photo
 - Upload Big Bass Winner Photo
-- Publish Tournament Results
+- Publish Tournament Manager
 
 Unfinished post-tournament work is upcoming workflow, not a pre-tournament
 setup failure.
@@ -57,7 +60,7 @@ setup failure.
 - Tournament Information
 - News & Announcements
 - Tournament Conditions
-- Tournament Results
+- Tournament Manager
 
 Sponsors are not a tournament readiness item or dashboard management card.
 Public sponsor content may continue to exist independently.
@@ -74,3 +77,7 @@ Public sponsor content may continue to exist independently.
   planned.
 
 Until Auth is implemented, do not describe the Admin Center as protected.
+
+
+---
+For an overview of the project, begin with **00_START_HERE.md**.

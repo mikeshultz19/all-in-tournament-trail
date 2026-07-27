@@ -1,3 +1,6 @@
+Version: 1.0
+Last Updated: July 27, 2026
+
 # Security Notes
 
 Updated: 2026-07-23
@@ -50,3 +53,7 @@ policy. A permissive RLS policy does not replace a missing table privilege.
 - Supabase Storage and upload policies are not complete.
 - Square payment creation and verification are not complete.
 - Do not treat the current Admin Center URL as an access-control boundary.
+
+
+---
+For an overview of the project, begin with **00_START_HERE.md**.

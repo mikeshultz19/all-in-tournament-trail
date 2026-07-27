@@ -1,3 +1,6 @@
+Version: 1.0
+Last Updated: July 27, 2026
+
 # Supabase Setup
 
 Updated: 2026-07-23
@@ -93,3 +96,7 @@ temporary policy with authenticated Admin policies.
 - Missing seed row: run the repository seed in the SQL Editor.
 - Migration drift: preview with `npx supabase db push --dry-run`; do not patch
   hosted columns manually.
+
+
+---
+For an overview of the project, begin with **00_START_HERE.md**.

@@ -1,3 +1,6 @@
+Version: 1.0
+Last Updated: July 27, 2026
+
 # All-In Tournament Trail UI Style Guide
 
 ## Purpose
@@ -128,3 +131,7 @@ be ambiguous, following the existing registration and operations conventions.
 This guide applies to public pages, registration, Rules and FAQ, confirmation
 screens, receipts and emails, user-facing AITT Admin Center wording, and future
 features.
+
+
+---
+For an overview of the project, begin with **00_START_HERE.md**.

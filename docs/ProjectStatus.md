@@ -1,3 +1,6 @@
+Version: 1.0
+Last Updated: July 27, 2026
+
 # Project Status
 
 Last verified: 2026-07-23
@@ -58,7 +61,7 @@ to Completed only after its intended environment and workflow are verified.
 - Connect conditions to the public tournament experience.
 - Verify persistence.
 
-### Step 4 — Tournament Results
+### Step 4 — Tournament Manager
 
 - Review the current Results UI and existing data structures.
 - Define the results schema before implementation.
@@ -124,3 +127,7 @@ Registration persistence, Square payment creation/finalization, transactional
 email, Supabase Auth, Supabase Storage, WeighFish import, results persistence,
 winner-photo uploads, Vercel production deployment, canonical-domain
 connection, and the `www` redirect are not complete.
+
+
+---
+For an overview of the project, begin with **00_START_HERE.md**.

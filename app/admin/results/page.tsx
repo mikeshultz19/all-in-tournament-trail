@@ -1,86 +1,100 @@
-import { ArrowLeft } from "lucide-react";
-import Link from "next/link";
-
-import TournamentResultsForm from "@/components/admin/TournamentResultsForm";
-import { getTournamentResults } from "@/lib/results";
+import AdminTournamentDashboard from "@/components/admin/AdminTournamentDashboard";
+import type { ReadinessChecklistItem } from "@/components/admin/WebsiteReadiness";
 import {
   getNextUpcomingTournament,
-  getTournamentByIdentifier,
+  getTournaments,
 } from "@/lib/tournaments";
+import {
+  getTournamentLocalDate,
+  tournamentDateTimeToUtc,
+} from "@/lib/tournament-time";
+import type { Tournament } from "@/types/tournament";
+
+const preTournamentItems: ReadinessChecklistItem[] = [
+  {
+    label: "Tournament Information Updated",
+    complete: true,
+    href: "/admin/tournament",
+  },
+  {
+    label: "Registration Information Complete",
+    complete: true,
+    href: "/admin/tournament",
+  },
+];
+
+const postTournamentItems: ReadinessChecklistItem[] = [
+  {
+    label: "Open Tournament Manager",
+    complete: false,
+    href: "/admin/tournament-manager",
+  },
+  {
+    label: "Import WeighFish",
+    complete: false,
+    href: "/admin/tournament-manager",
+  },
+  {
+    label: "Review Insurance",
+    complete: false,
+    href: "/admin/tournament-manager",
+  },
+  {
+    label: "Upload Winner Photos",
+    complete: false,
+    href: "/admin/tournament-manager",
+  },
+  {
+    label: "Publish Tournament",
+    complete: false,
+    href: "/admin/tournament-manager",
+  },
+];
 
 export const dynamic = "force-dynamic";
 
-export default async function ResultsAdminPage({
-  searchParams,
-}: {
-  searchParams: Promise<{ tournament?: string | string[] }>;
-}) {
-  const params = await searchParams;
-  const identifier = Array.isArray(params.tournament)
-    ? params.tournament[0]
-    : params.tournament;
-  let tournament = null;
-  let results = null;
+export default async function AdminPage() {
+  const now = new Date();
+  const comparisonDate = tournamentDateTimeToUtc(
+    getTournamentLocalDate(now),
+    "00:00",
+  ).toISOString();
+
+  let tournaments: Tournament[] = [];
+  let currentTournament: Tournament | null = null;
   let loadFailed = false;
 
   try {
-    tournament = identifier
-      ? await getTournamentByIdentifier(identifier)
-      : await getNextUpcomingTournament();
-    results = tournament ? await getTournamentResults(tournament.id) : null;
+    [tournaments, currentTournament] = await Promise.all([
+      getTournaments(),
+      getNextUpcomingTournament(),
+    ]);
   } catch (error) {
-    console.error("Tournament Results page load failed.", error);
+    console.error("Admin dashboard tournament load failed.", error);
     loadFailed = true;
   }
 
-  return (
-    <>
-      <Link
-        href="/admin"
-        className="inline-flex min-h-11 items-center gap-2 text-xs font-black uppercase tracking-[0.14em] text-neutral-400"
-      >
-        <ArrowLeft aria-hidden="true" className="size-4" />
-        Back to Admin Center
-      </Link>
-      <div className="mt-6 border-b border-white/10 pb-6">
-        <p className="text-xs font-black uppercase tracking-[0.2em] text-red-500">
-          Management
-        </p>
-        <h1 className="mt-2 text-3xl font-black uppercase tracking-tight text-white sm:text-4xl">
-          Tournament Results
+  if (loadFailed) {
+    return (
+      <section className="border border-[#D4A017]/40 bg-[#D4A017]/10 p-6">
+        <h1 className="text-xl font-black uppercase text-white">
+          Tournament Information Unavailable
         </h1>
-      </div>
 
-      {tournament ? (
-        <>
-          <TournamentResultsForm
-            tournament={tournament}
-            initialEntries={results?.entries ?? []}
-            initialTotalPayout={results?.total_payout ?? 0}
-            initialBronzePayout={results?.bronze_payout ?? 0}
-            initialSilverPayout={results?.silver_payout ?? 0}
-            initialGoldPayout={results?.gold_payout ?? 0}
-            initialInsurancePotPayout={results?.insurance_pot_payout ?? 0}
-            initialBigBassPayout={results?.big_bass_payout ?? 0}
-            initialBigBassAngler={results?.big_bass_angler ?? null}
-            initialBigBassTeam={results?.big_bass_team ?? null}
-            initialBigBassWeight={results?.big_bass_weight ?? null}
-            initialChampionImageUrl={results?.champion_image_url ?? null}
-            initialBigBassImageUrl={results?.big_bass_image_url ?? null}
-          />
-        </>
-      ) : (
-        <section className="mt-6 border border-white/10 bg-[#111111] p-6">
-          <h2 className="text-xl font-black uppercase text-white">
-            {loadFailed ? "Results Unavailable" : "Tournament Not Found"}
-          </h2>
-          <p className="mt-3 text-sm text-neutral-400">
-            {loadFailed
-              ? "Apply the results migration, then try again."
-              : "Choose an existing tournament from the Admin Center."}
-          </p>
-        </section>
-      )}
-    </>
+        <p className="mt-3 text-sm leading-6 text-neutral-300">
+          We could not load tournament information. Please try again.
+        </p>
+      </section>
+    );
+  }
+
+  return (
+    <AdminTournamentDashboard
+      tournaments={tournaments}
+      initialTournamentId={currentTournament?.id}
+      comparisonDate={comparisonDate}
+      preTournamentItems={preTournamentItems}
+      postTournamentItems={postTournamentItems}
+    />
   );
 }

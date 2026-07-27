@@ -1,3 +1,6 @@
+Version: 1.0
+Last Updated: July 27, 2026
+
 # Master Site Map
 
 This is the approved site structure for the All-In Tournament Trail.
@@ -11,8 +14,8 @@ Schedule
               └── Confirmation
 
 Results
-  ├── Current Tournament Results
-  └── Past Tournament Results
+  ├── Current Tournament Manager
+  └── Past Tournament Manager
         └── Big Bass stored within each tournament result
 
 AOY Standings
@@ -37,7 +40,7 @@ Admin Center
   ├── Tournament Information
   ├── News & Announcements
   ├── Tournament Conditions
-  └── Tournament Results
+  └── Tournament Manager
 ```
 
 The dashboard is scoped to a selected Current Tournament. Sponsors are not a
@@ -58,3 +61,7 @@ tournament readiness item or management card.
 - No separate Big Bass results page
 - No separate safety requirements page
 - No extra routes without approval
+
+
+---
+For an overview of the project, begin with **00_START_HERE.md**.

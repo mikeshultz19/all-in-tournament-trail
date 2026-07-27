@@ -1,13 +1,24 @@
-import PaymentAnnouncement from "@/components/PaymentAnnouncement";
-import TournamentStatusAnnouncement from "@/components/TournamentStatusAnnouncement";
-import type { Tournament } from "@/data/tournaments";
+import { Pin } from "lucide-react";
+import Link from "next/link";
+
 import type { Announcement } from "@/types/announcement";
 
+function formatAnnouncementDate(value: string): string {
+  const date = new Date(value);
+
+  if (Number.isNaN(date.getTime())) {
+    return "Date unavailable";
+  }
+
+  return new Intl.DateTimeFormat("en-US", {
+    timeZone: "America/Chicago",
+    dateStyle: "medium",
+  }).format(date);
+}
+
 export default function LatestTournamentNews({
-  tournament,
   announcements,
 }: {
-  tournament: Tournament | undefined;
   announcements: readonly Announcement[];
 }) {
   return (
@@ -24,42 +35,60 @@ export default function LatestTournamentNews({
           >
             Latest News &amp; Announcements
           </h2>
+
           <div
             aria-hidden="true"
             className="hidden h-px flex-1 bg-gradient-to-r from-red-600 via-red-600/40 to-transparent sm:block"
           />
         </div>
 
-        {tournament ? (
-          <TournamentStatusAnnouncement tournament={tournament} />
-        ) : (
+        {announcements.length === 0 ? (
           <div className="border border-white/10 bg-[#111111] p-6 text-sm text-neutral-400">
-            No upcoming tournament is currently scheduled. Check the schedule for future announcements.
+            No current news or announcements are available.
           </div>
-        )}
-        <PaymentAnnouncement />
-
-        {announcements.length > 0 && (
-          <div className="mt-4 grid gap-3">
+        ) : (
+          <div className="grid gap-4">
             {announcements.map((announcement) => (
               <article
                 key={announcement.id}
-                className="border border-white/10 bg-[#111111] px-5 py-4"
+                className="overflow-hidden border border-white/10 border-l-4 border-l-[#D4A017] bg-[#111111] px-5 py-5 sm:px-6"
               >
-                <h3 className="text-base font-black uppercase tracking-tight text-red-500">
+                <div className="flex flex-wrap items-center gap-2">
+                  {announcement.is_pinned && (
+                    <span className="inline-flex items-center gap-1.5 text-xs font-black uppercase tracking-[0.16em] text-[#D4A017]">
+                      <Pin aria-hidden="true" className="size-3.5" />
+                      Pinned Announcement
+                    </span>
+                  )}
+                </div>
+
+                <h3 className="mt-2 break-words text-lg font-black uppercase tracking-tight text-white sm:text-2xl">
                   {announcement.title}
                 </h3>
-                <p className="mt-2 whitespace-pre-line text-sm leading-6 text-neutral-200">
+
+                {announcement.summary && (
+                  <p className="mt-3 text-sm font-semibold leading-6 text-neutral-200">
+                    {announcement.summary}
+                  </p>
+                )}
+
+                <div className="mt-4 whitespace-pre-line text-sm leading-6 text-neutral-300">
                   {announcement.content}
-                </p>
-                <p className="mt-3 text-xs text-neutral-500">
+                </div>
+
+                {announcement.slug === "card-and-apple-pay-now-available" && (
+                  <Link
+                    href="/how-it-works#frequently-asked-questions"
+                    className="mt-4 inline-flex text-xs font-black uppercase tracking-[0.12em] text-[#D4A017] transition hover:text-yellow-300 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#D4A017]"
+                  >
+                    View Payment Details
+                  </Link>
+                )}
+
+                <p className="mt-4 text-xs text-neutral-500">
                   Updated{" "}
                   <time dateTime={announcement.updated_at}>
-                    {new Intl.DateTimeFormat("en-US", {
-                      timeZone: "America/Chicago",
-                      dateStyle: "medium",
-                      timeStyle: "short",
-                    }).format(new Date(announcement.updated_at))}
+                    {formatAnnouncementDate(announcement.updated_at)}
                   </time>
                 </p>
               </article>

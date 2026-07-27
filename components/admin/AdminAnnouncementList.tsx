@@ -1,6 +1,16 @@
-import { ArrowLeft, FileText, Plus } from "lucide-react";
+"use client";
+import {
+  ArrowLeft,
+  CalendarClock,
+  FileText,
+  ImageIcon,
+  Pencil,
+  Pin,
+  Plus,
+  Trash2,
+} from "lucide-react";
 import Link from "next/link";
-
+import { deleteAnnouncementAction } from "@/app/admin/announcements/actions";
 import type { Announcement } from "@/types/announcement";
 
 interface AdminAnnouncementListProps {
@@ -23,6 +33,16 @@ function formatAnnouncementDate(value: string): string {
   }).format(date);
 }
 
+function getAnnouncementPreview(announcement: Announcement): string {
+  const source = announcement.summary?.trim() || announcement.content.trim();
+
+  if (source.length <= 240) {
+    return source;
+  }
+
+  return `${source.slice(0, 237).trimEnd()}...`;
+}
+
 export default function AdminAnnouncementList({
   announcements,
   loadFailed = false,
@@ -41,11 +61,18 @@ export default function AdminAnnouncementList({
       <div className="mt-8 flex flex-col gap-5 border-b border-white/10 pb-7 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <p className="text-xs font-black uppercase tracking-[0.24em] text-red-500">
-            News &amp; Announcements
+            Website Content
           </p>
+
           <h1 className="mt-3 text-3xl font-black uppercase tracking-tight text-white sm:text-4xl">
-            Announcements
+            Latest News &amp; Announcements
           </h1>
+
+          <p className="mt-3 max-w-2xl text-sm leading-6 text-neutral-400">
+            These announcements are global website content. They are not tied
+            to an individual tournament and should match what visitors see on
+            the homepage.
+          </p>
         </div>
 
         <Link
@@ -74,6 +101,7 @@ export default function AdminAnnouncementList({
           <h2 className="text-lg font-black uppercase text-white">
             Announcements Unavailable
           </h2>
+
           <p className="mx-auto mt-3 max-w-xl text-sm leading-6 text-neutral-300">
             We could not load announcements. Check the Supabase migration and
             permissions, then try again.
@@ -89,61 +117,130 @@ export default function AdminAnnouncementList({
             className="mx-auto size-8 text-[#D4A017]"
             strokeWidth={1.75}
           />
+
           <h2 className="mt-5 text-xl font-black uppercase text-white">
             No Announcements
           </h2>
+
           <p className="mx-auto mt-3 max-w-xl text-sm leading-6 text-neutral-400">
-            Announcements will appear here after the first one is created.
+            Create the first announcement to begin managing homepage news.
           </p>
         </section>
       ) : (
-        <div
+        <section
           data-announcements-state="loaded"
-          className="mt-8 overflow-x-auto border border-white/10 bg-[#111111]"
+          className="mt-8"
+          aria-label="Existing announcements"
         >
-          <table className="w-full min-w-[780px] border-collapse text-left">
-            <thead className="bg-white/[0.025]">
-              <tr className="border-b border-white/10">
-                {["Title", "Last Updated"].map(
-                  (heading) => (
-                    <th
-                      key={heading}
-                      scope="col"
-                      className="px-5 py-4 text-[0.65rem] font-black uppercase tracking-[0.16em] text-neutral-500"
-                    >
-                      {heading}
-                    </th>
-                  ),
-                )}
-              </tr>
-            </thead>
-            <tbody>
-              {announcements.map((announcement) => (
-                <tr
-                  key={announcement.id}
-                  className="border-b border-white/10 last:border-b-0"
-                >
-                  <th
-                    scope="row"
-                    className="max-w-md px-5 py-5 text-sm font-bold text-white"
-                  >
-                    {announcement.title}
-                    {announcement.is_pinned && (
-                      <span className="ml-2 text-[0.6rem] font-black uppercase tracking-[0.12em] text-[#D4A017]">
-                        Pinned
+          <div className="mb-4 flex items-center justify-between gap-4">
+            <p className="text-xs font-black uppercase tracking-[0.16em] text-neutral-500">
+              Existing Homepage Content
+            </p>
+
+            <p className="text-xs font-bold uppercase tracking-[0.12em] text-neutral-500">
+              {announcements.length}{" "}
+              {announcements.length === 1
+                ? "Announcement"
+                : "Announcements"}
+            </p>
+          </div>
+
+          <div className="space-y-5">
+            {announcements.map((announcement) => (
+              <article
+                key={announcement.id}
+                className="border border-white/10 bg-[#111111] p-5 sm:p-6"
+              >
+                <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
+                  <div className="min-w-0 flex-1">
+                    <div className="flex flex-wrap items-center gap-2">
+                      {announcement.is_pinned && (
+                        <span className="inline-flex items-center gap-1.5 border border-[#D4A017]/40 bg-[#D4A017]/10 px-2.5 py-1 text-[0.65rem] font-black uppercase tracking-[0.12em] text-[#D4A017]">
+                          <Pin aria-hidden="true" className="size-3" />
+                          Pinned
+                        </span>
+                      )}
+
+                      <span className="inline-flex items-center gap-1.5 border border-emerald-500/30 bg-emerald-500/10 px-2.5 py-1 text-[0.65rem] font-black uppercase tracking-[0.12em] text-emerald-300">
+                        Homepage Content
                       </span>
-                    )}
-                  </th>
-                  <td className="px-5 py-5 text-sm text-neutral-300">
-                    <time dateTime={announcement.updated_at}>
-                      {formatAnnouncementDate(announcement.updated_at)}
-                    </time>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+
+                      {announcement.featured_image_url && (
+                        <span className="inline-flex items-center gap-1.5 border border-white/10 bg-white/[0.03] px-2.5 py-1 text-[0.65rem] font-black uppercase tracking-[0.12em] text-neutral-400">
+                          <ImageIcon aria-hidden="true" className="size-3" />
+                          Featured Image
+                        </span>
+                      )}
+                    </div>
+
+                    <h2 className="mt-4 text-xl font-black uppercase leading-tight text-white sm:text-2xl">
+                      {announcement.title}
+                    </h2>
+
+                    <p className="mt-3 max-w-3xl whitespace-pre-line text-sm leading-6 text-neutral-300">
+                      {getAnnouncementPreview(announcement)}
+                    </p>
+
+                    <div className="mt-5 flex flex-wrap items-center gap-x-5 gap-y-2 text-xs font-semibold text-neutral-500">
+                      <span className="inline-flex items-center gap-2">
+                        <CalendarClock
+                          aria-hidden="true"
+                          className="size-4"
+                        />
+                        Updated{" "}
+                        <time dateTime={announcement.updated_at}>
+                          {formatAnnouncementDate(
+                            announcement.updated_at,
+                          )}
+                        </time>
+                      </span>
+
+                      <span>
+                        Slug:{" "}
+                        <code className="text-neutral-400">
+                          {announcement.slug}
+                        </code>
+                      </span>
+                    </div>
+
+                  
+                  </div>
+
+<div className="flex shrink-0 flex-col gap-3 sm:flex-row">
+  <Link
+    href={`/admin/announcements/${announcement.id}/edit`}
+    className="inline-flex min-h-11 items-center justify-center gap-2 bg-[#D4A017] px-5 text-xs font-black uppercase tracking-[0.12em] text-black transition-colors hover:bg-[#e2b22a] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#D4A017]"
+  >
+    <Pencil aria-hidden="true" className="size-4" />
+    Edit Announcement
+  </Link>
+
+  <form
+    action={deleteAnnouncementAction.bind(null, announcement.id)}
+    onSubmit={(event) => {
+      const confirmed = window.confirm(
+        `Delete "${announcement.title}"? This cannot be undone.`,
+      );
+
+      if (!confirmed) {
+        event.preventDefault();
+      }
+    }}
+  >
+    <button
+      type="submit"
+      className="inline-flex min-h-11 w-full items-center justify-center gap-2 bg-red-700 px-5 text-xs font-black uppercase tracking-[0.12em] text-white transition-colors hover:bg-red-600 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-red-500"
+    >
+      <Trash2 aria-hidden="true" className="size-4" />
+      Delete
+    </button>
+  </form>
+</div>
+                </div>
+              </article>
+            ))}
+          </div>
+        </section>
       )}
     </>
   );

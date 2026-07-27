@@ -1,3 +1,6 @@
+Version: 1.0
+Last Updated: July 27, 2026
+
 # Decision Log
 
 Use this document to record approved project decisions that affect architecture, routes, design, data, integrations, or maintenance.
@@ -35,7 +38,7 @@ Use this document to record approved project decisions that affect architecture,
 
 - **Status:** Approved
 - **Context:** Staff must always know which tournament they are editing.
-- **Decision:** Show Current Tournament context, preserve the selected ID in Admin links, split readiness into before/after checklists, and use four management areas: Tournament Information, News & Announcements, Tournament Conditions, and Tournament Results. Sponsors are outside tournament readiness.
+- **Decision:** Show Current Tournament context, preserve the selected ID in Admin links, split readiness into before/after checklists, and use four management areas: Tournament Information, News & Announcements, Tournament Conditions, and Tournament Manager. Sponsors are outside tournament readiness.
 - **Impact:** Admin dashboard, selector, readiness, and navigation.
 - **Follow-up:** Replace remaining placeholder readiness values as each feature is implemented.
 
@@ -346,3 +349,7 @@ Use this document to record approved project decisions that affect architecture,
 - **Follow-up:** Preserve this distinction in results, reporting, API, export,
   and future finance work unless the Product Owner explicitly approves a
   replacement rule.
+
+
+---
+For an overview of the project, begin with **00_START_HERE.md**.

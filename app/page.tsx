@@ -90,10 +90,7 @@ export default async function HomePage() {
             </div>
 
             <div data-tournament-column="left" className="flex min-w-0 flex-col gap-6 lg:col-start-1 lg:row-start-1">
-              <LatestTournamentNews
-                tournament={featuredTournament ?? undefined}
-                announcements={announcements}
-              />
+<LatestTournamentNews announcements={announcements} />
               <SponsorHome sponsors={homepageSponsors} />
               <div className="min-w-0">
                 {featuredTournament && operations && weather ? (

@@ -1,15 +1,14 @@
 "use client";
 
-import { CalendarDays, CloudSun, Megaphone, Trophy } from "lucide-react";
+import { Newspaper } from "lucide-react";
+import Link from "next/link";
 import { useMemo, useState } from "react";
 
 import CurrentTournamentCard from "@/components/admin/CurrentTournamentCard";
-import ManagementCard from "@/components/admin/ManagementCard";
 import WebsiteReadiness, {
   type ReadinessChecklistItem,
 } from "@/components/admin/WebsiteReadiness";
 import {
-  formatAdminTournamentDate,
   getInitialAdminTournament,
   withTournamentContext,
 } from "@/lib/admin-tournaments";
@@ -23,37 +22,6 @@ interface AdminTournamentDashboardProps {
   postTournamentItems: readonly ReadinessChecklistItem[];
 }
 
-const staticCardDetails = {
-  announcements: {
-    title: "News & Announcements",
-    description: "Create, edit, hide and remove homepage announcements.",
-    icon: Megaphone,
-    statusItems: [
-      { label: "Active Announcements", value: "3" },
-      { label: "Next Expiration", value: "August 15, 2026" },
-      { label: "Status", value: "Reviewed" },
-    ],
-    lastUpdatedDate: "2026-07-22T18:14:00-05:00",
-    lastUpdatedBy: "AITT Staff",
-  },
-  conditions: {
-    title: "Tournament Conditions",
-    description: "Update Safe Light and the optional tournament message.",
-    icon: CloudSun,
-    statusItems: [
-      { label: "Safe Light", value: "6:18 AM" },
-      {
-        label: "Tournament Message",
-        value: "Not Entered",
-        needsAttention: true,
-      },
-      { label: "Status", value: "Needs Attention", needsAttention: true },
-    ],
-    lastUpdatedDate: "2026-07-20T12:00:00-05:00",
-    lastUpdatedBy: "AITT Staff",
-  },
-} as const;
-
 export default function AdminTournamentDashboard({
   tournaments,
   initialTournamentId,
@@ -66,27 +34,30 @@ export default function AdminTournamentDashboard({
     new Date(comparisonDate),
     initialTournamentId,
   );
-  const [currentTournament, setCurrentTournament] = useState(initialTournament);
+
+  const [currentTournament, setCurrentTournament] =
+    useState(initialTournament);
+
+  const tournamentId = currentTournament?.id ?? "";
 
   const contextualPreTournamentItems = useMemo(
     () =>
       preTournamentItems.map((item) => ({
         ...item,
         href: item.href
-          ? withTournamentContext(item.href, currentTournament?.id ?? "")
+          ? withTournamentContext(item.href, tournamentId)
           : undefined,
       })),
-    [currentTournament?.id, preTournamentItems],
+    [preTournamentItems, tournamentId],
   );
+
   const contextualPostTournamentItems = useMemo(
     () =>
       postTournamentItems.map((item) => ({
         ...item,
-        href: item.href
-          ? withTournamentContext(item.href, currentTournament?.id ?? "")
-          : undefined,
+        href: undefined,
       })),
-    [currentTournament?.id, postTournamentItems],
+    [postTournamentItems],
   );
 
   if (!currentTournament) {
@@ -97,65 +68,60 @@ export default function AdminTournamentDashboard({
     );
   }
 
-  const tournamentId = currentTournament.id;
-  const managementSections = [
-    {
-      title: "Tournament Information",
-      description:
-        "Manage the featured tournament information shown on the homepage and tournament schedule.",
-      href: withTournamentContext("/admin/tournament", tournamentId),
-      icon: CalendarDays,
-      statusItems: [
-        { label: "Featured Tournament", value: currentTournament.name },
-        {
-          label: "Tournament Date",
-          value: formatAdminTournamentDate(currentTournament.tournament_date),
-        },
-        { label: "Status", value: currentTournament.status },
-      ],
-      lastUpdatedDate: currentTournament.updated_at,
-      lastUpdatedBy: currentTournament.updated_by ?? "AITT Staff",
-    },
-    {
-      ...staticCardDetails.announcements,
-      href: withTournamentContext("/admin/announcements", tournamentId),
-    },
-    {
-      ...staticCardDetails.conditions,
-      href: withTournamentContext("/admin/conditions", tournamentId),
-    },
-    {
-      title: "Tournament Results",
-      description:
-        "Enter the official standings and save changes to update the public website.",
-      href: withTournamentContext("/admin/results", tournamentId),
-      icon: Trophy,
-      statusItems: [
-        { label: "Current Tournament", value: currentTournament.name },
-        {
-          label: "Publication Status",
-          value:
-            currentTournament.status === "Results Published"
-              ? "Published"
-              : "Not Published",
-          needsAttention: currentTournament.status !== "Results Published",
-        },
-        {
-          label: "Status",
-          value:
-            currentTournament.status === "Results Published"
-              ? "Complete"
-              : "Needs Attention",
-          needsAttention: currentTournament.status !== "Results Published",
-        },
-      ],
-      lastUpdatedDate: null,
-      lastUpdatedBy: null,
-    },
-  ] as const;
-
   return (
     <>
+      <section
+        aria-labelledby="announcements-heading"
+        className="border border-[#D4A017]/30 bg-[#111111] p-5 sm:p-6"
+      >
+        <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex min-w-0 items-start gap-4">
+            <span className="flex size-12 shrink-0 items-center justify-center border border-[#D4A017]/40 bg-[#D4A017]/10 text-[#D4A017]">
+              <Newspaper
+                aria-hidden="true"
+                className="size-6"
+              />
+            </span>
+
+            <div className="min-w-0">
+              <p className="text-xs font-black uppercase tracking-[0.18em] text-red-500">
+                Website Content
+              </p>
+
+              <h1
+                id="announcements-heading"
+                className="mt-1 text-xl font-black uppercase text-white sm:text-2xl"
+              >
+                Latest News &amp; Announcements
+              </h1>
+
+              <p className="mt-2 max-w-2xl text-sm leading-6 text-neutral-400">
+                Manage the latest news and announcements displayed on the
+                public homepage. This content applies to the entire website
+                and is separate from individual tournament updates.
+              </p>
+            </div>
+          </div>
+
+          <Link
+            href="/admin/announcements"
+            className="inline-flex min-h-12 shrink-0 items-center justify-center bg-[#D4A017] px-5 py-3 text-center text-sm font-black uppercase tracking-wide text-black transition hover:bg-[#e2b22a] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#D4A017]"
+          >
+            Manage Announcements
+          </Link>
+        </div>
+      </section>
+
+      <div className="my-8 flex items-center gap-4">
+        <div className="h-px flex-1 bg-white/10" />
+
+        <p className="shrink-0 text-xs font-black uppercase tracking-[0.22em] text-neutral-500">
+          Tournament Management
+        </p>
+
+        <div className="h-px flex-1 bg-white/10" />
+      </div>
+
       <CurrentTournamentCard
         tournament={currentTournament}
         tournaments={tournaments}
@@ -169,15 +135,6 @@ export default function AdminTournamentDashboard({
           postTournamentItems={contextualPostTournamentItems}
         />
       </div>
-
-      <nav
-        aria-label="Admin management sections"
-        className="mt-6 grid gap-5 sm:mt-8 md:grid-cols-2"
-      >
-        {managementSections.map((section) => (
-          <ManagementCard key={section.href} {...section} />
-        ))}
-      </nav>
     </>
   );
 }
