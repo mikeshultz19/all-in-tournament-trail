@@ -2,6 +2,8 @@ import type { Tournament } from "@/types/tournament";
 
 export const databaseTournament: Tournament = {
   id: "11111111-1111-4111-8111-111111111111",
+  season_id: null,
+  event_type: "regular_season",
   name: "Eagle Mountain",
   slug: "eagle-mountain-2026",
   lake: "Eagle Mountain",
@@ -12,6 +14,13 @@ export const databaseTournament: Tournament = {
   morning_registration: "05:00",
   registration_opens: "2026-07-01T06:00:00-05:00",
   registration_closes: "2026-10-31T21:00:00-05:00",
+  registration_information:
+    "Online registration closes Friday, October 30 at 6:00 PM.",
+  non_member_practice_rule:
+    "Off-limits beginning Sunday prior to the tournament.",
+  member_practice_rule: "Practice opens Friday before the tournament.",
+  practice_information:
+    "Non-members are off-limits beginning Sunday prior to the tournament.\n\nMembers may practice beginning Friday before the tournament.",
   status: "Registration Open",
   description:
     "Tournament preparations are on schedule. Register during the published registration windows.",

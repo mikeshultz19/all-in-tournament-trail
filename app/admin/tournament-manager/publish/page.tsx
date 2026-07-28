@@ -6,6 +6,10 @@ import {
 import Link from "next/link";
 
 import PublishTournamentForm from "@/components/admin/PublishTournamentForm";
+import {
+  calculateResultPayouts,
+  payoutAmount,
+} from "@/lib/result-payouts";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { getTournamentByIdentifier } from "@/lib/tournaments";
 
@@ -30,12 +34,6 @@ type ImportedEntry = {
   big_bass_payout: number | null;
 };
 
-function amount(value: number | null | undefined): number {
-  const parsed = Number(value ?? 0);
-
-  return Number.isFinite(parsed) ? parsed : 0;
-}
-
 function currency(value: number): string {
   return new Intl.NumberFormat("en-US", {
     style: "currency",
@@ -44,7 +42,7 @@ function currency(value: number): string {
 }
 
 function weight(value: number | null | undefined): string {
-  return `${amount(value).toFixed(2)} lbs`;
+  return `${payoutAmount(value).toFixed(2)} lbs`;
 }
 
 export default async function PublishPage({
@@ -106,56 +104,57 @@ export default async function PublishPage({
 
   const bigBass = [...entries]
     .filter(
-      (entry) => amount(entry.big_fish_weight) > 0,
+      (entry) => payoutAmount(entry.big_fish_weight) > 0,
     )
     .sort(
       (left, right) =>
-        amount(right.big_fish_weight) -
-        amount(left.big_fish_weight),
+        payoutAmount(right.big_fish_weight) -
+        payoutAmount(left.big_fish_weight),
     )[0];
 
   const basePayoutTotal = entries.reduce(
     (total, entry) =>
-      total + amount(entry.base_payout),
+      total + payoutAmount(entry.base_payout),
     0,
   );
 
   const bronzePayoutTotal = entries.reduce(
     (total, entry) =>
-      total + amount(entry.bronze_payout),
+      total + payoutAmount(entry.bronze_payout),
     0,
   );
 
   const silverPayoutTotal = entries.reduce(
     (total, entry) =>
-      total + amount(entry.silver_payout),
+      total + payoutAmount(entry.silver_payout),
     0,
   );
 
   const goldPayoutTotal = entries.reduce(
     (total, entry) =>
-      total + amount(entry.gold_payout),
+      total + payoutAmount(entry.gold_payout),
     0,
   );
 
   const bigBassPayoutTotal = entries.reduce(
     (total, entry) =>
-      total + amount(entry.big_bass_payout),
+      total + payoutAmount(entry.big_bass_payout),
     0,
   );
 
-  const totalPayout =
-    basePayoutTotal +
-    bronzePayoutTotal +
-    silverPayoutTotal +
-    goldPayoutTotal +
-    bigBassPayoutTotal +
-    amount(tournament.insurance_payout);
+  const payoutTotals = calculateResultPayouts({
+    total_payout: basePayoutTotal,
+    bronze_payout: bronzePayoutTotal,
+    silver_payout: silverPayoutTotal,
+    gold_payout: goldPayoutTotal,
+    insurance_pot_payout: tournament.insurance_payout,
+    big_bass_payout: bigBassPayoutTotal,
+  });
 
   return (
     <>
       <Link
-        href={`/admin/tournament-manager?tournament=${encodeURIComponent(
+        href={`/admin?tournament=${encodeURIComponent(
           identifier,
         )}`}
         className="inline-flex min-h-11 items-center gap-2 text-xs font-black uppercase tracking-[0.14em] text-neutral-400 hover:text-[#D4A017]"
@@ -165,7 +164,7 @@ export default async function PublishPage({
           className="size-4"
         />
 
-        Back to Catalyst
+        Back to Tournament Operations
       </Link>
 
       <header className="mt-6 border-b border-white/10 pb-6">
@@ -267,8 +266,8 @@ export default async function PublishPage({
               />
 
               <Summary
-                label="Total Payout"
-                value={currency(totalPayout)}
+                label="Total Paid Out to Anglers"
+                value={currency(payoutTotals.totalPaidOutToAnglers)}
               />
             </div>
 
@@ -301,7 +300,7 @@ export default async function PublishPage({
               <Summary
                 label="Insurance"
                 value={currency(
-                  amount(tournament.insurance_payout),
+                  payoutAmount(tournament.insurance_payout),
                 )}
               />
             </div>
@@ -355,11 +354,11 @@ export default async function PublishPage({
                 <tbody>
                   {entries.map((entry, index) => {
                     const rowTotal =
-                      amount(entry.base_payout) +
-                      amount(entry.bronze_payout) +
-                      amount(entry.silver_payout) +
-                      amount(entry.gold_payout) +
-                      amount(entry.big_bass_payout);
+                      payoutAmount(entry.base_payout) +
+                      payoutAmount(entry.bronze_payout) +
+                      payoutAmount(entry.silver_payout) +
+                      payoutAmount(entry.gold_payout) +
+                      payoutAmount(entry.big_bass_payout);
 
                     return (
                       <tr
@@ -375,7 +374,7 @@ export default async function PublishPage({
                         </td>
 
                         <td className="whitespace-nowrap px-4 py-3 text-neutral-300">
-                          {amount(entry.fish_count)}
+                          {payoutAmount(entry.fish_count)}
                         </td>
 
                         <td className="whitespace-nowrap px-4 py-3 text-neutral-300">
@@ -383,7 +382,7 @@ export default async function PublishPage({
                         </td>
 
                         <td className="whitespace-nowrap px-4 py-3 text-neutral-300">
-                          {amount(
+                          {payoutAmount(
                             entry.big_fish_weight,
                           ) > 0
                             ? weight(
@@ -394,13 +393,13 @@ export default async function PublishPage({
 
                         <td className="whitespace-nowrap px-4 py-3 text-neutral-300">
                           {currency(
-                            amount(entry.base_payout),
+                            payoutAmount(entry.base_payout),
                           )}
                         </td>
 
                         <td className="whitespace-nowrap px-4 py-3 text-neutral-300">
                           {currency(
-                            amount(
+                            payoutAmount(
                               entry.bronze_payout,
                             ),
                           )}
@@ -408,7 +407,7 @@ export default async function PublishPage({
 
                         <td className="whitespace-nowrap px-4 py-3 text-neutral-300">
                           {currency(
-                            amount(
+                            payoutAmount(
                               entry.silver_payout,
                             ),
                           )}
@@ -416,13 +415,13 @@ export default async function PublishPage({
 
                         <td className="whitespace-nowrap px-4 py-3 text-neutral-300">
                           {currency(
-                            amount(entry.gold_payout),
+                            payoutAmount(entry.gold_payout),
                           )}
                         </td>
 
                         <td className="whitespace-nowrap px-4 py-3 text-neutral-300">
                           {currency(
-                            amount(
+                            payoutAmount(
                               entry.big_bass_payout,
                             ),
                           )}

@@ -3,12 +3,8 @@
 import {
   CalendarDays,
   Check,
-  CheckCircle2,
   ChevronDown,
-  CircleAlert,
-  Pencil,
 } from "lucide-react";
-import Link from "next/link";
 import {
   useEffect,
   useId,
@@ -20,8 +16,8 @@ import {
 import {
   formatAdminTournamentDate,
   groupAdminTournaments,
-  withTournamentContext,
 } from "@/lib/admin-tournaments";
+import { getTournamentRegistrationStatus } from "@/lib/admin-tournament-operations";
 import type { Tournament } from "@/types/tournament";
 
 interface CurrentTournamentCardProps {
@@ -113,11 +109,9 @@ export default function CurrentTournamentCard({
   );
 
   const orderedTournaments = [...groups.upcoming, ...groups.past];
-  const isPublished = tournament.status === "Results Published";
-
-  const updateTournamentHref = withTournamentContext(
-    "/admin/tournament-manager",
-    tournament.id,
+  const registrationStatus = getTournamentRegistrationStatus(
+    tournament,
+    new Date(comparisonDate),
   );
 
   useEffect(() => {
@@ -210,7 +204,7 @@ export default function CurrentTournamentCard({
       <div className="grid gap-6 p-6 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center lg:p-7">
         <div className="min-w-0">
           <p className="text-xs font-black uppercase tracking-[0.2em] text-red-500">
-            Current Tournament
+            Tournament Operations
           </p>
 
           <h1
@@ -234,36 +228,29 @@ export default function CurrentTournamentCard({
             </time>
           </div>
 
-          <div className="mt-5 flex flex-wrap items-center gap-3">
-            <span
-              className={`inline-flex items-center gap-2 border px-3 py-2 text-xs font-black uppercase tracking-wide ${
-                isPublished
-                  ? "border-emerald-500/40 bg-emerald-500/10 text-emerald-400"
-                  : "border-[#D4A017]/40 bg-[#D4A017]/10 text-[#D4A017]"
-              }`}
-            >
-              {isPublished ? (
-                <CheckCircle2
-                  aria-hidden="true"
-                  className="size-4"
-                />
-              ) : (
-                <CircleAlert
-                  aria-hidden="true"
-                  className="size-4"
-                />
-              )}
-
-              {isPublished
-                ? "Website Data Published"
-                : "Website Data Not Published"}
-            </span>
+          <div className="mt-5 flex flex-wrap gap-3">
+            <div className="border border-white/10 bg-black px-4 py-3">
+              <p className="text-[0.65rem] font-black uppercase tracking-[0.12em] text-neutral-600">
+                Registration Status
+              </p>
+              <p className="mt-1 text-sm font-black uppercase text-[#D4A017]">
+                {registrationStatus}
+              </p>
+            </div>
+            <div className="border border-white/10 bg-black px-4 py-3">
+              <p className="text-[0.65rem] font-black uppercase tracking-[0.12em] text-neutral-600">
+                Overall Tournament Status
+              </p>
+              <p className="mt-1 text-sm font-black uppercase text-white">
+                {tournament.status}
+              </p>
+            </div>
           </div>
 
           <div className="mt-5 grid gap-3 border-t border-white/10 pt-4 text-sm sm:grid-cols-2">
             <div>
               <p className="text-xs font-black uppercase tracking-wide text-neutral-600">
-                Last Recorded Update
+                Last Updated
               </p>
 
               <p className="mt-1 font-semibold text-neutral-300">
@@ -367,13 +354,6 @@ export default function CurrentTournamentCard({
             </div>
           </div>
 
-          <Link
-            href={updateTournamentHref}
-            className="inline-flex min-h-14 items-center justify-center gap-3 bg-[#D4A017] px-6 py-3 text-center text-sm font-black uppercase tracking-wide text-black transition hover:bg-[#e2b22a] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#D4A017]"
-          >
-            <Pencil aria-hidden="true" className="size-5" />
-            Update Tournament
-          </Link>
         </div>
       </div>
     </section>

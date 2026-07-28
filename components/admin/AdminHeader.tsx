@@ -30,6 +30,12 @@ export default function AdminHeader() {
         </Link>
 
         <div className="flex items-center justify-between gap-6 border-t border-white/10 pt-4 md:justify-end md:border-l md:border-t-0 md:pl-6 md:pt-0">
+          <Link
+            href="/admin/members"
+            className="text-xs font-bold uppercase tracking-[0.14em] text-neutral-400 transition-colors hover:text-[#D4A017] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#D4A017]"
+          >
+            Members
+          </Link>
           <AdminUserInfo name="Mike" />
           <Link
             href="/"

@@ -12,6 +12,12 @@ import Link from "next/link";
 import type { ComponentType, SVGProps } from "react";
 
 import styles from "@/components/WinnersCircle.module.css";
+import {
+  calculateResultPayouts,
+  displayResultsPayout,
+  formatResultsDate,
+  isSidePotEntry,
+} from "@/lib/result-payouts";
 import type {
   LatestTournamentResults,
   ResultEntry,
@@ -43,36 +49,6 @@ const SIDE_POT_THEMES: Record<
   },
 };
 
-const BASE_PAYOUT_FALLBACKS: Record<number, number> = {
-  1: 2500,
-  2: 1500,
-  3: 1000,
-  4: 800,
-  5: 600,
-  6: 450,
-  7: 350,
-  8: 250,
-  9: 150,
-  10: 100,
-};
-
-function formatTournamentDate(value: string): string {
-  return new Intl.DateTimeFormat("en-US", {
-    timeZone: "America/Chicago",
-    month: "long",
-    day: "numeric",
-    year: "numeric",
-  }).format(new Date(value));
-}
-
-function formatCurrency(value: number): string {
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD",
-    minimumFractionDigits: 0,
-  }).format(value);
-}
-
 function formatOrdinal(value: number): string {
   const absValue = Math.abs(value);
   const suffix =
@@ -87,23 +63,6 @@ function formatOrdinal(value: number): string {
             : "th";
 
   return `${value}${suffix}`;
-}
-
-function getBasePayout(entry: ResultEntry): number {
-  return entry.baseWinnings && entry.baseWinnings > 0
-    ? entry.baseWinnings
-    : BASE_PAYOUT_FALLBACKS[entry.place] ?? 0;
-}
-
-function isSidePotEntry(
-  entry: ResultEntry,
-): entry is ResultEntry & { sidePot: SidePotName } {
-  return (
-    entry.kind === "sidePot" &&
-    (entry.sidePot === "bronze" ||
-      entry.sidePot === "silver" ||
-      entry.sidePot === "gold")
-  );
 }
 
 function isFinalEntry(entry: ResultEntry): boolean {
@@ -226,8 +185,6 @@ function StandingRow({
 }) {
   const placeTone =
     entry.place <= 3 ? "text-[#c9aa4a]" : "text-[#F4EEE7]";
-  const payout = getBasePayout(entry);
-
   return (
     <li className="border-b border-white/10 py-1 last:border-b-0">
       <div className={`${styles.finalStandingsGrid} items-center gap-2.5`}>
@@ -243,7 +200,7 @@ function StandingRow({
           {entry.weight.toFixed(2)} lbs
         </span>
         <span className="whitespace-nowrap text-right text-[0.65rem] font-black leading-4 tabular-nums text-[#c9aa4a]">
-          {formatCurrency(payout)}
+          {displayResultsPayout(entry.baseWinnings)}
         </span>
       </div>
     </li>
@@ -268,7 +225,7 @@ function SidePotRow({
           {winner.weight.toFixed(2)} lbs
         </span>
         <span className="whitespace-nowrap text-right text-[0.65rem] font-black leading-4 tabular-nums text-[#c9aa4a]">
-          {formatCurrency(winner.sidePotPayout ?? 0)}
+          {displayResultsPayout(winner.sidePotPayout)}
         </span>
       </div>
     </li>
@@ -350,42 +307,10 @@ function SummaryRow({
           emphasis ? "text-[1.05rem] text-[#c9aa4a]" : "text-[0.78rem] text-[#F4EEE7]"
         }`}
       >
-        {formatCurrency(value)}
+        {displayResultsPayout(value)}
       </span>
     </div>
   );
-}
-
-function formatTournamentEntryPayout(
-  results: LatestTournamentResults["results"] | null,
-  finalEntries: ResultEntry[],
-): number {
-  if (results && results.total_payout > 0) {
-    return results.total_payout;
-  }
-
-  return finalEntries.reduce((sum, entry) => sum + getBasePayout(entry), 0);
-}
-
-function getSidePotPayout(
-  results: LatestTournamentResults["results"] | null,
-  sidePot: SidePotName,
-): number {
-  if (!results) return 0;
-
-  return results.entries
-    .filter((entry): entry is ResultEntry & { sidePot: SidePotName } =>
-      isSidePotEntry(entry) && entry.sidePot === sidePot,
-    )
-    .reduce((sum, winner) => sum + (winner.sidePotPayout ?? 0), 0);
-}
-
-function getBigBassPayout(
-  results: LatestTournamentResults["results"] | null,
-): number {
-  return (results as (LatestTournamentResults["results"] & {
-    big_bass_payout?: number;
-  }) | null)?.big_bass_payout ?? 650;
 }
 
 export default function WinnersCircle({
@@ -415,20 +340,9 @@ export default function WinnersCircle({
         .slice(0, 1) ?? [],
   }));
 
-  const results = latestResults?.results ?? null;
-  const tournamentEntryPayout = formatTournamentEntryPayout(results, finalEntries);
-  const bronzePayout = getSidePotPayout(latestResults?.results ?? null, "bronze");
-  const silverPayout = getSidePotPayout(latestResults?.results ?? null, "silver");
-  const goldPayout = getSidePotPayout(latestResults?.results ?? null, "gold");
-  const insurancePot = latestResults?.results.insurance_pot_payout ?? 0;
-  const bigBassPot = getBigBassPayout(latestResults?.results ?? null);
-  const totalPaidOut =
-    tournamentEntryPayout +
-    bronzePayout +
-    silverPayout +
-    goldPayout +
-    insurancePot +
-    bigBassPot;
+  const payoutTotals = calculateResultPayouts(
+    latestResults?.results ?? {},
+  );
 
   const champion = finalEntries[0] ?? null;
   const championImage =
@@ -447,7 +361,7 @@ export default function WinnersCircle({
             <>
               <TournamentHeader
                 title={latestResults.tournament.name}
-                subtitle={`${latestResults.tournament.lake} • ${formatTournamentDate(
+                subtitle={`${latestResults.tournament.lake} • ${formatResultsDate(
                   latestResults.tournament.tournament_date,
                 )}`}
               />
@@ -498,16 +412,16 @@ export default function WinnersCircle({
                   />
 
                   <div className="mt-5 border border-[#8f762f]/60 bg-[#111111] p-3">
-                    <SummaryRow label="Tournament Entry Payout" value={tournamentEntryPayout} />
-                    <SummaryRow label="Bronze Side Pot Payout" value={bronzePayout} />
-                    <SummaryRow label="Silver Side Pot Payout" value={silverPayout} />
-                    <SummaryRow label="Gold Side Pot Payout" value={goldPayout} />
-                    <SummaryRow label="Insurance Pot" value={insurancePot} />
-                    <SummaryRow label="Big Bass Pot" value={bigBassPot} />
+                    <SummaryRow label="Tournament Entry Payout" value={payoutTotals.standardTournament} />
+                    <SummaryRow label="Bronze Side Pot Payout" value={payoutTotals.bronze} />
+                    <SummaryRow label="Silver Side Pot Payout" value={payoutTotals.silver} />
+                    <SummaryRow label="Gold Side Pot Payout" value={payoutTotals.gold} />
+                    <SummaryRow label="Insurance Pot" value={payoutTotals.insurance} />
+                    <SummaryRow label="Big Bass Pot" value={payoutTotals.bigBass} />
                     <div className="my-2 border-t border-[#c9aa4a]/60" />
                     <SummaryRow
-                      label="TOTAL PAID OUT TO ALL ANGLERS"
-                      value={totalPaidOut}
+                      label="TOTAL PAID OUT TO ANGLERS"
+                      value={payoutTotals.totalPaidOutToAnglers}
                       emphasis
                     />
                   </div>
@@ -545,7 +459,7 @@ export default function WinnersCircle({
                           Amount
                         </span>
                         <span className="whitespace-nowrap text-right text-[0.78rem] font-black tabular-nums text-[#c9aa4a]">
-                          {formatCurrency(insurancePot)}
+                          {displayResultsPayout(payoutTotals.insurance)}
                         </span>
                       </div>
                     </section>

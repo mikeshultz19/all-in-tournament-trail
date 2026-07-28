@@ -15,6 +15,14 @@ function validFormData(): FormData {
   formData.set("tournamentDate", "2026-08-16T06:00");
   formData.set("registrationOpens", "2026-07-01T08:00");
   formData.set("registrationCloses", "2026-08-15T18:00");
+  formData.set(
+    "registrationInformation",
+    "Online registration closes Friday at 6:00 PM.",
+  );
+  formData.set(
+    "practiceInformation",
+    "Non-members are off-limits Sunday.\n\nMembers may practice Friday.",
+  );
   formData.set("status", "Registration Open");
   formData.set("isFeatured", "on");
   formData.set("showOnHomepage", "on");
@@ -30,6 +38,10 @@ describe("Tournament Information form", () => {
       lake: "Eagle Mountain",
       tournamentDate: "2026-11-01T06:00",
       registrationCloses: "2026-10-31T21:00",
+      registrationInformation:
+        "Online registration closes Friday, October 30 at 6:00 PM.",
+      practiceInformation:
+        "Non-members are off-limits beginning Sunday prior to the tournament.\n\nMembers may practice beginning Friday before the tournament.",
       status: "Registration Open",
       isFeatured: true,
       showOnHomepage: true,
@@ -66,8 +78,30 @@ describe("Tournament Information form", () => {
       status: "Registration Open",
       is_featured: true,
       show_on_homepage: true,
+      registration_information:
+        "Online registration closes Friday at 6:00 PM.",
+      practice_information:
+        "Non-members are off-limits Sunday.\n\nMembers may practice Friday.",
       updated_by: "AITT Staff",
     });
     expect(update.tournament_date).toBe("2026-08-16T11:00:00.000Z");
+  });
+
+  it("keeps practice information optional and rejects oversized content", () => {
+    const formData = validFormData();
+    formData.set("practiceInformation", "x".repeat(1001));
+
+    const errors = validateTournamentForm(tournamentFormData(formData));
+
+    expect(errors.practiceInformation).toContain("1,000 characters");
+  });
+
+  it("rejects oversized registration information", () => {
+    const formData = validFormData();
+    formData.set("registrationInformation", "x".repeat(1001));
+
+    const errors = validateTournamentForm(tournamentFormData(formData));
+
+    expect(errors.registrationInformation).toContain("1,000 characters");
   });
 });

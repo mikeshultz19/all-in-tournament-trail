@@ -1,6 +1,7 @@
 import "server-only";
 
 import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { buildPublishedResultsArchive } from "@/lib/result-archive";
 import type {
   LatestTournamentResults,
   ResultEntry,
@@ -40,7 +41,7 @@ export async function getTournamentResults(
 export async function saveTournamentResults(
   tournamentId: string,
   entries: ResultEntry[],
-  totalPayout: number,
+  standardTournamentPayout: number,
   bronzePayout: number,
   silverPayout: number,
   goldPayout: number,
@@ -62,7 +63,8 @@ export async function saveTournamentResults(
       {
         tournament_id: tournamentId,
         entries,
-        total_payout: totalPayout,
+        // Legacy column name: this stores only the standard tournament payout.
+        total_payout: standardTournamentPayout,
         bronze_payout: bronzePayout,
         silver_payout: silverPayout,
         gold_payout: goldPayout,
@@ -131,15 +133,18 @@ export async function deleteTournamentResults(
 }
 
 export async function getLatestPublishedTournamentResults(): Promise<LatestTournamentResults | null> {
+  const [latest] = await getPublishedTournamentResultsArchive();
+
+  return latest
+    ? { ...latest, completeResultsUrl: "/results" }
+    : null;
+}
+
+export async function getPublishedTournamentResultsArchive(): Promise<
+  LatestTournamentResults[]
+> {
   const supabase = createSupabaseServerClient();
 
-  /*
-   * Only tournaments officially marked Results Published
-   * are eligible for the homepage Winners Circle.
-   *
-   * This prevents the upcoming featured tournament from
-   * being mistaken for a completed event.
-   */
   const { data: publishedTournaments, error: tournamentError } =
     await supabase
       .from("tournaments")
@@ -151,7 +156,7 @@ export async function getLatestPublishedTournamentResults(): Promise<LatestTourn
 
   if (tournamentError) {
     throw new ResultsDataError(
-      "We could not load published tournaments.",
+      "We could not load the tournament results archive.",
       {
         cause: tournamentError,
       },
@@ -162,51 +167,30 @@ export async function getLatestPublishedTournamentResults(): Promise<LatestTourn
     !publishedTournaments ||
     publishedTournaments.length === 0
   ) {
-    return null;
+    return [];
   }
 
-  /*
-   * Check published tournaments in date order until we find
-   * the newest one that actually has a results record.
-   */
-  for (const tournament of publishedTournaments) {
-    const { data: results, error: resultsError } =
-      await supabase
-        .from("tournament_results")
-        .select("*")
-        .eq("tournament_id", tournament.id)
-        .maybeSingle();
+  const tournamentIds = publishedTournaments.map(
+    (tournament) => tournament.id,
+  );
 
-    if (resultsError) {
-      throw new ResultsDataError(
-        "We could not load published results.",
-        {
-          cause: resultsError,
-        },
-      );
-    }
+  const { data: resultsRecords, error: resultsError } =
+    await supabase
+      .from("tournament_results")
+      .select("*")
+      .in("tournament_id", tournamentIds);
 
-    if (!results) {
-      continue;
-    }
-
-    const tournamentResults =
-      results as TournamentResultsRecord;
-
-    return {
-      tournament,
-      results: tournamentResults,
-      tournamentImage:
-        tournament.hero_image_url ?? null,
-      championImage:
-        tournamentResults.champion_image_url ??
-        "/images/results/overall-winner.jpg",
-      bigBassImage:
-        tournamentResults.big_bass_image_url ??
-        "/images/results/big-bass.jpg",
-      completeResultsUrl: "/results",
-    };
+  if (resultsError) {
+    throw new ResultsDataError(
+      "We could not load archived tournament results.",
+      {
+        cause: resultsError,
+      },
+    );
   }
 
-  return null;
+  return buildPublishedResultsArchive(
+    publishedTournaments,
+    (resultsRecords ?? []) as TournamentResultsRecord[],
+  );
 }

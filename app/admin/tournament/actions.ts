@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 
 import {
   tournamentFormData,
@@ -35,11 +36,6 @@ export async function saveTournamentAction(
     revalidatePath("/schedule");
     revalidatePath("/register");
 
-    return {
-      status: "success",
-      message: "Tournament information saved successfully.",
-      errors: {},
-    };
   } catch (error) {
     console.error("Tournament Information save failed.", error);
 
@@ -49,4 +45,6 @@ export async function saveTournamentAction(
       errors: {},
     };
   }
+
+  redirect(`/admin?tournament=${encodeURIComponent(tournamentId)}`);
 }

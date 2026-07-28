@@ -31,11 +31,15 @@ export default async function WeighFishImportPage({
   return (
     <>
       <Link
-        href="/admin/tournament-manager"
+        href={
+          requestedTournament
+            ? `/admin?tournament=${encodeURIComponent(requestedTournament)}`
+            : "/admin"
+        }
         className="inline-flex items-center gap-2 text-sm text-neutral-400 hover:text-[#D4A017]"
       >
         <ArrowLeft className="h-4 w-4" />
-        Back to Tournament Manager
+        Back to Tournament Operations
       </Link>
 
       <header className="mt-6">
@@ -75,6 +79,7 @@ export default async function WeighFishImportPage({
      <WeighfishCsvUploader
   key={tournament.id}
   tournamentId={tournament.id}
+  returnToDashboard
 />
         </div>
       ) : (

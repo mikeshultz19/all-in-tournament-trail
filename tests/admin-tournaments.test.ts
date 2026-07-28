@@ -15,12 +15,18 @@ function tournament(
   >,
 ): Tournament {
   return {
+    season_id: null,
+    event_type: "regular_season",
     slug: values.id,
     capacity: 50,
     launch_type: null,
     morning_registration: null,
     registration_opens: null,
     registration_closes: null,
+    registration_information: null,
+    non_member_practice_rule: null,
+    member_practice_rule: null,
+    practice_information: null,
     description: null,
     hero_image_url: null,
     is_featured: false,

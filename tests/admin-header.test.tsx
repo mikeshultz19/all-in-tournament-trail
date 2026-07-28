@@ -19,6 +19,8 @@ describe("AdminHeader", () => {
 
   it("preserves Admin Center and public website navigation", () => {
     expect(markup).toContain('href="/admin"');
+    expect(markup).toContain('href="/admin/members"');
+    expect(markup).toContain("Members");
     expect(markup).toContain('href="/"');
     expect(markup).toContain("focus-visible:outline-2");
   });

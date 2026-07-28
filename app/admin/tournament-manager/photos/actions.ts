@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 
 import { updateTournament } from "@/lib/tournaments";
 
@@ -61,11 +62,8 @@ export async function saveWinnerPhotosAction(
     revalidatePath("/admin/tournament-manager");
     revalidatePath("/admin/tournament-manager/photos");
     revalidatePath("/admin/tournament-manager/publish");
+    revalidatePath("/admin");
 
-    return {
-      status: "success",
-      message: "Winner photos saved.",
-    };
   } catch (error) {
     console.error("Winner photos save failed.", error);
 
@@ -74,4 +72,6 @@ export async function saveWinnerPhotosAction(
       message: "We could not save the winner photos. Please try again.",
     };
   }
+
+  redirect(`/admin?tournament=${encodeURIComponent(tournamentId)}`);
 }

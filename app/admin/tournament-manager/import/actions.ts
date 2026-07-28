@@ -78,6 +78,7 @@ await updateTournament(tournamentId, {
     revalidatePath("/admin/tournament-manager/import");
     revalidatePath("/admin/tournament-manager/insurance");
     revalidatePath("/admin/tournament-manager/publish");
+    revalidatePath("/admin");
 
     return {
       status: "success",

@@ -200,12 +200,12 @@ describe("Tournament Conditions", () => {
     }
   });
 
-  it("does not render an active registration action when registration is closed", () => {
+  it("leaves registration status handling to the registration page", () => {
     const closedTournament = { ...tournament, registrationStatus: "closed" as const };
     const closedOperations = getTournamentOperationsViewModel(closedTournament, new Date("2026-07-21T12:00:00Z"));
     const html = renderToStaticMarkup(<FeaturedTournament tournament={closedTournament} operations={closedOperations} />);
-    expect(html).toContain("Registration Closed");
-    expect(html).not.toContain('href="/register?tournament=eagle-mountain-2026"');
+    expect(html).not.toContain("Registration Closed");
+    expect(html).toContain('href="/register?tournament=eagle-mountain-2026"');
     expect(html).toContain('href="/registrations"');
   });
 });

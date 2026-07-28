@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 
 import { updateTournament } from "@/lib/tournaments";
 
@@ -51,11 +52,8 @@ export async function saveInsuranceReviewAction(
     revalidatePath("/admin/tournament-manager");
     revalidatePath("/admin/tournament-manager/insurance");
     revalidatePath("/admin/tournament-manager/publish");
+    revalidatePath("/admin");
 
-    return {
-      status: "success",
-      message: "Insurance review saved.",
-    };
   } catch (error) {
     console.error("Insurance review save failed.", error);
 
@@ -64,4 +62,6 @@ export async function saveInsuranceReviewAction(
       message: "We could not save the insurance review.",
     };
   }
+
+  redirect(`/admin?tournament=${encodeURIComponent(tournamentId)}`);
 }

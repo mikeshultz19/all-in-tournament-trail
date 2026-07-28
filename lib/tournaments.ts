@@ -126,7 +126,7 @@ export async function getFeaturedTournament(): Promise<Tournament | null> {
   const supabase = createSupabaseServerClient();
   const { data, error } = await supabase
     .from("tournaments")
-    .select("*")
+    .select("*,registration_information,practice_information")
     .eq("is_featured", true)
     .eq("show_on_homepage", true)
     .order("tournament_date", { ascending: true })

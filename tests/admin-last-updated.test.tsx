@@ -42,13 +42,13 @@ describe("formatAdminLastUpdated", () => {
 });
 
 describe("AdminLastUpdated", () => {
-  it("renders placeholder metadata on all four dashboard cards", () => {
+  it("renders audit metadata once in the tournament operations header", () => {
     const markup = renderAdminDashboardFixture();
 
-    expect(markup.match(/Last Updated/g)).toHaveLength(4);
-    expect(markup).toContain("July 20, 2026");
-    expect(markup.match(/by AITT Staff/g)).toHaveLength(3);
-    expect(markup).toContain("Never");
+    expect(markup.match(/Last Updated/g)).toHaveLength(1);
+    expect(markup).toContain("July 23, 2026");
+    expect(markup).toContain("Updated By");
+    expect(markup).toContain("AITT Staff");
   });
 
   it("does not show an administrator when a section has never been updated", () => {

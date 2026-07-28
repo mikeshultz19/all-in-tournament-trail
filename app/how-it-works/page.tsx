@@ -156,6 +156,11 @@ const faqs = [
       "Yes. Two anglers may compete together as one team entry. The team shares its tournament finish, payouts, and season points.",
   },
   {
+    question: "Can I fish with a substitute partner?",
+    answer:
+      "No.\n\nIf your partner cannot attend, you may fish the tournament by yourself.\n\nFishing alone continues to count toward:\n\n• AOY\n• Championship Qualification\n• Member Side Pots (if eligible)\n\nIf you fish with another partner, that pairing is considered a new team entry.\n\nThe event will not count toward your original team's AOY standings, Championship qualification, or Member Side Pot eligibility.",
+  },
+  {
     question: "Can I choose any pot?",
     answer:
       "Eligible members with Tournament Entry may choose Bronze, Silver, or Gold based on their preferred entry level. Each bonus pot is a separate competition with its own payout pool and pays 1 in 5 — one payout place for every five entries in that pot.",
@@ -178,12 +183,12 @@ const faqs = [
   {
     question: "How are AOY standings calculated?",
     answer:
-      "Eligible member entries earn points based on their tournament finishes. Each entry's six highest point totals determine its final AOY score.",
+      "Eligible member entries earn points based on their tournament finishes. Each entry's five highest point totals determine its final AOY score.",
   },
   {
     question: "How do I qualify for the Championship?",
     answer:
-      "An eligible member entry must physically compete in at least six of the nine regular-season tournaments. Paying an entry fee without launching and competing does not count as participation.",
+      "An eligible member entry must physically compete in at least five of the nine regular-season tournaments. Paying an entry fee without launching and competing does not count as participation.",
   },
   {
     question: "What does membership include?",

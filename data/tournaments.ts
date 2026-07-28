@@ -41,6 +41,8 @@ export interface Tournament {
   earlyRegistrationDeadlineTime: string;
   tournamentMorningRegistrationOpensAt: string | null;
   tournamentMorningRegistrationClosesAt: string | null;
+  registrationInformation?: string | null;
+  practiceInformation?: string | null;
   resultsAvailable: boolean;
   featured: boolean;
   heroImage: string | null;

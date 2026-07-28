@@ -82,7 +82,6 @@ export default async function HomePage() {
             <div data-tournament-column="right" className="min-w-0 lg:col-start-2 lg:row-start-1">
               <FeaturedTournament
                 tournament={featuredTournament ?? null}
-                lifecycleStatus={featuredTournament?.lifecycleStatus}
                 operations={operations}
                 earlyRegistrationSummary={earlyRegistrationSummary}
                 earlyRegistrationStatsUnavailable={earlyRegistrationStatsUnavailable}

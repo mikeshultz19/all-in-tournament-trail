@@ -1,38 +1,45 @@
+import Link from "next/link";
+import type { LatestTournamentResults } from "@/types/results";
 import Header from "@/components/Header";
-import { getLatestPublishedTournamentResults } from "@/lib/results";
+import {
+  calculateResultPayouts,
+  displayResultsPayout,
+  formatResultsDate,
+  getTeamPayouts,
+  isSidePotEntry,
+  payoutAmount,
+} from "@/lib/result-payouts";
+import {
+  getPublishedTournamentResultsArchive,
+} from "@/lib/results";
 
 export const dynamic = "force-dynamic";
 
-function formatCurrency(value: number): string {
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD",
-    minimumFractionDigits: 0,
-  }).format(value);
-}
-
-function formatTournamentDate(value: string): string {
-  return new Intl.DateTimeFormat("en-US", {
-    timeZone: "America/Chicago",
-    month: "long",
-    day: "numeric",
-    year: "numeric",
-  }).format(new Date(value));
-}
-
 export default async function ResultsPage() {
-  let latestResults = null;
+  let latestResults: LatestTournamentResults | null = null;
+  let publishedResultsArchive: LatestTournamentResults[] = [];
 
   try {
-    latestResults = await getLatestPublishedTournamentResults();
+    publishedResultsArchive =
+      await getPublishedTournamentResultsArchive();
+    latestResults = publishedResultsArchive[0] ?? null;
   } catch (error) {
     console.error("Results index load failed.", error);
   }
 
+  const pastTournamentResults = publishedResultsArchive.filter(
+    (item: LatestTournamentResults) =>
+      item.tournament.id !== latestResults?.tournament?.id,
+  );
+
   const finalEntries =
     latestResults?.results.entries
-      .filter((entry) => entry.kind !== "sidePot")
+      .filter((entry) => !isSidePotEntry(entry))
       .sort((a, b) => a.place - b.place) ?? [];
+
+  const payoutTotals = calculateResultPayouts(
+    latestResults?.results ?? {},
+  );
 
   return (
     <main className="min-h-screen bg-black text-white">
@@ -54,6 +61,29 @@ export default async function ResultsPage() {
         </div>
       </section>
 
+      {pastTournamentResults.length > 0 ? (
+        <nav
+          aria-label="Results archive"
+          className="border-b border-white/10 bg-[#111111]"
+        >
+          <div className="mx-auto flex max-w-[1500px] items-center gap-4 overflow-x-auto px-6 py-3">
+            <span className="shrink-0 text-xs font-black uppercase tracking-[0.15em] text-neutral-500">
+              Archive
+            </span>
+            {pastTournamentResults.map((item) => (
+              <Link
+                key={item.tournament.id}
+                href={item.completeResultsUrl}
+                className="shrink-0 text-xs font-black uppercase tracking-[0.12em] text-[#c9aa4a] hover:text-[#f4eee7]"
+              >
+                {item.tournament.name} ·{" "}
+                {formatResultsDate(item.tournament.tournament_date)}
+              </Link>
+            ))}
+          </div>
+        </nav>
+      ) : null}
+
       <section className="mx-auto max-w-[1500px] px-6 py-12">
         {!latestResults ? (
           <div className="border border-white/10 bg-[#111111] p-10 text-center">
@@ -74,7 +104,7 @@ export default async function ResultsPage() {
 
               <p className="mt-2 text-sm font-bold uppercase tracking-[0.15em] text-[#c9aa4a]">
                 {latestResults.tournament.lake} •{" "}
-                {formatTournamentDate(
+                {formatResultsDate(
                   latestResults.tournament.tournament_date,
                 )}
               </p>
@@ -84,6 +114,7 @@ export default async function ResultsPage() {
                   <p className="text-xs font-black uppercase tracking-[0.12em] text-neutral-500">
                     Total Teams
                   </p>
+
                   <p className="mt-2 text-2xl font-black text-[#f4eee7]">
                     {finalEntries.length}
                   </p>
@@ -91,16 +122,12 @@ export default async function ResultsPage() {
 
                 <div className="border border-white/10 bg-black p-4">
                   <p className="text-xs font-black uppercase tracking-[0.12em] text-neutral-500">
-                    Total Payout
+                    Total Paid Out to Anglers
                   </p>
+
                   <p className="mt-2 text-2xl font-black text-[#c9aa4a]">
-                    {formatCurrency(
-                      latestResults.results.total_payout +
-                        latestResults.results.bronze_payout +
-                        latestResults.results.silver_payout +
-                        latestResults.results.gold_payout +
-                        latestResults.results.insurance_pot_payout +
-                        (latestResults.results.big_bass_payout ?? 0),
+                    {displayResultsPayout(
+                      payoutTotals.totalPaidOutToAnglers,
                     )}
                   </p>
                 </div>
@@ -109,8 +136,10 @@ export default async function ResultsPage() {
                   <p className="text-xs font-black uppercase tracking-[0.12em] text-neutral-500">
                     Big Bass
                   </p>
+
                   <p className="mt-2 text-2xl font-black text-[#f4eee7]">
-                    {latestResults.results.big_bass_weight?.toFixed(2) ?? "—"} lbs
+                    {latestResults.results.big_bass_weight?.toFixed(2) ?? "—"}{" "}
+                    lbs
                   </p>
                 </div>
 
@@ -118,6 +147,7 @@ export default async function ResultsPage() {
                   <p className="text-xs font-black uppercase tracking-[0.12em] text-neutral-500">
                     Big Bass Angler
                   </p>
+
                   <p className="mt-2 text-lg font-black text-[#f4eee7]">
                     {latestResults.results.big_bass_angler ?? "Not recorded"}
                   </p>
@@ -132,41 +162,93 @@ export default async function ResultsPage() {
                     <th className="px-4 py-4 text-left text-xs font-black uppercase tracking-[0.12em] text-[#c9aa4a]">
                       Place
                     </th>
+
                     <th className="px-4 py-4 text-left text-xs font-black uppercase tracking-[0.12em] text-[#c9aa4a]">
                       Team
                     </th>
+
                     <th className="px-4 py-4 text-right text-xs font-black uppercase tracking-[0.12em] text-[#c9aa4a]">
                       Weight
                     </th>
+
                     <th className="px-4 py-4 text-right text-xs font-black uppercase tracking-[0.12em] text-[#c9aa4a]">
-                      Base Payout
+                      Tournament
+                    </th>
+
+                    <th className="px-4 py-4 text-right text-xs font-black uppercase tracking-[0.12em] text-[#c9aa4a]">
+                      Bronze
+                    </th>
+
+                    <th className="px-4 py-4 text-right text-xs font-black uppercase tracking-[0.12em] text-[#c9aa4a]">
+                      Silver
+                    </th>
+
+                    <th className="px-4 py-4 text-right text-xs font-black uppercase tracking-[0.12em] text-[#c9aa4a]">
+                      Gold
+                    </th>
+
+                    <th className="px-4 py-4 text-right text-xs font-black uppercase tracking-[0.12em] text-[#c9aa4a]">
+                      Big Bass
+                    </th>
+
+                    <th className="px-4 py-4 text-right text-xs font-black uppercase tracking-[0.12em] text-[#c9aa4a]">
+                      Total Won
                     </th>
                   </tr>
                 </thead>
 
                 <tbody>
-                  {finalEntries.map((entry) => (
-                    <tr
-                      key={`${entry.place}-${entry.team}`}
-                      className="border-b border-white/10 last:border-b-0 hover:bg-white/[0.03]"
-                    >
-                      <td className="whitespace-nowrap px-4 py-4 text-sm font-black text-[#c9aa4a]">
-                        {entry.place}
-                      </td>
+                  {finalEntries.map((entry) => {
+                    const teamPayouts = getTeamPayouts(
+                      latestResults.results.entries,
+                      entry.team,
+                      latestResults.results.big_bass_team,
+                      latestResults.results.big_bass_payout,
+                    );
 
-                      <td className="px-4 py-4 text-sm font-semibold text-[#f4eee7]">
-                        {entry.team}
-                      </td>
+                    return (
+                      <tr
+                        key={`${entry.place}-${entry.team}`}
+                        className="border-b border-white/10 last:border-b-0 hover:bg-white/[0.03]"
+                      >
+                        <td className="whitespace-nowrap px-4 py-4 text-sm font-black text-[#c9aa4a]">
+                          {entry.place}
+                        </td>
 
-                      <td className="whitespace-nowrap px-4 py-4 text-right text-sm tabular-nums text-neutral-300">
-                        {entry.weight.toFixed(2)} lbs
-                      </td>
+                        <td className="px-4 py-4 text-sm font-semibold text-[#f4eee7]">
+                          {entry.team}
+                        </td>
 
-                      <td className="whitespace-nowrap px-4 py-4 text-right text-sm font-black tabular-nums text-[#c9aa4a]">
-                        {formatCurrency(entry.baseWinnings ?? 0)}
-                      </td>
-                    </tr>
-                  ))}
+                        <td className="whitespace-nowrap px-4 py-4 text-right text-sm tabular-nums text-neutral-300">
+                          {payoutAmount(entry.weight).toFixed(2)} lbs
+                        </td>
+
+                        <td className="whitespace-nowrap px-4 py-4 text-right text-sm font-black tabular-nums text-[#c9aa4a]">
+                          {displayResultsPayout(teamPayouts.standardTournament)}
+                        </td>
+
+                        <td className="whitespace-nowrap px-4 py-4 text-right text-sm font-black tabular-nums text-[#c9aa4a]">
+                          {displayResultsPayout(teamPayouts.bronze)}
+                        </td>
+
+                        <td className="whitespace-nowrap px-4 py-4 text-right text-sm font-black tabular-nums text-[#c9aa4a]">
+                          {displayResultsPayout(teamPayouts.silver)}
+                        </td>
+
+                        <td className="whitespace-nowrap px-4 py-4 text-right text-sm font-black tabular-nums text-[#c9aa4a]">
+                          {displayResultsPayout(teamPayouts.gold)}
+                        </td>
+
+                        <td className="whitespace-nowrap px-4 py-4 text-right text-sm font-black tabular-nums text-[#c9aa4a]">
+                          {displayResultsPayout(teamPayouts.bigBass)}
+                        </td>
+
+                        <td className="whitespace-nowrap px-4 py-4 text-right text-sm font-black tabular-nums text-[#f4eee7]">
+                          {displayResultsPayout(teamPayouts.totalWon)}
+                        </td>
+                      </tr>
+                    );
+                  })}
                 </tbody>
               </table>
             </div>

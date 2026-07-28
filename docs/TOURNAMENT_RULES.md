@@ -1,9 +1,9 @@
 # Official Tournament Rules
 
-**Version:** 1.1
+**Version:** 1.2
 **Status:** Approved Draft
 **Effective Date:** (TBD)
-**Last Updated:** July 22, 2026
+**Last Updated:** July 28, 2026
 
 These rules govern All-In Tournament Trail (AITT) events. They are intended to
 provide a fair, safe, and professionally administered tournament experience.
@@ -32,8 +32,7 @@ these rules, and material changes will be reflected in the version history.
 14. [Refund & Cancellation Policy](#refund-cancellation-policy)
 15. [Media](#media)
 16. [Privacy](#privacy)
-17. [Frequently Asked Questions](#frequently-asked-questions)
-18. [Version History](#version-history)
+17. [Version History](#version-history)
 
 <a id="introduction"></a>
 ## 1. Introduction
@@ -222,13 +221,40 @@ An entry may compete as either:
 The Tournament Entry price applies per registration, not per angler. A team's
 finish, payouts, and season points belong to the registered team entry.
 
-### Substitutions
+### Team Continuity and Substitute Partners
 
-**Pending approval:** The historical substitution policy is not present in the
-current repository and cannot be confirmed from the approved project
-documentation. No substitute should be assumed eligible until AITT publishes
-the approved substitution conditions, deadlines, effect on AOY and
-Championship eligibility, and required Tournament Director authorization.
+AITT is a team tournament trail. Angler of the Year (AOY), Championship
+qualification, Member Side Pots, and all season-long awards are earned by the
+registered team, not by interchangeable partners.
+
+To preserve the integrity of the season-long competition, substitute partners
+are not permitted.
+
+Because teams count only their best five (5) tournament finishes toward AOY,
+and only five (5) qualifying tournaments are required for Championship
+qualification, allowing substitute partners would create an unfair competitive
+advantage.
+
+If one partner is unable to fish:
+
+- The remaining partner may fish the tournament alone.
+- Fishing alone **does** count toward:
+  - AOY Points
+  - Championship Qualification
+  - Member Side Pots (if otherwise eligible)
+
+If the remaining angler chooses to fish with another partner, that pairing is
+treated as a **new team entry**.
+
+The new team:
+
+- Appears in the official tournament results.
+- Does **not** earn AOY points for the original team.
+- Does **not** count toward the original team's Championship qualification.
+- Does **not** earn Member Side Pot eligibility for the original team.
+
+Exceptional circumstances may be reviewed by the Tournament Director. Any
+approved exception is at the sole discretion of AITT.
 
 <a id="angler-of-the-year"></a>
 ## 6. Angler of the Year
@@ -242,8 +268,8 @@ without physically launching and competing does not count as participation.
 ### Points Calculation and Dropped Events
 
 Eligible entries earn points based on their official tournament finishes.
-Each entry's **six highest point totals** determine its final AOY score. Scores
-outside the six highest are dropped from the season total.
+Each entry's **five highest point totals** determine its final AOY score. Scores
+outside the five highest are dropped from the season total.
 
 Official WeighFish results control finish data used for AOY calculations. AITT
 publishes standings after official results are processed. Any final points
@@ -254,7 +280,7 @@ before it is applied.
 ## 7. Championship Qualification
 
 To qualify for the Championship, an eligible member entry must physically
-compete in at least **six of the nine regular-season tournaments**.
+compete in at least **five of the nine regular-season tournaments**.
 
 - A solo entry must satisfy the membership and participation requirements.
 - Both anglers on a team must satisfy the membership requirements for the team
@@ -526,62 +552,12 @@ display names, registration time, selected pots, results, and standings.
 Private contact information, street addresses, payment details,
 administrative notes, and internal identifiers must not be displayed publicly.
 
-<a id="frequently-asked-questions"></a>
-## 17. Frequently Asked Questions
-
-### What happens if I bring a short fish to the scales?
-
-Any fish that does not meet the tournament's minimum legal length will not be
-counted toward the tournament catch.
-
-A short fish:
-
-- Receives no tournament weight.
-- Does not count toward the legal tournament limit.
-- Is not eligible for Big Bass.
-
-### What is the penalty for a dead fish?
-
-A one (1) pound penalty will be deducted for each legal fish presented dead at
-weigh-in.
-
-Example:
-
-- Gross catch weight: 18.42 pounds
-- Legal dead fish: 2
-- Dead-fish penalty: 2.00 pounds
-- Official tournament weight: 16.42 pounds
-
-### Are dead fish eligible for Big Bass?
-
-No.
-
-Only legal live fish are eligible for the Big Bass award.
-
-### What happens if I am late to check-in?
-
-A one (1) pound penalty will be assessed for each minute an individual or team
-is late checking in, up to fifteen (15) minutes.
-
-Any individual or team arriving more than fifteen (15) minutes after its
-assigned check-in time will forfeit that day's catch and will not be permitted
-to weigh fish.
-
-Tournament Officials will determine the official check-in time using the
-tournament's designated official timekeeping device.
-
-Participants are responsible for knowing their assigned flight and check-in
-time.
-
-Participants must never operate a vessel in an unsafe manner in an attempt to
-avoid a late penalty. Safety always takes precedence over tournament
-competition.
-
 <a id="version-history"></a>
-## 18. Version History
+## 17. Version History
 
 | Version | Date | Summary |
 | --- | --- | --- |
+| 1.2 | July 28, 2026 | Finalized team continuity and substitute-partner rules and aligned AOY and Championship qualification with the five-tournament standard. |
 | 1.1 | July 22, 2026 | Added approved short-fish, dead-fish, Big Bass, and late check-in rules and FAQ guidance. |
 | 1.0 | July 22, 2026 | Initial website rulebook. |
 

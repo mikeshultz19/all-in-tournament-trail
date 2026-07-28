@@ -8,6 +8,7 @@ import {
   saveResultsAction,
 } from "@/app/admin/results/actions";
 import WeighfishCsvUploader from "@/components/admin/WeighfishCsvUploader";
+import { calculateResultPayouts } from "@/lib/result-payouts";
 import type {
   WeighfishParseResult,
   WeighfishResultRow,
@@ -183,13 +184,14 @@ export default function TournamentResultsForm({
 
   const resetDialogRef = useRef<HTMLDialogElement>(null);
 
-  const totalPaidOut =
-    (Number(totalPayout) || 0) +
-    (Number(bronzePayout) || 0) +
-    (Number(silverPayout) || 0) +
-    (Number(goldPayout) || 0) +
-    (Number(insurancePotPayout) || 0) +
-    (Number(bigBassPayout) || 0);
+  const totalPaidOut = calculateResultPayouts({
+    total_payout: Number(totalPayout),
+    bronze_payout: Number(bronzePayout),
+    silver_payout: Number(silverPayout),
+    gold_payout: Number(goldPayout),
+    insurance_pot_payout: Number(insurancePotPayout),
+    big_bass_payout: Number(bigBassPayout),
+  }).totalPaidOutToAnglers;
 
   const requiresInsuranceReview =
     importedResult !== null && resultRows.length > 0;
@@ -427,7 +429,7 @@ export default function TournamentResultsForm({
               {[
                 {
                   name: "totalPayout",
-                  label: "Base Tournament Payout",
+                  label: "Standard Tournament Payout",
                   value: totalPayout,
                   setValue: setTotalPayout,
                   error: state.errors.totalPayout,

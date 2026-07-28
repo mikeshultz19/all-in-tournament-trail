@@ -36,11 +36,15 @@ export default async function TournamentAdminPage({
   return (
     <>
       <Link
-        href="/admin"
+        href={
+          requestedTournament
+            ? `/admin?tournament=${encodeURIComponent(requestedTournament)}`
+            : "/admin"
+        }
         className="inline-flex min-h-11 items-center gap-2 text-xs font-black uppercase tracking-[0.14em] text-neutral-400 transition-colors hover:text-[#D4A017] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#D4A017]"
       >
         <ArrowLeft aria-hidden="true" className="size-4" />
-        Back to Admin Center
+        Back to Tournament Operations
       </Link>
 
       <div className="mt-6 border-b border-white/10 pb-6">

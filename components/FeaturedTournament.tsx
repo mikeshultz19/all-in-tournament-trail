@@ -6,12 +6,10 @@ import {
   getTournamentImage,
   type Tournament,
 } from "@/data/tournaments";
-import { TOURNAMENT_STATUS_LABELS } from "@/lib/tournament-operations";
 import { getTournamentDisplay } from "@/lib/tournament-display";
 import type { TournamentOperationsViewModel } from "@/lib/tournament-view-model";
 import EarlyRegistrationStats from "@/components/EarlyRegistrationStats";
 import type { TournamentEntrySummary } from "@/lib/public-early-entry";
-import type { TournamentStatus } from "@/types/tournament";
 
 type Countdown = {
   days: number;
@@ -39,13 +37,11 @@ export default function FeaturedTournament({
   operations,
   earlyRegistrationSummary,
   earlyRegistrationStatsUnavailable = false,
-  lifecycleStatus,
 }: {
   tournament: Tournament | null;
   operations?: TournamentOperationsViewModel | null;
   earlyRegistrationSummary?: TournamentEntrySummary;
   earlyRegistrationStatsUnavailable?: boolean;
-  lifecycleStatus?: TournamentStatus;
 }) {
   const [countdown, setCountdown] = useState<Countdown>({
     days: 0,
@@ -83,10 +79,6 @@ export default function FeaturedTournament({
     );
   }
 
-  const registrationOpen = operations?.registrationCanSubmit ?? (
-    tournament.registrationStatus === "open" &&
-    !["cancelled", "postponed"].includes(tournament.tournamentStatus)
-  );
   const display = getTournamentDisplay(tournament);
 
   return (
@@ -132,12 +124,6 @@ export default function FeaturedTournament({
             {tournament.venue ? ` · ${tournament.venue}` : ""}
             {tournament.city ? ` · ${tournament.city}, Texas` : ""}
           </p>
-          <p className="mt-3 inline-flex items-center gap-2 border border-white/15 px-2.5 py-1 text-[10px] font-black uppercase tracking-[0.12em] text-zinc-200">
-            <span aria-hidden="true" className="h-1.5 w-1.5 rounded-full bg-[#D4A017]" />
-            Tournament Status:{" "}
-            {lifecycleStatus ??
-              TOURNAMENT_STATUS_LABELS[tournament.tournamentStatus]}
-          </p>
         </div>
 
         {/* Countdown */}
@@ -166,22 +152,6 @@ export default function FeaturedTournament({
               </div>
             ))}
           </div>
-        </div>
-
-        {/* Registration */}
-        <div className="mt-4 flex w-full justify-center">
-          {registrationOpen ? (
-            <Link
-              href={`/register?tournament=${tournament.slug}`}
-              className="w-full bg-red-700 px-4 py-3 text-center text-[10px] font-black uppercase tracking-[0.08em] text-white transition hover:bg-red-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#D4A017]"
-            >
-              Register Now
-            </Link>
-          ) : (
-            <span aria-disabled="true" className="w-full cursor-not-allowed bg-red-950 px-4 py-3 text-center text-[10px] font-black uppercase tracking-[0.08em] text-zinc-400">
-              {tournament.registrationStatus === "closed" || operations?.registrationPeriod === "fully_closed" ? "Registration Closed" : "Registration Unavailable"}
-            </span>
-          )}
         </div>
 
         <section aria-labelledby="tournament-information-heading" className="mt-4 border border-[#4A3A12] bg-[#0d0d0d]">
@@ -220,20 +190,54 @@ export default function FeaturedTournament({
           </dl>
         </section>
 
-        <Link
-          href="/registrations"
-          className="mt-3 block border border-[#4A3A12] px-3 py-2.5 text-center text-[9px] font-black uppercase tracking-[0.1em] text-yellow-400 transition hover:border-yellow-600 hover:text-yellow-300 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#D4A017]"
-        >
-          View Tournament Entries
-        </Link>
-
-        {operations && (
-          <p className="mt-3 text-center text-xs leading-5 text-zinc-400">
-            {registrationOpen ? (
-              <>Registration closes <time dateTime={operations.earlyRegistrationDeadlineIso}>{operations.earlyRegistrationDeadline}</time></>
-            ) : operations.registrationReason}
-          </p>
+        {tournament.registrationInformation && (
+          <section
+            aria-labelledby="registration-information-heading"
+            className="mt-3 border border-[#4A3A12] bg-[#0d0d0d]"
+          >
+            <h4
+              id="registration-information-heading"
+              className="border-b border-[#4A3A12] px-4 py-2.5 text-center text-[10px] font-black uppercase tracking-[0.16em] text-[#D4A017]"
+            >
+              Registration Information
+            </h4>
+            <p className="whitespace-pre-line px-4 py-3 text-center text-xs leading-5 text-white">
+              {tournament.registrationInformation}
+            </p>
+          </section>
         )}
+
+        {tournament.practiceInformation && (
+          <section
+            aria-labelledby="practice-information-heading"
+            className="mt-3 border border-[#4A3A12] bg-[#0d0d0d]"
+          >
+            <h4
+              id="practice-information-heading"
+              className="border-b border-[#4A3A12] px-4 py-2.5 text-center text-[10px] font-black uppercase tracking-[0.16em] text-[#D4A017]"
+            >
+              Practice Information
+            </h4>
+            <p className="whitespace-pre-line px-4 py-3 text-center text-xs leading-5 text-white">
+              {tournament.practiceInformation}
+            </p>
+          </section>
+        )}
+
+        <div className="mt-3 space-y-3">
+          <Link
+            href={`/register?tournament=${tournament.slug}`}
+            className="block w-full bg-red-700 px-4 py-3 text-center text-[10px] font-black uppercase tracking-[0.08em] text-white transition hover:bg-red-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#D4A017]"
+          >
+            Register Now
+          </Link>
+          <Link
+            href="/registrations"
+            className="block w-full border border-[#4A3A12] px-3 py-2.5 text-center text-[9px] font-black uppercase tracking-[0.1em] text-yellow-400 transition hover:border-yellow-600 hover:text-yellow-300 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#D4A017]"
+          >
+            View Tournament Entries
+          </Link>
+        </div>
 
         {earlyRegistrationSummary && (
           <EarlyRegistrationStats

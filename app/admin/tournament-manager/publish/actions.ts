@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
 import { saveTournamentResults } from "@/lib/results";
+import { calculateResultPayouts, payoutAmount } from "@/lib/result-payouts";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { updateTournament } from "@/lib/tournaments";
 import type { ResultEntry } from "@/types/results";
@@ -29,12 +30,6 @@ type ImportedEntry = {
   prize_description: string | null;
   raw_payout_breakdown: string | null;
 };
-
-function amount(value: number | null | undefined): number {
-  const parsed = Number(value ?? 0);
-
-  return Number.isFinite(parsed) ? parsed : 0;
-}
 
 export async function publishTournamentAction(
   _previousState: PublishTournamentState,
@@ -130,8 +125,8 @@ export async function publishTournamentAction(
     kind: "final" as const,
     place: row.place ?? 0,
     team: row.team_name,
-    weight: amount(row.total_weight),
-    baseWinnings: amount(row.base_payout),
+    weight: payoutAmount(row.total_weight),
+    baseWinnings: payoutAmount(row.base_payout),
   }));
 
   const sidePotEntries = (
@@ -142,16 +137,16 @@ export async function publishTournamentAction(
     ] as const
   ).flatMap(([sidePot, payoutColumn]) =>
     imported
-      .filter((row) => amount(row[payoutColumn]) > 0)
+      .filter((row) => payoutAmount(row[payoutColumn]) > 0)
       .map((row, index) => ({
         kind: "sidePot" as const,
         sidePot,
         sidePotPlacement: index + 1,
         place: index + 1,
         team: row.team_name,
-        weight: amount(row.total_weight),
-        sidePotWeight: amount(row.total_weight),
-        sidePotPayout: amount(row[payoutColumn]),
+        weight: payoutAmount(row.total_weight),
+        sidePotWeight: payoutAmount(row.total_weight),
+        sidePotPayout: payoutAmount(row[payoutColumn]),
       })),
   );
 
@@ -161,53 +156,55 @@ export async function publishTournamentAction(
   ] as ResultEntry[];
 
   const bronzePayout = imported.reduce(
-    (total, row) => total + amount(row.bronze_payout),
+    (total, row) => total + payoutAmount(row.bronze_payout),
     0,
   );
 
   const silverPayout = imported.reduce(
-    (total, row) => total + amount(row.silver_payout),
+    (total, row) => total + payoutAmount(row.silver_payout),
     0,
   );
 
   const goldPayout = imported.reduce(
-    (total, row) => total + amount(row.gold_payout),
+    (total, row) => total + payoutAmount(row.gold_payout),
     0,
   );
 
   const bigBassPayout = imported.reduce(
-    (total, row) => total + amount(row.big_bass_payout),
+    (total, row) => total + payoutAmount(row.big_bass_payout),
     0,
   );
 
-  const insurancePayout = amount(
+  const insurancePayout = payoutAmount(
     tournament.insurance_payout,
   );
 
-  const totalPayout = imported.reduce(
-    (total, row) =>
-      total +
-      amount(row.base_payout) +
-      amount(row.bronze_payout) +
-      amount(row.silver_payout) +
-      amount(row.gold_payout) +
-      amount(row.big_bass_payout),
-    insurancePayout,
+  const standardTournamentPayout = imported.reduce(
+    (total, row) => total + payoutAmount(row.base_payout),
+    0,
   );
+  const payoutTotals = calculateResultPayouts({
+    total_payout: standardTournamentPayout,
+    bronze_payout: bronzePayout,
+    silver_payout: silverPayout,
+    gold_payout: goldPayout,
+    insurance_pot_payout: insurancePayout,
+    big_bass_payout: bigBassPayout,
+  });
 
   const bigBass = [...imported]
-    .filter((row) => amount(row.big_fish_weight) > 0)
+    .filter((row) => payoutAmount(row.big_fish_weight) > 0)
     .sort(
       (left, right) =>
-        amount(right.big_fish_weight) -
-        amount(left.big_fish_weight),
+        payoutAmount(right.big_fish_weight) -
+        payoutAmount(left.big_fish_weight),
     )[0];
 
   try {
     await saveTournamentResults(
       tournamentId,
       entries,
-      totalPayout,
+      payoutTotals.standardTournament,
       bronzePayout,
       silverPayout,
       goldPayout,
@@ -244,9 +241,5 @@ export async function publishTournamentAction(
   revalidatePath("/admin/tournament-manager");
   revalidatePath("/admin/tournament-manager/publish");
 
-  redirect(
-    `/admin/tournament-manager/publish/success?tournament=${encodeURIComponent(
-      identifier,
-    )}`,
-  );
+  redirect(`/admin?tournament=${encodeURIComponent(identifier)}`);
 }

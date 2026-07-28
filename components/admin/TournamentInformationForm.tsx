@@ -113,6 +113,33 @@ export default function TournamentInformationForm({
 
       <fieldset className="border border-white/10 bg-[#111111] p-5 sm:p-7">
         <legend className="px-2 text-lg font-black uppercase tracking-tight text-red-500">
+          Practice Information
+        </legend>
+        <p className="mb-5 text-sm leading-6 text-neutral-400">
+          Explain all practice and off-limits rules, including any differences
+          between members and non-members.
+        </p>
+        <label className={labelClassName}>
+          Practice Information
+          <textarea
+            name="practiceInformation"
+            rows={5}
+            maxLength={1000}
+            defaultValue={values.practiceInformation}
+            aria-invalid={Boolean(state.errors.practiceInformation)}
+            aria-describedby={
+              state.errors.practiceInformation
+                ? "practiceInformation-error"
+                : undefined
+            }
+            className={`${inputClassName} resize-y`}
+          />
+          <FieldError errors={state.errors} field="practiceInformation" />
+        </label>
+      </fieldset>
+
+      <fieldset className="border border-white/10 bg-[#111111] p-5 sm:p-7">
+        <legend className="px-2 text-lg font-black uppercase tracking-tight text-red-500">
           Launch Information
         </legend>
         <div className="grid gap-5 sm:grid-cols-3">
@@ -172,6 +199,26 @@ export default function TournamentInformationForm({
               className={inputClassName}
             />
             <FieldError errors={state.errors} field="registrationCloses" />
+          </label>
+          <label className={`${labelClassName} sm:col-span-2`}>
+            Registration Information
+            <textarea
+              name="registrationInformation"
+              rows={4}
+              maxLength={1000}
+              defaultValue={values.registrationInformation}
+              aria-invalid={Boolean(state.errors.registrationInformation)}
+              aria-describedby={
+                state.errors.registrationInformation
+                  ? "registrationInformation-error"
+                  : undefined
+              }
+              className={`${inputClassName} resize-y`}
+            />
+            <FieldError
+              errors={state.errors}
+              field="registrationInformation"
+            />
           </label>
           <label className={labelClassName}>
             Tournament Status

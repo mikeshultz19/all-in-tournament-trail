@@ -65,6 +65,11 @@ function operationalStatus(
   return "scheduled";
 }
 
+function optionalDisplayText(value: string | null): string | null {
+  const normalized = value?.trim();
+  return normalized || null;
+}
+
 export function toPublicTournament(
   tournament: Tournament,
 ): PublicTournamentRecord {
@@ -109,6 +114,12 @@ export function toPublicTournament(
     ),
     tournamentMorningRegistrationOpensAt: morningRegistration,
     tournamentMorningRegistrationClosesAt: null,
+    registrationInformation: optionalDisplayText(
+      tournament.registration_information,
+    ),
+    practiceInformation: optionalDisplayText(
+      tournament.practice_information,
+    ),
     resultsAvailable: tournament.status === "Results Published",
     featured: tournament.is_featured,
     heroImage: tournament.hero_image_url ?? TOURNAMENT_IMAGE_FALLBACK,

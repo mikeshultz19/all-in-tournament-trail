@@ -1,59 +1,22 @@
 import AdminTournamentDashboard from "@/components/admin/AdminTournamentDashboard";
-import type { ReadinessChecklistItem } from "@/components/admin/WebsiteReadiness";
 import {
   getNextUpcomingTournament,
   getTournaments,
 } from "@/lib/tournaments";
-import {
-  getTournamentLocalDate,
-  tournamentDateTimeToUtc,
-} from "@/lib/tournament-time";
 import type { Tournament } from "@/types/tournament";
-
-const preTournamentItems: ReadinessChecklistItem[] = [
-  {
-    label: "Tournament Information Updated",
-    complete: true,
-    href: "/admin/tournament",
-  },
-  {
-    label: "Registration Information Complete",
-    complete: true,
-    href: "/admin/tournament",
-  },
-];
-
-const postTournamentItems: ReadinessChecklistItem[] = [
-  {
-    label: "Import WeighFish Results",
-    complete: false,
-    href: "/admin/results",
-  },
-  {
-    label: "Upload Tournament Winner Photo",
-    complete: false,
-    href: "/admin/results",
-  },
-  {
-    label: "Upload Big Bass Winner Photo",
-    complete: false,
-    href: "/admin/results",
-  },
-  {
-    label: "Save Tournament Results",
-    complete: false,
-    href: "/admin/results",
-  },
-];
 
 export const dynamic = "force-dynamic";
 
-export default async function AdminPage() {
+export default async function AdminPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ tournament?: string | string[] }>;
+}) {
+  const params = await searchParams;
+  const requestedTournament = Array.isArray(params.tournament)
+    ? params.tournament[0]
+    : params.tournament;
   const now = new Date();
-  const comparisonDate = tournamentDateTimeToUtc(
-    getTournamentLocalDate(now),
-    "00:00",
-  ).toISOString();
   let tournaments: Tournament[] = [];
   let currentTournament: Tournament | null = null;
   let loadFailed = false;
@@ -84,10 +47,14 @@ export default async function AdminPage() {
   return (
     <AdminTournamentDashboard
       tournaments={tournaments}
-      initialTournamentId={currentTournament?.id}
-      comparisonDate={comparisonDate}
-      preTournamentItems={preTournamentItems}
-      postTournamentItems={postTournamentItems}
+      initialTournamentId={
+        tournaments.find(
+          (tournament) =>
+            tournament.id === requestedTournament ||
+            tournament.slug === requestedTournament,
+        )?.id ?? currentTournament?.id
+      }
+      comparisonDate={now.toISOString()}
     />
   );
 }

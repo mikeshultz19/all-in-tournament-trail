@@ -1,0 +1,8 @@
+⨯ Another next dev server is already running.
+
+- Local:        http://localhost:3000
+- PID:          22112
+- Dir:          C:\Users\mikeshultz\all-in-tournament-trail
+- Log:          .next\dev\logs\next-development.log
+
+Run taskkill /PID 22112 /F to stop it.

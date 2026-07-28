@@ -12,6 +12,8 @@ export interface TournamentFormErrors {
   lake?: string;
   tournamentDate?: string;
   registrationCloses?: string;
+  registrationInformation?: string;
+  practiceInformation?: string;
   status?: string;
   heroImageUrl?: string;
 }
@@ -70,6 +72,8 @@ export function tournamentToFormValues(
     morningRegistration: tournament.morning_registration ?? "",
     registrationOpens: timestampToInputValue(tournament.registration_opens),
     registrationCloses: timestampToInputValue(tournament.registration_closes),
+    registrationInformation: tournament.registration_information ?? "",
+    practiceInformation: tournament.practice_information ?? "",
     status: tournament.status,
     heroImageUrl: tournament.hero_image_url ?? "",
     isFeatured: tournament.is_featured,
@@ -93,6 +97,12 @@ export function tournamentFormData(formData: FormData): TournamentFormValues {
     ).trim(),
     registrationCloses: String(
       formData.get("registrationCloses") ?? "",
+    ).trim(),
+    registrationInformation: String(
+      formData.get("registrationInformation") ?? "",
+    ).trim(),
+    practiceInformation: String(
+      formData.get("practiceInformation") ?? "",
     ).trim(),
     status: String(formData.get("status") ?? "") as TournamentStatus,
     heroImageUrl: String(formData.get("heroImageUrl") ?? "").trim(),
@@ -146,6 +156,16 @@ export function validateTournamentForm(
     }
   }
 
+  if (values.practiceInformation.length > 1000) {
+    errors.practiceInformation =
+      "Keep practice information to 1,000 characters or fewer.";
+  }
+
+  if (values.registrationInformation.length > 1000) {
+    errors.registrationInformation =
+      "Keep registration information to 1,000 characters or fewer.";
+  }
+
   return errors;
 }
 
@@ -162,6 +182,8 @@ export function tournamentFormToUpdate(
     morning_registration: values.morningRegistration || null,
     registration_opens: inputValueToTimestamp(values.registrationOpens),
     registration_closes: inputValueToTimestamp(values.registrationCloses),
+    registration_information: values.registrationInformation || null,
+    practice_information: values.practiceInformation || null,
     status: values.status,
     hero_image_url: values.heroImageUrl || null,
     is_featured: values.isFeatured,

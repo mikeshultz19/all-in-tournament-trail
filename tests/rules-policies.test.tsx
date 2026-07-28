@@ -29,20 +29,18 @@ describe("approved weigh-in and late check-in policies", () => {
     expect(html).toContain("Safety always takes precedence over tournament competition.");
   });
 
-  it("contains exactly the four approved questions in the Rules FAQ section", () => {
+  it("keeps FAQ content off the Rules page", () => {
     const source = readFileSync(
       path.join(process.cwd(), "docs", "TOURNAMENT_RULES.md"),
       "utf8",
     );
-    const faqSection = source.match(
-      /## 17\. Frequently Asked Questions([\s\S]*?)<a id="version-history">/,
-    )?.[1];
 
-    expect(faqSection).toBeDefined();
-    expect(faqSection?.match(/^### /gm)).toHaveLength(4);
+    expect(source).not.toContain("Frequently Asked Questions");
     for (const question of approvedFaqQuestions) {
-      expect(faqSection).toContain(`### ${question}`);
+      expect(source).not.toContain(`### ${question}`);
     }
+    expect(source).toContain("17. [Version History](#version-history)");
+    expect(source).toContain("## 17. Version History");
   });
 
   it("publishes the four approved How It Works FAQs and links to Rules", () => {

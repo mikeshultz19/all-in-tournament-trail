@@ -7,6 +7,7 @@ import {
   Loader2,
   UploadCloud,
 } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useRef, useState, useTransition } from "react";
 
 import {
@@ -21,6 +22,7 @@ import {
 interface WeighfishCsvUploaderProps {
   tournamentId: string;
   onImport?: (result: WeighfishParseResult) => void;
+  returnToDashboard?: boolean;
 }
 
 const initialImportState: WeighfishImportState = {
@@ -38,7 +40,9 @@ function formatCurrency(value: number) {
 export default function WeighfishCsvUploader({
   tournamentId,
   onImport,
+  returnToDashboard = false,
 }: WeighfishCsvUploaderProps) {
+  const router = useRouter();
   const inputRef = useRef<HTMLInputElement>(null);
 
   const [fileName, setFileName] = useState("");
@@ -98,6 +102,12 @@ export default function WeighfishCsvUploader({
 
         if (response.status === "success") {
           onImport?.(result);
+          if (returnToDashboard) {
+            router.push(
+              `/admin?tournament=${encodeURIComponent(tournamentId)}`,
+            );
+            router.refresh();
+          }
         }
       } catch (error) {
         console.error("WeighFish import failed.", error);
@@ -251,7 +261,7 @@ export default function WeighfishCsvUploader({
             />
 
             <SummaryCard
-              label="Total Payout"
+              label="All Listed Cash Payouts"
               value={formatCurrency(
                 result.payoutTotals.total,
               )}

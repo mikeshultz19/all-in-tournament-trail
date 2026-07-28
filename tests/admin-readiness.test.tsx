@@ -1,114 +1,140 @@
-import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
 
-import WebsiteReadiness from "@/components/admin/WebsiteReadiness";
+import {
+  getTournamentOperationSteps,
+  getTournamentRegistrationStatus,
+} from "@/lib/admin-tournament-operations";
 import { renderAdminDashboardFixture } from "@/tests/admin-dashboard-fixture";
+import { databaseTournament } from "@/tests/tournament-db-fixture";
 
-const completePreTournamentItems = [
-  { label: "Tournament Information Updated", complete: true },
-] as const;
-
-const incompletePostTournamentItems = [
-  {
-    label: "Publish Tournament Results",
-    complete: false,
-    href: "/admin/results",
-  },
-] as const;
-
-describe("Admin dashboard readiness", () => {
+describe("Tournament Operations Dashboard", () => {
   const markup = renderAdminDashboardFixture();
 
-  it("shows setup readiness without duplicating the lifecycle status", () => {
-    expect(markup).toContain("Website Readiness");
-    expect(markup).toContain("Tournament Setup Incomplete");
-    expect(markup).toContain(
-      'aria-label="Status: Tournament Setup Incomplete"',
-    );
-    expect(markup.match(/Tournament Status/g) ?? []).toHaveLength(0);
-  });
-
-  it("shows distinct before and after tournament workflows", () => {
-    expect(markup).toContain("Before the Tournament");
-    expect(markup).toContain(
-      "Complete these items before tournament day.",
-    );
-    expect(markup).toContain("After the Tournament");
-    expect(markup).toContain(
-      "Complete these items after weigh-in and save the official results.",
-    );
-    expect(markup).toContain("Conditions Updated");
-    expect(markup).toContain("Upload Tournament Winner Photo");
-    expect(markup).toContain("Upload Big Bass Winner Photo");
-  });
-
-  it("calculates setup completion from pre-tournament items only", () => {
-    const readyMarkup = renderToStaticMarkup(
-      <WebsiteReadiness
-        preTournamentItems={completePreTournamentItems}
-        postTournamentItems={incompletePostTournamentItems}
-      />,
-    );
-
-    expect(readyMarkup).toContain("Tournament Setup Complete");
-    expect(readyMarkup).toContain(
-      'aria-label="Status: Tournament Setup Complete"',
-    );
-    expect(readyMarkup).toContain("Upcoming");
-    expect(readyMarkup).not.toContain("Tournament Setup Incomplete");
-  });
-
-  it("links incomplete workflow items to their management sections", () => {
-    expect(markup).toMatch(
-      /<a[^>]*aria-label="Review Conditions Updated"[^>]*href="\/admin\/conditions\?tournament=11111111-1111-4111-8111-111111111111"/,
-    );
-    expect(markup).toMatch(
-      /<a[^>]*aria-label="Open Import WeighFish Results"[^>]*href="\/admin\/results\?tournament=11111111-1111-4111-8111-111111111111"/,
-    );
-  });
-
-  it("renders exactly four management cards without Sponsors", () => {
-    const cardLinks = [
-      "/admin/tournament",
-      "/admin/announcements",
-      "/admin/conditions",
-      "/admin/results",
-    ];
-
-    for (const href of cardLinks) {
-      expect(markup).toContain(
-        `href="${href}?tournament=11111111-1111-4111-8111-111111111111"`,
-      );
-    }
-
-    expect(markup).not.toContain('href="/admin/sponsors"');
-    expect(markup).not.toContain("Sponsors Loaded");
-    expect(markup.match(/Last Updated/g)).toHaveLength(4);
-  });
-
-  it("shows the four management-card status summaries", () => {
-    expect(markup).toContain("Lake Fork Open");
-    expect(markup).toContain("August 16, 2026");
-    expect(markup).toContain("Active Announcements");
-    expect(markup).toContain("6:18 AM");
-    expect(markup).toContain("Not Published");
-    expect(markup).toContain(
-      "Enter the official standings and save changes to update the public website.",
-    );
-  });
-
-  it("shows the selected tournament context above readiness", () => {
-    expect(markup.indexOf("Current Tournament")).toBeLessThan(
-      markup.indexOf("Website Readiness"),
-    );
+  it("shows the operational tournament header", () => {
+    expect(markup).toContain("Tournament Operations");
     expect(markup).toContain("Lake Fork Open");
     expect(markup).toContain("Sunday, August 16, 2026");
-    expect(markup).toContain("Lake Fork");
-    expect(markup).toContain("Pope&#x27;s Landing");
+    expect(markup).toContain("Registration Status");
+    expect(markup).toContain("Overall Tournament Status");
     expect(markup).toContain("Registration Open");
-    expect(markup).toContain("Change Tournament");
-    expect(markup).toContain('aria-haspopup="listbox"');
-    expect(markup).toContain('aria-expanded="false"');
-    expect(markup).toContain("Sam Rayburn Open");
+    expect(markup).toContain("Last Updated");
+    expect(markup).toContain("Updated By");
+  });
+
+  it("shows the three-step lifecycle and one recommended next step", () => {
+    expect(markup).toContain("Tournament Progress");
+    expect(markup).toContain("Prepare Tournament");
+    expect(markup).toContain("Registration Finalization");
+    expect(markup).toContain("Tournament Closeout");
+    expect(markup.match(/Recommended Next/g) ?? []).toHaveLength(1);
+    expect(markup).toContain('aria-current="step"');
+  });
+
+  it("shows every required operational checklist item", () => {
+    for (const item of [
+      "Tournament Information Complete",
+      "Registration Information Complete",
+      "Launch Ramp Complete",
+      "Practice Information Complete",
+      "Website Published",
+      "Registration Closed",
+      "Copy registrations to WeighFish",
+      "Verify tournament morning registrations entered",
+      "Verify final tournament field",
+      "Import WeighFish CSV",
+      "Enter Insurance Pot Amount",
+      "Upload Winner Photo",
+      "Upload Big Bass Photo",
+      "Publish Results",
+      "Update Membership Standings",
+      "Publish AOY",
+      "Tournament Complete",
+    ]) {
+      expect(markup).toContain(item);
+    }
+  });
+
+  it("shows the three primary workflow actions", () => {
+    expect(markup).toContain("Continue Tournament Setup");
+    expect(markup).toContain("Finalize Registration");
+    expect(markup).toContain("Complete Tournament");
+    expect(markup).toContain(
+      'href="/admin/tournament?tournament=lake-fork-open-2026"',
+    );
+    expect(markup).toContain(
+      'href="/admin/tournament-manager?tournament=lake-fork-open-2026"',
+    );
+  });
+
+  it("keeps unrelated modules off the operations dashboard", () => {
+    expect(markup).not.toContain("Latest News &amp; Announcements");
+    expect(markup).not.toContain("Sponsors");
+    expect(markup).not.toContain("Website Readiness");
+  });
+});
+
+describe("Tournament operations status", () => {
+  it("closes registration automatically at the configured deadline", () => {
+    expect(
+      getTournamentRegistrationStatus(
+        databaseTournament,
+        new Date("2026-11-01T00:00:00-05:00"),
+      ),
+    ).toBe("Closed");
+  });
+
+  it("advances to registration finalization after registration closes", () => {
+    const steps = getTournamentOperationSteps(
+      {
+        ...databaseTournament,
+        status: "Registration Closed",
+        weighfish_imported: false,
+      },
+      new Date("2026-10-31T22:00:00-05:00"),
+    );
+
+    expect(steps.map((step) => step.state)).toEqual([
+      "completed",
+      "current",
+      "upcoming",
+    ]);
+  });
+
+  it("advances to closeout after a WeighFish import", () => {
+    const steps = getTournamentOperationSteps(
+      {
+        ...databaseTournament,
+        status: "Tournament Day",
+        weighfish_imported: true,
+        weighfish_imported_at: "2026-11-01T18:00:00Z",
+      },
+      new Date("2026-11-01T18:00:00Z"),
+    );
+
+    expect(steps.map((step) => step.state)).toEqual([
+      "completed",
+      "completed",
+      "current",
+    ]);
+  });
+
+  it("does not invent completion for unimplemented AOY operations", () => {
+    const closeout = getTournamentOperationSteps(
+      {
+        ...databaseTournament,
+        status: "Results Published",
+        weighfish_imported: true,
+      },
+      new Date("2026-11-02T12:00:00Z"),
+    )[2];
+
+    expect(
+      closeout.items.find((item) => item.label === "Publish AOY")?.status,
+    ).toBe("not_available");
+    expect(
+      closeout.items.find(
+        (item) => item.label === "Update Membership Standings",
+      )?.status,
+    ).toBe("not_available");
   });
 });
