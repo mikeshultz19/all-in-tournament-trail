@@ -1,5 +1,10 @@
 # Online Registration Workflow
 
+> Implementation note (2026-07-29): This remains the approved target workflow.
+> The current application validates and quotes requests but does not prove
+> completed Square finalization and durable public registration/membership
+> creation. Those steps are launch blockers.
+
 **Document Version:** 1.1
 
 **Status:** Approved Phase 1 Workflow; Production Payment Pending

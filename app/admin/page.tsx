@@ -1,9 +1,13 @@
 import AdminTournamentDashboard from "@/components/admin/AdminTournamentDashboard";
 import {
   getNextUpcomingTournament,
-  getTournaments,
+  getActiveSeasonSchedule,
 } from "@/lib/tournaments";
 import type { Tournament } from "@/types/tournament";
+import {
+  getRegistrationReviewPendingCount,
+  getTournamentRegistrationReviewSummary,
+} from "@/lib/registration-identity-review";
 
 export const dynamic = "force-dynamic";
 
@@ -20,12 +24,26 @@ export default async function AdminPage({
   let tournaments: Tournament[] = [];
   let currentTournament: Tournament | null = null;
   let loadFailed = false;
+  let pendingRegistrationReviews = 0;
+  let registrationReviewSummaries: Record<
+    string,
+    { total: number; verified: number; pending: number; resolved: number }
+  > = {};
 
   try {
-    [tournaments, currentTournament] = await Promise.all([
-      getTournaments(),
+    [tournaments, currentTournament, pendingRegistrationReviews] = await Promise.all([
+      getActiveSeasonSchedule(),
       getNextUpcomingTournament(),
+      getRegistrationReviewPendingCount(),
     ]);
+    registrationReviewSummaries = Object.fromEntries(
+      await Promise.all(
+        tournaments.map(async (tournament) => [
+          tournament.id,
+          await getTournamentRegistrationReviewSummary(tournament.id),
+        ]),
+      ),
+    );
   } catch (error) {
     console.error("Admin dashboard tournament load failed.", error);
     loadFailed = true;
@@ -55,6 +73,8 @@ export default async function AdminPage({
         )?.id ?? currentTournament?.id
       }
       comparisonDate={now.toISOString()}
+      pendingRegistrationReviews={pendingRegistrationReviews}
+      registrationReviewSummaries={registrationReviewSummaries}
     />
   );
 }

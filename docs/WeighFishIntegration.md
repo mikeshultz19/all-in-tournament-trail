@@ -3,7 +3,7 @@ Last Updated: July 27, 2026
 
 # WeighFish Integration
 
-Status: **Planned — not implemented.**
+Status: **Partially implemented — identity reconciliation and authoritative AOY generation remain incomplete.**
 
 The authoritative registration, payment, and operational processes are defined in `docs/TOURNAMENT_OPERATIONS_AND_REGISTRATION_PROCESS.md`. AITT will store confirmed Early Online Registrations after successful Square payment once persistence is implemented. WeighFish owns Tournament-Morning Registration, Cash or Card selection, the tournament-day roster, check-in, weigh-in, scoring, official results, and the official CSV export.
 
@@ -25,10 +25,11 @@ WeighFish
 
 Unknown payment-method values remain available for review rather than being guessed. The workflow must detect duplicate imports and uncertain angler or team matches without automatically merging them. No real-time AITT, WeighFish, or Square synchronization is planned.
 
-AITT Admin Center and tournament persistence exist, but authentication, results
-persistence, and a protected import workflow do not. No public upload endpoint
-is implemented. The future import must use selected-tournament context.
-Post-tournament membership reconciliation remains a later phase.
+AITT Admin Center now has authenticated, tournament-scoped CSV import,
+result-entry persistence, review, insurance/photo, and publication screens.
+Imported names are not yet reconciled to stable angler/team UUIDs, so
+post-tournament membership reconciliation, authoritative AOY, and Championship
+qualification remain incomplete.
 
 
 ---

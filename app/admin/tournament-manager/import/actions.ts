@@ -4,7 +4,6 @@ import { revalidatePath } from "next/cache";
 
 import { requireAdminUser } from "@/lib/admin-auth";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
-import { updateTournament } from "@/lib/tournaments";
 import type { WeighfishResultRow } from "@/lib/weighfishParser";
 
 export interface WeighfishImportState {
@@ -16,7 +15,7 @@ export async function importWeighfishResultsAction(
   tournamentId: string,
   rows: WeighfishResultRow[],
 ): Promise<WeighfishImportState> {
-  await requireAdminUser();
+  const admin = await requireAdminUser();
 
   if (!tournamentId) {
     return {
@@ -35,47 +34,15 @@ export async function importWeighfishResultsAction(
   const supabase = createSupabaseServerClient();
 
   try {
-    const { error: deleteError } = await supabase
-      .from("tournament_result_entries")
-      .delete()
-      .eq("tournament_id", tournamentId);
-
-    if (deleteError) {
-      throw deleteError;
-    }
-
-    const entries = rows.map((row) => ({
-      tournament_id: tournamentId,
-      place: row.place,
-      team_name: row.entryName,
-      fish_count: row.fishCount,
-      total_weight: row.totalWeight,
-      big_fish_weight:
-        row.bigFishWeight > 0 ? row.bigFishWeight : null,
-      base_payout: row.basePayout,
-      bronze_payout: row.bronzePayout,
-      silver_payout: row.silverPayout,
-      gold_payout: row.goldPayout,
-      big_bass_place: row.bigBassPlace,
-      big_bass_payout: row.bigBassPayout,
-      insurance_payout: 0,
-      prize_description: row.prizeDescription || null,
-      raw_payout_breakdown: row.payoutBreakdown || null,
-      is_demo: false,
-    }));
-
-    const { error: insertError } = await supabase
-      .from("tournament_result_entries")
-      .insert(entries);
-
-    if (insertError) {
-      throw insertError;
-    }
-
-await updateTournament(tournamentId, {
-  weighfish_imported: true,
-  weighfish_imported_at: new Date().toISOString(),
-});
+    const { data: importedCount, error: importError } = await supabase.rpc(
+      "import_working_results",
+      {
+        p_tournament_id: tournamentId,
+        p_entries: rows,
+        p_admin_user_id: admin.id,
+      },
+    );
+    if (importError) throw importError;
 
     revalidatePath("/admin/tournament-manager");
     revalidatePath("/admin/tournament-manager/import");
@@ -85,7 +52,7 @@ await updateTournament(tournamentId, {
 
     return {
       status: "success",
-      message: `${rows.length} tournament results imported.`,
+      message: `${importedCount ?? rows.length} working results imported.`,
     };
   } catch (error) {
     console.error("WeighFish import failed.", error);

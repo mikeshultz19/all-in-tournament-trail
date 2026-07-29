@@ -4,11 +4,13 @@ export const databaseTournament: Tournament = {
   id: "11111111-1111-4111-8111-111111111111",
   season_id: null,
   event_type: "regular_season",
+  regular_season_number: null,
   name: "Eagle Mountain",
   slug: "eagle-mountain-2026",
   lake: "Eagle Mountain",
   capacity: 50,
   tournament_date: "2026-11-01T06:00:00-06:00",
+  tournament_end_date: null,
   ramp: "Twin Points Park",
   launch_type: "Trailering",
   morning_registration: "05:00",
@@ -44,6 +46,9 @@ export const databaseTournament: Tournament = {
 
   weighfish_imported: false,
   weighfish_imported_at: null,
+  result_status: "pending",
+  official_results_published_at: null,
+  official_results_published_by: null,
 
   created_at: "2026-07-01T12:00:00Z",
   updated_at: "2026-07-21T12:00:00Z",

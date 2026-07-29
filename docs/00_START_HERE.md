@@ -1,5 +1,9 @@
 # 00 - Start Here
 
+> Operations team: begin with
+> [knowledge-base/START-HERE.md](knowledge-base/START-HERE.md). This page is the
+> technical-maintenance reading path.
+
 Version: 1.0
 Last Updated: July 27, 2026
 

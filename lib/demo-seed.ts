@@ -2,9 +2,9 @@ import type { ResultEntry } from "@/types/results";
 
 export const DEMO_TOURNAMENT = {
   name: "Eagle Mountain",
-  slug: "eagle-mountain-2026",
+  slug: "eagle-mountain-november-2026",
   lake: "Eagle Mountain",
-  tournament_date: "2026-10-31T05:00:00-05:00",
+  tournament_date: "2026-11-01T06:00:00-06:00",
   ramp: "Twin Points Park",
   status: "Registration Open" as const,
   registration_opens: "2026-07-01T05:00:00-05:00",

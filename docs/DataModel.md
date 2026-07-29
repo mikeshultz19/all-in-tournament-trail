@@ -3,6 +3,11 @@ Last Updated: July 27, 2026
 
 # Tournament Data Model
 
+> Current-state note (2026-07-29): This documents the original tournament
+> foundation, not the complete schema. Use the migrations and
+> [technical/DYNAMIC-DATA-MAP.md](technical/DYNAMIC-DATA-MAP.md) for current
+> tables and flows.
+
 Updated: 2026-07-23
 
 `public.tournaments` in Supabase is the implemented source for Admin tournament

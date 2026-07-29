@@ -6,7 +6,7 @@ import {
   getTournamentImage,
 } from "@/data/tournaments";
 import {
-  getTournaments,
+  getActiveSeasonSchedule,
 } from "@/lib/tournaments";
 import {
   toPublicTournament,
@@ -109,7 +109,7 @@ export default async function SchedulePage() {
   let loadFailed = false;
 
   try {
-    tournaments = (await getTournaments()).map(toPublicTournament);
+    tournaments = (await getActiveSeasonSchedule()).map(toPublicTournament);
   } catch (error) {
     console.error("Tournament schedule load failed.", error);
     loadFailed = true;

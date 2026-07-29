@@ -11,9 +11,9 @@ function validValues(
   overrides: Partial<AnnouncementFormValues> = {},
 ): AnnouncementFormValues {
   return {
-    tournamentId: null,
     title: "Lake Fork Registration Update",
     content: "Registration remains open through the published deadline.",
+    isPinned: false,
     ...overrides,
   };
 }
@@ -65,14 +65,10 @@ describe("Announcement form model", () => {
     );
   });
 
-  it("supports Any Event and validates event-specific scopes", () => {
+  it("preserves the optional pinned state", () => {
     expect(
-      validateAnnouncementForm(validValues({ tournamentId: null }))
-        .tournamentId,
-    ).toBeUndefined();
-    expect(
-      validateAnnouncementForm(validValues({ tournamentId: "not-a-uuid" }))
-        .tournamentId,
-    ).toBeDefined();
+      announcementFormToInsert(validValues({ isPinned: true }), "abc12345")
+        .is_pinned,
+    ).toBe(true);
   });
 });

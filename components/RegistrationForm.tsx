@@ -11,7 +11,10 @@ import { formatCurrencyFromCents } from "@/config/payment-policy";
 import type { Tournament } from "@/data/tournaments";
 import type { TournamentOperationsViewModel } from "@/lib/tournament-view-model";
 import { getRegistrationPricing, hasFullMembershipEligibility, validateRegistrationSelections, type MemberPot, type Membership, type RegistrationType } from "@/lib/registration";
-import type { RegistrationPriceSnapshot } from "@/lib/online-registration";
+import {
+  selectCompetitiveRecordAnglers,
+  type RegistrationPriceSnapshot,
+} from "@/lib/online-registration";
 
 type AnglerKey = "angler1" | "angler2";
 type Angler = {
@@ -174,17 +177,24 @@ export default function RegistrationForm({
       requestAnimationFrame(() => formRef.current?.querySelector<HTMLElement>("#acknowledgment-combined")?.focus());
       return;
     }
-    const normalizedAnglers = activeKeys.map((key) => ({
-      ...anglers[key],
-      firstName: anglers[key].firstName.trim(),
-      lastName: anglers[key].lastName.trim(),
-      email: anglers[key].email.trim(),
-      mobilePhone: anglers[key].mobilePhone.trim(),
-      streetAddress: anglers[key].streetAddress.trim(),
-      city: anglers[key].city.trim(),
-      state: anglers[key].state.trim().toUpperCase(),
-      zipCode: anglers[key].zipCode.trim(),
-    }));
+    const normalizeAngler = (angler: Angler): Angler => ({
+      ...angler,
+      firstName: angler.firstName.trim(),
+      lastName: angler.lastName.trim(),
+      email: angler.email.trim(),
+      mobilePhone: angler.mobilePhone.trim(),
+      streetAddress: angler.streetAddress.trim(),
+      city: angler.city.trim(),
+      state: angler.state.trim().toUpperCase(),
+      zipCode: angler.zipCode.trim(),
+    });
+    const normalizedAnglers = selectCompetitiveRecordAnglers(
+      registrationType,
+      normalizeAngler(anglers.angler1),
+      registrationType === "team"
+        ? normalizeAngler(anglers.angler2)
+        : undefined,
+    );
     const selectionErrors = validateRegistrationSelections({ registrationType, baseEntry: true, memberships, memberPot, bigBass, insurance });
     if (selectionErrors.length) { setSubmitMessage(selectionErrors.join(" ")); return; }
     setAnglers((current) => ({ ...current, angler1: normalizedAnglers[0], angler2: registrationType === "team" ? normalizedAnglers[1] : { ...EMPTY_ANGLER } }));
@@ -271,6 +281,19 @@ export default function RegistrationForm({
       <section aria-labelledby="registration-type-heading" className="border-t border-[#4A3A12] pt-8">
         <h2 id="registration-type-heading" className="text-xl font-black uppercase tracking-[0.05em] text-[#D4A017]">Registration Type</h2>
         <div className="mt-5 grid gap-4 sm:grid-cols-2">{([['team', 'Team'], ['solo', 'Individual / Solo']] as const).map(([value, label]) => <label key={value} className="flex min-h-14 cursor-pointer items-center gap-4 border border-[#333] bg-[#111] px-4 py-3 has-checked:border-[#D4A017]"><input type="radio" name="registrationType" value={value} checked={registrationType === value} onChange={() => changeRegistrationType(value)} className="size-5 accent-[#D4A017]" /><span className="font-black uppercase text-white">{label}</span></label>)}</div>
+        <div className="mt-4 border-l-2 border-[#D4A017] pl-4 text-sm leading-6 text-[#B8B8B8]">
+          {registrationType === "team" ? (
+            <>
+              <p>Fish this tournament as a Team.</p>
+              <p className="mt-2 font-semibold text-white">Enter your established season partner even if they are unable to fish this tournament.</p>
+            </>
+          ) : (
+            <>
+              <p>Fish this tournament as a Solo competitor.</p>
+              <p className="mt-2 font-semibold text-white">This registration applies only to this tournament and does not create a separate season-long division.</p>
+            </>
+          )}
+        </div>
       </section>
 
       <section aria-labelledby="angler-heading" className="border-t border-[#4A3A12] pt-8">

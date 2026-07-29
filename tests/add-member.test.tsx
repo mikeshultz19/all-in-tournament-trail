@@ -15,6 +15,7 @@ const tournaments = [
     id: "11111111-1111-4111-8111-111111111111",
     name: "Lake Fork Open",
     tournament_date: "2026-08-16T06:00:00-05:00",
+    regular_season_number: 1,
   },
 ];
 

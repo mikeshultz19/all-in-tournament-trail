@@ -3,6 +3,11 @@ Last Updated: July 27, 2026
 
 # Tournament Operations and Registration Process
 
+> Implementation note (2026-07-29): Protected import/publication screens exist,
+> but stable identity reconciliation, atomic immutable publication,
+> authoritative AOY, and Championship qualification are incomplete. Use the
+> Knowledge Base for executable current operations.
+
 > Early Online Registration screen flow, lifecycle, pricing snapshot, Square
 > handoff, and recovery behavior are defined in
 > [Online Registration Workflow](ONLINE_REGISTRATION_WORKFLOW.md). This
@@ -21,6 +26,18 @@ The site supports:
 
 - Solo registration
 - Team registration
+
+### Competitive Record
+
+Each tournament registration records whether the competitor is fishing that
+tournament as a Team or as a Solo competitor. AITT has one Angler of the Year
+competition and one Championship qualification path. Solo registration applies
+only to that tournament and does not create a separate season-long division.
+
+For Team registration, Angler 2 is required. The established season partner is
+entered even when that partner is unable to fish the tournament.
+
+For Solo registration, Angler 2 is prohibited and is not submitted.
 
 For Team registration, information is collected independently for Angler 1
 and Angler 2. Each angler provides:

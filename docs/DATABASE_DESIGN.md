@@ -3,13 +3,12 @@ Last Updated: July 27, 2026
 
 # All In Tournament Trail Database Design
 
-> **Current-state note (2026-07-23):** This document remains the proposed
-> registration, payment, membership, and results blueprint. It is not a
-> description of tables already deployed. The one implemented table is
-> `public.tournaments`, defined by
-> `supabase/migrations/202607230001_create_tournaments.sql` and documented in
-> [DataModel.md](DataModel.md). Supabase is connected and AITT Admin Center
-> reads live tournament records. All other tables below remain planned.
+> **Current-state note (2026-07-29):** The detail below is the original
+> blueprint, not the deployed-schema inventory. Migrations now define
+> tournaments, news, registrations, Results, AOY rows, seasons, anglers,
+> memberships, teams, imported result entries, and reset logs. Use
+> [CURRENT_STATE_AUDIT_2026-07-29.md](CURRENT_STATE_AUDIT_2026-07-29.md) and
+> the checked-in migrations for implementation evidence.
 
 *Phase 4.1 – Registration Persistence Blueprint*
 

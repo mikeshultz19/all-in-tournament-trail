@@ -1,5 +1,8 @@
 # How Dynamic Content Works
 
+> Current-state note (2026-07-29): Exact implemented and missing paths are in
+> [technical/DYNAMIC-DATA-MAP.md](technical/DYNAMIC-DATA-MAP.md).
+
 Version: 1.0
 Last Updated: July 27, 2026
 

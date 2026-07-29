@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 
 import Header from "@/components/Header";
 import RegistrationForm from "@/components/RegistrationForm";
-import { getTournaments } from "@/lib/tournaments";
+import { getActiveSeasonSchedule } from "@/lib/tournaments";
 import {
   toPublicTournament,
   type PublicTournamentRecord,
@@ -28,7 +28,7 @@ export default async function RegistrationPage({
   let tournaments: PublicTournamentRecord[] = [];
 
   try {
-    tournaments = (await getTournaments()).map(toPublicTournament);
+    tournaments = (await getActiveSeasonSchedule()).map(toPublicTournament);
   } catch (error) {
     console.error("Registration tournament load failed.", error);
   }

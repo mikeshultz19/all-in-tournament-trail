@@ -12,6 +12,7 @@ import {
   createAuthoritativeRegistrationQuote,
   getOnlineRegistrationEligibility,
   REGISTRATION_POLICY_VERSIONS,
+  selectCompetitiveRecordAnglers,
   validateOnlineRegistrationRequest,
   type OnlineRegistrationRequest,
 } from "@/lib/online-registration";
@@ -50,8 +51,21 @@ describe("online tournament eligibility", () => {
 
 describe("server-authoritative registration validation and pricing", () => {
   it("validates required angler fields", () => expect(validateOnlineRegistrationRequest(validRequest({ anglers: [{ ...validRequest().anglers[0], mobilePhone: "" }] }), NOW)).toContain("Angler 1 mobile phone is invalid."));
-  it("requires two anglers for a team", () => expect(validateOnlineRegistrationRequest(validRequest({ registrationType: "team" }), NOW)).toContain("Team registration requires 2 anglers."));
-  it("requires only one angler for a solo entry", () => expect(validateOnlineRegistrationRequest(validRequest(), NOW)).not.toContain("Solo registration requires 1 angler."));
+  it("requires Angler 2 for a team competitive record", () => expect(validateOnlineRegistrationRequest(validRequest({ registrationType: "team" }), NOW)).toContain("Angler 2 is required for Team registration."));
+  it("accepts exactly one angler for a solo competitive record", () => expect(validateOnlineRegistrationRequest(validRequest(), NOW)).toEqual([]));
+  it("prohibits Angler 2 for a solo competitive record", () => {
+    const angler = validRequest().anglers[0];
+    expect(validateOnlineRegistrationRequest(validRequest({ anglers: [angler, { ...angler, email: "partner@example.com" }] }), NOW)).toContain("Angler 2 is not allowed for Solo registration.");
+  });
+  it("builds a solo payload without Angler 2", () => {
+    const angler = validRequest().anglers[0];
+    expect(selectCompetitiveRecordAnglers("solo", angler, { ...angler, firstName: "Stale" })).toEqual([angler]);
+  });
+  it("builds a team payload with both anglers", () => {
+    const angler1 = validRequest().anglers[0];
+    const angler2 = { ...angler1, firstName: "Partner", email: "partner@example.com" };
+    expect(selectCompetitiveRecordAnglers("team", angler1, angler2)).toEqual([angler1, angler2]);
+  });
   it("rejects unconfigured option fields", () => {
     const request = validRequest();
     (request.options as unknown as Record<string, unknown>).championship = true;
@@ -167,11 +181,15 @@ describe("online payment presentation", () => {
   it("shows team-only fields only for team registration", () => {
     const teamHtml = renderToStaticMarkup(<RegistrationForm tournaments={tournaments} operationsBySlug={operationsBySlug} policyVersions={POLICY_VERSIONS} initialRegistrationType="team" />);
     expect(html).not.toContain("Team Details — Angler 2");
+    expect(html).toContain("Fish this tournament as a Solo competitor.");
+    expect(html).toContain("This registration applies only to this tournament and does not create a separate season-long division.");
     expect(teamHtml).toContain("Team Details — Angler 2");
     expect(teamHtml).toContain('name="angler2.firstName"');
+    expect(teamHtml).toContain("Fish this tournament as a Team.");
+    expect(teamHtml).toContain("Enter your established season partner even if they are unable to fish this tournament.");
   });
   it("blocks invalid registration and stale policy versions before payment review", () => {
-    expect(validateOnlineRegistrationRequest(validRequest({ anglers: [] }), NOW)).toContain("Solo registration requires 1 angler.");
+    expect(validateOnlineRegistrationRequest(validRequest({ anglers: [] }), NOW)).toContain("Angler 1 is required for Solo registration.");
     expect(validateOnlineRegistrationRequest(validRequest({ acknowledgment: { ...validRequest().acknowledgment, rulesVersion: "0.9" } }), NOW)).toContain("Review and accept the current Official Tournament Rules.");
   });
   it("shows the compact authoritative-price summary without cash", () => {

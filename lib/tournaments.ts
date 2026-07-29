@@ -36,6 +36,41 @@ export async function getTournaments(): Promise<Tournament[]> {
   return data;
 }
 
+/**
+ * Returns the authoritative active-season schedule in constitutional order.
+ * Regular-season identity is defined by regular_season_number, not event date;
+ * the unnumbered Championship follows the eight regular-season events.
+ */
+export async function getActiveSeasonSchedule(): Promise<Tournament[]> {
+  const supabase = createSupabaseServerClient();
+  const activeSeason = await supabase
+    .from("seasons")
+    .select("id")
+    .eq("is_active", true)
+    .maybeSingle();
+
+  if (activeSeason.error) {
+    throw dataError("load", activeSeason.error);
+  }
+
+  if (!activeSeason.data) {
+    return [];
+  }
+
+  const { data, error } = await supabase
+    .from("tournaments")
+    .select("*")
+    .eq("season_id", activeSeason.data.id)
+    .order("event_type", { ascending: false })
+    .order("regular_season_number", { ascending: true, nullsFirst: false });
+
+  if (error) {
+    throw dataError("load", error);
+  }
+
+  return data;
+}
+
 export async function getTournamentById(
   id: string,
 ): Promise<Tournament | null> {
@@ -85,6 +120,20 @@ export async function getNextUpcomingTournament(
   now = new Date(),
 ): Promise<Tournament | null> {
   const supabase = createSupabaseServerClient();
+  const activeSeason = await supabase
+    .from("seasons")
+    .select("id")
+    .eq("is_active", true)
+    .maybeSingle();
+
+  if (activeSeason.error) {
+    throw dataError("load", activeSeason.error);
+  }
+
+  if (!activeSeason.data) {
+    return null;
+  }
+
   const localDate = getTournamentLocalDate(now);
   const startOfToday = tournamentDateTimeToUtc(
     localDate,
@@ -93,6 +142,7 @@ export async function getNextUpcomingTournament(
   const upcoming = await supabase
     .from("tournaments")
     .select("*")
+    .eq("season_id", activeSeason.data.id)
     .neq("status", "Cancelled")
     .gte("tournament_date", startOfToday)
     .order("tournament_date", { ascending: true })
@@ -110,6 +160,7 @@ export async function getNextUpcomingTournament(
   const past = await supabase
     .from("tournaments")
     .select("*")
+    .eq("season_id", activeSeason.data.id)
     .lt("tournament_date", startOfToday)
     .order("tournament_date", { ascending: false })
     .limit(1)

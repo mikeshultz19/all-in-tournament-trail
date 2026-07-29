@@ -16,8 +16,14 @@ Its purpose is rapid recovery of project context, collaboration style, developme
 - **Project:** All In Tournament Trail (AITT)
 - **Purpose:** The official website for a bass fishing tournament series in which anglers choose their competition level through Bronze, Silver, and Gold Pots.
 - **Admin application:** AITT Admin Center.
-- **Current phase:** Tournament Information reads/updates and persistence after refresh are verified. News & Announcements is next, followed by Conditions, Results, and production security. Homepage/schedule integration and deployment remain follow-ups. Always verify this in [ProjectStatus.md](ProjectStatus.md).
-- **Stack:** Next.js 16, React 19, TypeScript, Tailwind CSS 4, and Supabase PostgreSQL. Prisma is not used. GitHub is connected. Supabase Auth and Storage and Vercel production hosting are planned. Cloudflare inbound email routing is verified; production DNS is not.
+- **Current phase:** The authenticated Admin/tournament operations, membership,
+  import, Results, and public AOY foundations exist. Production RLS, atomic
+  immutable publication, stable-team AOY, Championship qualification, and
+  end-to-end workflow testing are next. Always verify this in
+  [ProjectStatus.md](ProjectStatus.md).
+- **Stack:** Next.js 16, React 19, TypeScript, Tailwind CSS 4, and Supabase
+  PostgreSQL/Auth/Storage. Prisma is not used. Vercel production hosting and
+  production DNS are not verified.
 - **Domain:** `allintrail.com` is registered and `https://allintrail.com` is canonical. Production deployment and DNS are not yet verified complete.
 - **Contact:** `info@allintrail.com` forwards through Cloudflare Email Routing
   to Gmail. The Contact page and widget use `mailto:`; no server submission

@@ -5,8 +5,9 @@ Last Updated: July 27, 2026
 
 Updated: 2026-07-23
 
-Supabase provides the project's PostgreSQL database. Supabase Auth and Storage
-are planned but are not implemented.
+Supabase provides PostgreSQL, Auth, and winner-photo Storage. Auth-protected
+Admin application paths exist, but hosted grants/RLS and Storage policies must
+be verified and anonymous development writes must be removed before production.
 
 ## Environment variables
 
@@ -15,6 +16,7 @@ The server client reads:
 ```text
 SUPABASE_URL
 SUPABASE_ANON_KEY
+SUPABASE_SERVICE_ROLE_KEY
 ```
 
 Use the current publishable key as the anonymous/public key. Never document or

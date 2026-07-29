@@ -18,6 +18,16 @@ Use this document to record approved project decisions that affect architecture,
 
 ## Decisions
 
+### 2026-07-29 — Finalize homepage AOY and Winner's Circle placement
+
+- **Status:** Approved
+- **Decision:** Remove Upcoming Schedule and the old standalone AOY widget.
+  Place the live five-leader AOY Race above Winner's Circle in one desktop row,
+  ordered 2nd, 3rd, 1st, 4th, 5th so first place is centered. Use no top or
+  bottom divider, keep Winner's Circle dimensions fixed, and start the hero
+  below fixed navigation so the NO FFS artwork is not clipped.
+- **Impact:** Homepage composition, AOY strip, Winner's Circle, Header, and Hero.
+
 ### 2026-07-23 — Establish the production platform and canonical domain
 
 - **Status:** Approved

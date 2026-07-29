@@ -69,6 +69,8 @@ function initialPreviewRows(
 ): WeighfishResultRow[] {
   return entries.map((entry) => ({
     place: entry.place,
+    sourcePlacement: String(entry.place),
+    participationStatus: "participated",
     entryName: entry.team,
     fishCount: 0,
     totalWeight: entry.weight,

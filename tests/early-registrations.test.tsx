@@ -102,6 +102,9 @@ describe("Tournament Entries", () => {
 
   it("renders team and solo entries with their public names", () => {
     const html = renderToStaticMarkup(<EarlyEntriesTable entries={entries} registrationHref="/register" registrationOpen />);
+    expect(html).toContain("Competing As");
+    expect(html).toContain("Team");
+    expect(html).toContain("Solo");
     expect(html).toContain("Caleb Brooks");
     expect(html).toContain("Drew Carter");
     expect(html).toContain("Avery Collins");

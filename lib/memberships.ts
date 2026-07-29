@@ -1,6 +1,6 @@
 import "server-only";
 
-import { isMembershipEligibleOnDate } from "@/lib/membership-eligibility";
+import { isMembershipEligibleForTournament } from "@/lib/membership-eligibility";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { getTournamentById } from "@/lib/tournaments";
 import type {
@@ -92,7 +92,7 @@ export async function getMembershipForAnglerAndSeason(
 export async function isAnglerEligibleMember(
   anglerId: string,
   seasonId: string,
-  tournamentDate: string,
+  tournamentId: string,
 ): Promise<boolean> {
   const supabase = createSupabaseServerClient();
   const { data: angler, error: anglerError } = await supabase
@@ -121,12 +121,18 @@ export async function isAnglerEligibleMember(
           membership.first_eligible_tournament_id,
         )
       : null;
+  const tournament = await getTournamentById(tournamentId);
 
-  return isMembershipEligibleOnDate(
+  if (!tournament || tournament.season_id !== seasonId) {
+    return false;
+  }
+
+  return isMembershipEligibleForTournament(
     membership,
     seasonId,
-    tournamentDate,
-    firstEligibleTournament?.tournament_date ?? null,
+    tournament.regular_season_number,
+    firstEligibleTournament?.regular_season_number ?? null,
+    tournament.event_type,
   );
 }
 

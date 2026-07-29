@@ -1,5 +1,9 @@
 # All-In Tournament Trail (AITT) Documentation
 
+Use [DOCUMENTATION-INDEX.md](DOCUMENTATION-INDEX.md) to choose the Operations or
+Technical reading path. Tournament operators should start with
+[knowledge-base/START-HERE.md](knowledge-base/START-HERE.md).
+
 Version: 1.0
 Last Updated: July 27, 2026
 

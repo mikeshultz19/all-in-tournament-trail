@@ -12,16 +12,24 @@ export const TOURNAMENT_STATUSES = [
 ] as const;
 
 export type TournamentStatus = (typeof TOURNAMENT_STATUSES)[number];
+export type TournamentResultStatus =
+  | "pending"
+  | "imported"
+  | "under_review"
+  | "ready_to_publish"
+  | "official";
 
 export interface Tournament {
   id: string;
   season_id: string | null;
   event_type: TournamentEventType;
+  regular_season_number: number | null;
   name: string;
   slug: string;
   lake: string;
   capacity: number | null;
   tournament_date: string;
+  tournament_end_date: string | null;
   ramp: string | null;
   launch_type: string | null;
   morning_registration: string | null;
@@ -48,6 +56,9 @@ export interface Tournament {
   photos_reviewed_at: string | null;
   weighfish_imported: boolean;
   weighfish_imported_at: string | null;
+  result_status: TournamentResultStatus;
+  official_results_published_at: string | null;
+  official_results_published_by: string | null;
 
   created_at: string;
   updated_at: string;
@@ -59,10 +70,12 @@ export type TournamentUpdate = Partial<
     Tournament,
     | "season_id"
     | "event_type"
+    | "regular_season_number"
     | "name"
     | "lake"
     | "capacity"
     | "tournament_date"
+    | "tournament_end_date"
     | "ramp"
     | "launch_type"
     | "morning_registration"
@@ -89,6 +102,9 @@ export type TournamentUpdate = Partial<
     | "photos_reviewed_at"
     | "weighfish_imported"
     | "weighfish_imported_at"
+    | "result_status"
+    | "official_results_published_at"
+    | "official_results_published_by"
     | "updated_by"
   >
 >;

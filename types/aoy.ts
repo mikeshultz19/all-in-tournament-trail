@@ -17,12 +17,19 @@ export type TournamentEventType =
 
 export const IDENTITY_RECONCILIATION_STATUSES = [
   "unresolved",
-  "matched",
-  "confirmed_new",
+  "suggested",
+  "confirmed",
+  "rejected",
+  "review_required",
 ] as const;
 
 export type IdentityReconciliationStatus =
   (typeof IDENTITY_RECONCILIATION_STATUSES)[number];
+
+export const COMPETITIVE_RECORD_TYPES = ["team", "solo"] as const;
+
+export type CompetitiveRecordType =
+  (typeof COMPETITIVE_RECORD_TYPES)[number];
 
 export interface Season {
   id: string;
@@ -70,6 +77,7 @@ export interface Membership {
 export interface Team {
   id: string;
   season_id: string;
+  record_type: CompetitiveRecordType;
   display_name: string | null;
   canonical_member_key: string;
   is_active: boolean;
@@ -130,4 +138,44 @@ export interface CreateTeamInput {
   seasonId: string;
   anglerIds: string[];
   displayName?: string | null;
+}
+
+export interface CreateCompetitiveRecordInput extends CreateTeamInput {
+  recordType: CompetitiveRecordType;
+}
+
+export type CompetitiveRecord = Team;
+
+export type CompetitiveRecordWithMembers = TeamWithMembers;
+
+export interface TournamentRegistration {
+  id: string;
+  registration_key: string;
+  tournament_id: string;
+  // Legacy name-only rows remain nullable until reviewed reconciliation.
+  // The database requires this value for every new registration.
+  competitive_record_id: string | null;
+  angler1_id: string | null;
+  angler2_id: string | null;
+  registered_at: string;
+  registration_type: CompetitiveRecordType;
+  angler1_name: string;
+  angler2_name: string | null;
+  big_bass: boolean;
+  member_pot: "bronze" | "silver" | "gold" | null;
+  insurance: boolean;
+  payment_reference: string | null;
+  membership_snapshot: unknown[] | null;
+  price_snapshot: Record<string, unknown> | null;
+  rules_version: string | null;
+  waiver_version: string | null;
+  rules_accepted_at: string | null;
+  identity_review_status:
+    | "verified"
+    | "review_required"
+    | "approved_new"
+    | "resolved_existing";
+  admin_notes: string | null;
+  created_at: string;
+  updated_at: string;
 }

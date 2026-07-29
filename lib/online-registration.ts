@@ -57,6 +57,27 @@ export type OnlineRegistrationRequest = {
   acknowledgment: RegistrationAcknowledgment;
 };
 
+/**
+ * Builds the competitors for the selected Competitive Record.
+ * Solo and Team registrations are independent records, so a Solo payload must
+ * never carry stale Angler 2 form data.
+ */
+export function selectCompetitiveRecordAnglers<T>(
+  registrationType: RegistrationType,
+  angler1: T,
+  angler2?: T,
+): T[] {
+  if (registrationType === "solo") {
+    return [angler1];
+  }
+
+  if (registrationType === "team" && angler2 !== undefined) {
+    return [angler1, angler2];
+  }
+
+  throw new Error("Angler 2 is required for Team registration.");
+}
+
 export type RegistrationPriceSnapshot = {
   currency: "USD";
   lineItems: ReadonlyArray<{ code: string; name: string; priceCents: number }>;
@@ -121,6 +142,7 @@ type EligibilityOptions = {
   capacity?: number | null;
   registrationOpensAt?: Date | null;
   onlineRegistrationEnabled?: boolean;
+  verifiedPaymentCompletion?: boolean;
 };
 
 export function getOnlineRegistrationEligibility(
@@ -182,16 +204,37 @@ export function validateOnlineRegistrationRequest(
   const tournament =
     tournamentOverride ?? getTournamentBySlug(input.tournamentSlug);
   if (!tournament) return ["Select a valid tournament."];
-  const eligibility = getOnlineRegistrationEligibility(tournament, now, {
-    capacity: TOURNAMENT_REGISTRATION_CONFIG.capacity,
-    onlineRegistrationEnabled: TOURNAMENT_REGISTRATION_CONFIG.onlineRegistrationEnabled,
-    ...eligibilityOptions,
-  });
-  const errors = eligibility.canRegister ? [] : [eligibility.reason];
+  const errors: string[] = [];
+  if (!eligibilityOptions.verifiedPaymentCompletion) {
+    const eligibility = getOnlineRegistrationEligibility(tournament, now, {
+      capacity: TOURNAMENT_REGISTRATION_CONFIG.capacity,
+      onlineRegistrationEnabled: TOURNAMENT_REGISTRATION_CONFIG.onlineRegistrationEnabled,
+      ...eligibilityOptions,
+    });
+    if (!eligibility.canRegister) {
+      errors.push(eligibility.reason);
+    }
+  }
   if (!(TOURNAMENT_REGISTRATION_CONFIG.allowedTypes as readonly unknown[]).includes(input.registrationType)) errors.push("Select a registration type offered by this tournament.");
-  const requiredAnglers = input.registrationType === "team" ? 2 : 1;
-  if (!Array.isArray(input.anglers) || input.anglers.length !== requiredAnglers) errors.push(`${input.registrationType === "team" ? "Team" : "Solo"} registration requires ${requiredAnglers} angler${requiredAnglers === 1 ? "" : "s"}.`);
-  else input.anglers.forEach((angler, index) => errors.push(...validateAngler(angler, index + 1)));
+  if (!Array.isArray(input.anglers)) {
+    errors.push("Enter valid competitor information.");
+  } else if (input.registrationType === "team") {
+    if (input.anglers.length !== 2) {
+      errors.push("Angler 2 is required for Team registration.");
+    } else {
+      input.anglers.forEach((angler, index) =>
+        errors.push(...validateAngler(angler, index + 1)),
+      );
+    }
+  } else if (input.registrationType === "solo") {
+    if (input.anglers.length > 1) {
+      errors.push("Angler 2 is not allowed for Solo registration.");
+    } else if (input.anglers.length === 0) {
+      errors.push("Angler 1 is required for Solo registration.");
+    } else {
+      errors.push(...validateAngler(input.anglers[0], 1));
+    }
+  }
   const memberships = Array.isArray(input.anglers)
     ? input.anglers.flatMap((angler) => angler && typeof angler === "object" ? [angler.membership] : [])
     : [];
@@ -237,11 +280,12 @@ export function createAuthoritativeRegistrationQuote(
   input: OnlineRegistrationRequest,
   now: Date = new Date(),
   tournamentOverride?: Tournament,
+  eligibilityOptions: EligibilityOptions = {},
 ): RegistrationPriceSnapshot {
   const errors = validateOnlineRegistrationRequest(
     input,
     now,
-    {},
+    eligibilityOptions,
     tournamentOverride,
   );
   if (errors.length) throw new Error(errors.join(" "));

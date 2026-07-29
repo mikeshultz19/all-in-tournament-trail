@@ -12,6 +12,12 @@ export interface WeighfishStatistics {
 
 export interface WeighfishResultRow {
   place: number | null;
+  sourcePlacement: string;
+  participationStatus:
+    | "participated"
+    | "withdrew_after_start"
+    | "no_show"
+    | "disqualified";
   entryName: string;
   fishCount: number;
   totalWeight: number;
@@ -168,6 +174,28 @@ function parseNullableInteger(value: string | undefined): number | null {
 
   const parsed = Number.parseInt(match[0], 10);
   return Number.isFinite(parsed) ? parsed : null;
+}
+
+function parseParticipationStatus(value: string): {
+  status: WeighfishResultRow["participationStatus"] | null;
+  place: number | null;
+} {
+  const normalized = normalizeText(value).replace(/[._-]+/g, " ");
+  const place = parseNullableInteger(value);
+
+  if (/^(dq|dqd|disqualified)$/.test(normalized)) {
+    return { status: "disqualified", place };
+  }
+  if (/^(no show|noshow|dns|did not start)$/.test(normalized)) {
+    return { status: "no_show", place };
+  }
+  if (/^(withdrawn|withdrew|wd|withdrew after start)$/.test(normalized)) {
+    return { status: "withdrew_after_start", place };
+  }
+  if (place !== null) {
+    return { status: "participated", place };
+  }
+  return { status: null, place: null };
 }
 
 function getCell(
@@ -468,11 +496,19 @@ export function parseWeighfishCsv(
     ]);
 
     const placeValue = getCell(record, headerIndexes, ["Place"]);
+    const participation = parseParticipationStatus(placeValue);
 
     // WeighFish exports may include footer or summary rows in the first
     // column. A real result entry must always have an angler/team name.
     // Skip any row without one instead of treating it as a broken result.
     if (!entryName) {
+      return;
+    }
+
+    if (!participation.status) {
+      errors.push(
+        `Result row ${recordIndex + 1} has an unsupported placement or participation value: "${placeValue || "(blank)"}".`,
+      );
       return;
     }
 
@@ -520,7 +556,9 @@ const bigBassPayout = extractBigBassPayout(
 );
 
     rows.push({
-      place: parseNullableInteger(placeValue),
+      place: participation.place,
+      sourcePlacement: placeValue,
+      participationStatus: participation.status,
       entryName,
       fishCount: Math.max(
         0,

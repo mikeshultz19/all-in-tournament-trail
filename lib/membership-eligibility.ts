@@ -1,28 +1,32 @@
-import type { Membership } from "@/types/aoy";
+import type {
+  Membership,
+  TournamentEventType,
+} from "@/types/aoy";
 
-function datePart(value: string): string | null {
-  const match = value.match(/^(\d{4}-\d{2}-\d{2})/);
-  return match?.[1] ?? null;
-}
-
-export function isMembershipEligibleOnDate(
+export function isMembershipEligibleForTournament(
   membership: Membership | null,
   seasonId: string,
-  tournamentDate: string,
-  firstEligibleTournamentDate: string | null,
+  tournamentNumber: number | null,
+  firstEligibleTournamentNumber: number | null,
+  eventType: TournamentEventType = "regular_season",
 ): boolean {
-  const eventDate = datePart(tournamentDate);
-  const firstEligibleDate = firstEligibleTournamentDate
-    ? datePart(firstEligibleTournamentDate)
-    : null;
+  const validFirstNumber =
+    firstEligibleTournamentNumber !== null &&
+    firstEligibleTournamentNumber >= 1 &&
+    firstEligibleTournamentNumber <= 8;
+  const validEventNumber =
+    tournamentNumber !== null &&
+    tournamentNumber >= 1 &&
+    tournamentNumber <= 8;
 
   return Boolean(
     membership &&
       membership.status === "active" &&
       membership.season_id === seasonId &&
       membership.first_eligible_tournament_id &&
-      eventDate &&
-      firstEligibleDate &&
-      firstEligibleDate <= eventDate,
+      validFirstNumber &&
+      (eventType === "championship" ||
+        (validEventNumber &&
+          firstEligibleTournamentNumber! <= tournamentNumber!)),
   );
 }

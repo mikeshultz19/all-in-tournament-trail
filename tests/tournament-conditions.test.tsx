@@ -122,7 +122,6 @@ describe("Tournament Conditions", () => {
     const html = renderToStaticMarkup(await HomePage());
     expect(html).toContain("Featured Tournament");
     expect(html).toContain("Latest News &amp; Announcements");
-    expect(html).toContain(tournament.statusMessage);
     expect(html).toContain("Tournament Conditions");
     expect(html).toContain("Tournament forecast will be available closer to the event.");
     expect(html).toContain("View Tournament Entries");
@@ -135,7 +134,7 @@ describe("Tournament Conditions", () => {
     for (const metric of ["Big Bass", "Bronze", "Silver", "Gold", "Insurance Pot"]) {
       expect(html).not.toContain(`<dt class="text-xs font-black uppercase tracking-[0.12em] text-[#D4A017]">${metric}</dt>`);
     }
-    expect(html).toContain("Registration closes");
+    expect(html).toContain("Registration Information");
     expect(html).toContain('href="/register?tournament=eagle-mountain-2026"');
     expect(html).toContain("Tournament Information");
     expect(html).toContain("Safe Light – 3:00 PM");
@@ -172,13 +171,13 @@ describe("Tournament Conditions", () => {
     expect(html.slice(gridIndex, newsIndex)).toContain('data-tournament-column="right"');
   });
 
-  it("renders Payment Update once inside Latest News and nowhere in Header or Hero", async () => {
+  it("renders the live-news empty state without static homepage announcements", async () => {
     const html = renderToStaticMarkup(await HomePage());
     const newsIndex = html.indexOf('data-homepage-news="true"');
-    const paymentMatches = html.match(/Payment Update/g) ?? [];
 
-    expect(paymentMatches).toHaveLength(1);
-    expect(html.indexOf("Payment Update")).toBeGreaterThan(newsIndex);
+    expect(newsIndex).toBeGreaterThan(-1);
+    expect(html).toContain("No current news or announcements are available.");
+    expect(html).not.toContain("Payment Update");
     expect(readFileSync("components/Header.tsx", "utf8")).not.toContain("LatestTournamentNews");
     expect(readFileSync("components/Hero.tsx", "utf8")).not.toContain("LatestTournamentNews");
   });

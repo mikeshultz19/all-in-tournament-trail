@@ -12,6 +12,7 @@ export interface MembershipTournamentOption {
   id: string;
   name: string;
   tournament_date: string;
+  regular_season_number: number;
 }
 
 export interface AdminMemberDetail {
@@ -49,10 +50,10 @@ export async function listMembershipTournamentsForSeason(
   const supabase = createSupabaseServerClient();
   const { data, error } = await supabase
     .from("tournaments")
-    .select("id,name,tournament_date")
+    .select("id,name,tournament_date,regular_season_number")
     .eq("season_id", seasonId)
     .eq("event_type", "regular_season")
-    .order("tournament_date", { ascending: true });
+    .order("regular_season_number", { ascending: true });
 
   if (error) {
     throw new AdminMemberDataError(

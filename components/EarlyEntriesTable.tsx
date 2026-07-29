@@ -29,11 +29,12 @@ export default function EarlyEntriesTable({
 
   return (
     <div className="overflow-x-auto border border-white/10" tabIndex={0} aria-label="Scrollable tournament entries">
-      <table className="w-full min-w-[980px] border-collapse text-left text-sm">
+      <table className="w-full min-w-[1080px] border-collapse text-left text-sm">
         <caption className="sr-only">Tournament entries, ordered from oldest registration to newest.</caption>
         <thead className="bg-[#171717] text-xs font-black uppercase tracking-[0.12em] text-[#D4A017]">
           <tr>
             <th scope="col" className="min-w-60 border-b border-[#4A3A12] px-4 py-3">Registered</th>
+            <th scope="col" className="min-w-32 border-b border-[#4A3A12] px-4 py-3">Competing As</th>
             <th scope="col" className="min-w-44 border-b border-[#4A3A12] px-4 py-3">Angler 1</th>
             <th scope="col" className="min-w-44 border-b border-[#4A3A12] px-4 py-3">Angler 2</th>
             <th scope="col" className="min-w-28 border-b border-[#4A3A12] px-4 py-3">Big Bass</th>
@@ -45,6 +46,9 @@ export default function EarlyEntriesTable({
           {entries.map((entry) => (
             <tr key={`${entry.registeredAt}-${entry.angler1DisplayName}`} className="hover:bg-white/[0.03]">
               <td className="whitespace-nowrap px-4 py-3"><time dateTime={entry.registeredAt}>{formatPublicRegistrationTimestamp(entry.registeredAt)}</time></td>
+              <td className="px-4 py-3 font-black uppercase tracking-[0.1em] text-[#D4A017]">
+                {entry.entryMode === "team" ? "Team" : "Solo"}
+              </td>
               <td className="px-4 py-3 font-semibold text-white">{entry.angler1DisplayName}</td>
               <td className="px-4 py-3">{entry.entryMode === "solo" ? "Solo" : entry.angler2DisplayName}</td>
               <td className="px-4 py-3">{entry.bigBassSelected ? "Yes" : <span className="text-neutral-600">—</span>}</td>

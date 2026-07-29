@@ -1,0 +1,113 @@
+# Official Results Workflow
+
+## Constitutional ownership
+
+Official Results are the permanent historical source for future AOY,
+Championship qualification, Competitive Record statistics, and tournament
+history. This milestone does not implement those calculations.
+
+Tournament sequence uses `season_id` and immutable
+`regular_season_number`. Calendar dates are display and scheduling data only.
+
+## Result states
+
+Each tournament has one result status:
+
+- `pending` — no Working Results have been imported;
+- `imported` — a WeighFish import created editable Working Results;
+- `under_review` — a documented working correction or identity resolution was
+  made;
+- `ready_to_publish` — reserved for an explicit completed review state;
+- `official` — the immutable Official Results snapshot was published.
+
+## Working Results lifecycle
+
+The WeighFish import action calls the service-role-only
+`import_working_results` transaction. It replaces only the selected
+tournament's Working Results, preserves every original imported row as JSON,
+and records the previous and new import in `working_result_audit`.
+
+Working Results may be corrected through `correct_working_result`. Allowed
+corrections include placement, team display, fish count, weights, penalties,
+canonical Competitive Record, and imported identity mapping. Every correction
+requires a reason and Admin UUID. Original imported JSON is never changed.
+
+Working Results remain temporary and cannot appear on public Results pages.
+
+## Publication requirements
+
+`publish_official_results` refuses publication unless:
+
+- the tournament belongs to a season;
+- a regular-season event has immutable number 1–8;
+- a Championship is unnumbered;
+- the Registration Review queue has no pending registrations;
+- at least one Working Result exists;
+- placements and weights pass validation;
+- every entry has a canonical Competitive Record;
+- each Competitive Record belongs to the tournament season;
+- any linked imported identity is confirmed against that same record.
+
+Failures return stable `AITT_OFFICIAL_RESULTS_*` domain codes. Registration and
+payment remain unaffected.
+
+## Official publication
+
+The protected Tournament Manager publish action calls one transactional RPC.
+That transaction:
+
+1. locks and validates the tournament;
+2. copies every Working Result into `official_result_entries`;
+3. freezes placement, weight, penalty, identity, and Competitive Record links;
+4. records the Admin and publication timestamp;
+5. records a complete publication snapshot;
+6. rebuilds the existing `tournament_results` public compatibility record;
+7. marks the tournament `official` and `Results Published`.
+
+Public Results pages now require `result_status = official`. Archive ordering
+uses season and immutable regular-season number rather than tournament date.
+
+## Immutability
+
+Normal updates and deletes to Official Result rows and public result snapshots
+raise `AITT_OFFICIAL_RESULTS_IMMUTABLE`. Working rows also become immutable once
+their tournament is Official.
+
+The older direct `/admin/results` save/reset actions no longer publish or
+delete results. Tournament Manager is the only authoritative publication
+workflow.
+
+## Administrative corrections
+
+Constitutional corrections use the protected `correct_official_result` RPC.
+Only specified fields may change, and every correction requires:
+
+- previous complete entry value;
+- new complete entry value;
+- correction reason;
+- Admin UUID;
+- timestamp.
+
+The correction and rebuilt public snapshot occur in one transaction. The
+original publication snapshot remains unchanged, providing the original
+historical record alongside the correction history.
+
+## Security
+
+Import, publication, and correction RPCs are executable only by the service
+role. Their server actions independently require an active Admin session.
+Anonymous result writes are revoked.
+
+## Remaining limitations
+
+- Imported entries must be linked to canonical Competitive Records before
+  publication. The existing Identity Reconciliation foundation supplies the
+  controlled mechanisms, but its full review UI is separate.
+- `ready_to_publish` is available as a workflow state but is not automatically
+  assigned; publication performs the authoritative readiness validation.
+- The administrative correction server action exists, but no new correction UI
+  was added in this milestone.
+- Official publication currently preserves the established public
+  `tournament_results` JSON for compatibility while the normalized
+  `official_result_entries` table is authoritative.
+- Pending migrations must be applied in sequence before this workflow is used.

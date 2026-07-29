@@ -1,7 +1,15 @@
 # AITT AOY SYSTEM SPECIFICATION
 
-This document is the authoritative business specification for AITT Membership,
-Team Identity, Angler of the Year (AOY), and Championship qualification.
+> **Constitutional precedence (July 29, 2026):**
+> [AITT Competition Rules Version 1.0](AITT_COMPETITION_RULES.md) is the
+> authoritative business specification for Competitive Records, AOY, and
+> Championship qualification. Any conflicting Team-only, solo-continuity,
+> eligibility, schedule, or result-finality language in this earlier
+> implementation specification is superseded and must not be implemented.
+
+This document remains an implementation-planning reference for AITT Membership,
+Team Identity, Angler of the Year (AOY), and Championship qualification where
+it does not conflict with the Competition Rules.
 
 ## 1. Purpose
 

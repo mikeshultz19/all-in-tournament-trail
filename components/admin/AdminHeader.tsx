@@ -41,6 +41,12 @@ export default function AdminHeader({
             Members
           </Link>
           <Link
+            href="/admin/registration-review"
+            className="text-xs font-bold uppercase tracking-[0.14em] text-neutral-400 transition-colors hover:text-[#D4A017] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#D4A017]"
+          >
+            Registration Review
+          </Link>
+          <Link
             href="/admin/settings"
             className="text-xs font-bold uppercase tracking-[0.14em] text-neutral-400 transition-colors hover:text-[#D4A017] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#D4A017]"
           >

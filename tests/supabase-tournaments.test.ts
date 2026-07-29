@@ -28,7 +28,7 @@ describe("Supabase tournaments migration", () => {
   });
 
   it("seeds Eagle Mountain idempotently", () => {
-    expect(seed).toContain('"eagle-mountain-2026"');
+    expect(seed).toContain('"eagle-mountain-november-2026"');
     expect(seed).toContain("capacity: 50");
     expect(seed).toContain('"Registration Open"');
     expect(seed).toContain('"05:00"');

@@ -40,7 +40,9 @@ export function getTournamentOperationsViewModel(
 
   return {
     effectiveDate,
-    formattedEffectiveDate: formatTournamentDate(effectiveDate),
+    formattedEffectiveDate: tournament.endDate
+      ? `${formatTournamentDate(effectiveDate)} – ${formatTournamentDate(tournament.endDate)}`
+      : formatTournamentDate(effectiveDate),
     earlyRegistrationDeadline: formatTournamentTimestamp(
       registration.earlyRegistrationDeadline.toISOString(),
     ),

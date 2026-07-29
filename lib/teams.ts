@@ -1,9 +1,13 @@
 import "server-only";
 
-import { createCanonicalTeamKey } from "@/lib/identity-normalization";
+import {
+  createCanonicalCompetitiveRecordKey,
+  createCanonicalTeamKey,
+} from "@/lib/identity-normalization";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import type {
   CreateTeamInput,
+  CreateCompetitiveRecordInput,
   Team,
   TeamWithMembers,
 } from "@/types/aoy";
@@ -42,11 +46,13 @@ export async function findTeamByAnglers(
   anglerIds: readonly string[],
 ): Promise<TeamWithMembers | null> {
   const canonicalMemberKey = createCanonicalTeamKey(anglerIds);
+  const recordType = anglerIds.length === 1 ? "solo" : "team";
   const supabase = createSupabaseServerClient();
   const { data, error } = await supabase
     .from("teams")
     .select(TEAM_WITH_MEMBERS_SELECT)
     .eq("season_id", seasonId)
+    .eq("record_type", recordType)
     .eq("canonical_member_key", canonicalMemberKey)
     .maybeSingle();
 
@@ -62,41 +68,38 @@ export async function findTeamByAnglers(
 export async function createTeam(
   input: CreateTeamInput,
 ): Promise<TeamWithMembers> {
-  const canonicalMemberKey = createCanonicalTeamKey(input.anglerIds);
-  const orderedAnglerIds = canonicalMemberKey.split(":");
+  return createCompetitiveRecord({
+    ...input,
+    recordType: input.anglerIds.length === 1 ? "solo" : "team",
+  });
+}
+
+export async function createCompetitiveRecord(
+  input: CreateCompetitiveRecordInput,
+): Promise<TeamWithMembers> {
+  createCanonicalCompetitiveRecordKey(
+    input.recordType,
+    input.anglerIds,
+  );
   const supabase = createSupabaseServerClient();
 
-  const { data: team, error: teamError } = await supabase
-    .from("teams")
-    .insert({
-      season_id: input.seasonId,
-      display_name: input.displayName?.trim() || null,
-      canonical_member_key: canonicalMemberKey,
-    })
-    .select("*")
-    .single();
+  const { data: team, error: teamError } = await supabase.rpc(
+    "create_competitive_record",
+    {
+      p_season_id: input.seasonId,
+      p_record_type: input.recordType,
+      p_angler_ids: input.anglerIds,
+      p_display_name: input.displayName?.trim() || null,
+    },
+  );
 
   if (teamError || !team) {
-    throw new TeamDataError("We could not create the team.", {
-      cause: teamError,
-    });
-  }
-
-  const { error: membersError } = await supabase
-    .from("team_members")
-    .insert(
-      orderedAnglerIds.map((anglerId, index) => ({
-        team_id: (team as Team).id,
-        angler_id: anglerId,
-        member_position: (index + 1) as 1 | 2,
-      })),
+    throw new TeamDataError(
+      "We could not create the Competitive Record.",
+      {
+        cause: teamError,
+      },
     );
-
-  if (membersError) {
-    await supabase.from("teams").delete().eq("id", (team as Team).id);
-    throw new TeamDataError("We could not add the team members.", {
-      cause: membersError,
-    });
   }
 
   const createdTeam = await getTeamById((team as Team).id);

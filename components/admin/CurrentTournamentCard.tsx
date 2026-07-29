@@ -239,6 +239,14 @@ export default function CurrentTournamentCard({
             </div>
             <div className="border border-white/10 bg-black px-4 py-3">
               <p className="text-[0.65rem] font-black uppercase tracking-[0.12em] text-neutral-600">
+                Result Status
+              </p>
+              <p className="mt-1 text-sm font-black uppercase text-[#D4A017]">
+                {tournament.result_status.replaceAll("_", " ")}
+              </p>
+            </div>
+            <div className="border border-white/10 bg-black px-4 py-3">
+              <p className="text-[0.65rem] font-black uppercase tracking-[0.12em] text-neutral-600">
                 Overall Tournament Status
               </p>
               <p className="mt-1 text-sm font-black uppercase text-white">

@@ -31,13 +31,21 @@ export function getTournamentDisplay(tournament: Tournament): TournamentDisplay 
   const date = new Date(`${effectiveDate}T12:00:00Z`);
   const stopFishing = formatTime(tournament.stopFishingTime);
 
-  return {
-    date: new Intl.DateTimeFormat("en-US", {
+  const dateFormatter = new Intl.DateTimeFormat("en-US", {
       timeZone: "UTC",
       month: "short",
       day: "numeric",
       year: "numeric",
-    }).format(date),
+    });
+  const formattedStartDate = dateFormatter.format(date);
+  const formattedEndDate = tournament.endDate
+    ? dateFormatter.format(new Date(`${tournament.endDate}T12:00:00Z`))
+    : null;
+
+  return {
+    date: formattedEndDate
+      ? `${formattedStartDate} – ${formattedEndDate}`
+      : formattedStartDate,
     dayOfWeek: new Intl.DateTimeFormat("en-US", {
       timeZone: "UTC",
       weekday: "long",

@@ -11,7 +11,7 @@ import Link from "next/link";
 import {
   getNextUpcomingTournament,
   getTournamentByIdentifier,
-  getTournaments,
+  getActiveSeasonSchedule,
 } from "@/lib/tournaments";
 import type { Tournament } from "@/types/tournament";
 
@@ -79,7 +79,7 @@ export default async function TournamentManagerPage({
   let loadFailed = false;
 
   try {
-    tournaments = await getTournaments();
+    tournaments = await getActiveSeasonSchedule();
 
     selectedTournament = requestedTournament
       ? await getTournamentByIdentifier(requestedTournament)

@@ -74,24 +74,26 @@ export async function getPublishedAoyStandings(): Promise<
   PublicAoyStanding[]
 > {
   const supabase = createSupabaseServerClient();
-  const { data: tournaments, error: tournamentError } = await supabase
-    .from("tournaments")
+  const { data: season, error: seasonError } = await supabase
+    .from("seasons")
     .select("id")
-    .eq("status", "Results Published");
-
-  if (tournamentError) {
-    throw new Error("We could not load published AOY tournaments.", {
-      cause: tournamentError,
+    .eq("is_active", true)
+    .maybeSingle();
+  if (seasonError) {
+    throw new Error("We could not load the active AOY season.", {
+      cause: seasonError,
     });
   }
-
-  const tournamentIds = (tournaments ?? []).map(({ id }) => id);
-  if (tournamentIds.length === 0) return [];
+  if (!season) return [];
 
   const { data, error } = await supabase
-    .from("tournament_aoy_points")
-    .select("tournament_id,anglers,points")
-    .in("tournament_id", tournamentIds);
+    .from("current_aoy_standings")
+    .select(
+      "rank,competitive_record_id,display_name,official_participation_count,total_counted_points",
+    )
+    .eq("season_id", season.id)
+    .order("rank", { ascending: true })
+    .order("competitive_record_id", { ascending: true });
 
   if (error) {
     throw new Error("We could not load published AOY standings.", {
@@ -99,5 +101,10 @@ export async function getPublishedAoyStandings(): Promise<
     });
   }
 
-  return buildFullAoyStandings((data ?? []) as TournamentAoyRow[]);
+  return (data ?? []).map((row) => ({
+    place: Number(row.rank),
+    angler: row.display_name,
+    events: Number(row.official_participation_count),
+    points: Number(row.total_counted_points),
+  }));
 }

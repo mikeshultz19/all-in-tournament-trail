@@ -19,6 +19,19 @@ export async function getTournamentResults(
   tournamentId: string,
 ): Promise<TournamentResultsRecord | null> {
   const supabase = createSupabaseServerClient();
+  const { data: tournament, error: tournamentError } = await supabase
+    .from("tournaments")
+    .select("result_status")
+    .eq("id", tournamentId)
+    .maybeSingle();
+
+  if (tournamentError) {
+    throw new ResultsDataError(
+      "We could not verify the Official Results status.",
+      { cause: tournamentError },
+    );
+  }
+  if (tournament?.result_status !== "official") return null;
 
   const { data, error } = await supabase
     .from("tournament_results")
@@ -148,10 +161,15 @@ export async function getPublishedTournamentResultsArchive(): Promise<
   const { data: publishedTournaments, error: tournamentError } =
     await supabase
       .from("tournaments")
-      .select("*")
-      .eq("status", "Results Published")
-      .order("tournament_date", {
+      .select("*,season:seasons!inner(year)")
+      .eq("result_status", "official")
+      .order("year", {
+        referencedTable: "seasons",
         ascending: false,
+      })
+      .order("regular_season_number", {
+        ascending: false,
+        nullsFirst: false,
       });
 
   if (tournamentError) {

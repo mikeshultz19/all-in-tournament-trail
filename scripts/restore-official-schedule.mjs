@@ -177,6 +177,9 @@ const officialSchedule = [
     lake: "Eagle Mountain",
     slug: "eagle-mountain-november-2026",
     tournament_date: "2026-11-01T06:00:00-06:00",
+    tournament_end_date: null,
+    event_type: "regular_season",
+    regular_season_number: 1,
     status: "Registration Open",
     is_featured: true,
     show_on_homepage: true,
@@ -186,6 +189,9 @@ const officialSchedule = [
     lake: "Squaw Creek",
     slug: "squaw-creek-november-2026",
     tournament_date: "2026-11-22T06:00:00-06:00",
+    tournament_end_date: null,
+    event_type: "regular_season",
+    regular_season_number: 2,
     status: "Registration Open",
     is_featured: false,
     show_on_homepage: false,
@@ -195,6 +201,9 @@ const officialSchedule = [
     lake: "Ray Hubbard",
     slug: "ray-hubbard-december-2026",
     tournament_date: "2026-12-13T06:00:00-06:00",
+    tournament_end_date: null,
+    event_type: "regular_season",
+    regular_season_number: 3,
     status: "Registration Open",
     is_featured: false,
     show_on_homepage: false,
@@ -204,6 +213,9 @@ const officialSchedule = [
     lake: "Granbury",
     slug: "granbury-january-2027",
     tournament_date: "2027-01-17T06:00:00-06:00",
+    tournament_end_date: null,
+    event_type: "regular_season",
+    regular_season_number: 4,
     status: "Registration Open",
     is_featured: false,
     show_on_homepage: false,
@@ -213,15 +225,9 @@ const officialSchedule = [
     lake: "Squaw Creek",
     slug: "squaw-creek-february-2027",
     tournament_date: "2027-02-14T06:00:00-06:00",
-    status: "Registration Open",
-    is_featured: false,
-    show_on_homepage: false,
-  },
-  {
-    name: "Eagle Mountain",
-    lake: "Eagle Mountain",
-    slug: "eagle-mountain-march-2027",
-    tournament_date: "2027-03-14T06:00:00-05:00",
+    tournament_end_date: null,
+    event_type: "regular_season",
+    regular_season_number: 5,
     status: "Registration Open",
     is_featured: false,
     show_on_homepage: false,
@@ -229,8 +235,11 @@ const officialSchedule = [
   {
     name: "Ray Roberts",
     lake: "Ray Roberts",
-    slug: "ray-roberts-april-2027",
-    tournament_date: "2027-04-25T06:00:00-05:00",
+    slug: "ray-roberts-march-2027",
+    tournament_date: "2027-03-14T06:00:00-05:00",
+    tournament_end_date: null,
+    event_type: "regular_season",
+    regular_season_number: 6,
     status: "Registration Open",
     is_featured: false,
     show_on_homepage: false,
@@ -238,8 +247,11 @@ const officialSchedule = [
   {
     name: "Tawakoni",
     lake: "Tawakoni",
-    slug: "tawakoni-may-2027",
-    tournament_date: "2027-05-16T06:00:00-05:00",
+    slug: "tawakoni-april-2027",
+    tournament_date: "2027-04-25T06:00:00-05:00",
+    tournament_end_date: null,
+    event_type: "regular_season",
+    regular_season_number: 7,
     status: "Registration Open",
     is_featured: false,
     show_on_homepage: false,
@@ -247,18 +259,24 @@ const officialSchedule = [
   {
     name: "Lewisville",
     lake: "Lewisville",
-    slug: "lewisville-june-2027",
-    tournament_date: "2027-06-13T06:00:00-05:00",
+    slug: "lewisville-may-2027",
+    tournament_date: "2027-05-16T06:00:00-05:00",
+    tournament_end_date: null,
+    event_type: "regular_season",
+    regular_season_number: 8,
     status: "Registration Open",
     is_featured: false,
     show_on_homepage: false,
   },
   {
-    name: "Ray Roberts",
-    lake: "Ray Roberts",
-    slug: "ray-roberts-july-2027",
-    tournament_date: "2027-07-11T06:00:00-05:00",
-    status: "Registration Open",
+    name: "AITT Championship",
+    lake: "TBD",
+    slug: "aitt-2026-2027-championship",
+    tournament_date: "2027-06-12T06:00:00-05:00",
+    tournament_end_date: "2027-06-13T15:00:00-05:00",
+    event_type: "championship",
+    regular_season_number: null,
+    status: "Scheduled",
     is_featured: false,
     show_on_homepage: false,
   },
@@ -318,6 +336,23 @@ function createBackup(tournaments, results) {
 
 async function main() {
   console.log("");
+
+  const { data: season, error: seasonError } = await supabase
+    .from("seasons")
+    .select("id")
+    .eq("slug", "2026-2027")
+    .single();
+
+  if (seasonError || !season) {
+    throw new Error(
+      `Could not load the 2026–2027 season: ${seasonError?.message ?? "Season not found"}`,
+    );
+  }
+
+  const officialSeasonSchedule = officialSchedule.map((tournament) => ({
+    ...tournament,
+    season_id: season.id,
+  }));
   console.log("Restoring official tournament schedule...");
   console.log("");
 
@@ -399,7 +434,7 @@ async function main() {
   }
 
   /*
-   * Insert or update the 10 official tournaments.
+   * Insert or update the eight regular-season events and Championship.
    */
 
   const {
@@ -407,7 +442,7 @@ async function main() {
     error: saveError,
   } = await supabase
     .from("tournaments")
-    .upsert(officialSchedule, {
+    .upsert(officialSeasonSchedule, {
       onConflict: "slug",
     })
     .select(
@@ -417,6 +452,9 @@ async function main() {
         "lake",
         "slug",
         "tournament_date",
+        "tournament_end_date",
+        "event_type",
+        "regular_season_number",
         "status",
         "is_featured",
         "show_on_homepage",
@@ -446,6 +484,9 @@ async function main() {
         "lake",
         "slug",
         "tournament_date",
+        "tournament_end_date",
+        "event_type",
+        "regular_season_number",
         "status",
         "is_featured",
         "show_on_homepage",
@@ -455,7 +496,7 @@ async function main() {
     )
     .in(
       "slug",
-      officialSchedule.map(
+      officialSeasonSchedule.map(
         (tournament) => tournament.slug,
       ),
     )

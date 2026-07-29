@@ -1,5 +1,9 @@
 # Project Deployment Checklist
 
+> Current-state note (2026-07-29): Auth and protected Admin application actions
+> are implemented. The remaining security gate is removal and hosted
+> verification of legacy anonymous writes plus Storage policies.
+
 **Document Version:** 1.0
 
 **Status:** Living Operational Checklist

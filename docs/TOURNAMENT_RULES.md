@@ -13,6 +13,11 @@ these rules, and material changes will be reflected in the version history.
 > **Draft notice:** Items expressly marked **Pending approval** are not final
 > rules and must not be enforced or represented as approved policy until AITT
 > publishes the applicable requirement.
+>
+> **Competition Rules precedence:** Competitive Record ownership, AOY
+> calculation, Championship qualification, and Official Results finality are
+> governed by [AITT Competition Rules Version 1.0](AITT_COMPETITION_RULES.md).
+> That document supersedes conflicting language in this Approved Draft.
 
 ## Table of Contents
 
@@ -237,11 +242,13 @@ advantage.
 
 If one partner is unable to fish:
 
-- The remaining partner may fish the tournament alone.
-- Fishing alone **does** count toward:
-  - AOY Points
-  - Championship Qualification
-  - Member Side Pots (if otherwise eligible)
+- A Team registration must continue to identify both established partners, and
+  all season credit belongs to the Team Competitive Record; or
+- The remaining angler may register as Solo, in which case all season credit
+  belongs exclusively to that angler's Solo Competitive Record.
+
+Team and Solo Competitive Records are independent. Results never transfer
+between them.
 
 If the remaining angler chooses to fish with another partner, that pairing is
 treated as a **new team entry**.
@@ -253,8 +260,9 @@ The new team:
 - Does **not** count toward the original team's Championship qualification.
 - Does **not** earn Member Side Pot eligibility for the original team.
 
-Exceptional circumstances may be reviewed by the Tournament Director. Any
-approved exception is at the sole discretion of AITT.
+The Tournament Director may correct a documented administrative, clerical,
+identity, software, or mathematical error. The Director may not waive or
+rewrite Competition Rules except where expressly authorized.
 
 <a id="angler-of-the-year"></a>
 ## 6. Angler of the Year
@@ -267,9 +275,15 @@ without physically launching and competing does not count as participation.
 
 ### Points Calculation and Dropped Events
 
-Eligible entries earn points based on their official tournament finishes.
-Each entry's **five highest point totals** determine its final AOY score. Scores
-outside the five highest are dropped from the season total.
+Official Results remain unchanged. Ineligible competitors are removed from the
+AOY calculation only, and eligible Competitive Records are reranked in their
+original relative finishing order. Points are awarded from that reranked AOY
+position.
+
+The regular season contains eight scheduled tournaments. Each Competitive
+Record's **five highest point totals** determine its final AOY score. The three
+lowest totals, including tournaments not fished, are dropped from the season
+total.
 
 Official WeighFish results control finish data used for AOY calculations. AITT
 publishes standings after official results are processed. Any final points
@@ -279,12 +293,13 @@ before it is applied.
 <a id="championship-qualification"></a>
 ## 7. Championship Qualification
 
-To qualify for the Championship, an eligible member entry must physically
-compete in at least **five of the nine regular-season tournaments**.
+To qualify for the Championship, an eligible Competitive Record must physically
+compete in at least **five of the eight regular-season tournaments**.
 
-- A solo entry must satisfy the membership and participation requirements.
-- Both anglers on a team must satisfy the membership requirements for the team
-  to receive Championship eligibility.
+- A Solo Competitive Record must satisfy the membership and participation
+  requirements.
+- Both anglers on a Team Competitive Record must satisfy the membership
+  requirements for the Team to receive Championship eligibility.
 - Payment without launching and competing does not count as participation.
 - Official tournament records determine participation and qualification.
 

@@ -25,6 +25,9 @@ export interface Tournament {
   city: string | null;
   state: string;
   date: string;
+  endDate: string | null;
+  eventType: "regular_season" | "championship";
+  regularSeasonNumber: number | null;
   startTimeDisplay: string;
   stopFishingTime: string;
   launchType: TournamentLaunchType;
@@ -91,6 +94,9 @@ type TournamentSeed = Omit<
       | "startTimeDisplay"
       | "stopFishingTime"
       | "launchType"
+      | "endDate"
+      | "eventType"
+      | "regularSeasonNumber"
     >
   >;
 
@@ -113,6 +119,9 @@ const tournamentSeeds: readonly TournamentSeed[] = [
     thumbnailImage: "/images/lakes/eagle-mountain.jfif",
     livestreamAvailable: false,
     accuWeatherLocationKey: null,
+    endDate: null,
+    eventType: "regular_season",
+    regularSeasonNumber: 1,
   },
   {
     slug: "squaw-creek-2026",
@@ -132,6 +141,9 @@ const tournamentSeeds: readonly TournamentSeed[] = [
     thumbnailImage: "/images/lakes/squaw-creek.jfif",
     livestreamAvailable: false,
     accuWeatherLocationKey: null,
+    endDate: null,
+    eventType: "regular_season",
+    regularSeasonNumber: 2,
   },
   {
     slug: "ray-hubbard-2026",
@@ -151,6 +163,9 @@ const tournamentSeeds: readonly TournamentSeed[] = [
     thumbnailImage: "/images/lakes/ray-hubbard.jfif",
     livestreamAvailable: false,
     accuWeatherLocationKey: null,
+    endDate: null,
+    eventType: "regular_season",
+    regularSeasonNumber: 3,
   },
   {
     slug: "granbury-2027",
@@ -169,6 +184,9 @@ const tournamentSeeds: readonly TournamentSeed[] = [
     heroImage: "/images/lakes/granbury.jfif",
     thumbnailImage: "/images/lakes/granbury.jfif",
     livestreamAvailable: false,
+    endDate: null,
+    eventType: "regular_season",
+    regularSeasonNumber: 4,
     accuWeatherLocationKey: null,
   },
   {
@@ -188,13 +206,16 @@ const tournamentSeeds: readonly TournamentSeed[] = [
     heroImage: "/images/lakes/squaw-creek.jfif",
     thumbnailImage: "/images/lakes/squaw-creek.jfif",
     livestreamAvailable: false,
+    endDate: null,
+    eventType: "regular_season",
+    regularSeasonNumber: 5,
     accuWeatherLocationKey: null,
   },
   {
-    slug: "eagle-mountain-2027",
-    name: "Eagle Mountain",
+    slug: "ray-roberts-march-2027",
+    name: "Ray Roberts",
     season: "2026-2027",
-    lake: "Eagle Mountain",
+    lake: "Ray Roberts",
     venue: null,
     city: null,
     date: "2027-03-14",
@@ -204,16 +225,19 @@ const tournamentSeeds: readonly TournamentSeed[] = [
     registrationUrl: null,
     resultsAvailable: false,
     featured: false,
-    heroImage: "/images/lakes/eagle-mountain.jfif",
-    thumbnailImage: "/images/lakes/eagle-mountain.jfif",
+    heroImage: "/images/lakes/ray-roberts.jfif",
+    thumbnailImage: "/images/lakes/ray-roberts.jfif",
     livestreamAvailable: false,
+    endDate: null,
+    eventType: "regular_season",
+    regularSeasonNumber: 6,
     accuWeatherLocationKey: null,
   },
   {
-    slug: "ray-roberts-2027",
-    name: "Ray Roberts",
+    slug: "tawakoni-april-2027",
+    name: "Tawakoni",
     season: "2026-2027",
-    lake: "Ray Roberts",
+    lake: "Tawakoni",
     venue: null,
     city: null,
     date: "2027-04-25",
@@ -223,16 +247,19 @@ const tournamentSeeds: readonly TournamentSeed[] = [
     registrationUrl: null,
     resultsAvailable: false,
     featured: false,
-    heroImage: "/images/lakes/ray-roberts.jfif",
-    thumbnailImage: "/images/lakes/ray-roberts.jfif",
+    heroImage: "/images/lakes/tawakoni.jfif",
+    thumbnailImage: "/images/lakes/tawakoni.jfif",
     livestreamAvailable: false,
+    endDate: null,
+    eventType: "regular_season",
+    regularSeasonNumber: 7,
     accuWeatherLocationKey: null,
   },
   {
-    slug: "tawakoni-2027",
-    name: "Tawakoni",
+    slug: "lewisville-may-2027",
+    name: "Lewisville",
     season: "2026-2027",
-    lake: "Tawakoni",
+    lake: "Lewisville",
     venue: null,
     city: null,
     date: "2027-05-16",
@@ -242,46 +269,34 @@ const tournamentSeeds: readonly TournamentSeed[] = [
     registrationUrl: null,
     resultsAvailable: false,
     featured: false,
-    heroImage: "/images/lakes/tawakoni.jfif",
-    thumbnailImage: "/images/lakes/tawakoni.jfif",
-    livestreamAvailable: false,
-    accuWeatherLocationKey: null,
-  },
-  {
-    slug: "lewisville-2027",
-    name: "Lewisville",
-    season: "2026-2027",
-    lake: "Lewisville",
-    venue: null,
-    city: null,
-    date: "2027-06-13",
-    description: TOURNAMENT_DESCRIPTION,
-    status: "upcoming",
-    registrationStatus: "unavailable",
-    registrationUrl: null,
-    resultsAvailable: false,
-    featured: false,
     heroImage: "/images/lakes/lewisville-lake.jfif",
     thumbnailImage: "/images/lakes/lewisville-lake.jfif",
     livestreamAvailable: false,
+    endDate: null,
+    eventType: "regular_season",
+    regularSeasonNumber: 8,
     accuWeatherLocationKey: null,
   },
   {
-    slug: "ray-roberts-2027-07",
-    name: "Ray Roberts",
+    slug: "aitt-2026-2027-championship",
+    name: "AITT Championship",
     season: "2026-2027",
-    lake: "Ray Roberts",
+    lake: "TBD",
     venue: null,
     city: null,
-    date: "2027-07-11",
-    description: TOURNAMENT_DESCRIPTION,
+    date: "2027-06-12",
+    endDate: "2027-06-13",
+    eventType: "championship",
+    regularSeasonNumber: null,
+    description:
+      "The two-day 2026–2027 AITT Championship. Championship lake and event details are to be announced.",
     status: "upcoming",
     registrationStatus: "unavailable",
     registrationUrl: null,
     resultsAvailable: false,
     featured: false,
-    heroImage: "/images/lakes/ray-roberts.jfif",
-    thumbnailImage: "/images/lakes/ray-roberts.jfif",
+    heroImage: TOURNAMENT_IMAGE_FALLBACK,
+    thumbnailImage: TOURNAMENT_IMAGE_FALLBACK,
     livestreamAvailable: false,
     accuWeatherLocationKey: null,
   },
@@ -311,6 +326,9 @@ export const tournaments: readonly Tournament[] = tournamentSeeds.map(
     startTimeDisplay: tournament.startTimeDisplay ?? "Safe Light",
     stopFishingTime: tournament.stopFishingTime ?? "15:00",
     launchType: tournament.launchType ?? "TRAILERING",
+    endDate: tournament.endDate ?? null,
+    eventType: tournament.eventType ?? "regular_season",
+    regularSeasonNumber: tournament.regularSeasonNumber ?? null,
   }),
 );
 

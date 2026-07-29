@@ -6,7 +6,7 @@ vi.mock("@/lib/tournaments", async () => {
     "@/tests/tournament-db-fixture"
   );
   return {
-    getTournaments: vi.fn(async () => [databaseTournament]),
+    getActiveSeasonSchedule: vi.fn(async () => [databaseTournament]),
   };
 });
 

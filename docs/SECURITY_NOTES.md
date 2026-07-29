@@ -1,59 +1,33 @@
-Version: 1.0
-Last Updated: July 27, 2026
-
 # Security Notes
 
-Updated: 2026-07-23
+Last updated: 2026-07-29
 
-## Supabase keys
+## Implemented application controls
 
-- A Supabase publishable/anonymous key may be used by public clients when Row
-  Level Security is correctly designed and tested.
-- A Supabase secret or service-role key bypasses normal protections and must
-  never be exposed to browser code, committed files, screenshots, examples, or
-  documentation.
-- Real environment values, passwords, access tokens, email credentials, and
-  payment credentials must not be committed.
-- The server client currently reads `SUPABASE_URL` and
-  `SUPABASE_ANON_KEY`.
+- Supabase Auth provides normal persistent browser sessions.
+- `proxy.ts` protects `/admin/:path*` and requires `role=admin` plus
+  `active=true` in app metadata.
+- current Admin Server Actions independently call `requireAdminUser()`.
+- logout calls Supabase `signOut()` and returns to Admin login.
+- the service-role client is imported from server-only modules.
 
-## Current temporary exception
+## Production blocker: anonymous database writes
 
-`public.tournaments` has RLS enabled and supports anonymous public reads. It
-also has a temporary anonymous table-level `UPDATE` privilege and RLS policy so
-Tournament Information work can proceed before authentication. This access is
-not safe for production.
+Legacy migrations still grant anonymous writes and permissive RLS policies for
+one or more operations on `tournaments`, `news`, `tournament_registrations`,
+`tournament_results`, and `tournament_aoy_points`. Authenticated UI protection
+does not prevent direct use of those anonymous database privileges.
 
-Before launch:
+Before production:
 
-1. Implement Supabase Auth.
-2. Protect Admin routes and server-side write actions.
-3. Replace anonymous update access with policies requiring authenticated Admin
-   users.
-4. Verify logged-out users cannot update tournaments.
-5. Confirm no privileged key is included in browser bundles.
-6. Revoke the obsolete Resend credential if that has not already been done.
+1. Revoke anonymous INSERT/UPDATE/DELETE privileges and permissive policies.
+2. Add least-privilege authenticated Admin or service-role access.
+3. Verify logged-out direct writes fail table by table.
+4. Verify Storage bucket read/write/delete policies.
+5. Verify the service-role key is absent from client bundles.
+6. Test all three manually provisioned Admin accounts and inactive/non-Admin
+   denial paths.
 
-## Grants and RLS
-
-Database grants and RLS policies are separate layers:
-
-- Grants determine whether a role may attempt an operation on a schema/table.
-- RLS policies determine which rows are visible or writable for that operation.
-
-The current anonymous read fix grants schema usage and table `SELECT`; the
-public read RLS policy then allows tournament rows to be returned. The current
-development write path similarly requires table-level `UPDATE` and an update
-policy. A permissive RLS policy does not replace a missing table privilege.
-
-## Other planned security work
-
-- Supabase Auth is not complete.
-- Admin authentication and authorization are not complete.
-- Supabase Storage and upload policies are not complete.
-- Square payment creation and verification are not complete.
-- Do not treat the current Admin Center URL as an access-control boundary.
-
-
----
-For an overview of the project, begin with **00_START_HERE.md**.
+Admin provisioning remains manual and is documented in
+[ADMIN_AUTH_SETUP.md](ADMIN_AUTH_SETUP.md). No password-expiry, MFA,
+invitation, recovery, or public-registration system is implemented.

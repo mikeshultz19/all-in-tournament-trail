@@ -33,3 +33,20 @@ export function createCanonicalTeamKey(
 
   return uniqueIds.sort().join(":");
 }
+
+export type CompetitiveRecordType = "team" | "solo";
+
+export function createCanonicalCompetitiveRecordKey(
+  recordType: CompetitiveRecordType,
+  anglerIds: readonly string[],
+): string {
+  const expectedCount = recordType === "team" ? 2 : 1;
+
+  if (anglerIds.length !== expectedCount) {
+    throw new Error(
+      `${recordType === "team" ? "Team" : "Solo"} Competitive Records require exactly ${expectedCount} stable angler${expectedCount === 1 ? "" : "s"}.`,
+    );
+  }
+
+  return createCanonicalTeamKey(anglerIds);
+}

@@ -97,13 +97,16 @@ const supabase = createClient(supabaseUrl, serviceRoleKey, {
 |
 */
 
-const tournamentSlug = "eagle-mountain-2026";
+const tournamentSlug = "eagle-mountain-november-2026";
 
 const featuredTournament = {
   name: "Eagle Mountain",
   slug: tournamentSlug,
   lake: "Eagle Mountain",
-  tournament_date: "2026-11-01T05:00:00-06:00",
+  tournament_date: "2026-11-01T06:00:00-06:00",
+  tournament_end_date: null,
+  event_type: "regular_season",
+  regular_season_number: 1,
   ramp: "Twin Points Park",
   status: "Registration Open",
   registration_opens: "2026-07-01T05:00:00-05:00",
@@ -377,6 +380,23 @@ const resultSummary = {
 async function main() {
   console.log("\nStarting safe homepage repair...\n");
 
+  const { data: season, error: seasonError } = await supabase
+    .from("seasons")
+    .select("id")
+    .eq("slug", "2026-2027")
+    .single();
+
+  if (seasonError || !season) {
+    throw new Error(
+      `Could not load the 2026–2027 season: ${seasonError?.message ?? "Season not found"}`,
+    );
+  }
+
+  const featuredSeasonTournament = {
+    ...featuredTournament,
+    season_id: season.id,
+  };
+
   /*
   |--------------------------------------------------------------------------
   | Find existing Eagle Mountain tournament
@@ -416,6 +436,10 @@ async function main() {
         name: featuredTournament.name,
         lake: featuredTournament.lake,
         tournament_date: featuredTournament.tournament_date,
+        tournament_end_date: featuredTournament.tournament_end_date,
+        season_id: season.id,
+        event_type: featuredTournament.event_type,
+        regular_season_number: featuredTournament.regular_season_number,
         ramp: featuredTournament.ramp,
         status: featuredTournament.status,
         registration_opens:
@@ -452,7 +476,7 @@ async function main() {
       error: insertError,
     } = await supabase
       .from("tournaments")
-      .insert(featuredTournament)
+      .insert(featuredSeasonTournament)
       .select("id, name, slug")
       .single();
 

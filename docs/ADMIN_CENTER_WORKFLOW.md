@@ -1,6 +1,12 @@
 Version: 1.0
 Last Updated: July 27, 2026
 
+> Current-state note (2026-07-29): The dashboard now follows the Tournament
+> Operations lifecycle, with Tournament Reset on selected Tournament Detail.
+> Use `ProjectStatus.md` and `CURRENT_STATE_AUDIT_2026-07-29.md` for current
+> implementation and blockers; the detail below preserves the earlier workflow
+> design where it differs.
+
 # AITT Admin Center Workflow
 
 Updated: 2026-07-23

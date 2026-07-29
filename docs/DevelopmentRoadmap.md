@@ -1,98 +1,30 @@
-Version: 1.0
-Last Updated: July 27, 2026
-
 # Development Roadmap
 
-Updated: 2026-07-23
+Last updated: 2026-07-29
 
-## Complete
+## Completed application foundations
 
-- Public-site design and responsive foundation
-- AITT Admin Center dashboard, Current Tournament context, Website Readiness,
-  and four management areas
-- Supabase tournaments migration, Lake Fork Open seed, RLS, and public reads
-- Live tournament loading in AITT Admin Center
-- Tournament Information read/update workflow, including verified persistence
-  after refresh
-- Cloudflare inbound routing for `info@allintrail.com`
-- Contact page and widget converted to visitor-initiated email
+- Public tournament, registration, announcements, Results, and standings views.
+- Authenticated Admin Center and tournament operations workflow.
+- Membership seasons, members, stable-team schema, and member administration.
+- Tournament-scoped Reset, WeighFish import, payout review, image upload, and
+  public publication interfaces.
 
-Sponsors remain separate from tournament readiness and the four management
-areas.
+## Next implementation order
 
-## In Progress
+1. Remove all anonymous database writes and verify production RLS/Storage.
+2. Consolidate publication into one atomic, immutable Results workflow; retire
+   the legacy editor only after migration and operational verification.
+3. Reconcile imported participants to stable angler/team identities.
+4. Implement the authoritative AOY engine from published Official Results.
+5. Implement Championship qualification separately from AOY.
+6. Run the complete workflow against a disposable tournament, including reset,
+   registration, import, reconciliation, publication, AOY, and qualification.
+7. Complete deployment, DNS, responsive/accessibility, and production smoke
+   testing.
 
-- Connect and verify the public homepage against authoritative tournament data.
-- Connect and verify the public schedule against authoritative tournament data.
-- Prepare deployment without claiming production is live.
+## Launch gate
 
-## Next — Tomorrow's Ordered Plan
-
-### Step 2 — News & Announcements
-
-- Review the existing page and data model.
-- Create or validate the announcements migration.
-- Associate announcements with a tournament where appropriate.
-- Implement Admin create, edit, publish/unpublish, and delete workflows.
-- Verify persistence.
-- Connect approved announcements to the public website.
-- Keep permissions temporary only until authentication is implemented.
-
-### Step 3 — Tournament Conditions
-
-- Review the existing page and expected fields.
-- Create or validate the conditions data model and migration.
-- Associate each conditions update with the selected tournament.
-- Implement Admin editing and saving.
-- Add timestamps and user-friendly freshness information.
-- Connect conditions to the public tournament experience.
-- Verify persistence.
-
-### Step 4 — Tournament Manager
-
-- Review the current Results UI and existing data structures.
-- Define the results schema before implementation.
-- Plan the WeighFish import workflow.
-- Support review before publishing.
-- Include tournament winners, big bass, standings, and photo requirements.
-- Do not mark results complete merely because the page exists.
-- Verify public publishing behavior.
-
-### Step 5 — Authentication and Production Security
-
-- Implement Supabase Auth for Admin users.
-- Protect all Admin pages and server actions.
-- Replace anonymous Admin writes with authenticated-role policies.
-- Revoke anonymous UPDATE access to public.tournaments.
-- Review every table grant and RLS policy.
-- Ensure secret/service-role keys are never browser accessible.
-- Verify logout, unauthorized access, and session handling.
-- Complete this before production launch.
-
-## Planned Parallel Follow-ups
-
-- Connect public homepage and schedule to authoritative tournament data.
-- Configure Vercel production deployment.
-- Configure the canonical domain and www redirect.
-- Complete production environment variables.
-- Add Supabase Storage when image uploads are implemented.
-- Perform accessibility, mobile, and production smoke testing.
-
-## Later Planned Systems
-
-- Durable registration and membership persistence
-- Secure Square payment creation and server-side confirmation
-- Transactional registration email
-- Protected WeighFish import, discrepancy review, results persistence, and AOY
-  calculation
-
-## Launch Gate
-
-Production launch requires authenticated Admin writes, revoked anonymous
-`UPDATE`, verified production RLS and grants, production environment
-configuration, successful lint/TypeScript/tests/build, and verified Vercel,
-canonical-domain, DNS, redirect, accessibility, mobile, and smoke testing.
-
-
----
-For an overview of the project, begin with **00_START_HERE.md**.
+Launch requires no anonymous writes, one immutable publication path, atomic
+closeout, correct stable-team AOY/Championship behavior, verified backup/reset
+behavior, passing validation, and end-to-end production-environment tests.

@@ -1,62 +1,42 @@
-Version: 1.0
-Last Updated: July 27, 2026
-
 # Repository Map
 
-Updated: 2026-07-23
-
-The approved public hierarchy is in [MasterSiteMap.md](MasterSiteMap.md).
+Last updated: 2026-07-29
 
 ## Routes
 
-Public routes include `/`, `/schedule`, `/results`, `/results/[slug]`,
-`/register`, `/how-it-works`, `/rules`, and `/liability-waiver`.
+Public: `/`, `/contact`, `/how-it-works`, `/liability-waiver`, `/register`,
+`/register/confirmation`, `/registrations`, `/results`, `/results/[slug]`,
+`/rules`, `/schedule`, `/standings`, and `/watch`.
 
-AITT Admin Center routes include `/admin`, `/admin/tournament`,
-`/admin/announcements`, `/admin/conditions`, and `/admin/results`. An
-`/admin/sponsors` placeholder may remain, but Sponsors are not a dashboard card
-or Website Readiness item.
+Admin: `/admin`, `/admin/login`, announcement list/create/edit, member
+list/create/detail/export, settings, conditions, sponsors, tournament
+information/reset, legacy results, and Tournament Manager
+import/insurance/photos/publish/success.
 
-## Tournament data
+API: `/api/registrations/quote`.
 
-- `supabase/migrations/202607230001_create_tournaments.sql` — implemented
-  schema, constraints, triggers, RLS, and current policies
-- `supabase/seed.sql` — idempotent Lake Fork Open seed
-- `lib/supabase/server.ts` — server-only Supabase client
-- `lib/tournaments.ts` — server-only tournament data access
-- `types/tournament.ts` — shared tournament and form types
-- `data/tournaments.ts` — legacy/public compatibility data while remaining
-  public integrations are completed and verified
+## Main modules
 
-The Admin Center reads tournaments from Supabase. Homepage and schedule
-integration remain tracked as in progress.
+- `proxy.ts`, `lib/admin-auth.ts`, `lib/supabase/auth-server.ts` — Admin
+  session and authorization.
+- `lib/supabase/server.ts` — server-only service-role data client.
+- `lib/tournaments.ts`, `lib/tournament-registrations.ts`, `lib/results.ts`,
+  `lib/news.ts`, `lib/aoy-standings.ts` — live public/server data.
+- `lib/seasons.ts`, `lib/anglers.ts`, `lib/memberships.ts`, `lib/teams.ts`,
+  `lib/admin-members.ts` — identity and membership foundation.
+- `lib/weighfishParser.ts`, Tournament Manager routes — import and publication.
+- `lib/result-payouts.ts` — authoritative payout normalization and totals.
+- `lib/tournament-reset.ts` and migration `202607280012` — scoped reset.
+- `types/database.ts` — manual partial database typing; not a complete generated
+  representation of every table, RPC, relationship, or Storage bucket.
 
-## Admin components
+## Compatibility/static data
 
-`components/admin/` contains the shared Admin header, user menu, Current
-Tournament selector/card, Website Readiness, management cards, Last Updated
-metadata, and Tournament Information form.
+`data/tournaments.ts` remains a presentation/registration compatibility model
+used by adapters and tests. `data/registration.ts`, `data/watch.ts`, and
+`data/sponsors.ts` are active. `data/aoyStandings.ts` and
+`data/tournamentResults.ts` are demo/test compatibility sources and do not
+override live public Supabase queries.
 
-## Other data
-
-- `data/tournamentResults.ts` — results placeholders
-- `data/aoyStandings.ts` — AOY placeholders
-- `data/sponsors.ts` — public sponsor data, separate from tournament readiness
-
-## Documentation entry points
-
-- `README.md`
-- `docs/ProjectStatus.md`
-- `docs/SUPABASE_SETUP.md`
-- `docs/SECURITY_NOTES.md`
-- `docs/ADMIN_CENTER_WORKFLOW.md`
-- `docs/DataModel.md`
-- `docs/DevelopmentRoadmap.md`
-- `docs/CHANGELOG.md`
-
-Historical audits are retained for context and labeled when they no longer
-describe current state.
-
-
----
-For an overview of the project, begin with **00_START_HERE.md**.
+The exact inventory and retained orphan candidates are in
+[CURRENT_STATE_AUDIT_2026-07-29.md](CURRENT_STATE_AUDIT_2026-07-29.md).

@@ -89,6 +89,11 @@ export function toPublicTournament(
     city: null,
     state: "Texas",
     date,
+    endDate: tournament.tournament_end_date
+      ? centralDate(tournament.tournament_end_date)
+      : null,
+    eventType: tournament.event_type,
+    regularSeasonNumber: tournament.regular_season_number,
     startTimeDisplay: "Safe Light",
     stopFishingTime: "15:00",
     launchType:

@@ -5,7 +5,9 @@ import {
   toPublicTournament,
   type PublicTournamentRecord,
 } from "@/lib/tournament-record-adapter";
+import { validateRegistrationMembershipClaims } from "@/lib/registration-membership-validation";
 import { getTournamentBySlug } from "@/lib/tournaments";
+import type { Tournament } from "@/types/tournament";
 
 export async function POST(request: Request) {
   let input: OnlineRegistrationRequest;
@@ -17,15 +19,19 @@ export async function POST(request: Request) {
 
   const now = new Date();
   let tournament: PublicTournamentRecord;
+  let tournamentRecord: Tournament;
 
   try {
-    const tournamentRecord = await getTournamentBySlug(input.tournamentSlug);
-    if (!tournamentRecord) {
+    const loadedTournament = await getTournamentBySlug(
+      input.tournamentSlug,
+    );
+    if (!loadedTournament) {
       return NextResponse.json(
         { error: "Select a valid tournament." },
         { status: 400 },
       );
     }
+    tournamentRecord = loadedTournament;
     tournament = toPublicTournament(tournamentRecord);
   } catch (error) {
     console.error("Registration tournament validation failed.", error);
@@ -38,9 +44,26 @@ export async function POST(request: Request) {
   const errors = validateOnlineRegistrationRequest(input, now, {}, tournament);
   if (errors.length) return NextResponse.json({ error: "Registration needs attention.", errors }, { status: 400 });
 
-  // TODO(Phase 4): Persist the accepted rules/waiver versions and replace the
-  // client-reported acknowledgment time with a trusted server timestamp before
-  // creating a durable registration or initiating Square payment.
+  try {
+    const membershipErrors =
+      await validateRegistrationMembershipClaims(
+        input.anglers,
+        tournamentRecord,
+      );
+    if (membershipErrors.length) {
+      return NextResponse.json(
+        { error: "Registration needs attention.", errors: membershipErrors },
+        { status: 400 },
+      );
+    }
+  } catch (error) {
+    console.error("Registration membership validation failed.", error);
+    return NextResponse.json(
+      { error: "We could not verify membership information. Please try again." },
+      { status: 503 },
+    );
+  }
+
   return NextResponse.json({
     quote: createAuthoritativeRegistrationQuote(input, now, tournament),
   });

@@ -32,25 +32,20 @@ const announcements: Announcement[] = [
 ];
 
 describe("Admin Announcements list", () => {
-  it("renders announcement columns and last-updated times", () => {
+  it("renders announcement cards and last-updated times", () => {
     const markup = renderToStaticMarkup(
       <AdminAnnouncementList announcements={announcements} />,
     );
 
-    for (const heading of [
-      "Title",
-      "Last Updated",
-    ]) {
-      expect(markup).toContain(`>${heading}</th>`);
-    }
-
+    expect(markup).toContain('data-announcements-state="loaded"');
+    expect(markup).toContain("Existing Homepage Content");
     expect(markup).toContain("Lake Fork Registration Opens");
     expect(markup).toContain("Weather Update");
     expect(markup).toContain("Pinned");
     expect(markup).toContain("Jul 24, 2026");
     expect(markup).toContain("11:00 AM");
-    expect(markup).not.toContain(">Edit</button>");
-    expect(markup).not.toContain(">Delete</button>");
+    expect(markup).toContain("Edit Announcement");
+    expect(markup).toContain(">Delete</button>");
   });
 
   it("links New Announcement to the approved child route", () => {
