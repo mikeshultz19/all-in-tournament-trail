@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
+import { requireAdminUser } from "@/lib/admin-auth";
 import {
   announcementFormData,
   validateAnnouncementForm,
@@ -25,6 +26,8 @@ export async function updateAnnouncementAction(
   _previousState: AnnouncementFormState,
   formData: FormData,
 ): Promise<AnnouncementFormState> {
+  await requireAdminUser();
+
   const values = announcementFormData(formData);
   const errors = validateAnnouncementForm(values);
 
@@ -62,6 +65,8 @@ export async function deleteAnnouncementAction(
   announcementId: string,
   _formData: FormData,
 ): Promise<void> {
+  await requireAdminUser();
+
   try {
     await deleteAnnouncement(announcementId);
     refreshAnnouncementPages(announcementId);

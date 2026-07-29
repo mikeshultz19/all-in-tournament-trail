@@ -3,12 +3,15 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
+import { requireAdminUser } from "@/lib/admin-auth";
 import { deleteAnnouncement } from "@/lib/news";
 
 export async function deleteAnnouncementAction(
   announcementId: string,
   _formData: FormData,
 ): Promise<void> {
+  await requireAdminUser();
+
   try {
     await deleteAnnouncement(announcementId);
 

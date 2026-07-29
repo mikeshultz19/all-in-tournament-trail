@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
+import { requireAdminUser } from "@/lib/admin-auth";
 import {
   tournamentFormData,
   tournamentFormToUpdate,
@@ -16,6 +17,8 @@ export async function saveTournamentAction(
   _previousState: TournamentFormState,
   formData: FormData,
 ): Promise<TournamentFormState> {
+  await requireAdminUser();
+
   const values = tournamentFormData(formData);
   const errors = validateTournamentForm(values);
 

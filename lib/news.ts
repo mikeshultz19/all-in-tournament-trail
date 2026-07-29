@@ -41,10 +41,12 @@ export async function getAnnouncements(): Promise<
     .order("created_at", { ascending: false });
 
   if (error) {
-    console.error(
-      "Supabase announcement load failed.",
-      error,
-    );
+    console.error("Supabase announcement load failed.", {
+      message: error.message,
+      details: error.details,
+      hint: error.hint,
+      code: error.code,
+    });
 
     return [];
   }

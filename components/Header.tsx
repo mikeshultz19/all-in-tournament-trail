@@ -6,7 +6,7 @@ const navItems = [
   { label: "Watch", href: "/watch" },
   { label: "Results", href: "/results" },
   { label: "Schedule", href: "/schedule" },
-  { label: "Standings" },
+  { label: "Standings", href: "/standings" },
   { label: "Rules", href: "/rules" },
   { label: "Sponsors" },
 ];

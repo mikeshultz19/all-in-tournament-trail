@@ -1,6 +1,12 @@
 import { readFileSync } from "node:fs";
 import { renderToStaticMarkup } from "react-dom/server";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
+
+vi.mock("next/navigation", () => ({
+  useRouter: () => ({ replace: vi.fn() }),
+  usePathname: () => "/admin/members",
+  useSearchParams: () => new URLSearchParams(),
+}));
 
 import MembersList from "@/components/admin/MembersList";
 import { filterMemberRows } from "@/lib/member-list";
@@ -15,6 +21,7 @@ const members: AdminMemberListRow[] = [
     display_name: "John Smith",
     email: "john@example.com",
     phone: "817-555-0101",
+    is_active: true,
     membership_status: "active",
     season_id: "season-2026",
     season_name: "2026 Season",
@@ -31,6 +38,7 @@ const members: AdminMemberListRow[] = [
     display_name: "Maria Garcia",
     email: "maria@example.com",
     phone: "214-555-0199",
+    is_active: false,
     membership_status: "refunded",
     season_id: "season-2026",
     season_name: "2026 Season",
@@ -64,6 +72,10 @@ describe("Admin Members list", () => {
     expect(html).toContain("Refunded");
     expect(html).toContain("Not assigned");
     expect(html).toContain(">View</a>");
+    expect(html).toContain(
+      `href="/admin/members/${members[0].angler_id}"`,
+    );
+    expect(html).not.toContain("?season=");
     expect(html).not.toContain("Edit");
     expect(html).not.toContain("Delete");
     expect(html).not.toContain("Renew");

@@ -2,35 +2,12 @@ import "server-only";
 
 import { isMembershipEligibleOnDate } from "@/lib/membership-eligibility";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { getTournamentById } from "@/lib/tournaments";
 import type {
   AdminMemberListRow,
   CreateOrUpdateMembershipInput,
   Membership,
 } from "@/types/aoy";
-
-type MemberListQueryRow = {
-  id: string;
-  status: Membership["status"];
-  effective_date: string;
-  first_eligible_tournament_id: string | null;
-  updated_at: string;
-  angler: {
-    id: string;
-    first_name: string;
-    last_name: string;
-    display_name: string;
-    email: string | null;
-    phone: string | null;
-  };
-  season: {
-    id: string;
-    name: string;
-  };
-  first_eligible_tournament: {
-    id: string;
-    name: string;
-  } | null;
-};
 
 export class MembershipDataError extends Error {
   constructor(message: string, options?: ErrorOptions) {
@@ -41,14 +18,23 @@ export class MembershipDataError extends Error {
 
 export async function listMembersForSeason(
   seasonId: string,
-): Promise<AdminMemberListRow[]> {
+  options: {
+    search?: string;
+    active?: boolean | null;
+    page?: number;
+    pageSize?: number;
+  } = {},
+): Promise<{ members: AdminMemberListRow[]; total: number }> {
+  const page = Math.max(1, options.page ?? 1);
+  const pageSize = Math.max(1, Math.min(options.pageSize ?? 25, 10000));
   const supabase = createSupabaseServerClient();
-  const { data, error } = await supabase
-    .from("memberships")
-    .select(
-      "id,status,effective_date,first_eligible_tournament_id,updated_at,angler:anglers!inner(id,first_name,last_name,display_name,email,phone),season:seasons!inner(id,name),first_eligible_tournament:tournaments!memberships_first_eligible_tournament_id_fkey(id,name)",
-    )
-    .eq("season_id", seasonId);
+  const { data, error } = await supabase.rpc("admin_list_members", {
+    p_season_id: seasonId,
+    p_search: options.search?.trim() ?? "",
+    p_active: options.active ?? null,
+    p_limit: pageSize,
+    p_offset: (page - 1) * pageSize,
+  });
 
   if (error) {
     throw new MembershipDataError("We could not load members.", {
@@ -56,28 +42,30 @@ export async function listMembersForSeason(
     });
   }
 
-  return ((data ?? []) as unknown as MemberListQueryRow[])
-    .map((row) => ({
-      membership_id: row.id,
-      angler_id: row.angler.id,
-      first_name: row.angler.first_name,
-      last_name: row.angler.last_name,
-      display_name: row.angler.display_name,
-      email: row.angler.email,
-      phone: row.angler.phone,
-      membership_status: row.status,
-      season_id: row.season.id,
-      season_name: row.season.name,
-      first_eligible_tournament_id:
-        row.first_eligible_tournament_id,
+  const rows = (data ?? []) as unknown as Array<
+    AdminMemberListRow & { total_count: number }
+  >;
+  return {
+    members: rows.map((row) => ({
+      membership_id: row.membership_id,
+      angler_id: row.angler_id,
+      first_name: row.first_name,
+      last_name: row.last_name,
+      display_name: row.display_name,
+      email: row.email,
+      phone: row.phone,
+      is_active: row.is_active,
+      membership_status: row.membership_status,
+      season_id: row.season_id,
+      season_name: row.season_name,
+      first_eligible_tournament_id: row.first_eligible_tournament_id,
       first_eligible_tournament_name:
-        row.first_eligible_tournament?.name ?? null,
+        row.first_eligible_tournament_name,
       effective_date: row.effective_date,
       updated_at: row.updated_at,
-    }))
-    .sort((left, right) =>
-      left.display_name.localeCompare(right.display_name),
-    );
+    })),
+    total: Number(rows[0]?.total_count ?? 0),
+  };
 }
 
 export async function getMembershipForAnglerAndSeason(
@@ -106,15 +94,39 @@ export async function isAnglerEligibleMember(
   seasonId: string,
   tournamentDate: string,
 ): Promise<boolean> {
+  const supabase = createSupabaseServerClient();
+  const { data: angler, error: anglerError } = await supabase
+    .from("anglers")
+    .select("is_active")
+    .eq("id", anglerId)
+    .maybeSingle();
+
+  if (anglerError) {
+    throw new MembershipDataError("We could not verify the angler.", {
+      cause: anglerError,
+    });
+  }
+
+  if (!angler?.is_active) {
+    return false;
+  }
+
   const membership = await getMembershipForAnglerAndSeason(
     anglerId,
     seasonId,
   );
+  const firstEligibleTournament =
+    membership?.first_eligible_tournament_id
+      ? await getTournamentById(
+          membership.first_eligible_tournament_id,
+        )
+      : null;
 
   return isMembershipEligibleOnDate(
     membership,
     seasonId,
     tournamentDate,
+    firstEligibleTournament?.tournament_date ?? null,
   );
 }
 

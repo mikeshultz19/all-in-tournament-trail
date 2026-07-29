@@ -353,7 +353,7 @@ export default function WinnersCircle({
   return (
     <section
       id="results"
-      className="border-b border-[#191612] bg-[#0B0A09] py-8"
+      className="bg-[#0B0A09] px-4 py-8 sm:px-6"
     >
       <div className={styles.showcaseContainer}>
         <article className="overflow-visible border border-[#8f762f]/60 bg-[#111111] shadow-[0_10px_30px_rgba(0,0,0,0.35)]">
@@ -396,7 +396,7 @@ export default function WinnersCircle({
                   </Link>
                 </section>
 
-                <section className="min-w-0 border border-[#8f762f]/60 bg-[#111111] p-4 sm:p-5">
+                <section className="flex min-w-0 flex-col border border-[#8f762f]/60 bg-[#111111] p-4 sm:p-5">
                   <SectionHeading
                     title="OVERALL CHAMPION"
                     icon={Crown}
@@ -423,6 +423,19 @@ export default function WinnersCircle({
                       label="TOTAL PAID OUT TO ANGLERS"
                       value={payoutTotals.totalPaidOutToAnglers}
                       emphasis
+                    />
+                  </div>
+
+                  <div
+                    aria-hidden="true"
+                    className="relative hidden min-h-0 flex-1 overflow-hidden md:block"
+                  >
+                    <Image
+                      src="/images/logo.png"
+                      alt=""
+                      width={60}
+                      height={23}
+                      className="absolute bottom-1 left-1/2 h-auto max-h-full w-[60px] max-w-full -translate-x-1/2 object-contain opacity-[0.13]"
                     />
                   </div>
                 </section>

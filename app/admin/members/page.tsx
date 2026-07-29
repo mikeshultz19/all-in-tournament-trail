@@ -8,16 +8,43 @@ import type { AdminMemberListRow, Season } from "@/types/aoy";
 
 export const dynamic = "force-dynamic";
 
-export default async function MembersAdminPage() {
+export default async function MembersAdminPage({
+  searchParams,
+}: {
+  searchParams: Promise<{
+    saved?: string;
+    deleted?: string;
+    q?: string;
+    status?: string;
+    page?: string;
+  }>;
+}) {
+  const params = await searchParams;
+  const saved = params.saved === "1";
+  const deleted = params.deleted === "1";
+  const search = params.q?.trim() ?? "";
+  const status =
+    params.status === "active" || params.status === "inactive"
+      ? params.status
+      : "all";
+  const page = Math.max(1, Number.parseInt(params.page ?? "1", 10) || 1);
   let activeSeason: Season | null = null;
   let members: AdminMemberListRow[] = [];
+  let total = 0;
   let loadFailed = false;
 
   try {
     activeSeason = await getActiveSeason();
-    members = activeSeason
-      ? await listMembersForSeason(activeSeason.id)
-      : [];
+    if (activeSeason) {
+      const result = await listMembersForSeason(activeSeason.id, {
+        search,
+        active: status === "all" ? null : status === "active",
+        page,
+        pageSize: 25,
+      });
+      members = result.members;
+      total = result.total;
+    }
   } catch (error) {
     console.error("Admin members load failed.", error);
     loadFailed = true;
@@ -56,6 +83,20 @@ export default async function MembersAdminPage() {
         </Link>
       </div>
 
+      {saved && (
+        <p
+          className="mt-6 border border-emerald-500/30 bg-emerald-500/10 px-4 py-3 text-sm font-semibold text-emerald-300"
+          role="status"
+        >
+          Member added successfully.
+        </p>
+      )}
+      {deleted && (
+        <p className="mt-6 border border-emerald-500/30 bg-emerald-500/10 px-4 py-3 text-sm font-semibold text-emerald-300" role="status">
+          Member deleted successfully.
+        </p>
+      )}
+
       {loadFailed ? (
         <section className="mt-8 border border-red-500/30 bg-red-500/10 px-6 py-10 text-center">
           <h2 className="text-lg font-black uppercase text-white">
@@ -73,7 +114,14 @@ export default async function MembersAdminPage() {
               <span className="text-neutral-300">{activeSeason.name}</span>
             </p>
           ) : null}
-          <MembersList members={members} />
+          <MembersList
+            members={members}
+            total={total}
+            page={page}
+            pageSize={25}
+            initialSearch={search}
+            statusFilter={status}
+          />
         </>
       )}
     </>

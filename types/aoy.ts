@@ -116,6 +116,7 @@ export interface AdminMemberListRow {
   display_name: string;
   email: string | null;
   phone: string | null;
+  is_active: boolean;
   membership_status: MembershipStatus;
   season_id: string;
   season_name: string;

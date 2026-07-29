@@ -61,42 +61,63 @@ describe("AITT identity primitives", () => {
 });
 
 describe("AITT membership eligibility", () => {
-  it("accepts an active same-season membership on its effective date", () => {
-    expect(
-      isMembershipEligibleOnDate(
-        activeMembership,
-        SEASON_ID,
-        "2026-03-01T06:00:00-06:00",
-      ),
-    ).toBe(true);
-  });
+  it("accepts an active same-season membership on its first eligible tournament date", () => {
+      expect(
+        isMembershipEligibleOnDate(
+          {
+            ...activeMembership,
+            first_eligible_tournament_id:
+              "77777777-7777-4777-8777-777777777777",
+          },
+          SEASON_ID,
+          "2026-03-01T06:00:00-06:00",
+          "2026-03-01T06:00:00-06:00",
+        ),
+      ).toBe(true);
+    });
 
-  it("rejects membership before its effective date", () => {
-    expect(
-      isMembershipEligibleOnDate(
-        activeMembership,
-        SEASON_ID,
-        "2026-02-28",
-      ),
-    ).toBe(false);
+  it("rejects membership before its first eligible tournament", () => {
+      expect(
+        isMembershipEligibleOnDate(
+          {
+            ...activeMembership,
+            first_eligible_tournament_id:
+              "77777777-7777-4777-8777-777777777777",
+          },
+          SEASON_ID,
+          "2026-02-28",
+          "2026-03-01",
+        ),
+      ).toBe(false);
   });
 
   it("rejects cancelled membership", () => {
     expect(
-      isMembershipEligibleOnDate(
-        { ...activeMembership, status: "cancelled" },
-        SEASON_ID,
-        "2026-04-01",
+        isMembershipEligibleOnDate(
+          {
+            ...activeMembership,
+            status: "cancelled",
+            first_eligible_tournament_id:
+              "77777777-7777-4777-8777-777777777777",
+          },
+          SEASON_ID,
+          "2026-04-01",
+          "2026-03-01",
       ),
     ).toBe(false);
   });
 
   it("rejects membership from another season", () => {
     expect(
-      isMembershipEligibleOnDate(
-        activeMembership,
-        "55555555-5555-4555-8555-555555555555",
-        "2026-04-01",
+        isMembershipEligibleOnDate(
+          {
+            ...activeMembership,
+            first_eligible_tournament_id:
+              "77777777-7777-4777-8777-777777777777",
+          },
+          "55555555-5555-4555-8555-555555555555",
+          "2026-04-01",
+          "2026-03-01",
       ),
     ).toBe(false);
   });

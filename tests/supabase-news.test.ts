@@ -10,6 +10,10 @@ describe("Supabase news migration", () => {
     "supabase/migrations/202607240002_simplify_news_announcements.sql",
     "utf8",
   );
+  const serviceRoleGrant = readFileSync(
+    "supabase/migrations/202607280014_grant_service_role_news_read.sql",
+    "utf8",
+  );
 
   it("creates the constrained news table and indexes", () => {
     expect(migration).toContain("create table if not exists public.news");
@@ -57,5 +61,11 @@ describe("Supabase news migration", () => {
       "drop column if exists published_at",
     );
     expect(simplificationMigration).not.toContain("drop column if exists content");
+  });
+
+  it("allows the server-side service role to load homepage announcements", () => {
+    expect(serviceRoleGrant).toContain(
+      "grant select on table public.news to service_role",
+    );
   });
 });

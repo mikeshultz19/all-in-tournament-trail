@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 
+import { requireAdminUser } from "@/lib/admin-auth";
 import {
   resultsDateToTimestamp,
   resultsFormData,
@@ -16,6 +17,8 @@ export async function saveResultsAction(
   _previousState: ResultsFormState,
   formData: FormData,
 ): Promise<ResultsFormState> {
+  await requireAdminUser();
+
   const values = resultsFormData(formData);
   const errors = validateResultsForm(values);
 
@@ -80,6 +83,8 @@ export async function resetResultsAction(
   },
   _formData?: FormData,
 ): Promise<{ status: "success" | "error"; message: string }> {
+  await requireAdminUser();
+
   void _previousState;
   void _formData;
   try {

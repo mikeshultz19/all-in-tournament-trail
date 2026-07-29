@@ -1,5 +1,6 @@
 .showcaseContainer {
-  width: min(calc(100% - 32px), 1500px);
+  width: 100%;
+  max-width: 1700px;
   margin-inline: auto;
   overflow: visible;
 }

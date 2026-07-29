@@ -10,7 +10,20 @@ export class SeasonDataError extends Error {
   }
 }
 
+async function ensureInitialMembershipSeason(): Promise<void> {
+  const supabase = createSupabaseServerClient();
+  const { error } = await supabase.rpc("ensure_initial_membership_season");
+
+  if (error) {
+    throw new SeasonDataError(
+      "We could not initialize the membership season.",
+      { cause: error },
+    );
+  }
+}
+
 export async function getActiveSeason(): Promise<Season | null> {
+  await ensureInitialMembershipSeason();
   const supabase = createSupabaseServerClient();
   const { data, error } = await supabase
     .from("seasons")
@@ -28,6 +41,7 @@ export async function getActiveSeason(): Promise<Season | null> {
 }
 
 export async function getSeasonById(id: string): Promise<Season | null> {
+  await ensureInitialMembershipSeason();
   const supabase = createSupabaseServerClient();
   const { data, error } = await supabase
     .from("seasons")
@@ -45,6 +59,7 @@ export async function getSeasonById(id: string): Promise<Season | null> {
 }
 
 export async function listSeasons(): Promise<Season[]> {
+  await ensureInitialMembershipSeason();
   const supabase = createSupabaseServerClient();
   const { data, error } = await supabase
     .from("seasons")

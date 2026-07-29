@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
+import { requireAdminUser } from "@/lib/admin-auth";
 import { updateTournament } from "@/lib/tournaments";
 
 export interface WinnerPhotosFormState {
@@ -15,6 +16,8 @@ export async function saveWinnerPhotosAction(
   _previousState: WinnerPhotosFormState,
   formData: FormData,
 ): Promise<WinnerPhotosFormState> {
+  await requireAdminUser();
+
   const championPhotoUrl = String(
     formData.get("championPhotoUrl") ?? "",
   ).trim();

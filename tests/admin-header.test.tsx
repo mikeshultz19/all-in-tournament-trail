@@ -4,7 +4,7 @@ import { describe, expect, it } from "vitest";
 import AdminHeader from "@/components/admin/AdminHeader";
 
 describe("AdminHeader", () => {
-  const markup = renderToStaticMarkup(<AdminHeader />);
+  const markup = renderToStaticMarkup(<AdminHeader adminName="Mike" />);
 
   it("shows the AITT branding and administrator context", () => {
     expect(markup).toContain('alt="All-In Tournament Trail"');
@@ -13,6 +13,7 @@ describe("AdminHeader", () => {
       "Tournament Administration &amp; Website Management",
     );
     expect(markup).toContain("Mike");
+    expect(markup).toContain("Logout");
     expect(markup).not.toContain("Tournament Administrator");
     expect(markup).not.toContain("Welcome");
   });
@@ -21,6 +22,7 @@ describe("AdminHeader", () => {
     expect(markup).toContain('href="/admin"');
     expect(markup).toContain('href="/admin/members"');
     expect(markup).toContain("Members");
+    expect(markup).toContain("Logout");
     expect(markup).toContain('href="/"');
     expect(markup).toContain("focus-visible:outline-2");
   });

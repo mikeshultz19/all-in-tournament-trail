@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
+import { requireAdminUser } from "@/lib/admin-auth";
 import { updateTournament } from "@/lib/tournaments";
 
 export interface InsuranceReviewFormState {
@@ -15,6 +16,8 @@ export async function saveInsuranceReviewAction(
   _previousState: InsuranceReviewFormState,
   formData: FormData,
 ): Promise<InsuranceReviewFormState> {
+  await requireAdminUser();
+
   const payoutValue = String(
     formData.get("insurancePayout") ?? "",
   ).trim();

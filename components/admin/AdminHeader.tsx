@@ -1,9 +1,13 @@
 import Image from "next/image";
 import Link from "next/link";
 
-import AdminUserInfo from "@/components/admin/AdminUserInfo";
+import AdminLogoutButton from "@/components/admin/AdminLogoutButton";
 
-export default function AdminHeader() {
+export default function AdminHeader({
+  adminName,
+}: {
+  adminName?: string | null;
+}) {
   return (
     <header className="border-b border-white/10 bg-[#0B0B0B]">
       <div className="mx-auto flex max-w-7xl flex-col gap-5 px-5 py-5 sm:px-6 md:flex-row md:items-center md:justify-between">
@@ -36,7 +40,20 @@ export default function AdminHeader() {
           >
             Members
           </Link>
-          <AdminUserInfo name="Mike" />
+          <Link
+            href="/admin/settings"
+            className="text-xs font-bold uppercase tracking-[0.14em] text-neutral-400 transition-colors hover:text-[#D4A017] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#D4A017]"
+          >
+            Settings
+          </Link>
+          {adminName && (
+            <>
+              <span className="max-w-40 truncate text-sm font-black text-white">
+                {adminName}
+              </span>
+              <AdminLogoutButton />
+            </>
+          )}
           <Link
             href="/"
             className="text-xs font-bold uppercase tracking-[0.14em] text-neutral-400 transition-colors hover:text-[#D4A017] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#D4A017]"

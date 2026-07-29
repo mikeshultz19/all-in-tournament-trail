@@ -15,9 +15,7 @@ export default function Hero() {
           w-full
           h-auto
 
-          -translate-y-[2vw]
-          sm:-translate-y-[3vw]
-          lg:-translate-y-[4vw]
+          -translate-x-[2.25vw]
         "
       />
 

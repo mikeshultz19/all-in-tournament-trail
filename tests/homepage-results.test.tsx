@@ -145,6 +145,9 @@ describe("homepage latest tournament results", () => {
     expect(html).toContain("Lake Fork");
     expect(html).toContain("FINAL STANDINGS");
     expect(html).toContain("OVERALL CHAMPION");
+    expect(html).toContain("%2Fimages%2Flogo.png");
+    expect(html).toContain("w-[60px]");
+    expect(html).toContain("opacity-[0.13]");
     expect(html).toContain("SIDE POTS &amp; PAYOUTS");
     expect(html).toContain("BIG BASS WINNER");
     expect(html).toContain("Smith / Jones");

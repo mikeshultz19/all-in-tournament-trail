@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 
+import { requireAdminUser } from "@/lib/admin-auth";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { updateTournament } from "@/lib/tournaments";
 import type { WeighfishResultRow } from "@/lib/weighfishParser";
@@ -15,6 +16,8 @@ export async function importWeighfishResultsAction(
   tournamentId: string,
   rows: WeighfishResultRow[],
 ): Promise<WeighfishImportState> {
+  await requireAdminUser();
+
   if (!tournamentId) {
     return {
       status: "error",

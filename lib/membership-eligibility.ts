@@ -9,14 +9,20 @@ export function isMembershipEligibleOnDate(
   membership: Membership | null,
   seasonId: string,
   tournamentDate: string,
+  firstEligibleTournamentDate: string | null,
 ): boolean {
   const eventDate = datePart(tournamentDate);
+  const firstEligibleDate = firstEligibleTournamentDate
+    ? datePart(firstEligibleTournamentDate)
+    : null;
 
   return Boolean(
     membership &&
       membership.status === "active" &&
       membership.season_id === seasonId &&
+      membership.first_eligible_tournament_id &&
       eventDate &&
-      membership.effective_date <= eventDate,
+      firstEligibleDate &&
+      firstEligibleDate <= eventDate,
   );
 }

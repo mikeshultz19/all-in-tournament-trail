@@ -2,6 +2,7 @@ import type { TournamentEventType } from "@/types/aoy";
 
 export const TOURNAMENT_STATUSES = [
   "Scheduled",
+  "Ready for Registration",
   "Registration Open",
   "Registration Closed",
   "Postponed",

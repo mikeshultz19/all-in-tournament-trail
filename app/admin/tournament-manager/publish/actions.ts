@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
+import { requireAdminUser } from "@/lib/admin-auth";
 import { saveTournamentResults } from "@/lib/results";
 import { calculateResultPayouts, payoutAmount } from "@/lib/result-payouts";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
@@ -35,6 +36,8 @@ export async function publishTournamentAction(
   _previousState: PublishTournamentState,
   formData: FormData,
 ): Promise<PublishTournamentState> {
+  await requireAdminUser();
+
   const tournamentId = String(
     formData.get("tournamentId") ?? "",
   ).trim();

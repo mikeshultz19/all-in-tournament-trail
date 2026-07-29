@@ -3,7 +3,7 @@ import Hero from "@/components/Hero";
 import LatestTournamentNews from "@/components/LatestTournamentNews";
 import FeaturedTournament from "@/components/FeaturedTournament";
 import WinnersCircle from "@/components/WinnersCircle";
-import AOYStandings from "@/components/AOYStandings";
+import AOYPointsRaceStrip from "@/components/AOYPointsRaceStrip";
 import TournamentConditions from "@/components/TournamentConditions";
 import SponsorHome from "@/components/SponsorHome";
 import { getHomepageSponsors } from "@/data/sponsors";
@@ -17,6 +17,10 @@ import { getTournamentEntrySummary, type TournamentEntrySummary } from "@/lib/pu
 import type { Announcement } from "@/types/announcement";
 import { getLatestPublishedTournamentResults } from "@/lib/results";
 import type { LatestTournamentResults } from "@/types/results";
+import {
+  getTopPublishedAoyStandings,
+  type PublicAoyStanding,
+} from "@/lib/aoy-standings";
 
 export const revalidate = 10800;
 export const dynamic = "force-dynamic";
@@ -56,6 +60,7 @@ export default async function HomePage() {
   const homepageSponsors = getHomepageSponsors();
   let announcements: Announcement[] = [];
   let latestResults: LatestTournamentResults | null = null;
+  let aoyStandings: PublicAoyStanding[] = [];
 
   try {
     announcements = await getAnnouncements();
@@ -67,6 +72,12 @@ export default async function HomePage() {
     latestResults = await getLatestPublishedTournamentResults();
   } catch (error) {
     console.error("Homepage results load failed.", error);
+  }
+
+  try {
+    aoyStandings = await getTopPublishedAoyStandings();
+  } catch (error) {
+    console.error("Homepage AOY standings load failed.", error);
   }
 
   return (
@@ -105,9 +116,8 @@ export default async function HomePage() {
         </div>
       </section>
 
+      <AOYPointsRaceStrip standings={aoyStandings} />
       <WinnersCircle latestResults={latestResults} />
-
-      <AOYStandings />
     </main>
   );
 }

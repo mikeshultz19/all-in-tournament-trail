@@ -19,6 +19,7 @@ const REGISTRATION_ROUTE = "/register";
 
 const lifecycleStatusStyles = {
   Scheduled: "border-sky-500/40 text-sky-300",
+  "Ready for Registration": "border-sky-500/40 text-sky-300",
   "Registration Open": "border-emerald-500/40 text-emerald-300",
   "Registration Closed": "border-neutral-500/40 text-neutral-300",
   Postponed: "border-[#D4A017]/50 text-[#D4A017]",
