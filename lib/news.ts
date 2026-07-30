@@ -37,8 +37,29 @@ export async function getAnnouncements(): Promise<
   const { data, error } = await supabase
     .from("news")
     .select("*")
-    .order("is_pinned", { ascending: false })
+    .order("display_order", { ascending: true })
+    .order("publish_date", { ascending: false, nullsFirst: false })
     .order("created_at", { ascending: false });
+
+  if (error) {
+    throw dataError("load", error);
+  }
+
+  return (data ?? []) as Announcement[];
+}
+
+export async function getPublishedAnnouncements(
+  now = new Date(),
+): Promise<Announcement[]> {
+  const supabase = createSupabaseServerClient();
+
+  const { data, error } = await supabase
+    .from("news")
+    .select("*")
+    .eq("is_published", true)
+    .lte("publish_date", now.toISOString())
+    .order("display_order", { ascending: true })
+    .order("publish_date", { ascending: false });
 
   if (error) {
     console.error("Supabase announcement load failed.", {
@@ -47,7 +68,6 @@ export async function getAnnouncements(): Promise<
       hint: error.hint,
       code: error.code,
     });
-
     return [];
   }
 

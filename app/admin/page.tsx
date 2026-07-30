@@ -1,51 +1,29 @@
-import AdminTournamentDashboard from "@/components/admin/AdminTournamentDashboard";
+import AdminHomeOverview from "@/components/admin/AdminHomeOverview";
 import {
-  getNextUpcomingTournament,
-  getActiveSeasonSchedule,
+  getActiveOperationalTournament,
 } from "@/lib/tournaments";
 import type { Tournament } from "@/types/tournament";
 import {
   getRegistrationReviewPendingCount,
-  getTournamentRegistrationReviewSummary,
 } from "@/lib/registration-identity-review";
 
 export const dynamic = "force-dynamic";
 
-export default async function AdminPage({
-  searchParams,
-}: {
-  searchParams: Promise<{ tournament?: string | string[] }>;
-}) {
-  const params = await searchParams;
-  const requestedTournament = Array.isArray(params.tournament)
-    ? params.tournament[0]
-    : params.tournament;
+export default async function AdminPage() {
   const now = new Date();
-  let tournaments: Tournament[] = [];
   let currentTournament: Tournament | null = null;
   let loadFailed = false;
   let pendingRegistrationReviews = 0;
-  let registrationReviewSummaries: Record<
-    string,
-    { total: number; verified: number; pending: number; resolved: number }
-  > = {};
 
   try {
-    [tournaments, currentTournament, pendingRegistrationReviews] = await Promise.all([
-      getActiveSeasonSchedule(),
-      getNextUpcomingTournament(),
+    const [tournament, pendingReviews] = await Promise.all([
+      getActiveOperationalTournament(),
       getRegistrationReviewPendingCount(),
     ]);
-    registrationReviewSummaries = Object.fromEntries(
-      await Promise.all(
-        tournaments.map(async (tournament) => [
-          tournament.id,
-          await getTournamentRegistrationReviewSummary(tournament.id),
-        ]),
-      ),
-    );
+    currentTournament = tournament;
+    pendingRegistrationReviews = pendingReviews;
   } catch (error) {
-    console.error("Admin dashboard tournament load failed.", error);
+    console.error("Admin home overview load failed.", error);
     loadFailed = true;
   }
 
@@ -62,19 +40,19 @@ export default async function AdminPage({
     );
   }
 
+  if (!currentTournament) {
+    return (
+      <p className="border border-white/10 bg-[#111111] p-5 text-sm text-neutral-300">
+        No tournaments are available to manage.
+      </p>
+    );
+  }
+
   return (
-    <AdminTournamentDashboard
-      tournaments={tournaments}
-      initialTournamentId={
-        tournaments.find(
-          (tournament) =>
-            tournament.id === requestedTournament ||
-            tournament.slug === requestedTournament,
-        )?.id ?? currentTournament?.id
-      }
+    <AdminHomeOverview
+      tournament={currentTournament}
       comparisonDate={now.toISOString()}
       pendingRegistrationReviews={pendingRegistrationReviews}
-      registrationReviewSummaries={registrationReviewSummaries}
     />
   );
 }

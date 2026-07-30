@@ -8,7 +8,7 @@ export default function TournamentProgress({
   steps: readonly TournamentOperationStep[];
 }) {
   return (
-    <section aria-labelledby="tournament-progress-heading" className="mt-8">
+    <section aria-labelledby="tournament-progress-heading" className="mt-6">
       <p className="text-xs font-black uppercase tracking-[0.2em] text-red-500">
         Tournament Progress
       </p>
@@ -19,7 +19,7 @@ export default function TournamentProgress({
         Operational Workflow
       </h2>
 
-      <ol className="mt-5 grid gap-3 md:grid-cols-3">
+      <ol className="mt-4 grid gap-3 md:grid-cols-3">
         {steps.map((step) => (
           <li
             key={step.number}

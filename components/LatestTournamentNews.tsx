@@ -1,5 +1,4 @@
 import { Pin } from "lucide-react";
-import Link from "next/link";
 
 import type { Announcement } from "@/types/announcement";
 
@@ -76,19 +75,31 @@ export default function LatestTournamentNews({
                   {announcement.content}
                 </div>
 
-                {announcement.slug === "card-and-apple-pay-now-available" && (
-                  <Link
-                    href="/how-it-works#frequently-asked-questions"
+                {announcement.link_label && announcement.link_url && (
+                  <a
+                    href={announcement.link_url}
+                    target={
+                      announcement.link_url.startsWith("http")
+                        ? "_blank"
+                        : undefined
+                    }
+                    rel={
+                      announcement.link_url.startsWith("http")
+                        ? "noopener noreferrer"
+                        : undefined
+                    }
                     className="mt-4 inline-flex text-xs font-black uppercase tracking-[0.12em] text-[#D4A017] transition hover:text-yellow-300 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#D4A017]"
                   >
-                    View Payment Details
-                  </Link>
+                    {announcement.link_label}
+                  </a>
                 )}
 
                 <p className="mt-4 text-xs text-neutral-500">
                   Updated{" "}
-                  <time dateTime={announcement.updated_at}>
-                    {formatAnnouncementDate(announcement.updated_at)}
+                  <time dateTime={announcement.publish_date ?? announcement.updated_at}>
+                    {formatAnnouncementDate(
+                      announcement.publish_date ?? announcement.updated_at,
+                    )}
                   </time>
                 </p>
               </article>

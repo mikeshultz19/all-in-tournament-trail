@@ -201,7 +201,7 @@ export default function CurrentTournamentCard({
       aria-labelledby="current-tournament-heading"
       className="border border-[#4A3A12] bg-[#111111]"
     >
-      <div className="grid gap-6 p-6 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center lg:p-7">
+      <div className="grid gap-5 p-5 sm:p-6 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center">
         <div className="min-w-0">
           <p className="text-xs font-black uppercase tracking-[0.2em] text-red-500">
             Tournament Operations

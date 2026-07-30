@@ -33,7 +33,7 @@ describe("approved payment content", () => {
   it("keeps homepage announcements database-driven", () => {
     const pageSource = readFileSync("app/page.tsx", "utf8");
     const newsSource = readFileSync("components/LatestTournamentNews.tsx", "utf8");
-    expect(pageSource).toContain("getAnnouncements");
+    expect(pageSource).toContain("getPublishedAnnouncements");
     expect(pageSource).toContain(
       "<LatestTournamentNews announcements={announcements} />",
     );

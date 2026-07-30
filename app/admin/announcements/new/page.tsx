@@ -2,10 +2,12 @@ import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 
 import AnnouncementForm from "@/components/admin/AnnouncementForm";
+import { requireAdminUser } from "@/lib/admin-auth";
 
 export const dynamic = "force-dynamic";
 
-export default function NewAnnouncementPage() {
+export default async function NewAnnouncementPage() {
+  await requireAdminUser();
   return (
     <>
       <Link

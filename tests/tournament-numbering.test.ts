@@ -49,6 +49,20 @@ describe("immutable regular-season tournament numbering", () => {
     );
   });
 
+  it("numbers the official November Eagle Mountain and safely ignores an unused March copy", () => {
+    expect(migration).toContain("date '2026-11-01'");
+    expect(migration).toContain("v_official_eagle_count > 1");
+    expect(migration).toContain(
+      "AITT_REGULAR_SEASON_NUMBER_AMBIGUOUS_EAGLE_MOUNTAIN",
+    );
+    expect(migration).toContain("date '2027-03-14'");
+    expect(migration).toContain("set season_id = null");
+    expect(migration).toContain("public.tournament_registrations");
+    expect(migration).toContain("public.tournament_results");
+    expect(migration).toContain("public.tournament_aoy_points");
+    expect(migration).toContain("membership.first_eligible_tournament_id");
+  });
+
   it("makes the number, season, and regular-season identity immutable", () => {
     expect(migration).toContain(
       "AITT_REGULAR_SEASON_IDENTITY_IMMUTABLE",
@@ -65,9 +79,7 @@ describe("immutable regular-season tournament numbering", () => {
     expect(migration).not.toMatch(
       /row_number\s*\(\s*\)\s*over\s*\(\s*order by\s+tournament_date/i,
     );
-    expect(migration).not.toMatch(
-      /set\s+regular_season_number\s*=[\s\S]*tournament_date/i,
-    );
+    expect(migration).toContain("where id = v_official_eagle_id");
   });
 
   it("uses tournament numbers for First Eligible Tournament ordering", () => {

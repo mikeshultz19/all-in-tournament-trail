@@ -13,7 +13,11 @@ function validValues(
   return {
     title: "Lake Fork Registration Update",
     content: "Registration remains open through the published deadline.",
-    isPinned: false,
+    publishDate: "2026-11-01T08:00",
+    isPublished: true,
+    linkLabel: "",
+    linkUrl: "",
+    displayOrder: 0,
     ...overrides,
   };
 }
@@ -45,7 +49,8 @@ describe("Announcement form model", () => {
     const insert = announcementFormToInsert(values, "abc12345");
 
     expect(insert.content).toBe("The tournament ramp has changed.");
-    expect(insert.is_pinned).toBe(false);
+    expect(insert.is_published).toBe(true);
+    expect(insert.display_order).toBe(0);
     expect(insert).not.toHaveProperty("tournament_id");
     expect(insert.slug).toBe("lake-fork-registration-update-abc12345");
   });
@@ -65,10 +70,31 @@ describe("Announcement form model", () => {
     );
   });
 
-  it("preserves the optional pinned state", () => {
+  it("validates paired links and nonnegative display order", () => {
     expect(
-      announcementFormToInsert(validValues({ isPinned: true }), "abc12345")
-        .is_pinned,
-    ).toBe(true);
+      validateAnnouncementForm(validValues({ linkLabel: "Register" })).linkUrl,
+    ).toBeDefined();
+    expect(
+      validateAnnouncementForm(validValues({ linkUrl: "/register" })).linkLabel,
+    ).toBeDefined();
+    expect(
+      validateAnnouncementForm(validValues({ displayOrder: -1 })).displayOrder,
+    ).toBeDefined();
+  });
+
+  it("stores optional links and publication controls", () => {
+    const insert = announcementFormToInsert(
+      validValues({
+        linkLabel: "Register Now",
+        linkUrl: "/register",
+        displayOrder: 2,
+        isPublished: false,
+      }),
+      "abc12345",
+    );
+    expect(insert.link_label).toBe("Register Now");
+    expect(insert.link_url).toBe("/register");
+    expect(insert.display_order).toBe(2);
+    expect(insert.is_published).toBe(false);
   });
 });

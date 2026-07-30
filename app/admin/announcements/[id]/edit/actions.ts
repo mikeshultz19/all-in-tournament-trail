@@ -6,6 +6,7 @@ import { redirect } from "next/navigation";
 import { requireAdminUser } from "@/lib/admin-auth";
 import {
   announcementFormData,
+  announcementFormToUpdate,
   validateAnnouncementForm,
   type AnnouncementFormState,
 } from "@/lib/announcement-form";
@@ -40,11 +41,10 @@ export async function updateAnnouncementAction(
   }
 
   try {
-    await updateAnnouncement(announcementId, {
-      title: values.title,
-      content: values.content,
-      is_pinned: values.isPinned,
-    });
+    await updateAnnouncement(
+      announcementId,
+      announcementFormToUpdate(values),
+    );
 
     refreshAnnouncementPages(announcementId);
   } catch (error) {
@@ -63,7 +63,6 @@ export async function updateAnnouncementAction(
 
 export async function deleteAnnouncementAction(
   announcementId: string,
-  _formData: FormData,
 ): Promise<void> {
   await requireAdminUser();
 

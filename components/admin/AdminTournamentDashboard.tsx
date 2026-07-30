@@ -21,6 +21,7 @@ interface AdminTournamentDashboardProps {
     string,
     { total: number; verified: number; pending: number; resolved: number }
   >;
+  showTournamentTools?: boolean;
 }
 
 export default function AdminTournamentDashboard({
@@ -29,6 +30,7 @@ export default function AdminTournamentDashboard({
   comparisonDate,
   pendingRegistrationReviews = 0,
   registrationReviewSummaries = {},
+  showTournamentTools = false,
 }: AdminTournamentDashboardProps) {
   const initialTournament = getInitialAdminTournament(
     tournaments,
@@ -62,13 +64,25 @@ export default function AdminTournamentDashboard({
     <>
       <Link
         href="/admin/registration-review"
-        className="mb-6 flex items-center justify-between border border-[#D4A017]/30 bg-[#D4A017]/5 px-5 py-4 transition hover:border-[#D4A017]/60"
+        className={`mb-4 flex items-center justify-between border px-5 py-3 ${
+          pendingRegistrationReviews > 0
+            ? "border-[#D4A017]/30 bg-[#D4A017]/5"
+            : "border-white/10 bg-[#111111]"
+        }`}
       >
         <span className="font-black uppercase text-white">
           Registration Review
         </span>
-        <span className="text-sm font-black uppercase text-[#D4A017]">
-          Pending: {pendingRegistrationReviews}
+        <span
+          className={`text-sm font-black uppercase ${
+            pendingRegistrationReviews > 0
+              ? "text-[#D4A017]"
+              : "text-neutral-500"
+          }`}
+        >
+          {pendingRegistrationReviews > 0
+            ? `${pendingRegistrationReviews} Pending`
+            : "No Pending Reviews"}
         </span>
       </Link>
 
@@ -82,7 +96,7 @@ export default function AdminTournamentDashboard({
       <TournamentProgress steps={operationSteps} />
 
       {registrationReviewSummaries[currentTournament.id] && (
-        <section className="mt-6 border border-white/10 bg-[#111] p-5">
+        <section className="mt-4 border border-white/10 bg-[#111] p-5">
           <h2 className="text-sm font-black uppercase text-white">
             Registration Identity Review
           </h2>
@@ -102,11 +116,41 @@ export default function AdminTournamentDashboard({
         </section>
       )}
 
-      <div className="mt-8 space-y-5">
+      <div className="mt-6 space-y-4">
         {operationSteps.map((step) => (
           <TournamentOperationCard key={step.number} step={step} />
         ))}
       </div>
+
+      {showTournamentTools && (
+        <section className="mt-6" aria-labelledby="tournament-tools-heading">
+          <h2
+            id="tournament-tools-heading"
+            className="text-xl font-black uppercase text-white"
+          >
+            Tournament Closeout Tools
+          </h2>
+          <div className="mt-4 grid gap-3 sm:grid-cols-2">
+            {[
+              ["Tournament Information", `/admin/tournament?tournament=${encodeURIComponent(currentTournament.slug || currentTournament.id)}`],
+              ["Tournament Conditions", "/admin/conditions"],
+              ["Tournament Results", "/admin/results"],
+              ["Import WeighFish", `/admin/tournament-manager/import?tournament=${encodeURIComponent(currentTournament.slug || currentTournament.id)}`],
+              ["Insurance Review", `/admin/tournament-manager/insurance?tournament=${encodeURIComponent(currentTournament.slug || currentTournament.id)}`],
+              ["Winner Photos", `/admin/tournament-manager/photos?tournament=${encodeURIComponent(currentTournament.slug || currentTournament.id)}`],
+              ["Publish Tournament", `/admin/tournament-manager/publish?tournament=${encodeURIComponent(currentTournament.slug || currentTournament.id)}`],
+            ].map(([label, href]) => (
+              <Link
+                key={href}
+                href={href}
+                className="flex min-h-12 items-center border border-white/10 bg-[#111111] px-5 text-sm font-black uppercase text-white hover:border-[#D4A017] hover:text-[#D4A017]"
+              >
+                {label}
+              </Link>
+            ))}
+          </div>
+        </section>
+      )}
     </>
   );
 }

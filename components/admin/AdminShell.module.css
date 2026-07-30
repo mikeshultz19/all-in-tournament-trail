@@ -1,0 +1,10 @@
+.body {
+  flex: 1;
+}
+
+@media (min-width: 48rem) {
+  .body {
+    display: grid;
+    grid-template-columns: 256px minmax(0, 1fr);
+  }
+}

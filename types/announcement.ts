@@ -7,6 +7,11 @@ export interface Announcement {
   content: string;
   featured_image_url: string | null;
   is_pinned: boolean;
+  publish_date: string | null;
+  is_published: boolean;
+  link_label: string | null;
+  link_url: string | null;
+  display_order: number;
   created_at: string;
   updated_at: string;
 }
@@ -19,6 +24,11 @@ export interface AnnouncementInsert {
   summary?: string | null;
   featured_image_url?: string | null;
   is_pinned?: boolean;
+  publish_date?: string | null;
+  is_published?: boolean;
+  link_label?: string | null;
+  link_url?: string | null;
+  display_order?: number;
 }
 
 export type AnnouncementUpdate = Partial<
@@ -31,5 +41,10 @@ export type AnnouncementUpdate = Partial<
     | "content"
     | "featured_image_url"
     | "is_pinned"
+    | "publish_date"
+    | "is_published"
+    | "link_label"
+    | "link_url"
+    | "display_order"
   >
 >;

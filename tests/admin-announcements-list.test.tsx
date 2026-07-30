@@ -14,6 +14,11 @@ const announcements: Announcement[] = [
     content: "Registration details.",
     featured_image_url: null,
     is_pinned: true,
+    publish_date: "2026-07-24T15:00:00Z",
+    is_published: true,
+    link_label: null,
+    link_url: null,
+    display_order: 0,
     created_at: "2026-07-23T15:00:00Z",
     updated_at: "2026-07-24T16:00:00Z",
   },
@@ -26,6 +31,11 @@ const announcements: Announcement[] = [
     content: "Weather update details.",
     featured_image_url: null,
     is_pinned: false,
+    publish_date: "2026-07-25T15:00:00Z",
+    is_published: false,
+    link_label: "View Details",
+    link_url: "/register",
+    display_order: 1,
     created_at: "2026-07-24T17:00:00Z",
     updated_at: "2026-07-24T17:00:00Z",
   },
@@ -41,7 +51,9 @@ describe("Admin Announcements list", () => {
     expect(markup).toContain("Existing Homepage Content");
     expect(markup).toContain("Lake Fork Registration Opens");
     expect(markup).toContain("Weather Update");
-    expect(markup).toContain("Pinned");
+    expect(markup).toContain("Published");
+    expect(markup).toContain("Unpublished");
+    expect(markup).toContain("Display order:");
     expect(markup).toContain("Jul 24, 2026");
     expect(markup).toContain("11:00 AM");
     expect(markup).toContain("Edit Announcement");

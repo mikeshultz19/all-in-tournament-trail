@@ -1,4 +1,5 @@
 import AdminAnnouncementList from "@/components/admin/AdminAnnouncementList";
+import { requireAdminUser } from "@/lib/admin-auth";
 import { getAnnouncements } from "@/lib/news";
 import type { Announcement } from "@/types/announcement";
 
@@ -9,6 +10,7 @@ export default async function AnnouncementsAdminPage({
 }: {
   searchParams: Promise<{ saved?: string }>;
 }) {
+  await requireAdminUser();
   const saved = (await searchParams).saved === "1";
   let announcements: Announcement[] = [];
   let loadFailed = false;

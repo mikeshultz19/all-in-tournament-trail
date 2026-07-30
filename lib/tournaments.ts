@@ -173,6 +173,30 @@ export async function getNextUpcomingTournament(
   return past.data;
 }
 
+/**
+ * Returns the tournament currently active in the operational workflow.
+ *
+ * A tournament remains active until its lifecycle is officially closed by
+ * publishing Results. Selection follows the active season's constitutional
+ * order rather than event date, so Home advances automatically only after the
+ * current workflow is closed.
+ */
+export function selectActiveOperationalTournament(
+  schedule: readonly Tournament[],
+): Tournament | null {
+  return (
+    schedule.find(
+      (tournament) =>
+        tournament.status !== "Results Published" &&
+        tournament.status !== "Cancelled",
+    ) ?? null
+  );
+}
+
+export async function getActiveOperationalTournament(): Promise<Tournament | null> {
+  return selectActiveOperationalTournament(await getActiveSeasonSchedule());
+}
+
 export async function getFeaturedTournament(): Promise<Tournament | null> {
   const supabase = createSupabaseServerClient();
   const { data, error } = await supabase

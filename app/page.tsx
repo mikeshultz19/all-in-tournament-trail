@@ -7,7 +7,7 @@ import AOYPointsRaceStrip from "@/components/AOYPointsRaceStrip";
 import TournamentConditions from "@/components/TournamentConditions";
 import SponsorHome from "@/components/SponsorHome";
 import { getHomepageSponsors } from "@/data/sponsors";
-import { getAnnouncements } from "@/lib/news";
+import { getPublishedAnnouncements } from "@/lib/news";
 import { getPublicEarlyEntriesForTournament } from "@/lib/tournament-registrations";
 import { getFeaturedTournament } from "@/lib/tournaments";
 import { toPublicTournament } from "@/lib/tournament-record-adapter";
@@ -63,7 +63,7 @@ export default async function HomePage() {
   let aoyStandings: PublicAoyStanding[] = [];
 
   try {
-    announcements = await getAnnouncements();
+    announcements = await getPublishedAnnouncements();
   } catch (error) {
     console.error("Homepage announcements load failed.", error);
   }
@@ -88,7 +88,7 @@ export default async function HomePage() {
 
       {/* Homepage information + Featured Tournament */}
       <section id="tournament-grid" className="border-t border-zinc-900 bg-black">
-        <div className="mx-auto w-full max-w-[1700px] px-4 py-10 lg:px-8">
+        <div className="mx-auto w-full max-w-[1700px] px-4 py-6 sm:py-8 lg:px-8">
           <div data-homepage-tournament-grid className="grid min-w-0 grid-cols-1 items-start gap-6 lg:grid-cols-2">
             <div data-tournament-column="right" className="min-w-0 lg:col-start-2 lg:row-start-1">
               <FeaturedTournament

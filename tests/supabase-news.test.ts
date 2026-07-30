@@ -14,6 +14,10 @@ describe("Supabase news migration", () => {
     "supabase/migrations/202607280014_grant_service_role_news_read.sql",
     "utf8",
   );
+  const adminExpansion = readFileSync(
+    "supabase/migrations/202607290012_expand_admin_announcements.sql",
+    "utf8",
+  );
 
   it("creates the constrained news table and indexes", () => {
     expect(migration).toContain("create table if not exists public.news");
@@ -66,6 +70,20 @@ describe("Supabase news migration", () => {
   it("allows the server-side service role to load homepage announcements", () => {
     expect(serviceRoleGrant).toContain(
       "grant select on table public.news to service_role",
+    );
+  });
+
+  it("adds publication controls and service-role-only writes", () => {
+    expect(adminExpansion).toContain("add column if not exists publish_date");
+    expect(adminExpansion).toContain("add column if not exists is_published");
+    expect(adminExpansion).toContain("add column if not exists link_label");
+    expect(adminExpansion).toContain("add column if not exists link_url");
+    expect(adminExpansion).toContain("add column if not exists display_order");
+    expect(adminExpansion).toContain(
+      "revoke insert, update, delete on table public.news from anon, authenticated",
+    );
+    expect(adminExpansion).toContain(
+      "grant select, insert, update, delete on table public.news to service_role",
     );
   });
 });

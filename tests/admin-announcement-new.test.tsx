@@ -12,10 +12,12 @@ describe("New Announcement editor", () => {
     expect(markup).toContain("<form");
     expect(markup).toContain("Announcement Details");
     expect(markup).toContain("Message");
-    expect(markup).toContain("Publish Announcement");
-    expect(markup).not.toContain("Draft");
-    expect(markup).not.toContain("Published");
-    expect(markup).toContain("Pin Announcement");
+    expect(markup).toContain("Save Announcement");
+    expect(markup).toContain("Publish Date");
+    expect(markup).toContain("Published");
+    expect(markup).toContain("Display Order");
+    expect(markup).toContain("Link Label");
+    expect(markup).toContain("Link URL");
     expect(markup).toContain('maxLength="100"');
     expect(markup).toContain('maxLength="500"');
     expect(markup).not.toContain("Topic");

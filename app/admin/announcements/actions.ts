@@ -8,7 +8,6 @@ import { deleteAnnouncement } from "@/lib/news";
 
 export async function deleteAnnouncementAction(
   announcementId: string,
-  _formData: FormData,
 ): Promise<void> {
   await requireAdminUser();
 

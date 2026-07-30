@@ -161,8 +161,14 @@ export default function AdminAnnouncementList({
                         </span>
                       )}
 
-                      <span className="inline-flex items-center gap-1.5 border border-emerald-500/30 bg-emerald-500/10 px-2.5 py-1 text-[0.65rem] font-black uppercase tracking-[0.12em] text-emerald-300">
-                        Homepage Content
+                      <span
+                        className={`inline-flex items-center border px-2.5 py-1 text-[0.65rem] font-black uppercase tracking-[0.12em] ${
+                          announcement.is_published
+                            ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-300"
+                            : "border-white/10 bg-white/[0.03] text-neutral-400"
+                        }`}
+                      >
+                        {announcement.is_published ? "Published" : "Unpublished"}
                       </span>
 
                       {announcement.featured_image_url && (
@@ -196,10 +202,19 @@ export default function AdminAnnouncementList({
                       </span>
 
                       <span>
-                        Slug:{" "}
-                        <code className="text-neutral-400">
-                          {announcement.slug}
-                        </code>
+                        Publish date:{" "}
+                        <span className="text-neutral-400">
+                          {announcement.publish_date
+                            ? formatAnnouncementDate(announcement.publish_date)
+                            : "Not set"}
+                        </span>
+                      </span>
+
+                      <span>
+                        Display order:{" "}
+                        <span className="text-neutral-400">
+                          {announcement.display_order}
+                        </span>
                       </span>
                     </div>
 

@@ -12,7 +12,9 @@ describe("homepage announcement fallback", () => {
     expect(source).toContain("details: error.details");
     expect(source).toContain("hint: error.hint");
     expect(source).toContain("code: error.code");
-    expect(source).toMatch(/if \(error\)[\s\S]*return \[\];/);
+    expect(source).toContain("getPublishedAnnouncements");
+    expect(source).toContain('.eq("is_published", true)');
+    expect(source).toContain('.lte("publish_date", now.toISOString())');
   });
 
   it("renders records and the empty state without crashing", () => {
@@ -28,6 +30,11 @@ describe("homepage announcement fallback", () => {
             content: "Registration details are available.",
             featured_image_url: null,
             is_pinned: true,
+            publish_date: "2026-07-28T12:00:00Z",
+            is_published: true,
+            link_label: "Registration Details",
+            link_url: "/register",
+            display_order: 0,
             created_at: "2026-07-28T12:00:00Z",
             updated_at: "2026-07-28T12:00:00Z",
           },
@@ -40,6 +47,7 @@ describe("homepage announcement fallback", () => {
 
     expect(loaded).toContain("Tournament Update");
     expect(loaded).toContain("Registration details are available.");
+    expect(loaded).toContain("Registration Details");
     expect(empty).toContain(
       "No current news or announcements are available.",
     );

@@ -2,41 +2,102 @@ alter table public.tournaments
   add column if not exists regular_season_number smallint;
 
 -- The two UUIDs are environment-specific identities previously used for the
--- inaugural Eagle Mountain tournament. Exactly one may exist in a database.
+-- inaugural Eagle Mountain tournament. Development may contain an unused
+-- March copy; only the official November 1 event is a numbering candidate.
 do $$
 declare
-  v_eagle_count integer;
+  v_season_id uuid;
+  v_official_eagle_count integer;
+  v_official_eagle_id uuid;
 begin
-  select count(*) into v_eagle_count
-  from public.tournaments
-  where id in (
-    'a54c9b21-7e60-47f0-9007-4c95c8bbf13c'::uuid,
-    '54e88b83-2521-4c77-a1b6-5ed4eed2890f'::uuid
-  )
-    and season_id = (
-      select id from public.seasons where slug = '2026-2027'
-    )
-    and event_type = 'regular_season';
+  select id into v_season_id
+  from public.seasons
+  where slug = '2026-2027';
 
-  if v_eagle_count > 1 then
+  select count(*)
+  into v_official_eagle_count
+  from public.tournaments
+  where season_id = v_season_id
+    and event_type = 'regular_season'
+    and (tournament_date at time zone 'America/Chicago')::date =
+      date '2026-11-01'
+    and (
+      id in (
+        'a54c9b21-7e60-47f0-9007-4c95c8bbf13c'::uuid,
+        '54e88b83-2521-4c77-a1b6-5ed4eed2890f'::uuid
+      )
+      or lower(btrim(lake)) in ('eagle mountain', 'eagle mountain lake')
+      or lower(btrim(name)) in ('eagle mountain', 'eagle mountain lake')
+    );
+
+  if v_official_eagle_count > 1 then
     raise exception using
       errcode = '23514',
       message = 'AITT_REGULAR_SEASON_NUMBER_AMBIGUOUS_EAGLE_MOUNTAIN';
   end if;
 
-  if v_eagle_count = 1 then
+  if v_official_eagle_count = 1 then
+    select id into v_official_eagle_id
+    from public.tournaments
+    where season_id = v_season_id
+      and event_type = 'regular_season'
+      and (tournament_date at time zone 'America/Chicago')::date =
+        date '2026-11-01'
+      and (
+        id in (
+          'a54c9b21-7e60-47f0-9007-4c95c8bbf13c'::uuid,
+          '54e88b83-2521-4c77-a1b6-5ed4eed2890f'::uuid
+        )
+        or lower(btrim(lake)) in ('eagle mountain', 'eagle mountain lake')
+        or lower(btrim(name)) in ('eagle mountain', 'eagle mountain lake')
+      );
+
     update public.tournaments
     set regular_season_number = 1
-    where id in (
-      'a54c9b21-7e60-47f0-9007-4c95c8bbf13c'::uuid,
-      '54e88b83-2521-4c77-a1b6-5ed4eed2890f'::uuid
-    )
-      and season_id = (
-        select id from public.seasons where slug = '2026-2027'
-      )
-      and event_type = 'regular_season'
+    where id = v_official_eagle_id
       and regular_season_number is null;
   end if;
+
+  -- Preserve but unassign the exact unused March development copy so the
+  -- active-season numbering constraint can be installed without manual edits.
+  -- Any registration, result, AOY row, or membership reference keeps the row
+  -- in scope and intentionally causes the later constraint/review checks to
+  -- fail instead of silently reclassifying production data.
+  update public.tournaments tournament
+  set season_id = null
+  where tournament.season_id = v_season_id
+    and tournament.event_type = 'regular_season'
+    and tournament.regular_season_number is null
+    and (tournament.tournament_date at time zone 'America/Chicago')::date =
+      date '2027-03-14'
+    and (
+      lower(btrim(tournament.lake)) in (
+        'eagle mountain', 'eagle mountain lake'
+      )
+      or lower(btrim(tournament.name)) in (
+        'eagle mountain', 'eagle mountain lake'
+      )
+    )
+    and not exists (
+      select 1
+      from public.tournament_registrations registration
+      where registration.tournament_id = tournament.id
+    )
+    and not exists (
+      select 1
+      from public.tournament_results result
+      where result.tournament_id = tournament.id
+    )
+    and not exists (
+      select 1
+      from public.tournament_aoy_points points
+      where points.tournament_id = tournament.id
+    )
+    and not exists (
+      select 1
+      from public.memberships membership
+      where membership.first_eligible_tournament_id = tournament.id
+    );
 end;
 $$;
 

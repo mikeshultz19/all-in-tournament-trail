@@ -18,13 +18,12 @@ describe("AdminHeader", () => {
     expect(markup).not.toContain("Welcome");
   });
 
-  it("preserves Admin Center and public website navigation", () => {
+  it("preserves Admin Center branding and public website navigation", () => {
     expect(markup).toContain('href="/admin"');
-    expect(markup).toContain('href="/admin/members"');
-    expect(markup).toContain("Members");
     expect(markup).toContain("Logout");
     expect(markup).toContain('href="/"');
     expect(markup).toContain("focus-visible:outline-2");
+    expect(markup).not.toContain('href="/admin/members"');
   });
 
   it("uses a stacked mobile layout and horizontal desktop layout", () => {

@@ -35,6 +35,14 @@ const inputClassName =
 const labelClassName =
   "text-xs font-black uppercase tracking-[0.12em] text-neutral-300";
 
+function toDateTimeLocal(value: string | null): string {
+  if (!value) return "";
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "";
+  const offset = date.getTimezoneOffset() * 60_000;
+  return new Date(date.getTime() - offset).toISOString().slice(0, 16);
+}
+
 export default function EditAnnouncementForm({
   announcement,
 }: EditAnnouncementFormProps) {
@@ -145,22 +153,89 @@ export default function EditAnnouncementForm({
             )}
           </label>
 
+          <div className="grid gap-5 sm:grid-cols-2">
+            <label className={labelClassName}>
+              Publish Date
+              <input
+                type="datetime-local"
+                name="publishDate"
+                required
+                defaultValue={toDateTimeLocal(announcement.publish_date)}
+                aria-invalid={Boolean(state.errors.publishDate)}
+                className={inputClassName}
+              />
+              {state.errors.publishDate && (
+                <span className="mt-2 block text-sm text-red-400" role="alert">
+                  {state.errors.publishDate}
+                </span>
+              )}
+            </label>
+
+            <label className={labelClassName}>
+              Display Order
+              <input
+                type="number"
+                name="displayOrder"
+                min="0"
+                step="1"
+                defaultValue={announcement.display_order}
+                aria-invalid={Boolean(state.errors.displayOrder)}
+                className={inputClassName}
+              />
+              {state.errors.displayOrder && (
+                <span className="mt-2 block text-sm text-red-400" role="alert">
+                  {state.errors.displayOrder}
+                </span>
+              )}
+            </label>
+          </div>
+
+          <div className="grid gap-5 sm:grid-cols-2">
+            <label className={labelClassName}>
+              Link Label <span className="text-neutral-500">(Optional)</span>
+              <input
+                name="linkLabel"
+                defaultValue={announcement.link_label ?? ""}
+                aria-invalid={Boolean(state.errors.linkLabel)}
+                className={inputClassName}
+              />
+              {state.errors.linkLabel && (
+                <span className="mt-2 block text-sm text-red-400" role="alert">
+                  {state.errors.linkLabel}
+                </span>
+              )}
+            </label>
+
+            <label className={labelClassName}>
+              Link URL <span className="text-neutral-500">(Optional)</span>
+              <input
+                name="linkUrl"
+                defaultValue={announcement.link_url ?? ""}
+                aria-invalid={Boolean(state.errors.linkUrl)}
+                className={inputClassName}
+              />
+              {state.errors.linkUrl && (
+                <span className="mt-2 block text-sm text-red-400" role="alert">
+                  {state.errors.linkUrl}
+                </span>
+              )}
+            </label>
+          </div>
+
           <label className="flex items-start gap-3 border border-white/10 bg-black/30 p-4">
             <input
               type="checkbox"
-              name="isPinned"
+              name="isPublished"
               value="true"
-              defaultChecked={announcement.is_pinned}
+              defaultChecked={announcement.is_published}
               className="mt-0.5 size-4 accent-[#D4A017]"
             />
-
             <span>
               <span className="block text-xs font-black uppercase tracking-[0.12em] text-neutral-300">
-                Pin Announcement
+                Published
               </span>
-
               <span className="mt-1 block text-sm text-neutral-500">
-                Show this announcement before the others.
+                Uncheck to remove this announcement from the homepage.
               </span>
             </span>
           </label>
