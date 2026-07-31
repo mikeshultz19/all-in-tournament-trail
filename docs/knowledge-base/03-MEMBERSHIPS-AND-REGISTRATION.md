@@ -35,6 +35,13 @@ First Eligible Tournament is the business eligibility control for AOY,
 Championship qualification, and member benefits. Membership Effective Date is
 administrative only. Never substitute one for the other.
 
+For the official practice privilege, current membership is necessary but is
+not sufficient by itself. The member must also be registered for that specific
+tournament. An eligible member receives one official practice day immediately
+before the event and may choose Friday or Saturday, but not both. A registered
+non-member is off-limits beginning at 12:00 AM midnight on Monday of tournament
+week. The public Rules page controls this policy before every event.
+
 Example: a membership recorded on August 1 with “Lake Two” selected as First
 Eligible Tournament does not become eligible for Lake One merely because Lake
 One occurred after the recorded Effective Date.

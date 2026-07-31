@@ -1,9 +1,9 @@
 # Official Tournament Rules
 
-**Version:** 1.2
+**Version:** 1.4
 **Status:** Approved Draft
 **Effective Date:** (TBD)
-**Last Updated:** July 28, 2026
+**Last Updated:** July 30, 2026
 
 These rules govern All-In Tournament Trail (AITT) events. They are intended to
 provide a fair, safe, and professionally administered tournament experience.
@@ -30,7 +30,7 @@ these rules, and material changes will be reflected in the version history.
 7. [Championship Qualification](#championship-qualification)
 8. [Boat & Safety](#boat-safety)
 9. [Fishing Rules](#fishing-rules)
-10. [Practice & Off Limits](#practice-off-limits)
+10. [Practice and Off-Limits Policy](#practice-off-limits)
 11. [Tournament Operations](#tournament-operations)
 12. [Protests](#protests)
 13. [Polygraph](#polygraph)
@@ -201,7 +201,8 @@ Eligible members may receive access to:
 - Championship qualification
 - Bronze, Silver, or Gold member bonus pots
 - Insurance Pot
-- Tournament-week Friday practice
+- One official practice day, either Friday or Saturday immediately before an
+  event, when the current member is registered for that specific tournament
 - Other member opportunities published by AITT
 
 Membership does not replace Tournament Entry. Bronze, Silver, and Gold are
@@ -343,7 +344,7 @@ The Tournament Director may delay, shorten, postpone, cancel, or reschedule an
 event because of lightning, severe storms, flooding, unsafe ramps or water,
 dense fog, government or marina closure, or any other unsafe condition. Wind
 gusts of **30 MPH or greater** will normally result in a delay or postponement.
-AccuWeather and Weather Underground are primary human decision references;
+Open-Meteo and Weather Underground are primary human decision references;
 weather data does not make an automatic tournament decision.
 
 <a id="fishing-rules"></a>
@@ -397,6 +398,22 @@ Only legal live fish are eligible for the Big Bass award.
 
 Any fish presented dead at weigh-in is not eligible for Big Bass.
 
+### AITT Bass Stack Challenge Rules
+
+The AITT Bass Stack Challenge is an MLF-inspired cumulative-weight format
+used only at tournaments specifically designated as Bass Stack Challenge
+events.
+
+- The angler or team with the greatest cumulative weight of all legal fish
+  officially weighed wins.
+- Anglers may weigh an unlimited number of legal fish during the tournament.
+- No more than three fish may be presented for weighing at one time.
+- Culling up to three fish is permitted.
+- Every fish counted toward the final total must satisfy all applicable AITT
+  legal-fish, size, species, handling, and tournament requirements.
+- These rules apply only to tournaments specifically designated as AITT Bass
+  Stack Challenge events.
+
 ### Cell Phones and Communication
 
 Cell phones may be carried for safety, emergency communication, official
@@ -407,25 +424,22 @@ or unauthorized outside assistance. Emergency and Tournament Official
 communications are always permitted.
 
 <a id="practice-off-limits"></a>
-## 10. Practice & Off Limits
+## 10. Practice and Off-Limits Policy
 
 ### Official Practice and Off-Limits Period
 
-- For non-members, tournament waters become off limits at **12:00 AM
-  (midnight) on Monday of tournament week** and remain off limits until the
-  official tournament begins.
-- For members, the only permitted practice day during tournament week is the
-  **Friday immediately before the tournament**.
-- Friday tournament-week practice is a member benefit; it does not alter any
-  government closure, safety instruction, or site restriction.
+Beginning at **12:00 AM midnight on Monday of tournament week**, tournament
+waters are off-limits to all non-member anglers registered to compete in that
+tournament.
 
-### Practice Partners
+A current All-In Tournament Trail member who is registered for that specific
+tournament is permitted one official practice day immediately before the
+tournament. The member may choose either Friday or Saturday, but may not
+practice on both days.
 
-A participant may not use another person to obtain information or access that
-the participant could not lawfully obtain under these practice and off-limits
-rules. **Pending approval:** AITT has not published final eligibility rules for
-Friday practice partners; participants must obtain Tournament Director
-approval before practicing with a person whose eligibility is uncertain.
+Membership alone does not provide the practice privilege. The angler must be
+registered for the applicable tournament. This policy applies before every
+AITT tournament event.
 
 ### Boats During Practice
 
@@ -572,6 +586,8 @@ administrative notes, and internal identifiers must not be displayed publicly.
 
 | Version | Date | Summary |
 | --- | --- | --- |
+| 1.4 | July 31, 2026 | Added Bass Stack Challenge rules for the designated Squaw Creek #5 and Lewisville #8 events. |
+| 1.3 | July 30, 2026 | Approved the event-specific Practice and Off-Limits Policy: registered non-members are off-limits beginning Monday at 12:00 AM; current members registered for the event may practice either Friday or Saturday, but not both. |
 | 1.2 | July 28, 2026 | Finalized team continuity and substitute-partner rules and aligned AOY and Championship qualification with the five-tournament standard. |
 | 1.1 | July 22, 2026 | Added approved short-fish, dead-fish, Big Bass, and late check-in rules and FAQ guidance. |
 | 1.0 | July 22, 2026 | Initial website rulebook. |

@@ -163,6 +163,7 @@ export default function TournamentInformationForm({
             Morning Registration
             <input
               name="morningRegistration"
+              type="time"
               defaultValue={values.morningRegistration}
               className={inputClassName}
             />

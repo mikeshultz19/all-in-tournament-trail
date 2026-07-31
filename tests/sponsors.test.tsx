@@ -1,6 +1,9 @@
 import { renderToStaticMarkup } from "react-dom/server";
+import { existsSync, readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 
+import SponsorsPage from "@/app/sponsors/page";
+import Hero from "@/components/Hero";
 import SponsorHome from "@/components/SponsorHome";
 import FeaturedSponsor from "@/components/home/FeaturedSponsor";
 import {
@@ -80,20 +83,27 @@ describe("homepage sponsors", () => {
   it("renders the configured sponsors in the approved order", () => {
     const html = renderToStaticMarkup(<SponsorHome sponsors={sponsors} />);
 
-    expect(html.indexOf("Phoenix Boats logo")).toBeLessThan(
-      html.indexOf("Texas Boat Works logo"),
-    );
     expect(html.indexOf("Texas Boat Works logo")).toBeLessThan(
       html.indexOf("Fenix Parts logo"),
     );
     expect(html.indexOf("Fenix Parts logo")).toBeLessThan(
-      html.indexOf("Mad Dawg Graphics &amp; Design logo"),
+      html.indexOf("Mad Dawg Graphics &amp; Design"),
     );
-    expect(html).toContain("grid-cols-2");
-    expect(html).toContain("min-[640px]:grid-cols-4");
-    expect(html).toContain("max-h-[40px]");
-    expect(html).toContain("max-h-[42px]");
-    expect(html).toContain("max-h-[48px]");
+    expect(html).not.toContain("Phoenix Boats");
+    expect(html).not.toContain("phoenix-boats.png");
+    expect(html).toContain("mad-dawg-graphics-design-wide1.png");
+    expect(
+      existsSync(
+        "public/images/sponsors/mad-dawg-graphics-design-wide1.png",
+      ),
+    ).toBe(true);
+    expect(html).toContain('alt="Mad Dawg Graphics &amp; Design"');
+    expect(html.match(/ alt="[^"]+"/g)).toHaveLength(3);
+    expect(html).toContain("grid-cols-1");
+    expect(html).toContain("min-[480px]:grid-cols-2");
+    expect(html).toContain("md:grid-cols-3");
+    expect(html).toContain("max-h-[52px]");
+    expect(html).toContain("max-h-[64px]");
     expect(html).toContain("border-[#4A3A12]");
   });
 
@@ -105,6 +115,12 @@ describe("homepage sponsors", () => {
     expect(html).toContain("object-contain");
     expect(html).toContain('target="_blank"');
     expect(html).toContain('rel="noopener noreferrer"');
+    expect(html).toContain("AITT is open to sponsorship opportunities.");
+    expect(html).toContain('href="/sponsors"');
+    expect(html).toContain(
+      'aria-label="Learn more about AITT sponsorship opportunities"',
+    );
+    expect(html).toContain("Learn more");
     expect(html).not.toContain("Sponsor information coming soon.");
   });
 
@@ -127,5 +143,41 @@ describe("homepage sponsors", () => {
 
     expect(html).toContain("transition-opacity");
     expect(html).not.toContain("<button");
+  });
+});
+
+describe("public sponsorship paths", () => {
+  it("renders the completed Sponsors page with benefits and the approved contact route", () => {
+    const html = renderToStaticMarkup(<SponsorsPage />);
+
+    expect(html).toContain("Partner With All-In Tournament Trail");
+    expect(html).toContain("Sponsorship benefits may include");
+    expect(html).toContain("Website exposure");
+    expect(html).toContain("Tournament recognition");
+    expect(html).toContain("Contact Us");
+    expect(html).toContain('href="/contact"');
+    expect(html).toContain("overflow-x-hidden");
+    expect(html).toContain("break-words");
+  });
+
+  it("links the emphasized homepage phrase to the existing How It Works route", () => {
+    const html = renderToStaticMarkup(<Hero />);
+
+    expect(html).not.toContain("See How AITT Works");
+    expect(html).toContain('href="/how-it-works"');
+    expect(html).toContain("How AITT Works");
+    expect(html).toContain("font-bold");
+    expect(html).toContain("text-yellow-400");
+    expect(html).toContain("hover:text-yellow-300");
+    expect(html).toContain("focus-visible:outline");
+  });
+
+  it("uses only the approved existing public routes", () => {
+    expect(existsSync("app/sponsors/page.tsx")).toBe(true);
+    expect(existsSync("app/how-it-works/page.tsx")).toBe(true);
+    expect(existsSync("app/contact/page.tsx")).toBe(true);
+    expect(
+      readFileSync("components/Header.tsx", "utf8"),
+    ).toContain('{ label: "Sponsors", href: "/sponsors" }');
   });
 });

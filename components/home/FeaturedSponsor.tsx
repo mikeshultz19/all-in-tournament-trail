@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 
 export interface FeaturedSponsorItem {
   id: string;
@@ -23,18 +24,26 @@ function SponsorLogo({
   sponsor: FeaturedSponsorItem;
   enableFadeTransition?: boolean;
 }) {
+  const isMadDawg = sponsor.name === "Mad Dawg Graphics & Design";
+
   const logo = (
     <Image
       src={sponsor.image}
-      alt={`${sponsor.name} logo`}
+      alt={
+        isMadDawg
+          ? sponsor.name
+          : `${sponsor.name} logo`
+      }
       width={500}
       height={220}
       className={`h-auto w-auto object-contain ${
-        sponsor.scale === "small"
-          ? "max-h-[40px] max-w-[85%]"
-          : sponsor.scale === "compact"
-            ? "max-h-[42px] max-w-[85%]"
-            : "max-h-[48px] max-w-[85%]"
+        isMadDawg
+          ? "bg-[#0b0b0b] max-h-[72px] max-w-[96%]"
+          : sponsor.scale === "small"
+            ? "max-h-[48px] max-w-[90%]"
+            : sponsor.scale === "compact"
+              ? "max-h-[52px] max-w-[90%]"
+              : "max-h-[64px] max-w-[92%]"
       } ${
         enableFadeTransition
           ? "transition-opacity duration-500 ease-in-out"
@@ -87,12 +96,12 @@ export default function FeaturedSponsor({
         <div className="h-px flex-1 bg-gradient-to-r from-red-700/70 to-transparent" />
       </div>
 
-      <div className="px-3 py-2 sm:px-4">
-        <div className="grid grid-cols-2 gap-1 min-[640px]:grid-cols-4">
+      <div className="px-3 py-3 sm:px-4">
+        <div className="grid grid-cols-1 gap-2 min-[480px]:grid-cols-2 md:grid-cols-3">
           {activeSponsors.map((sponsor) => (
             <div
               key={sponsor.id}
-              className="flex h-16 min-w-0 items-center justify-center px-2 py-1 sm:h-20"
+              className="flex h-20 min-w-0 items-center justify-center px-3 py-2 sm:h-24"
             >
               <SponsorLogo
                 sponsor={sponsor}
@@ -101,6 +110,18 @@ export default function FeaturedSponsor({
             </div>
           ))}
         </div>
+
+        <p className="border-t border-white/10 px-2 pb-1 pt-3 text-center text-xs leading-5 text-neutral-500">
+          AITT is open to sponsorship opportunities.{" "}
+          <Link
+            href="/sponsors"
+            aria-label="Learn more about AITT sponsorship opportunities"
+            className="font-bold text-[#D4A017] transition hover:text-yellow-300 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#D4A017]"
+          >
+            Learn more
+          </Link>
+          .
+        </p>
       </div>
     </section>
   );

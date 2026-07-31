@@ -21,7 +21,7 @@ function validFormData(): FormData {
   );
   formData.set(
     "practiceInformation",
-    "Non-members are off-limits Sunday.\n\nMembers may practice Friday.",
+    "Registered non-members are off-limits beginning Monday at 12:00 AM.\n\nA current member registered for the event may practice Friday or Saturday, but not both.",
   );
   formData.set("status", "Registration Open");
   formData.set("isFeatured", "on");
@@ -41,7 +41,7 @@ describe("Tournament Information form", () => {
       registrationInformation:
         "Online registration closes Friday, October 30 at 6:00 PM.",
       practiceInformation:
-        "Non-members are off-limits beginning Sunday prior to the tournament.\n\nMembers may practice beginning Friday before the tournament.",
+        "Beginning at 12:00 AM midnight on Monday of tournament week, tournament waters are off-limits to non-member anglers competing in this event.\n\nA current member registered for this specific tournament may use one official practice day, choosing Friday or Saturday immediately before the tournament, but not both.",
       status: "Registration Open",
       isFeatured: true,
       showOnHomepage: true,
@@ -81,7 +81,7 @@ describe("Tournament Information form", () => {
       registration_information:
         "Online registration closes Friday at 6:00 PM.",
       practice_information:
-        "Non-members are off-limits Sunday.\n\nMembers may practice Friday.",
+        "Registered non-members are off-limits beginning Monday at 12:00 AM.\n\nA current member registered for the event may practice Friday or Saturday, but not both.",
       updated_by: "AITT Staff",
     });
     expect(update.tournament_date).toBe("2026-08-16T11:00:00.000Z");

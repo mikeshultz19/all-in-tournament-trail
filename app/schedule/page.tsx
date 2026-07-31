@@ -1,5 +1,4 @@
 import Image from "next/image";
-import Link from "next/link";
 
 import Header from "@/components/Header";
 import {
@@ -12,27 +11,15 @@ import {
   toPublicTournament,
   type PublicTournamentRecord,
 } from "@/lib/tournament-record-adapter";
-import { getOnlineRegistrationEligibility } from "@/lib/online-registration";
 import { getTournamentDisplay } from "@/lib/tournament-display";
 
-const REGISTRATION_ROUTE = "/register";
-
-const lifecycleStatusStyles = {
-  Scheduled: "border-sky-500/40 text-sky-300",
-  "Ready for Registration": "border-sky-500/40 text-sky-300",
-  "Registration Open": "border-emerald-500/40 text-emerald-300",
-  "Registration Closed": "border-neutral-500/40 text-neutral-300",
-  Postponed: "border-[#D4A017]/50 text-[#D4A017]",
-  Cancelled: "border-red-500/40 text-red-300",
-  "Tournament Day": "border-sky-500/40 text-sky-300",
-  "Results Published": "border-emerald-500/40 text-emerald-300",
-} as const;
+const LAUNCH_REGISTRATION_STATUS = "Registration Closed";
 
 function TournamentRow({ tournament }: { tournament: PublicTournamentRecord }) {
   const thumbnailImage =
     tournament.thumbnailImage ?? getTournamentImage(tournament);
-  const registration = getOnlineRegistrationEligibility(tournament);
   const display = getTournamentDisplay(tournament);
+  const isBassStackChallenge = tournament.tournamentFormat === "bass-stack";
 
   return (
     <article className="grid gap-5 border-b border-[#4A3A12] px-4 py-6 lg:grid-cols-[180px_minmax(0,1fr)_140px] lg:items-center lg:gap-6 lg:px-5 lg:py-5">
@@ -60,13 +47,23 @@ function TournamentRow({ tournament }: { tournament: PublicTournamentRecord }) {
         <p className="mb-2 text-xs font-bold uppercase tracking-[0.14em] text-[#D4A017] lg:hidden">
           About This Tournament
         </p>
-        <p className="text-sm leading-6 text-[#B8B8B8]">
-          {tournament.description}
-        </p>
+        <div className="space-y-2">
+          <p className="text-sm leading-6 text-[#B8B8B8]">
+            {tournament.description}
+          </p>
+          {isBassStackChallenge && (
+            <p className="flex flex-wrap items-baseline gap-x-2 gap-y-1 text-sm leading-6 text-[#D4A017]">
+              <span className="inline-flex whitespace-nowrap rounded border border-[#c9aa4a]/70 bg-black/70 px-2 py-0.5 text-[0.58rem] font-black uppercase leading-none tracking-[0.18em] text-[#c9aa4a]">
+                BASS STACK
+              </span>
+              <span>This event is an AITT Bass Stack Challenge.</span>
+            </p>
+          )}
+        </div>
         <span
-          className={`mt-3 inline-flex border px-2.5 py-1 text-[10px] font-black uppercase tracking-[0.12em] ${lifecycleStatusStyles[tournament.lifecycleStatus]}`}
+          className="mt-3 inline-flex border border-neutral-500/40 px-2.5 py-1 text-[10px] font-black uppercase tracking-[0.12em] text-neutral-300"
         >
-          {tournament.lifecycleStatus}
+          {LAUNCH_REGISTRATION_STATUS}
         </span>
         <dl className="mt-4 grid grid-cols-1 gap-x-5 gap-y-3 border-t border-white/10 pt-4 sm:grid-cols-2 xl:grid-cols-5">
           <div>
@@ -94,10 +91,12 @@ function TournamentRow({ tournament }: { tournament: PublicTournamentRecord }) {
         </dl>
       </div>
 
-      {registration.canRegister ? <Link
-        href={`${REGISTRATION_ROUTE}?tournament=${tournament.slug}`}
-        className="inline-flex min-h-11 w-full items-center justify-center rounded-sm bg-[#D4A017] px-5 py-3 text-center text-xs font-black uppercase tracking-[0.12em] text-[#0B0B0B] transition hover:bg-[#e2b229] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#D4A017]"
-      >{registration.label}</Link> : <span aria-disabled="true" title={registration.reason} className="inline-flex min-h-11 w-full cursor-not-allowed items-center justify-center rounded-sm border border-neutral-700 px-3 py-3 text-center text-xs font-black uppercase tracking-[0.08em] text-neutral-500">{registration.label}</span>}
+      <span
+        aria-disabled="true"
+        className="inline-flex min-h-11 w-full cursor-not-allowed items-center justify-center rounded-sm border border-neutral-700 px-3 py-3 text-center text-xs font-black uppercase tracking-[0.08em] text-neutral-500"
+      >
+        {LAUNCH_REGISTRATION_STATUS}
+      </span>
     </article>
   );
 }
@@ -132,7 +131,7 @@ export default async function SchedulePage() {
           <div className="hidden grid-cols-[180px_minmax(0,1fr)_140px] items-center gap-6 border-b border-[#4A3A12] px-5 py-4 text-xs font-black uppercase tracking-[0.14em] text-[#D4A017] lg:grid">
             <span>Lake</span>
             <span>About This Tournament</span>
-            <span className="text-center">Register</span>
+            <span className="text-center">Status</span>
           </div>
 
           {tournaments.length > 0 ? (

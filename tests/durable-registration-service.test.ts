@@ -29,6 +29,10 @@ vi.mock("@/lib/registration-membership-validation", () => ({
   validateRegistrationMembershipClaims: validateMembershipClaims,
 }));
 
+vi.mock("@/config/launch-mode", () => ({
+  SOFT_LAUNCH_REGISTRATION_CLOSED: false,
+}));
+
 import {
   completeDurableRegistration,
   DurableRegistrationError,

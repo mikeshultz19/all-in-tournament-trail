@@ -180,6 +180,8 @@ const officialSchedule = [
     tournament_end_date: null,
     event_type: "regular_season",
     regular_season_number: 1,
+    description:
+      "A powerhouse fishery known for big bass and heavyweight tournament bags. Get ready to see some impressive fish brought to the scales.",
     status: "Registration Open",
     is_featured: true,
     show_on_homepage: true,
@@ -192,6 +194,8 @@ const officialSchedule = [
     tournament_end_date: null,
     event_type: "regular_season",
     regular_season_number: 2,
+    description:
+      "One of the premier power plant lakes in Texas, known for excellent winter fishing and consistent limits.",
     status: "Registration Open",
     is_featured: false,
     show_on_homepage: false,
@@ -204,6 +208,8 @@ const officialSchedule = [
     tournament_end_date: null,
     event_type: "regular_season",
     regular_season_number: 3,
+    description:
+      "A big-weight lake where marinas, riprap, and the expansive river system often hold the winning fish.",
     status: "Registration Open",
     is_featured: false,
     show_on_homepage: false,
@@ -216,6 +222,8 @@ const officialSchedule = [
     tournament_end_date: null,
     event_type: "regular_season",
     regular_season_number: 4,
+    description:
+      "A unique river-system fishery featuring boat docks, deep clear water, and a variety of productive structure.",
     status: "Registration Open",
     is_featured: false,
     show_on_homepage: false,
@@ -228,6 +236,8 @@ const officialSchedule = [
     tournament_end_date: null,
     event_type: "regular_season",
     regular_season_number: 5,
+    description:
+      "One of the premier power plant lakes in Texas, known for excellent winter fishing and consistent limits.",
     status: "Registration Open",
     is_featured: false,
     show_on_homepage: false,
@@ -240,6 +250,8 @@ const officialSchedule = [
     tournament_end_date: null,
     event_type: "regular_season",
     regular_season_number: 6,
+    description:
+      "One of the toughest tournament lakes in Texas, but capable of producing trophy bass around rocks, flats, and flooded timber.",
     status: "Registration Open",
     is_featured: false,
     show_on_homepage: false,
@@ -252,6 +264,8 @@ const officialSchedule = [
     tournament_end_date: null,
     event_type: "regular_season",
     regular_season_number: 7,
+    description:
+      "An expansive fishery known for its abundant boat docks and outstanding shallow-water cover fishing.",
     status: "Registration Open",
     is_featured: false,
     show_on_homepage: false,
@@ -264,6 +278,8 @@ const officialSchedule = [
     tournament_end_date: null,
     event_type: "regular_season",
     regular_season_number: 8,
+    description:
+      "One of the toughest lakes in DFW, where success often comes from fishing rocks, brush piles, and riprap.",
     status: "Registration Open",
     is_featured: false,
     show_on_homepage: false,

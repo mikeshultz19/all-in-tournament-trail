@@ -1,3 +1,7 @@
+import { TWIN_POINTS_WEATHER_LOCATION } from "@/config/tournament-weather-locations";
+
+export type TournamentFormat = "standard" | "bass-stack";
+
 export type TournamentStatus =
   | "upcoming"
   | "live"
@@ -51,14 +55,24 @@ export interface Tournament {
   heroImage: string | null;
   thumbnailImage: string | null;
   livestreamAvailable: boolean;
-  /** Stable provider location key; populate from an AccuWeather location lookup. */
-  accuWeatherLocationKey: string | null;
+  /** Approved tournament weather location; never derive through browser geolocation. */
+  weatherLatitude: number | null;
+  weatherLongitude: number | null;
+  tournamentFormat?: TournamentFormat;
 }
 
 export const TOURNAMENT_IMAGE_FALLBACK = "/images/tournament-hero.png";
 
-const TOURNAMENT_DESCRIPTION =
-  "Eagle Mountain Lake is one of North Texas’ premier fisheries, known for its healthy population of largemouth, spotted, and white bass. With miles of shoreline, creek arms, and deep ledges, it offers something for every angler.";
+const TOURNAMENT_DESCRIPTIONS = {
+  1: "A powerhouse fishery known for big bass and heavyweight tournament bags. Get ready to see some impressive fish brought to the scales.",
+  2: "One of the premier power plant lakes in Texas, known for excellent winter fishing and consistent limits.",
+  3: "A big-weight lake where marinas, riprap, and the expansive river system often hold the winning fish.",
+  4: "A unique river-system fishery featuring boat docks, deep clear water, and a variety of productive structure.",
+  5: "One of the premier power plant lakes in Texas, known for excellent winter fishing and consistent limits.",
+  6: "One of the toughest tournament lakes in Texas, but capable of producing trophy bass around rocks, flats, and flooded timber.",
+  7: "An expansive fishery known for its abundant boat docks and outstanding shallow-water cover fishing.",
+  8: "One of the toughest lakes in DFW, where success often comes from fishing rocks, brush piles, and riprap.",
+} as const;
 
 type TournamentSeed = Omit<
   Tournament,
@@ -71,7 +85,9 @@ type TournamentSeed = Omit<
   | "earlyRegistrationDeadlineTime"
   | "tournamentMorningRegistrationOpensAt"
   | "tournamentMorningRegistrationClosesAt"
-  | "accuWeatherLocationKey"
+  | "weatherLatitude"
+  | "weatherLongitude"
+  | "tournamentFormat"
   | "state"
   | "startTimeDisplay"
   | "stopFishingTime"
@@ -89,7 +105,9 @@ type TournamentSeed = Omit<
       | "earlyRegistrationDeadlineTime"
       | "tournamentMorningRegistrationOpensAt"
       | "tournamentMorningRegistrationClosesAt"
-      | "accuWeatherLocationKey"
+      | "weatherLatitude"
+      | "weatherLongitude"
+      | "tournamentFormat"
       | "state"
       | "startTimeDisplay"
       | "stopFishingTime"
@@ -109,7 +127,7 @@ const tournamentSeeds: readonly TournamentSeed[] = [
     venue: "Twin Points Park",
     city: "Azle",
     date: "2026-11-01",
-    description: TOURNAMENT_DESCRIPTION,
+    description: TOURNAMENT_DESCRIPTIONS[1],
     status: "upcoming",
     registrationStatus: "open",
     registrationUrl: null,
@@ -118,7 +136,9 @@ const tournamentSeeds: readonly TournamentSeed[] = [
     heroImage: "/images/lakes/eagle-mountain.jfif",
     thumbnailImage: "/images/lakes/eagle-mountain.jfif",
     livestreamAvailable: false,
-    accuWeatherLocationKey: null,
+    weatherLatitude: TWIN_POINTS_WEATHER_LOCATION.latitude,
+    weatherLongitude: TWIN_POINTS_WEATHER_LOCATION.longitude,
+    tournamentFormat: "standard",
     endDate: null,
     eventType: "regular_season",
     regularSeasonNumber: 1,
@@ -131,7 +151,7 @@ const tournamentSeeds: readonly TournamentSeed[] = [
     venue: "Public Ramp",
     city: "Glen Rose",
     date: "2026-11-22",
-    description: TOURNAMENT_DESCRIPTION,
+    description: TOURNAMENT_DESCRIPTIONS[2],
     status: "upcoming",
     registrationStatus: "open",
     registrationUrl: null,
@@ -140,7 +160,9 @@ const tournamentSeeds: readonly TournamentSeed[] = [
     heroImage: "/images/lakes/squaw-creek.jfif",
     thumbnailImage: "/images/lakes/squaw-creek.jfif",
     livestreamAvailable: false,
-    accuWeatherLocationKey: null,
+    weatherLatitude: null,
+    weatherLongitude: null,
+    tournamentFormat: "standard",
     endDate: null,
     eventType: "regular_season",
     regularSeasonNumber: 2,
@@ -153,7 +175,7 @@ const tournamentSeeds: readonly TournamentSeed[] = [
     venue: "Public Ramp",
     city: "Rockwall",
     date: "2026-12-13",
-    description: TOURNAMENT_DESCRIPTION,
+    description: TOURNAMENT_DESCRIPTIONS[3],
     status: "upcoming",
     registrationStatus: "open",
     registrationUrl: null,
@@ -162,7 +184,9 @@ const tournamentSeeds: readonly TournamentSeed[] = [
     heroImage: "/images/lakes/ray-hubbard.jfif",
     thumbnailImage: "/images/lakes/ray-hubbard.jfif",
     livestreamAvailable: false,
-    accuWeatherLocationKey: null,
+    weatherLatitude: null,
+    weatherLongitude: null,
+    tournamentFormat: "standard",
     endDate: null,
     eventType: "regular_season",
     regularSeasonNumber: 3,
@@ -175,7 +199,7 @@ const tournamentSeeds: readonly TournamentSeed[] = [
     venue: null,
     city: null,
     date: "2027-01-17",
-    description: TOURNAMENT_DESCRIPTION,
+    description: TOURNAMENT_DESCRIPTIONS[4],
     status: "upcoming",
     registrationStatus: "unavailable",
     registrationUrl: null,
@@ -187,7 +211,9 @@ const tournamentSeeds: readonly TournamentSeed[] = [
     endDate: null,
     eventType: "regular_season",
     regularSeasonNumber: 4,
-    accuWeatherLocationKey: null,
+    tournamentFormat: "standard",
+    weatherLatitude: null,
+    weatherLongitude: null,
   },
   {
     slug: "squaw-creek-2027",
@@ -197,7 +223,7 @@ const tournamentSeeds: readonly TournamentSeed[] = [
     venue: null,
     city: null,
     date: "2027-02-14",
-    description: TOURNAMENT_DESCRIPTION,
+    description: TOURNAMENT_DESCRIPTIONS[5],
     status: "upcoming",
     registrationStatus: "unavailable",
     registrationUrl: null,
@@ -209,7 +235,9 @@ const tournamentSeeds: readonly TournamentSeed[] = [
     endDate: null,
     eventType: "regular_season",
     regularSeasonNumber: 5,
-    accuWeatherLocationKey: null,
+    tournamentFormat: "bass-stack",
+    weatherLatitude: null,
+    weatherLongitude: null,
   },
   {
     slug: "ray-roberts-march-2027",
@@ -219,7 +247,7 @@ const tournamentSeeds: readonly TournamentSeed[] = [
     venue: null,
     city: null,
     date: "2027-03-14",
-    description: TOURNAMENT_DESCRIPTION,
+    description: TOURNAMENT_DESCRIPTIONS[6],
     status: "upcoming",
     registrationStatus: "unavailable",
     registrationUrl: null,
@@ -231,7 +259,9 @@ const tournamentSeeds: readonly TournamentSeed[] = [
     endDate: null,
     eventType: "regular_season",
     regularSeasonNumber: 6,
-    accuWeatherLocationKey: null,
+    tournamentFormat: "standard",
+    weatherLatitude: null,
+    weatherLongitude: null,
   },
   {
     slug: "tawakoni-april-2027",
@@ -241,7 +271,7 @@ const tournamentSeeds: readonly TournamentSeed[] = [
     venue: null,
     city: null,
     date: "2027-04-25",
-    description: TOURNAMENT_DESCRIPTION,
+    description: TOURNAMENT_DESCRIPTIONS[7],
     status: "upcoming",
     registrationStatus: "unavailable",
     registrationUrl: null,
@@ -253,7 +283,9 @@ const tournamentSeeds: readonly TournamentSeed[] = [
     endDate: null,
     eventType: "regular_season",
     regularSeasonNumber: 7,
-    accuWeatherLocationKey: null,
+    tournamentFormat: "standard",
+    weatherLatitude: null,
+    weatherLongitude: null,
   },
   {
     slug: "lewisville-may-2027",
@@ -263,7 +295,7 @@ const tournamentSeeds: readonly TournamentSeed[] = [
     venue: null,
     city: null,
     date: "2027-05-16",
-    description: TOURNAMENT_DESCRIPTION,
+    description: TOURNAMENT_DESCRIPTIONS[8],
     status: "upcoming",
     registrationStatus: "unavailable",
     registrationUrl: null,
@@ -275,7 +307,9 @@ const tournamentSeeds: readonly TournamentSeed[] = [
     endDate: null,
     eventType: "regular_season",
     regularSeasonNumber: 8,
-    accuWeatherLocationKey: null,
+    tournamentFormat: "bass-stack",
+    weatherLatitude: null,
+    weatherLongitude: null,
   },
   {
     slug: "aitt-2026-2027-championship",
@@ -298,7 +332,8 @@ const tournamentSeeds: readonly TournamentSeed[] = [
     heroImage: TOURNAMENT_IMAGE_FALLBACK,
     thumbnailImage: TOURNAMENT_IMAGE_FALLBACK,
     livestreamAvailable: false,
-    accuWeatherLocationKey: null,
+    weatherLatitude: null,
+    weatherLongitude: null,
   },
 ];
 
@@ -321,7 +356,9 @@ export const tournaments: readonly Tournament[] = tournamentSeeds.map(
       tournament.tournamentMorningRegistrationOpensAt ?? "05:00",
     tournamentMorningRegistrationClosesAt:
       tournament.tournamentMorningRegistrationClosesAt ?? null,
-    accuWeatherLocationKey: tournament.accuWeatherLocationKey ?? null,
+    weatherLatitude: tournament.weatherLatitude ?? null,
+    weatherLongitude: tournament.weatherLongitude ?? null,
+    tournamentFormat: tournament.tournamentFormat ?? "standard",
     state: tournament.state ?? "Texas",
     startTimeDisplay: tournament.startTimeDisplay ?? "Safe Light",
     stopFishingTime: tournament.stopFishingTime ?? "15:00",

@@ -117,72 +117,23 @@ export default function AnnouncementForm() {
             )}
           </label>
 
-          <div className="grid gap-5 sm:grid-cols-2">
-            <label className={labelClassName}>
-              Publish Date
-              <input
-                type="datetime-local"
-                name="publishDate"
-                required
-                aria-invalid={Boolean(state.errors.publishDate)}
-                className={inputClassName}
-              />
-              {state.errors.publishDate && (
-                <span className="mt-2 block text-sm text-red-400" role="alert">
-                  {state.errors.publishDate}
-                </span>
-              )}
-            </label>
-
-            <label className={labelClassName}>
-              Display Order
-              <input
-                type="number"
+          <label className={labelClassName}>
+              Announcement Position
+              <select
                 name="displayOrder"
-                min="0"
-                step="1"
                 defaultValue="0"
                 aria-invalid={Boolean(state.errors.displayOrder)}
                 className={inputClassName}
-              />
+              >
+                <option value="0">Top Announcement</option>
+                <option value="1">Second Announcement</option>
+              </select>
               {state.errors.displayOrder && (
                 <span className="mt-2 block text-sm text-red-400" role="alert">
                   {state.errors.displayOrder}
                 </span>
               )}
-            </label>
-          </div>
-
-          <div className="grid gap-5 sm:grid-cols-2">
-            <label className={labelClassName}>
-              Link Label <span className="text-neutral-500">(Optional)</span>
-              <input
-                name="linkLabel"
-                aria-invalid={Boolean(state.errors.linkLabel)}
-                className={inputClassName}
-              />
-              {state.errors.linkLabel && (
-                <span className="mt-2 block text-sm text-red-400" role="alert">
-                  {state.errors.linkLabel}
-                </span>
-              )}
-            </label>
-
-            <label className={labelClassName}>
-              Link URL <span className="text-neutral-500">(Optional)</span>
-              <input
-                name="linkUrl"
-                placeholder="/register or https://example.com"
-                aria-invalid={Boolean(state.errors.linkUrl)}
-                className={inputClassName}
-              />
-              {state.errors.linkUrl && (
-                <span className="mt-2 block text-sm text-red-400" role="alert">
-                  {state.errors.linkUrl}
-                </span>
-              )}
-            </label>
-          </div>
+          </label>
 
           <label className="flex items-start gap-3 border border-white/10 bg-black/30 p-4">
             <input
@@ -196,8 +147,7 @@ export default function AnnouncementForm() {
                 Published
               </span>
               <span className="mt-1 block text-sm leading-6 text-neutral-500">
-                Published announcements appear on the homepage when their
-                publish date arrives.
+                Published announcements appear on the homepage.
               </span>
             </span>
           </label>

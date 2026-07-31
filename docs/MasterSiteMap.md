@@ -37,10 +37,14 @@ The staff application is separate from public navigation:
 
 ```text
 Admin Center
-  ├── Tournament Information
-  ├── News & Announcements
-  ├── Tournament Conditions
-  └── Tournament Manager
+  ├── Home
+  ├── Tournament
+  ├── Members
+  ├── Registration Review
+  ├── Website
+  ├── Settings
+  └── Website Analytics
+        └── Registration Interest
 ```
 
 The dashboard is scoped to a selected Current Tournament. Sponsors are not a

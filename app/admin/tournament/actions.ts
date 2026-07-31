@@ -34,7 +34,9 @@ export async function saveTournamentAction(
     await updateTournament(tournamentId, tournamentFormToUpdate(values));
 
     revalidatePath("/admin");
+    revalidatePath("/admin/tournaments");
     revalidatePath("/admin/tournament");
+    revalidatePath("/admin/tournament-manager");
     revalidatePath("/");
     revalidatePath("/schedule");
     revalidatePath("/register");

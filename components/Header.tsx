@@ -8,7 +8,7 @@ const navItems = [
   { label: "Schedule", href: "/schedule" },
   { label: "Standings", href: "/standings" },
   { label: "Rules", href: "/rules" },
-  { label: "Sponsors" },
+  { label: "Sponsors", href: "/sponsors" },
 ];
 
 export default function Header({ activeItem }: { activeItem?: string }) {

@@ -4,6 +4,15 @@ import Link from "next/link";
 import styles from "@/components/AOYPointsRaceStrip.module.css";
 import type { PublicAoyStanding } from "@/lib/aoy-standings";
 
+type AoyDisplayLeader =
+  | PublicAoyStanding
+  | {
+      place: number;
+      angler: string;
+      points: null;
+      isPlaceholder: true;
+    };
+
 function formatOrdinalRank(place: number) {
   const remainder100 = place % 100;
   if (remainder100 >= 11 && remainder100 <= 13) return `${place}TH`;
@@ -22,27 +31,52 @@ function formatOrdinalRank(place: number) {
 
 export default function AOYPointsRaceStrip({
   standings,
+  unavailable = false,
 }: {
   standings: readonly PublicAoyStanding[];
+  unavailable?: boolean;
 }) {
   const leaders = standings.slice(0, 5);
-  const displayLeaders =
-    leaders.length >= 3
-      ? [leaders[1], leaders[2], leaders[0], ...leaders.slice(3)]
-      : leaders;
+  const placeholderLeaders: AoyDisplayLeader[] = [2, 3, 1, 4, 5].map(
+    (place) => ({
+      place,
+      angler: "Awaiting Results",
+      points: null,
+      isPlaceholder: true as const,
+    }),
+  );
+  let displayLeaders: AoyDisplayLeader[] = [];
+
+  if (!unavailable) {
+    displayLeaders =
+      leaders.length === 0
+        ? placeholderLeaders
+        : leaders.length >= 3
+          ? [leaders[1], leaders[2], leaders[0], ...leaders.slice(3)]
+          : leaders;
+  }
 
   return (
     <section
       aria-labelledby="homepage-aoy-points-race"
-      className="-mb-6 bg-[#0B0A09] px-4 sm:px-6"
+      className="bg-black px-4 sm:px-6"
     >
-      <div className="relative mx-auto flex h-[100px] w-full max-w-[1700px] flex-col overflow-hidden bg-[#0f0f0e] px-3 py-2 sm:px-4">
+      <div className="relative mx-auto flex h-[100px] w-full max-w-[1700px] flex-col overflow-hidden bg-transparent px-3 py-2 sm:px-4">
         <div className="relative flex min-h-5 items-center justify-center">
           <h2
             id="homepage-aoy-points-race"
-            className="whitespace-nowrap text-[0.62rem] font-black uppercase tracking-[0.14em] text-[#c9aa4a] sm:text-[0.72rem] sm:tracking-[0.18em]"
+            className="flex items-center justify-center gap-2 whitespace-nowrap text-[0.62rem] font-black uppercase tracking-[0.14em] text-[#c9aa4a] sm:gap-3 sm:text-[0.72rem] sm:tracking-[0.18em]"
           >
-            Angler of the Year Race
+            <span aria-hidden="true" className="text-[0.8rem] leading-none">
+              ❧
+            </span>
+            <span>Angler of the Year Race</span>
+            <span
+              aria-hidden="true"
+              className="scale-x-[-1] text-[0.8rem] leading-none"
+            >
+              ❧
+            </span>
           </h2>
           <Link
             href="/standings"
@@ -52,12 +86,16 @@ export default function AOYPointsRaceStrip({
           </Link>
         </div>
 
-        {leaders.length > 0 ? (
+        {unavailable ? (
+          <p className="flex flex-1 items-center justify-center text-center text-xs leading-5 text-neutral-500">
+            AOY standings are temporarily unavailable.
+          </p>
+        ) : (
           <div className="mt-1.5 flex-1">
             <ol className={styles.leaders}>
               {displayLeaders.map((standing) => (
                 <li
-                  key={standing.angler}
+                  key={`${standing.place}-${standing.angler}`}
                   className={styles.leader}
                 >
                   <span className="flex items-center justify-center gap-1 whitespace-nowrap text-[0.6rem] font-black text-[#c9aa4a]">
@@ -75,21 +113,26 @@ export default function AOYPointsRaceStrip({
                   }`}>
                     {standing.angler}
                   </span>
-                  <span className={`mt-1 whitespace-nowrap text-[0.62rem] font-black tabular-nums ${
-                    standing.place === 1
-                      ? "text-[#d6b84f]"
-                      : "text-[#c9aa4a]"
-                  }`}>
-                    {standing.points.toLocaleString()} PTS
-                  </span>
+                  {"isPlaceholder" in standing ? (
+                    <span
+                      aria-hidden="true"
+                      className="mt-1 whitespace-nowrap text-[0.62rem] font-black tabular-nums opacity-0"
+                    >
+                      0 PTS
+                    </span>
+                  ) : (
+                    <span className={`mt-1 whitespace-nowrap text-[0.62rem] font-black tabular-nums ${
+                      standing.place === 1
+                        ? "text-[#d6b84f]"
+                        : "text-[#c9aa4a]"
+                    }`}>
+                      {standing.points.toLocaleString()} PTS
+                    </span>
+                  )}
                 </li>
               ))}
             </ol>
           </div>
-        ) : (
-          <p className="flex flex-1 items-center justify-center text-center text-xs leading-5 text-neutral-500">
-            AOY standings will appear after the first tournament results are published.
-          </p>
         )}
       </div>
     </section>

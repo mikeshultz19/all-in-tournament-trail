@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 
+import { SOFT_LAUNCH_REGISTRATION_CLOSED } from "@/config/launch-mode";
 import { createAuthoritativeRegistrationQuote, validateOnlineRegistrationRequest, type OnlineRegistrationRequest } from "@/lib/online-registration";
 import {
   toPublicTournament,
@@ -10,6 +11,13 @@ import { getTournamentBySlug } from "@/lib/tournaments";
 import type { Tournament } from "@/types/tournament";
 
 export async function POST(request: Request) {
+  if (SOFT_LAUNCH_REGISTRATION_CLOSED) {
+    return NextResponse.json(
+      { error: "Registration is currently closed." },
+      { status: 403 },
+    );
+  }
+
   let input: OnlineRegistrationRequest;
   try {
     input = (await request.json()) as OnlineRegistrationRequest;

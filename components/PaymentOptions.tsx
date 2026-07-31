@@ -5,6 +5,7 @@ interface PaymentOptionsProps {
   reviewing?: boolean;
   checkoutAvailable?: boolean;
   validationMessage?: string;
+  registrationClosed?: boolean;
 }
 
 export default function PaymentOptions({
@@ -14,6 +15,7 @@ export default function PaymentOptions({
   reviewing = false,
   checkoutAvailable = false,
   validationMessage,
+  registrationClosed = false,
 }: PaymentOptionsProps) {
   return (
     <section aria-labelledby="payment-handoff-heading">
@@ -21,10 +23,14 @@ export default function PaymentOptions({
       {validationMessage && <p className="text-sm text-red-400" role="alert">{validationMessage}</p>}
       <button
         type="submit"
-        disabled={!canReview || reviewing}
+        disabled={registrationClosed || !canReview || reviewing}
         className="mt-5 min-h-14 w-full rounded-sm bg-[#D4A017] px-6 py-4 text-sm font-black uppercase tracking-[0.12em] text-[#0B0B0B] transition hover:bg-yellow-400 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white disabled:cursor-not-allowed disabled:opacity-50"
       >
-        {reviewing ? "Reviewing Registration…" : "Continue to Payment"}
+        {registrationClosed
+          ? "Registration Closed"
+          : reviewing
+            ? "Reviewing Registration…"
+            : "Continue to Payment"}
       </button>
       <p className="mt-3 text-center text-xs text-neutral-400">You’ll review and confirm before paying.</p>
       <p className="mt-2 text-center text-xs text-neutral-500">Secure payment through Square</p>

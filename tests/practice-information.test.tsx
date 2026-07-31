@@ -19,11 +19,12 @@ describe("Tournament practice information", () => {
     expect(practiceInformation).toBeGreaterThan(tournamentInformation);
     expect(viewEntries).toBeGreaterThan(practiceInformation);
     expect(html).toContain(
-      "Non-members are off-limits beginning Sunday prior to the tournament.",
+      "Beginning at 12:00 AM midnight on Monday of tournament week",
     );
     expect(html).toContain(
-      "Members may practice beginning Friday before the tournament.",
+      "one official practice day, choosing Friday or Saturday",
     );
+    expect(html).toContain("but not both");
     expect(html).toContain("whitespace-pre-line");
     expect(html).not.toContain(">Non-Members<");
     expect(html).not.toContain(">Members<");
@@ -94,7 +95,7 @@ describe("Featured Tournament registration information", () => {
     expect(html).not.toContain("Registration Information");
   });
 
-  it("always links Register Now and omits homepage status messaging", () => {
+  it("shows the Soft Launch registration status", () => {
     const tournament = {
       ...toPublicTournament(databaseTournament),
       registrationStatus: "closed" as const,
@@ -106,8 +107,8 @@ describe("Featured Tournament registration information", () => {
     expect(html).toContain(
       'href="/register?tournament=eagle-mountain-2026"',
     );
-    expect(html).toContain("Register Now");
-    expect(html).not.toContain("Registration Closed");
+    expect(html).not.toContain("Register Now");
+    expect(html).toContain("Registration Closed");
     expect(html).not.toContain("Tournament Status:");
     expect(html).not.toContain(
       "Registration is closed for this tournament.",

@@ -8,6 +8,8 @@ export const databaseTournament: Tournament = {
   name: "Eagle Mountain",
   slug: "eagle-mountain-2026",
   lake: "Eagle Mountain",
+  weather_latitude: 32.87562,
+  weather_longitude: -97.49323,
   capacity: 50,
   tournament_date: "2026-11-01T06:00:00-06:00",
   tournament_end_date: null,
@@ -19,10 +21,11 @@ export const databaseTournament: Tournament = {
   registration_information:
     "Online registration closes Friday, October 30 at 6:00 PM.",
   non_member_practice_rule:
-    "Off-limits beginning Sunday prior to the tournament.",
-  member_practice_rule: "Practice opens Friday before the tournament.",
+    "Off-limits beginning at 12:00 AM midnight on Monday of tournament week.",
+  member_practice_rule:
+    "A current member registered for this tournament may practice Friday or Saturday, but not both.",
   practice_information:
-    "Non-members are off-limits beginning Sunday prior to the tournament.\n\nMembers may practice beginning Friday before the tournament.",
+    "Beginning at 12:00 AM midnight on Monday of tournament week, tournament waters are off-limits to non-member anglers competing in this event.\n\nA current member registered for this specific tournament may use one official practice day, choosing Friday or Saturday immediately before the tournament, but not both.",
   status: "Registration Open",
   description:
     "Tournament preparations are on schedule. Register during the published registration windows.",

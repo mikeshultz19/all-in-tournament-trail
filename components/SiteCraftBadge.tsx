@@ -10,6 +10,7 @@ export default function SiteCraftBadge() {
       <Image
         alt="SiteCraft Web Design"
         height={110}
+        className="h-auto w-[110px]"
         src="/brands/sitecraft.png"
         width={110}
       />

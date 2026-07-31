@@ -16,20 +16,27 @@ export interface TournamentDisplay {
   morningRegistration: string;
 }
 
-function formatTime(time: string): string {
-  const [hours, minutes] = time.split(":").map(Number);
+export function formatTournamentTime(value?: string | null): string {
+  if (!value) return "TBA";
+
+  const [hours, minutes] = value.split(":").map(Number);
+
+  if (Number.isNaN(hours) || Number.isNaN(minutes)) {
+    return value;
+  }
+
   return new Intl.DateTimeFormat("en-US", {
-    timeZone: "UTC",
     hour: "numeric",
     minute: "2-digit",
     hour12: true,
-  }).format(new Date(Date.UTC(2000, 0, 1, hours, minutes)));
+    timeZone: "America/Chicago",
+  }).format(new Date(Date.UTC(2000, 0, 1, hours + 6, minutes)));
 }
 
 export function getTournamentDisplay(tournament: Tournament): TournamentDisplay {
   const effectiveDate = getEffectiveTournamentDate(tournament);
   const date = new Date(`${effectiveDate}T12:00:00Z`);
-  const stopFishing = formatTime(tournament.stopFishingTime);
+  const stopFishing = formatTournamentTime(tournament.stopFishingTime);
 
   const dateFormatter = new Intl.DateTimeFormat("en-US", {
       timeZone: "UTC",
@@ -55,8 +62,8 @@ export function getTournamentDisplay(tournament: Tournament): TournamentDisplay 
     hours: `${tournament.startTimeDisplay} – ${stopFishing}`,
     stopFishing: `Stop Fishing: ${stopFishing}`,
     launchType: TOURNAMENT_LAUNCH_TYPE_LABELS[tournament.launchType],
-    morningRegistration: tournament.tournamentMorningRegistrationOpensAt
-      ? formatTime(tournament.tournamentMorningRegistrationOpensAt)
-      : "To Be Announced",
+    morningRegistration: formatTournamentTime(
+      tournament.tournamentMorningRegistrationOpensAt,
+    ),
   };
 }

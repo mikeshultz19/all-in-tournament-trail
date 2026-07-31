@@ -8,6 +8,7 @@ import SafeLightCard from "@/components/SafeLightCard";
 import TournamentInfoIcon from "@/components/TournamentInfoIcon";
 import { REGISTRATION_PRICING } from "@/data/registration";
 import { formatCurrencyFromCents } from "@/config/payment-policy";
+import { SOFT_LAUNCH_REGISTRATION_CLOSED } from "@/config/launch-mode";
 import type { Tournament } from "@/data/tournaments";
 import type { TournamentOperationsViewModel } from "@/lib/tournament-view-model";
 import { getRegistrationPricing, hasFullMembershipEligibility, validateRegistrationSelections, type MemberPot, type Membership, type RegistrationType } from "@/lib/registration";
@@ -138,7 +139,10 @@ export default function RegistrationForm({
   const { lineItems, subtotalCents, cardProcessingFeeCents, totalCents } = pricing;
   const currentErrors = activeKeys.reduce<Errors>((all, key) => ({ ...all, ...validateAngler(key, anglers[key]) }), {});
   const formIsValid = Object.keys(currentErrors).length === 0 && (!(memberPot || insurance) || memberPotsEnabled);
-  const canAttemptReview = formIsValid && operations.registrationCanSubmit;
+  const canAttemptReview =
+    !SOFT_LAUNCH_REGISTRATION_CLOSED &&
+    formIsValid &&
+    operations.registrationCanSubmit;
 
   function updateAngler(key: AnglerKey, field: keyof Angler, value: string) {
     setAnglers((current) => ({ ...current, [key]: { ...current[key], [field]: value } }));
@@ -159,6 +163,10 @@ export default function RegistrationForm({
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    if (SOFT_LAUNCH_REGISTRATION_CLOSED) {
+      setSubmitMessage("Registration is currently closed.");
+      return;
+    }
     const nextErrors = activeKeys.reduce<Errors>((all, key) => ({ ...all, ...validateAngler(key, anglers[key]) }), {});
     setErrors(nextErrors);
     if (!operations.registrationCanSubmit) {
@@ -320,6 +328,6 @@ export default function RegistrationForm({
       </section>
     </div>
 
-    <aside aria-labelledby="registration-summary-heading" className="min-w-0 border border-[#4A3A12] bg-[#111] p-5 sm:p-6 lg:sticky lg:top-28 lg:max-h-[calc(100vh-8rem)] lg:overflow-y-auto"><h2 id="registration-summary-heading" className="text-xl font-black uppercase tracking-[0.05em] text-[#D4A017]">Registration Summary</h2><dl className="mt-5 space-y-2 border-b border-[#3A3A3A] pb-5 text-sm"><div><dt className="text-[#999]">Tournament</dt><dd className="font-bold text-white">{tournament.name}</dd></div><div><dt className="text-[#999]">Date</dt><dd className="text-white">{operations.formattedEffectiveDate}</dd></div><div><dt className="text-[#999]">Registration type</dt><dd className="text-white">{registrationType === "team" ? "Team" : "Individual / Solo"}</dd></div>{activeKeys.some((key) => anglers[key].firstName.trim() || anglers[key].lastName.trim()) && <div><dt className="text-[#999]">Anglers</dt><dd className="break-words text-white">{activeKeys.map((key) => `${anglers[key].firstName} ${anglers[key].lastName}`.trim()).filter(Boolean).join(" / ")}</dd></div>}</dl><h3 className="mt-5 text-xs font-black uppercase tracking-[0.12em] text-white">Entry &amp; Options</h3><div className="mt-3 space-y-3 text-sm">{lineItems.map((item) => <div key={item.name} className="flex justify-between gap-4 text-[#B8B8B8]"><span>{item.name}</span><span>{formatCurrencyFromCents(item.priceCents)}</span></div>)}</div><h3 className="mt-6 border-t border-[#3A3A3A] pt-5 text-xs font-black uppercase tracking-[0.12em] text-white">Total</h3><dl className="mt-3 space-y-3 text-sm"><div className="flex justify-between text-[#B8B8B8]"><dt>Subtotal</dt><dd>{formatCurrencyFromCents(subtotalCents)}</dd></div><div className="flex justify-between gap-4 text-[#B8B8B8]"><dt>Card Processing Fee (3%)</dt><dd>{formatCurrencyFromCents(cardProcessingFeeCents)}</dd></div><div className="flex justify-between border-t border-[#3A3A3A] pt-4 text-lg font-black uppercase text-white"><dt>Final Total</dt><dd className="text-[#D4A017]">{formatCurrencyFromCents(totalCents)}</dd></div></dl>{serverQuote && <p className="mt-4 border-l-2 border-green-500 pl-3 text-xs leading-5 text-green-300" role="status">Server-verified total: {formatCurrencyFromCents(serverQuote.totalCents)}.</p>}<div className="mt-6"><PaymentOptions total={formatCurrencyFromCents(serverQuote?.totalCents ?? totalCents)} canReview={canAttemptReview} reviewComplete={Boolean(serverQuote)} reviewing={reviewing} validationMessage={submitMessage} /></div></aside>
+    <aside aria-labelledby="registration-summary-heading" className="min-w-0 border border-[#4A3A12] bg-[#111] p-5 sm:p-6 lg:sticky lg:top-28 lg:max-h-[calc(100vh-8rem)] lg:overflow-y-auto"><h2 id="registration-summary-heading" className="text-xl font-black uppercase tracking-[0.05em] text-[#D4A017]">Registration Summary</h2><dl className="mt-5 space-y-2 border-b border-[#3A3A3A] pb-5 text-sm"><div><dt className="text-[#999]">Tournament</dt><dd className="font-bold text-white">{tournament.name}</dd></div><div><dt className="text-[#999]">Date</dt><dd className="text-white">{operations.formattedEffectiveDate}</dd></div><div><dt className="text-[#999]">Registration type</dt><dd className="text-white">{registrationType === "team" ? "Team" : "Individual / Solo"}</dd></div>{activeKeys.some((key) => anglers[key].firstName.trim() || anglers[key].lastName.trim()) && <div><dt className="text-[#999]">Anglers</dt><dd className="break-words text-white">{activeKeys.map((key) => `${anglers[key].firstName} ${anglers[key].lastName}`.trim()).filter(Boolean).join(" / ")}</dd></div>}</dl><h3 className="mt-5 text-xs font-black uppercase tracking-[0.12em] text-white">Entry &amp; Options</h3><div className="mt-3 space-y-3 text-sm">{lineItems.map((item) => <div key={item.name} className="flex justify-between gap-4 text-[#B8B8B8]"><span>{item.name}</span><span>{formatCurrencyFromCents(item.priceCents)}</span></div>)}</div><h3 className="mt-6 border-t border-[#3A3A3A] pt-5 text-xs font-black uppercase tracking-[0.12em] text-white">Total</h3><dl className="mt-3 space-y-3 text-sm"><div className="flex justify-between text-[#B8B8B8]"><dt>Subtotal</dt><dd>{formatCurrencyFromCents(subtotalCents)}</dd></div><div className="flex justify-between gap-4 text-[#B8B8B8]"><dt>Card Processing Fee (3%)</dt><dd>{formatCurrencyFromCents(cardProcessingFeeCents)}</dd></div><div className="flex justify-between border-t border-[#3A3A3A] pt-4 text-lg font-black uppercase text-white"><dt>Final Total</dt><dd className="text-[#D4A017]">{formatCurrencyFromCents(totalCents)}</dd></div></dl>{serverQuote && <p className="mt-4 border-l-2 border-green-500 pl-3 text-xs leading-5 text-green-300" role="status">Server-verified total: {formatCurrencyFromCents(serverQuote.totalCents)}.</p>}<div className="mt-6"><PaymentOptions total={formatCurrencyFromCents(serverQuote?.totalCents ?? totalCents)} canReview={canAttemptReview} reviewComplete={Boolean(serverQuote)} reviewing={reviewing} validationMessage={submitMessage} registrationClosed={SOFT_LAUNCH_REGISTRATION_CLOSED} /></div></aside>
   </form>;
 }

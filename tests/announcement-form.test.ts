@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import {
   announcementFormToInsert,
+  announcementFormToUpdate,
   announcementTitleToSlug,
   validateAnnouncementForm,
   type AnnouncementFormValues,
@@ -13,10 +14,7 @@ function validValues(
   return {
     title: "Lake Fork Registration Update",
     content: "Registration remains open through the published deadline.",
-    publishDate: "2026-11-01T08:00",
     isPublished: true,
-    linkLabel: "",
-    linkUrl: "",
     displayOrder: 0,
     ...overrides,
   };
@@ -70,31 +68,40 @@ describe("Announcement form model", () => {
     );
   });
 
-  it("validates paired links and nonnegative display order", () => {
-    expect(
-      validateAnnouncementForm(validValues({ linkLabel: "Register" })).linkUrl,
-    ).toBeDefined();
-    expect(
-      validateAnnouncementForm(validValues({ linkUrl: "/register" })).linkLabel,
-    ).toBeDefined();
+  it("accepts only the two launch announcement positions", () => {
     expect(
       validateAnnouncementForm(validValues({ displayOrder: -1 })).displayOrder,
     ).toBeDefined();
+    expect(
+      validateAnnouncementForm(validValues({ displayOrder: 2 })).displayOrder,
+    ).toBeDefined();
+    expect(
+      validateAnnouncementForm(validValues({ displayOrder: 1 })).displayOrder,
+    ).toBeUndefined();
   });
 
-  it("stores optional links and publication controls", () => {
+  it("stores position and publication controls", () => {
     const insert = announcementFormToInsert(
       validValues({
-        linkLabel: "Register Now",
-        linkUrl: "/register",
-        displayOrder: 2,
+        displayOrder: 1,
         isPublished: false,
       }),
       "abc12345",
     );
-    expect(insert.link_label).toBe("Register Now");
-    expect(insert.link_url).toBe("/register");
-    expect(insert.display_order).toBe(2);
+    expect(insert.display_order).toBe(1);
     expect(insert.is_published).toBe(false);
+    expect(insert.publish_date).toBeDefined();
+    expect(insert).not.toHaveProperty("link_label");
+    expect(insert).not.toHaveProperty("link_url");
+  });
+
+  it("preserves removed metadata when updating an announcement", () => {
+    const update = announcementFormToUpdate(
+      validValues({ displayOrder: 1 }),
+    );
+
+    expect(update).not.toHaveProperty("publish_date");
+    expect(update).not.toHaveProperty("link_label");
+    expect(update).not.toHaveProperty("link_url");
   });
 });

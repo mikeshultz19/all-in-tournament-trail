@@ -91,7 +91,7 @@ describe("server-authoritative registration validation and pricing", () => {
     expect(acceptance.registrationId).toBe("draft-123");
     expect(acceptance.acknowledgedAt).toBe(NOW.toISOString());
     expect(acceptance.acknowledgmentAccepted).toBe(true);
-    expect(acceptance.rulesVersion).toBe("1.2");
+    expect(acceptance.rulesVersion).toBe("1.4");
     expect(acceptance.waiverVersion).toBe("1.0");
     expect(Object.keys(acceptance.policyVersions)).toEqual(["rules", "liability_waiver", "refund_policy", "payment_terms"]);
   });
@@ -135,7 +135,8 @@ describe("online payment presentation", () => {
   it("provides the approved four-stage progress and clean payment boundary", () => {
     expect(html).toContain("Registration progress");
     expect(html).toContain("Team Info");
-    expect(html).toContain("Continue to Payment");
+    expect(html).toContain("Registration Closed");
+    expect(html).toContain('disabled=""');
     expect(html).toContain("Secure payment through Square");
     expect(html).not.toMatch(/Visa|Mastercard|American Express|Discover|Apple Pay/i);
   });
@@ -168,7 +169,7 @@ describe("online payment presentation", () => {
     expect(html).not.toContain('id="acknowledgment-combined" type="checkbox" required="" checked=""');
     expect(html).toContain('aria-describedby="acknowledgment-requirement"');
     expect(html).toContain("Required before continuing to payment");
-    expect(html).toContain("Rules version 1.2; waiver version 1.0");
+    expect(html).toContain("Rules version 1.4; waiver version 1.0");
     expect(html).not.toContain("accurate information");
     expect(html).not.toContain("acknowledgment-rules");
   });

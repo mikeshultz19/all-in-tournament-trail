@@ -9,10 +9,28 @@ export interface PublicAoyStanding {
   points: number;
 }
 
+export type PublicAoyStandingsResult =
+  | { status: "available"; standings: PublicAoyStanding[] }
+  | { status: "unavailable"; standings: [] };
+
+class AoyStandingsDataAccessError extends Error {
+  constructor(message: string, options?: ErrorOptions) {
+    super(message, options);
+    this.name = "AoyStandingsDataAccessError";
+  }
+}
+
 interface TournamentAoyRow {
   tournament_id: string;
   anglers: unknown;
   points: number | string;
+}
+
+interface PublicAoyStandingRow {
+  rank: number | string;
+  display_name: string;
+  official_participation_count: number | string;
+  total_counted_points: number | string;
 }
 
 export function buildAoyStandings(
@@ -70,6 +88,24 @@ export async function getTopPublishedAoyStandings(): Promise<
   return (await getPublishedAoyStandings()).slice(0, 5);
 }
 
+export async function getHomepageAoyStandings(): Promise<
+  PublicAoyStandingsResult
+> {
+  try {
+    return {
+      status: "available",
+      standings: await getTopPublishedAoyStandings(),
+    };
+  } catch (error) {
+    if (!(error instanceof AoyStandingsDataAccessError)) throw error;
+
+    console.error(
+      "Homepage AOY standings are unavailable due to a data-access error.",
+    );
+    return { status: "unavailable", standings: [] };
+  }
+}
+
 export async function getPublishedAoyStandings(): Promise<
   PublicAoyStanding[]
 > {
@@ -80,28 +116,27 @@ export async function getPublishedAoyStandings(): Promise<
     .eq("is_active", true)
     .maybeSingle();
   if (seasonError) {
-    throw new Error("We could not load the active AOY season.", {
+    throw new AoyStandingsDataAccessError(
+      "We could not load the active AOY season.",
+      {
       cause: seasonError,
-    });
+      },
+    );
   }
   if (!season) return [];
 
-  const { data, error } = await supabase
-    .from("current_aoy_standings")
-    .select(
-      "rank,competitive_record_id,display_name,official_participation_count,total_counted_points",
-    )
-    .eq("season_id", season.id)
-    .order("rank", { ascending: true })
-    .order("competitive_record_id", { ascending: true });
+  const { data, error } = await supabase.rpc("get_public_aoy_standings", {
+    p_season_id: season.id,
+  });
 
   if (error) {
-    throw new Error("We could not load published AOY standings.", {
-      cause: error,
-    });
+    throw new AoyStandingsDataAccessError(
+      "We could not load published AOY standings.",
+      { cause: error },
+    );
   }
 
-  return (data ?? []).map((row) => ({
+  return ((data ?? []) as PublicAoyStandingRow[]).map((row) => ({
     place: Number(row.rank),
     angler: row.display_name,
     events: Number(row.official_participation_count),

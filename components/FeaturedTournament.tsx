@@ -229,7 +229,7 @@ export default function FeaturedTournament({
             href={`/register?tournament=${tournament.slug}`}
             className="block w-full bg-red-700 px-4 py-3 text-center text-[10px] font-black uppercase tracking-[0.08em] text-white transition hover:bg-red-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#D4A017]"
           >
-            Register Now
+            Registration Closed
           </Link>
           <Link
             href="/registrations"

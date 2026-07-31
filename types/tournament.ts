@@ -27,6 +27,8 @@ export interface Tournament {
   name: string;
   slug: string;
   lake: string;
+  weather_latitude?: number | null;
+  weather_longitude?: number | null;
   capacity: number | null;
   tournament_date: string;
   tournament_end_date: string | null;
@@ -73,6 +75,8 @@ export type TournamentUpdate = Partial<
     | "regular_season_number"
     | "name"
     | "lake"
+    | "weather_latitude"
+    | "weather_longitude"
     | "capacity"
     | "tournament_date"
     | "tournament_end_date"

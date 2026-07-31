@@ -13,11 +13,20 @@ vi.mock("@/lib/tournaments", async () => {
 import SchedulePage from "@/app/schedule/page";
 import FeaturedTournament from "@/components/FeaturedTournament";
 import { tournaments } from "@/data/tournaments";
-import { getTournamentDisplay } from "@/lib/tournament-display";
+import {
+  formatTournamentTime,
+  getTournamentDisplay,
+} from "@/lib/tournament-display";
 import { toPublicTournament } from "@/lib/tournament-record-adapter";
 import { databaseTournament } from "@/tests/tournament-db-fixture";
 
 describe("shared tournament display data", () => {
+  it("formats database tournament times safely", () => {
+    expect(formatTournamentTime("05:00")).toBe("5:00 AM");
+    expect(formatTournamentTime(null)).toBe("TBA");
+    expect(formatTournamentTime("5am")).toBe("5am");
+  });
+
   it("maps stored tournament fields for both public views", () => {
     const tournament = {
       ...tournaments[0],
@@ -61,5 +70,8 @@ describe("shared tournament display data", () => {
     }
     expect(schedule).toContain("Morning Registration");
     expect(schedule).toContain(display.morningRegistration);
+    expect(schedule).toContain("Registration Closed");
+    expect(schedule).not.toContain("Registration Open");
+    expect(schedule).not.toContain("Register Now");
   });
 });

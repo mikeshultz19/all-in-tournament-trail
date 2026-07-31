@@ -18,6 +18,126 @@ Use this document to record approved project decisions that affect architecture,
 
 ## Decisions
 
+### 2026-07-30 — Replace AccuWeather with Open-Meteo
+
+- **Status:** Approved; supersedes the 2026-07-21 AccuWeather provider
+  decision.
+- **Context:** The AccuWeather integration remained inactive because it
+  required both an API key and provider location keys, while the homepage
+  already consumes a normalized provider-neutral daily forecast.
+- **Decision:** AITT uses Open-Meteo's official forecast API for the homepage
+  rolling five-day forecast. Requests remain server-side and use approved
+  tournament latitude and longitude values, Fahrenheit, mph,
+  `America/Chicago`, and a three-hour revalidation window. The public component
+  consumes only the normalized application model; browser-side provider calls
+  are not permitted.
+- **Decision:** The forecast begins with today rather than the tournament date.
+  Safe Light and Tournament Status remain independent and application
+  controlled.
+- **Reasoning:** Open-Meteo supplies the required daily condition,
+  temperature, precipitation, wind, gust, and direction data without requiring
+  an API key for the selected endpoint.
+- **Constraints:** Visible Open-Meteo attribution is required. Production use
+  must comply with Open-Meteo's current licence, attribution, usage, and
+  commercial terms; the appropriate production service plan must be confirmed
+  before launch.
+- **Impact:** Homepage provider service, normalized weather model, tournament
+  coordinate data, attribution, tests, setup instructions, deployment
+  checklist, and operations documentation.
+
+### 2026-07-30 — Expose AOY standings through a narrow public projection
+
+- **Status:** Approved
+- **Context:** The homepage server client uses `service_role`, but the full
+  `current_aoy_standings` view omitted that grant while direct public grants
+  exposed internal calculation fields through `standing.*`.
+- **Decision:** Keep the full AOY view restricted to `service_role` and expose
+  public standings through a `SECURITY DEFINER` function returning only rank,
+  display name, official participation count, and counted points.
+- **Reasoning:** The narrow function fixes public rendering without granting
+  access to member JSON, calculation IDs, performance IDs, tie-break details,
+  registrations, payments, or other private records.
+- **Impact:** Public AOY loader, homepage unavailable state, AOY database
+  permissions, focused security tests, and migration
+  `202607300005_secure_public_aoy_standings.sql`.
+- **Follow-up:** Apply the migration when the local Docker/Supabase stack is
+  available. Do not replace local validation with an unapproved linked remote
+  push.
+
+### 2026-07-30 — Group registration interest with Featured Tournament
+
+- **Status:** Approved
+- **Context:** The registration-interest call to action was separated from the
+  primary tournament surface and disrupted the intended desktop balance and
+  mobile reading order.
+- **Decision:** Be the First to Know appears directly beneath Featured
+  Tournament and is not duplicated elsewhere on the homepage.
+- **Reasoning:** Grouping the subscription call to action with the primary
+  tournament surface improves homepage balance and mobile reading order.
+- **Impact:** Homepage composition only; registration-interest behavior and
+  submission remain unchanged.
+
+### 2026-07-30 — Display an accurate compact rolling five-day forecast
+
+- **Status:** Approved
+- **Context:** A single tournament-date weather value left the Tournament
+  Conditions panel mostly empty and provided little recognizable forecast
+  context.
+- **Decision:** Tournament Conditions displays up to five chronological daily
+  forecasts beginning with the current `America/Chicago` calendar date from
+  the existing official AccuWeather integration. Forecast selection is not
+  relative to the tournament date.
+- **Decision:** Safe Light and the rolling forecast share one compact row on
+  larger screens. On small screens, any horizontal overflow remains confined
+  to the forecast region.
+- **Reasoning:** A recognizable today-forward forecast provides useful local
+  conditions without implying that ordinary near-term weather represents a
+  distant tournament date or enlarging the established Safe Light panel.
+- **Impact:** Normalized weather model, server-side provider normalization,
+  homepage Tournament Conditions presentation, tests, and weather
+  documentation. Tournament Status and Safe Light remain independent.
+
+### 2026-07-30 — Finalize public sponsor presentation and discovery links
+
+- **Status:** Approved
+- **Context:** The public homepage needed to distinguish Fenix Parts from
+  Phoenix Boats, use the approved Mad Dawg logo, and direct prospective
+  partners to complete sponsorship information.
+- **Decision:** The homepage sponsor section displays Texas Boat Works, Fenix
+  Parts, and Mad Dawg Graphics & Design, in that order. Phoenix Boats is
+  removed from the section while the existing green Fenix Parts logo remains.
+  Mad Dawg uses the approved wide-format asset without cropping or alteration.
+- **Decision:** A compact sponsorship invitation appears beneath the logos and
+  links to the approved Sponsors page. The homepage “How AITT Works” phrase is
+  a bold contextual link to the existing How It Works page.
+- **Reasoning:** These are the current sponsors intended for the public
+  homepage. Clear contextual links help prospective partners and visitors find
+  sponsorship and tournament-format information without adding another sponsor
+  tile or an unrelated homepage section.
+- **Impact:** Homepage sponsor data and presentation, homepage hero,
+  `/sponsors`, public header navigation, and focused public-page tests.
+
+### 2026-07-30 — Approve the event-specific Practice and Off-Limits Policy
+
+- **Status:** Approved
+- **Context:** Tournament-week practice eligibility required one clear policy
+  across Rules, FAQ, membership content, and Tournament Director documentation.
+- **Decision:** For every tournament, non-member competitors are off-limits
+  beginning at 12:00 AM on Monday of tournament week. Current members
+  registered for that specific tournament may use one official practice day,
+  either Friday or Saturday immediately before the tournament, but not both.
+  Membership alone does not establish eligibility; event registration is
+  required.
+- **Reasoning:** The policy creates a clear off-limits period for non-members
+  while providing a defined event-specific practice benefit to registered
+  members.
+- **Impact:** Official Rules, How It Works FAQ and membership explanation,
+  tournament operations documentation, terminology guidance, and focused
+  policy tests.
+- **Follow-up:** The Rules page remains the controlling public source. No
+  automated eligibility enforcement or practice-day selection is authorized
+  by this decision.
+
 ### 2026-07-29 — Finalize homepage AOY and Winner's Circle placement
 
 - **Status:** Approved
@@ -360,6 +480,15 @@ Use this document to record approved project decisions that affect architecture,
   and future finance work unless the Product Owner explicitly approves a
   replacement rule.
 
+### 2026-07-31 — Approve the Bass Stack Challenge for Squaw Creek #5 and Lewisville #8
+
+- **Status:** Approved
+- **Context:** Two approved 2026–2027 regular-season events need a distinct public format designation that is not implied by lake name or by the default tournament presentation.
+- **Decision:** Tournament #5 at Squaw Creek and tournament #8 at Lewisville use the AITT Bass Stack Challenge format.
+- **Reasoning:** The Bass Stack Challenge provides an MLF-inspired cumulative-weight competition format in which every legal fish officially weighed contributes to the final total.
+- **Rules:** Competitors may weigh an unlimited number of legal fish, may present no more than three fish at one time, and may cull up to three fish. The greatest cumulative legal weight wins.
+- **Constraint:** AITT is not claiming affiliation with or endorsement by Major League Fishing.
+- **Impact:** Public schedule presentation, tournament detail copy, FAQ, Official Rules, Tournament Operations documentation, style guidance, and focused Bass Stack tests.
 
 ---
 For an overview of the project, begin with **00_START_HERE.md**.

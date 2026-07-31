@@ -15,7 +15,7 @@ standards or create a broader design system.
 |---|---|---|
 | Tournament Entry | Base Entry | Required for every registration. |
 | Tournament Entries | Public Registrations, Registration Records, Entry Database | Preferred public entry-list page title. |
-| Tournament Conditions | Weather Widget | Combines status, Safe Light, and tournament-date forecast. |
+| Tournament Conditions | Weather Widget | Combines status, Safe Light, and a compact five-day forecast. |
 | Team Entries | Teams Registered | Tournament Entries summary label. |
 | Solo Entries | Individual Entries | Tournament Entries summary label. |
 | Register Now | Submit Registration | Primary homepage action while registration is open. |
@@ -30,6 +30,8 @@ standards or create a broader design system.
 | Current Member | Existing Member | Match registration choices. |
 | Purchase Membership | Join | Make the purchase action clear. |
 | Continue as Non-Member | Skip Membership | State the resulting status. |
+| Practice and Off-Limits Policy | Prefishing policy | Controlling public rules terminology. |
+| One official practice day | Practice weekend | Eligible current members registered for the specific tournament choose Friday or Saturday, not both. |
 
 Technical identifiers such as `baseEntry`, `registrationPeriod`,
 `safeLightOverride`, and `tournamentStatus` may remain in code.
@@ -108,17 +110,32 @@ be ambiguous, following the existing registration and operations conventions.
 
 ## Tournament Conditions
 
-- Use Tournament Conditions, Tournament Status, Safe Light, Tournament
-  Forecast, Wind, Gusts, Rain, and Weather data by AccuWeather.
+- Use Tournament Conditions, Tournament Status, Safe Light, Next 5 Days,
+  Rain, and Weather data by Open-Meteo.
 - Keep homepage weather compact and secondary to primary tournament content.
+- Present available daily forecasts in chronological order with concise
+  weekday, condition indicator, high/low, and optional precipitation labels.
+- The rolling forecast begins with the current `America/Chicago` calendar date
+  and is not selected relative to the tournament date.
+- Keep Safe Light on the left and the five-day forecast on the right in one
+  compact row on larger screens.
+- On small screens, contain any horizontal scrolling inside the forecast
+  region and never introduce page-level horizontal overflow.
 - Do not use weather color alone as a safety indicator.
 - Do not present provider output as an official tournament decision.
 - Prefer text plus a restrained status indicator, and always include the status
   text so color is not the only signal.
 - Keep **Register Now** visually dominant over forecast content and secondary
   links.
-- Use **Weather data by AccuWeather** as visible linked attribution whenever
+- Use **Weather data by Open-Meteo** as visible linked attribution whenever
   provider data appears.
+
+## Schedule Badges
+
+- Use a compact gold BASS STACK badge inside the schedule lake-image area only
+  for tournaments explicitly designated as Bass Stack Challenge events.
+- Keep the badge readable on mobile and desktop, and provide accessible text
+  that identifies the event format.
 
 ## Homepage Announcements
 

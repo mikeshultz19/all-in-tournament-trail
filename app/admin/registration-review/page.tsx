@@ -4,6 +4,7 @@ import { requireAdminUser } from "@/lib/admin-auth";
 import {
   listRegistrationReviewItems,
   listReviewAnglerOptions,
+  summarizeRegistrationReviewItems,
 } from "@/lib/registration-identity-review";
 import { getActiveSeasonSchedule } from "@/lib/tournaments";
 
@@ -21,10 +22,7 @@ export default async function RegistrationReviewPage({
     listReviewAnglerOptions(),
     getActiveSeasonSchedule(),
   ]);
-  const pending = items.filter((item) => item.status === "review_required");
-  const pendingRegistrations = new Set(
-    pending.map((item) => item.registrationId),
-  ).size;
+  const reviewSummary = summarizeRegistrationReviewItems(items);
 
   return (
     <>
@@ -58,7 +56,7 @@ export default async function RegistrationReviewPage({
       </form>
 
       <p className="mt-6 text-sm font-bold text-[#D4A017]">
-        Pending: {pendingRegistrations}
+        Pending: {reviewSummary.pendingReviewCount}
       </p>
 
       <div className="mt-5 space-y-4">

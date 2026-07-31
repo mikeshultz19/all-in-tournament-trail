@@ -10,7 +10,11 @@ describe("AdminHomeOverview", () => {
       <AdminHomeOverview
         tournament={databaseTournament}
         comparisonDate="2026-07-29T12:00:00-05:00"
-        pendingRegistrationReviews={2}
+        registrationReviewSummary={{
+          pendingReviewCount: 2,
+          duplicateCount: 1,
+          membershipMatchCount: 1,
+        }}
       />,
     );
 
@@ -19,7 +23,11 @@ describe("AdminHomeOverview", () => {
     expect(markup).toContain("Registration Status");
     expect(markup).toContain("Results Status");
     expect(markup).toContain("Needs Attention");
-    expect(markup).toContain("2 Pending");
+    expect(markup).toContain(">2</p>");
+    expect(markup).toContain("Possible Duplicates");
+    expect(markup).toContain("Membership Matches");
+    expect(markup).toContain("Action Needed");
+    expect(markup).toContain("Review Registrations");
     expect(markup).not.toContain("Next Tournament Workflow Step");
     expect(markup).toContain("Quick Actions");
     expect(markup).not.toContain("Operational Workflow");
@@ -31,7 +39,11 @@ describe("AdminHomeOverview", () => {
       <AdminHomeOverview
         tournament={{ ...databaseTournament, result_status: "under_review" }}
         comparisonDate="2026-07-29T12:00:00-05:00"
-        pendingRegistrationReviews={0}
+        registrationReviewSummary={{
+          pendingReviewCount: 0,
+          duplicateCount: 0,
+          membershipMatchCount: 0,
+        }}
       />,
     );
 
@@ -55,12 +67,19 @@ describe("AdminHomeOverview", () => {
           show_on_homepage: true,
         }}
         comparisonDate="2026-07-29T12:00:00-05:00"
-        pendingRegistrationReviews={0}
+        registrationReviewSummary={{
+          pendingReviewCount: 0,
+          duplicateCount: 0,
+          membershipMatchCount: 0,
+        }}
       />,
     );
 
     expect(markup).toContain("No Outstanding Actions");
-    expect(markup).not.toContain("Registration Review</span>");
+    expect(markup).toContain("All Clear");
+    expect(markup).toContain("Review Registrations");
+    expect(markup).toContain("Registration Review</span>");
+    expect(markup).toContain('href="/admin/registration-review"');
     expect(markup).not.toContain("0 Pending");
     expect(markup).not.toContain("Next Tournament Workflow Step");
   });

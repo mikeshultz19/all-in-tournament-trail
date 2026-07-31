@@ -1,11 +1,12 @@
 import AdminHomeOverview from "@/components/admin/AdminHomeOverview";
 import {
-  getActiveOperationalTournament,
+  getNextUpcomingTournament,
 } from "@/lib/tournaments";
 import type { Tournament } from "@/types/tournament";
 import {
-  getRegistrationReviewPendingCount,
+  getRegistrationReviewDashboardSummary,
 } from "@/lib/registration-identity-review";
+import type { RegistrationReviewDashboardSummary } from "@/lib/registration-identity-review";
 
 export const dynamic = "force-dynamic";
 
@@ -13,15 +14,19 @@ export default async function AdminPage() {
   const now = new Date();
   let currentTournament: Tournament | null = null;
   let loadFailed = false;
-  let pendingRegistrationReviews = 0;
+  let registrationReviewSummary: RegistrationReviewDashboardSummary = {
+    pendingReviewCount: 0,
+    duplicateCount: 0,
+    membershipMatchCount: 0,
+  };
 
   try {
-    const [tournament, pendingReviews] = await Promise.all([
-      getActiveOperationalTournament(),
-      getRegistrationReviewPendingCount(),
+    const [tournament, reviewSummary] = await Promise.all([
+      getNextUpcomingTournament(),
+      getRegistrationReviewDashboardSummary(),
     ]);
     currentTournament = tournament;
-    pendingRegistrationReviews = pendingReviews;
+    registrationReviewSummary = reviewSummary;
   } catch (error) {
     console.error("Admin home overview load failed.", error);
     loadFailed = true;
@@ -52,7 +57,7 @@ export default async function AdminPage() {
     <AdminHomeOverview
       tournament={currentTournament}
       comparisonDate={now.toISOString()}
-      pendingRegistrationReviews={pendingRegistrationReviews}
+      registrationReviewSummary={registrationReviewSummary}
     />
   );
 }

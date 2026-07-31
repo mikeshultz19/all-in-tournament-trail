@@ -9,19 +9,13 @@ export const ANNOUNCEMENT_CONTENT_MAX_LENGTH = 500;
 export interface AnnouncementFormValues {
   title: string;
   content: string;
-  publishDate: string;
   isPublished: boolean;
-  linkLabel: string;
-  linkUrl: string;
   displayOrder: number;
 }
 
 export interface AnnouncementFormErrors {
   title?: string;
   content?: string;
-  publishDate?: string;
-  linkLabel?: string;
-  linkUrl?: string;
   displayOrder?: string;
 }
 
@@ -37,10 +31,7 @@ export function announcementFormData(
   return {
     title: String(formData.get("title") ?? "").trim(),
     content: String(formData.get("content") ?? "").trim(),
-    publishDate: String(formData.get("publishDate") ?? "").trim(),
     isPublished: formData.get("isPublished") === "true",
-    linkLabel: String(formData.get("linkLabel") ?? "").trim(),
-    linkUrl: String(formData.get("linkUrl") ?? "").trim(),
     displayOrder: Number(formData.get("displayOrder") ?? 0),
   };
 }
@@ -62,26 +53,8 @@ export function validateAnnouncementForm(
     errors.content = `Keep the announcement to ${ANNOUNCEMENT_CONTENT_MAX_LENGTH} characters or fewer.`;
   }
 
-  if (!values.publishDate || Number.isNaN(Date.parse(values.publishDate))) {
-    errors.publishDate = "Enter a valid publish date.";
-  }
-
-  if (values.linkLabel && !values.linkUrl) {
-    errors.linkUrl = "Enter a link URL or remove the link label.";
-  } else if (!values.linkLabel && values.linkUrl) {
-    errors.linkLabel = "Enter a link label or remove the link URL.";
-  }
-
-  if (
-    values.linkUrl &&
-    !values.linkUrl.startsWith("/") &&
-    !/^https?:\/\/\S+$/i.test(values.linkUrl)
-  ) {
-    errors.linkUrl = "Enter a full http(s) URL or a site path beginning with /.";
-  }
-
-  if (!Number.isInteger(values.displayOrder) || values.displayOrder < 0) {
-    errors.displayOrder = "Display order must be a whole number of 0 or greater.";
+  if (values.displayOrder !== 0 && values.displayOrder !== 1) {
+    errors.displayOrder = "Choose Top Announcement or Second Announcement.";
   }
 
   return errors;
@@ -111,10 +84,8 @@ export function announcementFormToInsert(
     title: values.title,
     slug: announcementTitleToSlug(values.title, uniqueSuffix),
     content: values.content,
-    publish_date: new Date(values.publishDate).toISOString(),
+    publish_date: new Date().toISOString(),
     is_published: values.isPublished,
-    link_label: values.linkLabel || null,
-    link_url: values.linkUrl || null,
     display_order: values.displayOrder,
   };
 }
@@ -125,10 +96,7 @@ export function announcementFormToUpdate(
   return {
     title: values.title,
     content: values.content,
-    publish_date: new Date(values.publishDate).toISOString(),
     is_published: values.isPublished,
-    link_label: values.linkLabel || null,
-    link_url: values.linkUrl || null,
     display_order: values.displayOrder,
   };
 }

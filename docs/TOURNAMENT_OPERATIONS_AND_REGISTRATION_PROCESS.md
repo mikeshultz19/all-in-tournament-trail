@@ -73,9 +73,28 @@ members. Member benefits include access to:
 - Insurance Pot
 - AOY points
 - Championship eligibility
+- One official practice day immediately before an event when the current
+  member is registered for that specific tournament
 
 When either team member is a non-member, member-only benefits must be
 unavailable.
+
+### Practice and Off-Limits Policy
+
+Before every tournament event, tournament waters are off-limits to all
+non-member anglers registered to compete in that tournament beginning at
+**12:00 AM midnight on Monday of tournament week**.
+
+A current member who is registered for that specific tournament is eligible
+for one official practice day immediately before the event. The eligible
+member may choose either Friday or Saturday, but may not practice on both
+days. Membership alone does not establish eligibility for the practice
+privilege; registration for the applicable tournament is required.
+
+The public Rules page is the controlling public source for this policy. This
+documentation defines the same business rule but does not implement automated
+membership verification, event-registration checks, or practice-day
+selection.
 
 ## 4. Entry Options and Payout Pots
 
@@ -244,6 +263,22 @@ implemented.
 Post-tournament membership reconciliation is a later implementation phase and
 is not part of the current CSV-import workflow.
 
+### Bass Stack Challenge Events
+
+Tournament #5 at Squaw Creek and tournament #8 at Lewisville use the AITT
+Bass Stack Challenge format.
+
+The Bass Stack Challenge is an MLF-inspired cumulative-weight competition in
+which every legal fish officially weighed contributes to the angler or team
+total. The operational rules for these designated events are:
+
+- Anglers may weigh an unlimited number of legal fish during the tournament.
+- No more than three fish may be presented for weighing at one time.
+- Culling up to three fish is permitted.
+- Every fish counted toward the final total must satisfy all applicable AITT
+  legal-fish, size, species, handling, and tournament requirements.
+- The format applies only to the designated Bass Stack Challenge events.
+
 ## 9. Public Tournament Entries Page
 
 The read-only **Tournament Entries** page uses a compact, spreadsheet-style
@@ -314,8 +349,9 @@ Estimated safe light is calculated as:
 > Official Fort Worth sunrise for the tournament date minus 30 minutes
 
 The calculation must use the `America/Chicago` time zone. Automatic daylight-
-saving adjustments must occur through that time zone. The website does not
-need to store latitude or longitude for every lake.
+saving adjustments must occur through that time zone. Safe Light does not
+require per-lake coordinates. The separate weather forecast requires approved
+tournament latitude and longitude values.
 
 The application calculates sunrise internally with the lightweight `suncalc`
 library and a centralized Fort Worth reference coordinate. Page rendering does
@@ -340,25 +376,32 @@ estimate.
 
 The Home page uses a compact **Tournament Conditions** panel that combines the
 current Tournament Status, application-calculated Safe Light, and supplemental
-AccuWeather forecast data for the tournament date and configured location.
+Open-Meteo five-day daily forecast data for the configured tournament
+coordinates. Available
+days appear in chronological order beginning with the current
+`America/Chicago` calendar date. The rolling display is not selected relative
+to the tournament date. Safe Light appears on the left and the forecast uses
+the remaining space in the same compact row on larger screens.
 Safe Light remains controlled by the calculation and override rules in section
-10; AccuWeather astronomy values do not replace it. Forecast data never changes
+10; Open-Meteo data does not replace it. Forecast data never changes
 Tournament Status automatically. Delays, postponements, cancellations, and
 other operational decisions remain under Tournament Director authority.
 
-Forecast data may be pending outside the provider's forecast horizon or
-temporarily unavailable. Missing configuration, invalid provider responses,
-and provider failures must not prevent the Home page, Tournament Status, or
-Safe Light from rendering. Displayed weather update times use
-`America/Chicago`. Wherever AccuWeather data appears, visible linked **Weather
-data by AccuWeather** attribution is required. An official logo may be used
-only when obtained and licensed from AccuWeather; it must not be invented,
-redrawn, or imitated.
+The rolling five-day forecast remains the same when the tournament is outside
+the provider horizon and is not represented as tournament-day weather.
+Forecast data may be temporarily unavailable. Missing configuration, invalid
+provider responses, and provider failures must not prevent the Home page,
+Tournament Status, or Safe Light from rendering. Displayed weather update times
+use `America/Chicago`. Requests are server-side, use Fahrenheit and mph, and do
+not require an API key. Missing coordinates show a compact configuration
+fallback. Wherever Open-Meteo data appears, visible linked **Weather data by
+Open-Meteo** attribution is required. Production use must comply with
+Open-Meteo's then-current licence, attribution, usage, and commercial terms.
 
 Weather strongly affects tournament operations. The Tournament Director uses
 the following weather applications as primary decision references:
 
-- AccuWeather
+- Open-Meteo
 - Weather Underground
 
 Wind gusts of **30 MPH or greater** will normally result in a tournament delay
@@ -377,7 +420,7 @@ include:
 - Any unsafe condition determined by the Tournament Director
 
 The Tournament Director has final authority over weather and safety decisions.
-AccuWeather and Weather Underground are human decision references, not
+Open-Meteo and Weather Underground are human decision references, not
 automated website integrations. The site does not scrape either service or
 make tournament decisions automatically.
 
@@ -502,12 +545,19 @@ The Rules page must explain:
   date minus 30 minutes, using the `America/Chicago` time zone
 - Estimated Safe Light is not a guaranteed launch schedule
 - The Tournament Director determines final launch timing
-- AccuWeather and Weather Underground are used as primary weather references
+- Open-Meteo and Weather Underground are used as primary weather references
 - Wind gusts of 30 MPH or greater will normally result in a delay or
   postponement
 - Unsafe conditions may cause delay, postponement, cancellation, or
   rescheduling
 - The website is the official source for tournament status and instructions
+- The Practice and Off-Limits Policy applies before every event
+- Registered non-member anglers are off-limits beginning at 12:00 AM midnight
+  on Monday of tournament week
+- A current member registered for the specific tournament may use one official
+  practice day, choosing Friday or Saturday immediately before the tournament,
+  but not both
+- Membership alone does not provide the event-specific practice privilege
 
 Until a dedicated Rules document or page is approved and created, this section
 is the authoritative source for these requirements.
@@ -546,7 +596,7 @@ before that time. Tournament Officials determine final launch timing.
 
 ### How are weather decisions made?
 
-AccuWeather and Weather Underground are the primary reference sources. Wind
+Open-Meteo and Weather Underground are the primary reference sources. Wind
 gusts of 30 MPH or greater will normally result in a delay or postponement.
 Lightning and other unsafe conditions may also affect the event. The
 Tournament Director has final authority, and the website's **Tournament Status
@@ -564,6 +614,14 @@ refund policy applies until it has been approved.
 Yes. Both anglers must be members for the team to receive member benefits.
 Those benefits include Bronze, Silver, Gold, Insurance Pot, AOY points, and
 Championship eligibility.
+
+### When can I practice before a tournament?
+
+Beginning at 12:00 AM on Monday of tournament week, tournament waters are
+off-limits to non-member anglers competing in the event. A current All-In
+Tournament Trail member who is registered for that specific tournament may
+use one official practice day, choosing either Friday or Saturday immediately
+before the tournament. Practice on both days is not permitted.
 
 ### What entry options are available?
 

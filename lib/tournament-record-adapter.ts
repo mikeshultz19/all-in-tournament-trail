@@ -4,6 +4,7 @@ import {
   type Tournament as PublicTournament,
   type TournamentOperationalStatus,
 } from "@/data/tournaments";
+import { getApprovedTournamentWeatherLocation } from "@/config/tournament-weather-locations";
 import type {
   Tournament,
   TournamentStatus,
@@ -74,17 +75,26 @@ export function toPublicTournament(
   tournament: Tournament,
 ): PublicTournamentRecord {
   const date = centralDate(tournament.tournament_date);
-  const morningRegistration =
-    tournament.morning_registration &&
-    /^\d{2}:\d{2}$/.test(tournament.morning_registration)
-      ? tournament.morning_registration
-      : null;
+  const approvedWeatherLocation = getApprovedTournamentWeatherLocation({
+    lake: tournament.lake,
+    ramp: tournament.ramp,
+  });
+  const tournamentFormat =
+    tournament.regular_season_number === 5 ||
+    tournament.regular_season_number === 8
+      ? "bass-stack"
+      : "standard";
 
   return {
     slug: tournament.slug,
     name: tournament.name,
     season: `${date.slice(0, 4)}`,
     lake: tournament.lake,
+    weatherLatitude:
+      tournament.weather_latitude ?? approvedWeatherLocation?.latitude ?? null,
+    weatherLongitude:
+      tournament.weather_longitude ?? approvedWeatherLocation?.longitude ?? null,
+    tournamentFormat,
     venue: tournament.ramp,
     city: null,
     state: "Texas",
@@ -117,7 +127,9 @@ export function toPublicTournament(
     earlyRegistrationDeadlineTime: centralTime(
       tournament.registration_closes,
     ),
-    tournamentMorningRegistrationOpensAt: morningRegistration,
+    tournamentMorningRegistrationOpensAt: optionalDisplayText(
+      tournament.morning_registration,
+    ),
     tournamentMorningRegistrationClosesAt: null,
     registrationInformation: optionalDisplayText(
       tournament.registration_information,
@@ -130,7 +142,6 @@ export function toPublicTournament(
     heroImage: tournament.hero_image_url ?? TOURNAMENT_IMAGE_FALLBACK,
     thumbnailImage: tournament.hero_image_url ?? TOURNAMENT_IMAGE_FALLBACK,
     livestreamAvailable: false,
-    accuWeatherLocationKey: null,
     lifecycleStatus: tournament.status,
   };
 }

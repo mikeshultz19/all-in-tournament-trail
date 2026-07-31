@@ -353,9 +353,9 @@ export default function WinnersCircle({
   return (
     <section
       id="results"
-      className="bg-[#0B0A09] px-4 py-8 sm:px-6"
+      className="bg-black px-4 py-8 sm:px-6"
     >
-      <div className={styles.showcaseContainer}>
+      <div className={`${styles.showcaseContainer} bg-[#0B0A09]`}>
         <article className="overflow-visible border border-[#8f762f]/60 bg-[#111111] shadow-[0_10px_30px_rgba(0,0,0,0.35)]">
           {latestResults ? (
             <>
@@ -525,6 +525,7 @@ export default function WinnersCircle({
                   alt=""
                   fill
                   sizes="(max-width: 1650px) 100vw, 1650px"
+                  priority
                   className="object-cover"
                 />
                 <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(12,10,9,0.78),rgba(43,8,16,0.72))]" />

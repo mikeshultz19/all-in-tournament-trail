@@ -34,6 +34,12 @@ export interface TournamentRegistrationReviewSummary {
   resolved: number;
 }
 
+export interface RegistrationReviewDashboardSummary {
+  pendingReviewCount: number;
+  duplicateCount: number;
+  membershipMatchCount: number;
+}
+
 export class RegistrationIdentityReviewError extends Error {
   constructor(message: string, options?: ErrorOptions) {
     super(message, options);
@@ -133,6 +139,30 @@ export async function getRegistrationReviewPendingCount(): Promise<number> {
     );
   }
   return count ?? 0;
+}
+
+export function summarizeRegistrationReviewItems(
+  items: readonly RegistrationReviewItem[],
+): RegistrationReviewDashboardSummary {
+  const pending = items.filter((item) => item.status === "review_required");
+
+  return {
+    pendingReviewCount: new Set(
+      pending.map((item) => item.registrationId),
+    ).size,
+    duplicateCount: pending.filter(
+      (item) => item.suggestedAnglers.length > 0,
+    ).length,
+    membershipMatchCount: pending.filter((item) =>
+      item.reason.toLowerCase().includes("membership"),
+    ).length,
+  };
+}
+
+export async function getRegistrationReviewDashboardSummary(): Promise<RegistrationReviewDashboardSummary> {
+  return summarizeRegistrationReviewItems(
+    await listRegistrationReviewItems(),
+  );
 }
 
 export async function getTournamentRegistrationReviewSummary(

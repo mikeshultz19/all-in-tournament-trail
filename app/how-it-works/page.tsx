@@ -5,6 +5,14 @@ import { REGISTRATION_PRICING } from "@/data/registration";
 const price = (amount: number, additional = false) =>
   `${additional ? "+" : ""}$${amount}`;
 
+const PAYBACK_BADGE_TITLES = new Set([
+  "Bronze Pot",
+  "Silver Pot",
+  "Gold Pot",
+  "Big Bass",
+  "Insurance Pot",
+]);
+
 const entryOptions = [
   {
     name: "Tournament Entry",
@@ -60,7 +68,7 @@ const entryOptions = [
       "The premium competition for anglers pursuing the largest potential payout.",
     features: [
       "Separate payout pool",
-      "Pays 1 in 5",
+      "Pays 1 in 7",
       "Tournament Entry required",
       "Choose one pot per event",
     ],
@@ -91,7 +99,7 @@ const waysToWin = [
   {
     title: "Gold Pot",
     description:
-      "The premium members-only payout competition for anglers seeking the largest potential reward. Pays 1 in 5 — one payout place for every five entries in the pot.",
+      "The premium members-only payout competition for anglers seeking the largest potential reward. Pay 1 in 7 — one payout place for every seven entries in the pot.",
     label: "Members",
   },
   {
@@ -110,6 +118,13 @@ const waysToWin = [
     title: "AOY Points",
     description:
       "Eligible members earn season points toward the Angler of the Year standings.",
+    note: "Depending on sponsorship and participation, AITT staff are evaluating AOY Winner Bonus Bucks.",
+    label: "Season",
+  },
+  {
+    title: "Championship Qualification",
+    description:
+      "Compete in 5 of the 8 regular season tournaments to qualify for the Championship.",
     label: "Season",
   },
 ];
@@ -133,7 +148,7 @@ const faqs = [
   {
     question: "How are weather decisions made?",
     answer:
-      "The Tournament Director uses AccuWeather and Weather Underground as primary weather references. Wind gusts of 30 MPH or greater will normally result in a delay or postponement. Lightning, severe storms, flooding, unsafe ramps, unsafe water, dense fog, closures, or other dangerous conditions may also affect the tournament. The Tournament Director has final authority over safety decisions. Tournament Status & Announcements on this website is the official source for public updates.",
+      "The Tournament Director uses Open-Meteo and Weather Underground as primary weather references. Wind gusts of 30 MPH or greater will normally result in a delay or postponement. Lightning, severe storms, flooding, unsafe ramps, unsafe water, dense fog, closures, or other dangerous conditions may also affect the tournament. The Tournament Director has final authority over safety decisions. Tournament Status & Announcements on this website is the official source for public updates.",
   },
   {
     question: "Do I have to be a member?",
@@ -193,12 +208,22 @@ const faqs = [
   {
     question: "What does membership include?",
     answer:
-      `The ${price(REGISTRATION_PRICING.annualMembership)} per angler Annual Membership provides access to AOY eligibility, Championship qualification, the Bronze, Silver, and Gold Pots, the Insurance Pot, tournament-week practice eligibility, and additional member opportunities.`,
+      `The ${price(REGISTRATION_PRICING.annualMembership)} per angler Annual Membership provides access to AOY eligibility, Championship qualification, the Bronze, Silver, and Gold Pots, the Insurance Pot, and additional member opportunities. A current member who is registered for a specific tournament may use one official practice day immediately before that event, choosing either Friday or Saturday, but not both. Membership alone does not provide the practice privilege.`,
   },
   {
-    question: "When does the off-limits period begin?",
+    question: "What is the AITT Bass Stack Challenge?",
     answer:
-      "Non-members: Tournament waters become off-limits beginning at 12:00 a.m. midnight on the Monday of tournament week and remain off-limits until the official tournament begins. Members: The only permitted practice day during tournament week is the Friday immediately preceding the tournament. Friday practice is an exclusive member benefit. See the Official Rules page for complete practice and off-limits regulations.",
+      "The AITT Bass Stack Challenge is an MLF-inspired cumulative-weight tournament format used at selected AITT events. The angler or team with the greatest cumulative weight of all legal fish officially weighed wins. Competitors may weigh as many legal fish as they catch, but no more than three fish may be presented at one time. Culling up to three fish is allowed. The format applies only to events identified as Bass Stack Challenge tournaments.",
+  },
+  {
+    question: "Which tournaments use the Bass Stack Challenge format?",
+    answer:
+      "The 2026–2027 Bass Stack Challenge events are tournament #5 at Squaw Creek and tournament #8 at Lewisville.",
+  },
+  {
+    question: "When can I practice before a tournament?",
+    answer:
+      "Beginning at 12:00 AM on Monday of tournament week, tournament waters are off-limits to non-member anglers competing in the event. A current All-In Tournament Trail member who is registered for that specific tournament may use one official practice day, choosing either Friday or Saturday immediately before the tournament. Practice on both days is not permitted. See the Official Rules page for the controlling Practice and Off-Limits Policy.",
   },
   {
     question: "Is forward-facing sonar allowed?",
@@ -293,8 +318,13 @@ export default function HowItWorksPage() {
             {entryOptions.map((option) => (
               <article
                 key={option.name}
-                className={`flex h-full flex-col border bg-[#111111] p-5 shadow-[0_12px_35px_rgba(0,0,0,0.3)] ${option.accent}`}
+                className={`relative flex h-full flex-col border bg-[#111111] p-5 shadow-[0_12px_35px_rgba(0,0,0,0.3)] ${option.accent}`}
               >
+                {PAYBACK_BADGE_TITLES.has(option.name) && (
+                  <span className="absolute right-4 top-4 inline-flex whitespace-nowrap rounded border border-[#c9aa4a]/70 bg-black/70 px-2 py-0.5 text-[0.58rem] font-black uppercase leading-none tracking-[0.18em] text-[#c9aa4a]">
+                    100% Payback
+                  </span>
+                )}
                 <div>
                   <p className="text-[10px] font-black uppercase tracking-[0.22em] text-red-500">
                     {option.eyebrow}
@@ -341,7 +371,7 @@ export default function HowItWorksPage() {
         </div>
       </section>
 
-      <section className="border-b border-white/10 bg-[#0d0d0d] px-4 py-12 sm:px-6 lg:py-16">
+      <section className="border-b border-white/10 bg-black px-4 py-12 sm:px-6 lg:py-16">
         <div className="mx-auto max-w-[1300px]">
           <SectionHeading
             eyebrow="Payout Opportunities"
@@ -353,8 +383,13 @@ export default function HowItWorksPage() {
             {waysToWin.map((opportunity) => (
               <article
                 key={opportunity.title}
-                className="border border-white/10 bg-[#111111] p-5 transition hover:border-[#8f762f]/70"
+                className="relative border border-white/10 bg-[#111111] p-5 transition hover:border-[#8f762f]/70"
               >
+                {PAYBACK_BADGE_TITLES.has(opportunity.title) && (
+                  <span className="absolute right-4 top-4 inline-flex whitespace-nowrap rounded border border-[#c9aa4a]/70 bg-black/70 px-2 py-0.5 text-[0.58rem] font-black uppercase leading-none tracking-[0.18em] text-[#c9aa4a]">
+                    100% Payback
+                  </span>
+                )}
                 <p className="text-[10px] font-black uppercase tracking-[0.2em] text-red-500">
                   {opportunity.label}
                 </p>
@@ -366,8 +401,32 @@ export default function HowItWorksPage() {
                 <p className="mt-3 text-sm leading-6 text-neutral-400">
                   {opportunity.description}
                 </p>
+
+                {"note" in opportunity && (
+                  <p className="mt-3 text-xs leading-5 text-[#d0ae4c]">
+                    {opportunity.note}
+                  </p>
+                )}
               </article>
             ))}
+          </div>
+
+          <div className="mt-5 space-y-2">
+            <p className="flex flex-wrap items-center gap-x-2 gap-y-1 text-[10px] font-black uppercase tracking-[0.22em] text-red-500">
+              <span className="inline-flex whitespace-nowrap rounded border border-[#c9aa4a]/70 bg-black/70 px-2 py-0.5 text-[0.58rem] font-black uppercase leading-none tracking-[0.18em] text-[#c9aa4a]">
+                BASS STACK
+              </span>
+              <span>Bass Stack Challenge</span>
+            </p>
+            <p className="mt-2 text-sm leading-6 text-neutral-300">
+              Selected events use an AITT Bass Stack Challenge format. It is
+              an MLF-inspired cumulative-weight competition in which every
+              legal fish officially weighed contributes to the angler or team
+              total.
+            </p>
+            <p className="text-xs leading-5 text-neutral-400">
+              See the Official Rules page for the controlling policy.
+            </p>
           </div>
         </div>
       </section>

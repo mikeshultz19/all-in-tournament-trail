@@ -170,7 +170,7 @@ server-side contact submission endpoint.
 - [ ] Verify confirmation and failure emails contain accurate instructions and support contact details.
 - [ ] Verify public registration entries do not expose private contact, address, payment, or administrative information.
 - [ ] Verify tournament status and urgent announcements can be updated by an authorized person.
-- [ ] Confirm AccuWeather account, subscription, API access, location keys, attribution, and usage limits are ready if live forecasts are enabled.
+- [ ] Confirm tournament weather coordinates, Open-Meteo attribution, service terms, and production usage plan are ready if live forecasts are enabled.
 - [ ] Verify Safe Light and Tournament Status remain available if forecast data is unavailable.
 - [ ] Test the site on the phones and browsers most likely to be used by anglers.
 - [ ] Publish a support contact and define who monitors it during launch and tournament windows.

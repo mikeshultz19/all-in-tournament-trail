@@ -16,11 +16,6 @@ interface AdminTournamentDashboardProps {
   tournaments: readonly Tournament[];
   initialTournamentId?: string;
   comparisonDate: string;
-  pendingRegistrationReviews?: number;
-  registrationReviewSummaries?: Record<
-    string,
-    { total: number; verified: number; pending: number; resolved: number }
-  >;
   showTournamentTools?: boolean;
 }
 
@@ -28,8 +23,6 @@ export default function AdminTournamentDashboard({
   tournaments,
   initialTournamentId,
   comparisonDate,
-  pendingRegistrationReviews = 0,
-  registrationReviewSummaries = {},
   showTournamentTools = false,
 }: AdminTournamentDashboardProps) {
   const initialTournament = getInitialAdminTournament(
@@ -62,30 +55,6 @@ export default function AdminTournamentDashboard({
 
   return (
     <>
-      <Link
-        href="/admin/registration-review"
-        className={`mb-4 flex items-center justify-between border px-5 py-3 ${
-          pendingRegistrationReviews > 0
-            ? "border-[#D4A017]/30 bg-[#D4A017]/5"
-            : "border-white/10 bg-[#111111]"
-        }`}
-      >
-        <span className="font-black uppercase text-white">
-          Registration Review
-        </span>
-        <span
-          className={`text-sm font-black uppercase ${
-            pendingRegistrationReviews > 0
-              ? "text-[#D4A017]"
-              : "text-neutral-500"
-          }`}
-        >
-          {pendingRegistrationReviews > 0
-            ? `${pendingRegistrationReviews} Pending`
-            : "No Pending Reviews"}
-        </span>
-      </Link>
-
       <CurrentTournamentCard
         tournament={currentTournament}
         tournaments={tournaments}
@@ -94,27 +63,6 @@ export default function AdminTournamentDashboard({
       />
 
       <TournamentProgress steps={operationSteps} />
-
-      {registrationReviewSummaries[currentTournament.id] && (
-        <section className="mt-4 border border-white/10 bg-[#111] p-5">
-          <h2 className="text-sm font-black uppercase text-white">
-            Registration Identity Review
-          </h2>
-          <div className="mt-4 grid grid-cols-2 gap-4 text-sm sm:grid-cols-4">
-            {[
-              ["Completed", registrationReviewSummaries[currentTournament.id].total],
-              ["Verified", registrationReviewSummaries[currentTournament.id].verified],
-              ["Pending", registrationReviewSummaries[currentTournament.id].pending],
-              ["Resolved", registrationReviewSummaries[currentTournament.id].resolved],
-            ].map(([label, value]) => (
-              <div key={String(label)}>
-                <p className="text-xs font-bold uppercase text-neutral-500">{label}</p>
-                <p className="mt-1 text-xl font-black text-[#D4A017]">{value}</p>
-              </div>
-            ))}
-          </div>
-        </section>
-      )}
 
       <div className="mt-6 space-y-4">
         {operationSteps.map((step) => (

@@ -44,6 +44,25 @@ npx supabase db push --dry-run
 npx supabase db push
 ```
 
+## Homepage weather
+
+The homepage uses Open-Meteo for a server-rendered, rolling five-day forecast
+beginning with the current `America/Chicago` date. No weather API key is
+required. Each tournament must instead have approved `weather_latitude` and
+`weather_longitude` coordinates; the application does not use browser
+geolocation or geocode a venue on each request.
+
+Forecast requests use Fahrenheit and mph, remain behind the normalized
+provider-neutral weather model, and are cached on the server. Weather is
+informational only and cannot calculate Safe Light or change Tournament Status.
+Visible **Weather data by Open-Meteo** attribution must remain with displayed
+forecast data.
+
+The public Open-Meteo endpoint is intended for non-commercial evaluation and
+qualifying non-commercial use. Before production, confirm that AITT's use
+complies with Open-Meteo's current licence, attribution, rate-limit, and
+commercial-use terms and obtain the appropriate service plan if required.
+
 ## Validation
 
 ```bash

@@ -61,9 +61,9 @@ describe("homepage AOY standings", () => {
     );
     expect(strip).toContain("View Full Standings");
     expect(strip).not.toContain("standing.events");
-    expect(strip).toContain(
-      "AOY standings will appear after the first tournament results are published.",
-    );
+    expect(strip).toContain("Awaiting Results");
+    expect(strip).toContain("isPlaceholder");
+    expect(strip).not.toContain("AOY standings will appear after the first tournament results are published.");
     expect(homepage.indexOf("<AOYPointsRaceStrip")).toBeLessThan(
       homepage.indexOf("<WinnersCircle"),
     );

@@ -120,20 +120,6 @@ export async function getNextUpcomingTournament(
   now = new Date(),
 ): Promise<Tournament | null> {
   const supabase = createSupabaseServerClient();
-  const activeSeason = await supabase
-    .from("seasons")
-    .select("id")
-    .eq("is_active", true)
-    .maybeSingle();
-
-  if (activeSeason.error) {
-    throw dataError("load", activeSeason.error);
-  }
-
-  if (!activeSeason.data) {
-    return null;
-  }
-
   const localDate = getTournamentLocalDate(now);
   const startOfToday = tournamentDateTimeToUtc(
     localDate,
@@ -142,8 +128,7 @@ export async function getNextUpcomingTournament(
   const upcoming = await supabase
     .from("tournaments")
     .select("*")
-    .eq("season_id", activeSeason.data.id)
-    .neq("status", "Cancelled")
+    .not("status", "in", '("Results Published","Cancelled")')
     .gte("tournament_date", startOfToday)
     .order("tournament_date", { ascending: true })
     .limit(1)
@@ -153,24 +138,7 @@ export async function getNextUpcomingTournament(
     throw dataError("load", upcoming.error);
   }
 
-  if (upcoming.data) {
-    return upcoming.data;
-  }
-
-  const past = await supabase
-    .from("tournaments")
-    .select("*")
-    .eq("season_id", activeSeason.data.id)
-    .lt("tournament_date", startOfToday)
-    .order("tournament_date", { ascending: false })
-    .limit(1)
-    .maybeSingle();
-
-  if (past.error) {
-    throw dataError("load", past.error);
-  }
-
-  return past.data;
+  return upcoming.data;
 }
 
 /**
