@@ -2,6 +2,7 @@ import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
 
 import Header from "@/components/Header";
+import { SOCIAL_LINKS } from "@/config/social-links";
 
 describe("Header Login controls", () => {
   it("links both desktop and mobile Login controls to the Admin Center", () => {
@@ -24,5 +25,15 @@ describe("Header Login controls", () => {
     );
     expect(loginLinks.some((link) => link.includes("text-sm"))).toBe(true);
     expect(loginLinks.some((link) => link.includes("text-xs"))).toBe(true);
+  });
+
+  it("uses the new logo and centralized social media links", () => {
+    const markup = renderToStaticMarkup(<Header />);
+
+    expect(markup).toContain("logo-new.png");
+    expect(markup).toContain(SOCIAL_LINKS.facebook.href);
+    expect(markup).toContain(SOCIAL_LINKS.instagram.href);
+    expect(markup).toContain('target="_blank"');
+    expect(markup).toContain('rel="noopener noreferrer"');
   });
 });

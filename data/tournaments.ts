@@ -74,63 +74,124 @@ const TOURNAMENT_DESCRIPTIONS = {
   8: "One of the toughest lakes in DFW, where success often comes from fishing rocks, brush piles, and riprap.",
 } as const;
 
-type TournamentSeed = Omit<
+type TournamentScheduleSeed = Pick<
   Tournament,
-  | "tournamentStatus"
-  | "statusMessage"
-  | "statusUpdatedAt"
-  | "rescheduledDate"
-  | "safeLightOverride"
-  | "safeLightOverridePublicMessage"
-  | "earlyRegistrationDeadlineTime"
-  | "tournamentMorningRegistrationOpensAt"
-  | "tournamentMorningRegistrationClosesAt"
-  | "weatherLatitude"
-  | "weatherLongitude"
-  | "tournamentFormat"
-  | "state"
-  | "startTimeDisplay"
-  | "stopFishingTime"
-  | "launchType"
-> &
-  Partial<
-    Pick<
-      Tournament,
-      | "tournamentStatus"
-      | "statusMessage"
-      | "statusUpdatedAt"
-      | "rescheduledDate"
-      | "safeLightOverride"
-      | "safeLightOverridePublicMessage"
-      | "earlyRegistrationDeadlineTime"
-      | "tournamentMorningRegistrationOpensAt"
-      | "tournamentMorningRegistrationClosesAt"
-      | "weatherLatitude"
-      | "weatherLongitude"
-      | "tournamentFormat"
-      | "state"
-      | "startTimeDisplay"
-      | "stopFishingTime"
-      | "launchType"
-      | "endDate"
-      | "eventType"
-      | "regularSeasonNumber"
-    >
-  >;
+  "slug" | "lake" | "date" | "endDate" | "eventType" | "regularSeasonNumber"
+>;
 
-const tournamentSeeds: readonly TournamentSeed[] = [
+type TournamentMetadataSeed = Omit<
+  Tournament,
+  | "slug"
+  | "lake"
+  | "date"
+  | "endDate"
+  | "eventType"
+  | "regularSeasonNumber"
+>;
+
+type TournamentSeed = TournamentScheduleSeed & TournamentMetadataSeed;
+
+const tournamentScheduleSeeds: readonly TournamentScheduleSeed[] = [
   {
     slug: "eagle-mountain-2026",
+    lake: "Eagle Mountain",
+    date: "2026-11-01",
+    endDate: null,
+    eventType: "regular_season",
+    regularSeasonNumber: 1,
+  },
+  {
+    slug: "squaw-creek-2026",
+    lake: "Squaw Creek",
+    date: "2026-11-22",
+    endDate: null,
+    eventType: "regular_season",
+    regularSeasonNumber: 2,
+  },
+  {
+    slug: "ray-hubbard-2026",
+    lake: "Ray Hubbard",
+    date: "2026-12-13",
+    endDate: null,
+    eventType: "regular_season",
+    regularSeasonNumber: 3,
+  },
+  {
+    slug: "granbury-2027",
+    lake: "Granbury",
+    date: "2027-01-17",
+    endDate: null,
+    eventType: "regular_season",
+    regularSeasonNumber: 4,
+  },
+  {
+    slug: "squaw-creek-2027",
+    lake: "Squaw Creek",
+    date: "2027-02-14",
+    endDate: null,
+    eventType: "regular_season",
+    regularSeasonNumber: 5,
+  },
+  {
+    slug: "ray-roberts-march-2027",
+    lake: "Ray Roberts",
+    date: "2027-03-14",
+    endDate: null,
+    eventType: "regular_season",
+    regularSeasonNumber: 6,
+  },
+  {
+    slug: "tawakoni-april-2027",
+    lake: "Tawakoni",
+    date: "2027-04-25",
+    endDate: null,
+    eventType: "regular_season",
+    regularSeasonNumber: 7,
+  },
+  {
+    slug: "lewisville-may-2027",
+    lake: "Lewisville",
+    date: "2027-05-16",
+    endDate: null,
+    eventType: "regular_season",
+    regularSeasonNumber: 8,
+  },
+  {
+    slug: "aitt-2026-2027-championship",
+    lake: "TBD",
+    date: "2027-06-12",
+    endDate: "2027-06-13",
+    eventType: "championship",
+    regularSeasonNumber: null,
+  },
+];
+
+const tournamentMetadataSeeds: readonly TournamentMetadataSeed[] = [
+  {
     name: "Eagle Mountain",
     season: "2026-2027",
-    lake: "Eagle Mountain",
     venue: "Twin Points Park",
     city: "Azle",
-    date: "2026-11-01",
+    state: "Texas",
+    startTimeDisplay: "Safe Light",
+    stopFishingTime: "15:00",
+    launchType: "TRAILERING",
     description: TOURNAMENT_DESCRIPTIONS[1],
     status: "upcoming",
     registrationStatus: "open",
     registrationUrl: null,
+    tournamentStatus: "scheduled",
+    statusMessage:
+      "Tournament preparations are on schedule. Register during the published registration windows.",
+    statusUpdatedAt: "2026-07-21T12:00:00.000Z",
+    rescheduledDate: null,
+    safeLightOverride: null,
+    safeLightOverridePublicMessage: null,
+    earlyRegistrationDeadlineTime: "21:00",
+    tournamentMorningRegistrationOpensAt: "05:00",
+    tournamentMorningRegistrationClosesAt: null,
+    registrationInformation: null,
+    practiceInformation: null,
     resultsAvailable: false,
     featured: true,
     heroImage: "/images/lakes/eagle-mountain.jfif",
@@ -139,22 +200,32 @@ const tournamentSeeds: readonly TournamentSeed[] = [
     weatherLatitude: TWIN_POINTS_WEATHER_LOCATION.latitude,
     weatherLongitude: TWIN_POINTS_WEATHER_LOCATION.longitude,
     tournamentFormat: "standard",
-    endDate: null,
-    eventType: "regular_season",
-    regularSeasonNumber: 1,
   },
   {
-    slug: "squaw-creek-2026",
     name: "Squaw Creek",
     season: "2026-2027",
-    lake: "Squaw Creek",
     venue: "Public Ramp",
     city: "Glen Rose",
-    date: "2026-11-22",
+    state: "Texas",
+    startTimeDisplay: "Safe Light",
+    stopFishingTime: "15:00",
+    launchType: "TRAILERING",
     description: TOURNAMENT_DESCRIPTIONS[2],
     status: "upcoming",
     registrationStatus: "open",
     registrationUrl: null,
+    tournamentStatus: "scheduled",
+    statusMessage:
+      "Tournament preparations are on schedule. Register during the published registration windows.",
+    statusUpdatedAt: "2026-07-21T12:00:00.000Z",
+    rescheduledDate: null,
+    safeLightOverride: null,
+    safeLightOverridePublicMessage: null,
+    earlyRegistrationDeadlineTime: "21:00",
+    tournamentMorningRegistrationOpensAt: "05:00",
+    tournamentMorningRegistrationClosesAt: null,
+    registrationInformation: null,
+    practiceInformation: null,
     resultsAvailable: false,
     featured: false,
     heroImage: "/images/lakes/squaw-creek.jfif",
@@ -163,22 +234,32 @@ const tournamentSeeds: readonly TournamentSeed[] = [
     weatherLatitude: null,
     weatherLongitude: null,
     tournamentFormat: "standard",
-    endDate: null,
-    eventType: "regular_season",
-    regularSeasonNumber: 2,
   },
   {
-    slug: "ray-hubbard-2026",
     name: "Ray Hubbard",
     season: "2026-2027",
-    lake: "Ray Hubbard",
     venue: "Public Ramp",
     city: "Rockwall",
-    date: "2026-12-13",
+    state: "Texas",
+    startTimeDisplay: "Safe Light",
+    stopFishingTime: "15:00",
+    launchType: "TRAILERING",
     description: TOURNAMENT_DESCRIPTIONS[3],
     status: "upcoming",
     registrationStatus: "open",
     registrationUrl: null,
+    tournamentStatus: "scheduled",
+    statusMessage:
+      "Tournament preparations are on schedule. Register during the published registration windows.",
+    statusUpdatedAt: "2026-07-21T12:00:00.000Z",
+    rescheduledDate: null,
+    safeLightOverride: null,
+    safeLightOverridePublicMessage: null,
+    earlyRegistrationDeadlineTime: "21:00",
+    tournamentMorningRegistrationOpensAt: "05:00",
+    tournamentMorningRegistrationClosesAt: null,
+    registrationInformation: null,
+    practiceInformation: null,
     resultsAvailable: false,
     featured: false,
     heroImage: "/images/lakes/ray-hubbard.jfif",
@@ -187,146 +268,203 @@ const tournamentSeeds: readonly TournamentSeed[] = [
     weatherLatitude: null,
     weatherLongitude: null,
     tournamentFormat: "standard",
-    endDate: null,
-    eventType: "regular_season",
-    regularSeasonNumber: 3,
   },
   {
-    slug: "granbury-2027",
     name: "Granbury",
     season: "2026-2027",
-    lake: "Granbury",
     venue: null,
     city: null,
-    date: "2027-01-17",
+    state: "Texas",
+    startTimeDisplay: "Safe Light",
+    stopFishingTime: "15:00",
+    launchType: "TRAILERING",
     description: TOURNAMENT_DESCRIPTIONS[4],
     status: "upcoming",
     registrationStatus: "unavailable",
     registrationUrl: null,
+    tournamentStatus: "scheduled",
+    statusMessage:
+      "Tournament preparations are on schedule. Register during the published registration windows.",
+    statusUpdatedAt: "2026-07-21T12:00:00.000Z",
+    rescheduledDate: null,
+    safeLightOverride: null,
+    safeLightOverridePublicMessage: null,
+    earlyRegistrationDeadlineTime: "21:00",
+    tournamentMorningRegistrationOpensAt: "05:00",
+    tournamentMorningRegistrationClosesAt: null,
+    registrationInformation: null,
+    practiceInformation: null,
     resultsAvailable: false,
     featured: false,
     heroImage: "/images/lakes/granbury.jfif",
     thumbnailImage: "/images/lakes/granbury.jfif",
     livestreamAvailable: false,
-    endDate: null,
-    eventType: "regular_season",
-    regularSeasonNumber: 4,
-    tournamentFormat: "standard",
     weatherLatitude: null,
     weatherLongitude: null,
+    tournamentFormat: "standard",
   },
   {
-    slug: "squaw-creek-2027",
     name: "Squaw Creek",
     season: "2026-2027",
-    lake: "Squaw Creek",
     venue: null,
     city: null,
-    date: "2027-02-14",
+    state: "Texas",
+    startTimeDisplay: "Safe Light",
+    stopFishingTime: "15:00",
+    launchType: "TRAILERING",
     description: TOURNAMENT_DESCRIPTIONS[5],
     status: "upcoming",
     registrationStatus: "unavailable",
     registrationUrl: null,
+    tournamentStatus: "scheduled",
+    statusMessage:
+      "Tournament preparations are on schedule. Register during the published registration windows.",
+    statusUpdatedAt: "2026-07-21T12:00:00.000Z",
+    rescheduledDate: null,
+    safeLightOverride: null,
+    safeLightOverridePublicMessage: null,
+    earlyRegistrationDeadlineTime: "21:00",
+    tournamentMorningRegistrationOpensAt: "05:00",
+    tournamentMorningRegistrationClosesAt: null,
+    registrationInformation: null,
+    practiceInformation: null,
     resultsAvailable: false,
     featured: false,
     heroImage: "/images/lakes/squaw-creek.jfif",
     thumbnailImage: "/images/lakes/squaw-creek.jfif",
     livestreamAvailable: false,
-    endDate: null,
-    eventType: "regular_season",
-    regularSeasonNumber: 5,
-    tournamentFormat: "bass-stack",
     weatherLatitude: null,
     weatherLongitude: null,
+    tournamentFormat: "bass-stack",
   },
   {
-    slug: "ray-roberts-march-2027",
     name: "Ray Roberts",
     season: "2026-2027",
-    lake: "Ray Roberts",
     venue: null,
     city: null,
-    date: "2027-03-14",
+    state: "Texas",
+    startTimeDisplay: "Safe Light",
+    stopFishingTime: "15:00",
+    launchType: "TRAILERING",
     description: TOURNAMENT_DESCRIPTIONS[6],
     status: "upcoming",
     registrationStatus: "unavailable",
     registrationUrl: null,
+    tournamentStatus: "scheduled",
+    statusMessage:
+      "Tournament preparations are on schedule. Register during the published registration windows.",
+    statusUpdatedAt: "2026-07-21T12:00:00.000Z",
+    rescheduledDate: null,
+    safeLightOverride: null,
+    safeLightOverridePublicMessage: null,
+    earlyRegistrationDeadlineTime: "21:00",
+    tournamentMorningRegistrationOpensAt: "05:00",
+    tournamentMorningRegistrationClosesAt: null,
+    registrationInformation: null,
+    practiceInformation: null,
     resultsAvailable: false,
     featured: false,
     heroImage: "/images/lakes/ray-roberts.jfif",
     thumbnailImage: "/images/lakes/ray-roberts.jfif",
     livestreamAvailable: false,
-    endDate: null,
-    eventType: "regular_season",
-    regularSeasonNumber: 6,
-    tournamentFormat: "standard",
     weatherLatitude: null,
     weatherLongitude: null,
+    tournamentFormat: "standard",
   },
   {
-    slug: "tawakoni-april-2027",
     name: "Tawakoni",
     season: "2026-2027",
-    lake: "Tawakoni",
     venue: null,
     city: null,
-    date: "2027-04-25",
+    state: "Texas",
+    startTimeDisplay: "Safe Light",
+    stopFishingTime: "15:00",
+    launchType: "TRAILERING",
     description: TOURNAMENT_DESCRIPTIONS[7],
     status: "upcoming",
     registrationStatus: "unavailable",
     registrationUrl: null,
+    tournamentStatus: "scheduled",
+    statusMessage:
+      "Tournament preparations are on schedule. Register during the published registration windows.",
+    statusUpdatedAt: "2026-07-21T12:00:00.000Z",
+    rescheduledDate: null,
+    safeLightOverride: null,
+    safeLightOverridePublicMessage: null,
+    earlyRegistrationDeadlineTime: "21:00",
+    tournamentMorningRegistrationOpensAt: "05:00",
+    tournamentMorningRegistrationClosesAt: null,
+    registrationInformation: null,
+    practiceInformation: null,
     resultsAvailable: false,
     featured: false,
     heroImage: "/images/lakes/tawakoni.jfif",
     thumbnailImage: "/images/lakes/tawakoni.jfif",
     livestreamAvailable: false,
-    endDate: null,
-    eventType: "regular_season",
-    regularSeasonNumber: 7,
-    tournamentFormat: "standard",
     weatherLatitude: null,
     weatherLongitude: null,
+    tournamentFormat: "standard",
   },
   {
-    slug: "lewisville-may-2027",
     name: "Lewisville",
     season: "2026-2027",
-    lake: "Lewisville",
     venue: null,
     city: null,
-    date: "2027-05-16",
+    state: "Texas",
+    startTimeDisplay: "Safe Light",
+    stopFishingTime: "15:00",
+    launchType: "TRAILERING",
     description: TOURNAMENT_DESCRIPTIONS[8],
     status: "upcoming",
     registrationStatus: "unavailable",
     registrationUrl: null,
+    tournamentStatus: "scheduled",
+    statusMessage:
+      "Tournament preparations are on schedule. Register during the published registration windows.",
+    statusUpdatedAt: "2026-07-21T12:00:00.000Z",
+    rescheduledDate: null,
+    safeLightOverride: null,
+    safeLightOverridePublicMessage: null,
+    earlyRegistrationDeadlineTime: "21:00",
+    tournamentMorningRegistrationOpensAt: "05:00",
+    tournamentMorningRegistrationClosesAt: null,
+    registrationInformation: null,
+    practiceInformation: null,
     resultsAvailable: false,
     featured: false,
     heroImage: "/images/lakes/lewisville-lake.jfif",
     thumbnailImage: "/images/lakes/lewisville-lake.jfif",
     livestreamAvailable: false,
-    endDate: null,
-    eventType: "regular_season",
-    regularSeasonNumber: 8,
-    tournamentFormat: "bass-stack",
     weatherLatitude: null,
     weatherLongitude: null,
+    tournamentFormat: "bass-stack",
   },
   {
-    slug: "aitt-2026-2027-championship",
     name: "AITT Championship",
     season: "2026-2027",
-    lake: "TBD",
     venue: null,
     city: null,
-    date: "2027-06-12",
-    endDate: "2027-06-13",
-    eventType: "championship",
-    regularSeasonNumber: null,
+    state: "Texas",
+    startTimeDisplay: "Safe Light",
+    stopFishingTime: "15:00",
+    launchType: "TRAILERING",
     description:
-      "The two-day 2026–2027 AITT Championship. Championship lake and event details are to be announced.",
+      "The two-day 2026-2027 AITT Championship. Championship lake and event details are to be announced.",
     status: "upcoming",
     registrationStatus: "unavailable",
     registrationUrl: null,
+    tournamentStatus: "scheduled",
+    statusMessage:
+      "Tournament preparations are on schedule. Register during the published registration windows.",
+    statusUpdatedAt: "2026-07-21T12:00:00.000Z",
+    rescheduledDate: null,
+    safeLightOverride: null,
+    safeLightOverridePublicMessage: null,
+    earlyRegistrationDeadlineTime: "21:00",
+    tournamentMorningRegistrationOpensAt: "05:00",
+    tournamentMorningRegistrationClosesAt: null,
+    registrationInformation: null,
+    practiceInformation: null,
     resultsAvailable: false,
     featured: false,
     heroImage: TOURNAMENT_IMAGE_FALLBACK,
@@ -336,6 +474,13 @@ const tournamentSeeds: readonly TournamentSeed[] = [
     weatherLongitude: null,
   },
 ];
+
+const tournamentSeeds: readonly TournamentSeed[] = tournamentScheduleSeeds.map(
+  (schedule, index) => ({
+    ...schedule,
+    ...tournamentMetadataSeeds[index],
+  }),
+);
 
 export const tournaments: readonly Tournament[] = tournamentSeeds.map(
   (tournament): Tournament => ({

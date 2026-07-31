@@ -1,4 +1,5 @@
 import Header from "@/components/Header";
+import { PUBLIC_PAGE_CONTAINER } from "@/config/layout";
 import {
   getPublishedAoyStandings,
   type PublicAoyStanding,
@@ -19,21 +20,25 @@ export default async function StandingsPage() {
     <main className="min-h-screen bg-black text-white">
       <Header activeItem="Standings" />
 
-      <section className="border-b border-white/10 bg-[#0d0d0d]">
-        <div className="mx-auto max-w-[1500px] px-6 py-16">
+      <section className="py-10 md:py-14">
+        <div className={PUBLIC_PAGE_CONTAINER}>
+          <header className="border-b border-[#D4A017]/30 pb-6">
           <p className="text-sm font-black uppercase tracking-[0.25em] text-red-500">
             All-In Tournament Trail
           </p>
-          <h1 className="mt-4 text-5xl font-black uppercase tracking-tight">
+
+          <h1 className="mt-3 text-4xl font-black uppercase tracking-tight text-white md:text-5xl">
             AOY Standings
           </h1>
-          <p className="mt-5 max-w-3xl text-lg text-neutral-400">
+
+          <p className="mt-4 max-w-3xl text-base leading-7 text-neutral-400">
             Current Angler of the Year points from officially published AITT tournament results.
           </p>
+          </header>
         </div>
       </section>
 
-      <section className="mx-auto max-w-[1500px] px-6 py-12">
+      <section className={`${PUBLIC_PAGE_CONTAINER} py-10 md:py-14`}>
         {standings.length === 0 ? (
           <div className="border border-white/10 bg-[#111111] px-6 py-12 text-center">
             <p className="text-sm text-neutral-400">

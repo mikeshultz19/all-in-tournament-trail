@@ -40,7 +40,7 @@ export default function AOYPointsRaceStrip({
   const placeholderLeaders: AoyDisplayLeader[] = [2, 3, 1, 4, 5].map(
     (place) => ({
       place,
-      angler: "Awaiting Results",
+      angler: "—",
       points: null,
       isPlaceholder: true as const,
     }),
@@ -110,15 +110,12 @@ export default function AOYPointsRaceStrip({
                   </span>
                   <span className={`mt-1 max-w-full truncate whitespace-nowrap text-[0.7rem] uppercase tracking-wide text-white ${
                     standing.place === 1 ? "font-black" : "font-bold"
-                  }`}>
+                  } ${"isPlaceholder" in standing ? "opacity-80" : ""}`}>
                     {standing.angler}
                   </span>
                   {"isPlaceholder" in standing ? (
-                    <span
-                      aria-hidden="true"
-                      className="mt-1 whitespace-nowrap text-[0.62rem] font-black tabular-nums opacity-0"
-                    >
-                      0 PTS
+                    <span className="mt-1 whitespace-nowrap text-[0.62rem] font-black tabular-nums text-neutral-500">
+                      —
                     </span>
                   ) : (
                     <span className={`mt-1 whitespace-nowrap text-[0.62rem] font-black tabular-nums ${

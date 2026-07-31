@@ -31,7 +31,7 @@ describe("homepage AOY and Winner's Circle visual structure", () => {
     expect(html).toContain("3RD");
     expect(html).toContain("4TH");
     expect(html).toContain("5TH");
-    expect(html.match(/Awaiting Results/g)).toHaveLength(5);
+    expect(html).toContain("—");
     expect(html).not.toContain("AOY standings are temporarily unavailable.");
   });
 
@@ -40,7 +40,15 @@ describe("homepage AOY and Winner's Circle visual structure", () => {
     const source = readFileSync("components/WinnersCircle.tsx", "utf8");
 
     expect(html).toContain("Latest Tournament Results");
-    expect(html).toContain("No Results Available");
+    expect(html).toContain("FINAL STANDINGS");
+    expect(html).toContain("OVERALL CHAMPION");
+    expect(html).toContain("AOY POINTS LEADER");
+    expect(html).toContain("SIDE POTS &amp; PAYOUTS");
+    expect(html).toContain("BIG BASS WINNER");
+    expect(html).toContain("%2Fimages%2Ffeatured-tournament.png");
+    expect(html).toContain("aria-disabled=\"true\"");
+    expect(html).not.toContain("No Results Available");
+    expect(html).not.toContain("Awaiting Results");
     expect(html).toContain('class="bg-black px-4 py-8 sm:px-6"');
     expect(html).toContain("bg-[#0B0A09]");
     expect(source).toContain("styles.showcaseContainer");

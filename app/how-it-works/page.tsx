@@ -1,5 +1,6 @@
 import Link from "next/link";
 import Header from "@/components/Header";
+import { PUBLIC_PAGE_CONTAINER } from "@/config/layout";
 import { REGISTRATION_PRICING } from "@/data/registration";
 
 const price = (amount: number, additional = false) =>
@@ -267,112 +268,52 @@ export default function HowItWorksPage() {
     <main className="min-h-screen bg-black text-white">
       <Header />
 
-      <section className="relative overflow-hidden border-b border-white/10 bg-[#0d0d0d]">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_75%_20%,rgba(185,154,63,0.12),transparent_35%),linear-gradient(to_bottom,transparent,rgba(0,0,0,0.8))]" />
 
-        <div className="relative mx-auto max-w-[1300px] px-4 py-14 sm:px-6 sm:py-16 lg:py-20">
-          <p className="text-xs font-black uppercase tracking-[0.3em] text-red-500">
-            All-In Tournament Trail
-          </p>
+      <section className="py-10 md:py-14">
+  <div className={PUBLIC_PAGE_CONTAINER}>
+    <div className="max-w-3xl">
+      <header className="border-b border-[#D4A017]/30 pb-6">
+        <p className="text-xs font-black uppercase tracking-[0.3em] text-red-500">
+          All-In Tournament Trail
+        </p>
 
-          <h1 className="mt-4 max-w-4xl text-4xl font-black uppercase leading-[0.95] tracking-tight text-white sm:text-5xl lg:text-7xl">
-            How It Works
-          </h1>
+        <h1 className="mt-3 text-4xl font-black uppercase tracking-tight text-white md:text-5xl">
+          How It Works
+        </h1>
 
-          <p className="mt-5 text-xl font-black uppercase tracking-wide text-[#d0ae4c] sm:text-2xl">
-            Fish Your Way. Bet Your Way. Win Your Way.
-          </p>
+        <p className="mt-4 text-xl font-black uppercase tracking-wide text-[#d0ae4c] sm:text-2xl">
+          Fish Your Way. Bet Your Way. Win Your Way.
+        </p>
+      </header>
 
-          <p className="mt-5 max-w-2xl text-base leading-7 text-neutral-300 sm:text-lg">
-            Tournament Entry is required for every registration. Add Big Bass or an
-            eligible member-only pot to choose your competition level.
-          </p>
+      <p className="mt-8 max-w-2xl text-base leading-7 text-neutral-300">
+        Every registration requires a Tournament Entry. Add Big Bass or an
+        eligible{" "}
+        <span className="whitespace-nowrap">members-only</span> pot to compete
+        at your preferred level.
+      </p>
 
-          <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-            <span
-              aria-disabled="true"
-              className="inline-flex min-h-12 cursor-not-allowed items-center justify-center border border-red-950 bg-red-950 px-7 py-3 text-sm font-black uppercase tracking-wider text-zinc-400"
-            >
-              Register Now
-            </span>
+      <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+        <Link
+          href="/schedule"
+          className="inline-flex min-h-12 items-center justify-center border border-red-700 bg-red-800 px-7 py-3 text-sm font-black uppercase tracking-wider text-white transition hover:bg-red-700"
+        >
+          View Tournament Schedule
+        </Link>
 
-            <Link
-              href="/rules"
-              className="inline-flex min-h-12 items-center justify-center border border-white/20 bg-black px-7 py-3 text-sm font-black uppercase tracking-wider text-white transition hover:border-[#d0ae4c] hover:text-[#d0ae4c]"
-            >
-              View Official Rules
-            </Link>
-          </div>
-        </div>
-      </section>
+        <Link
+          href="/rules"
+          className="inline-flex min-h-12 items-center justify-center border border-white/20 bg-black px-7 py-3 text-sm font-black uppercase tracking-wider text-white transition hover:border-[#d0ae4c] hover:text-[#d0ae4c]"
+        >
+          View Official Rules
+        </Link>
+      </div>
+    </div>
+  </div>
+</section>
 
-      <section className="border-b border-white/10 bg-black px-4 py-12 sm:px-6 lg:py-16">
-        <div className="mx-auto max-w-[1300px]">
-          <SectionHeading
-            eyebrow="Choose Your Entry"
-            title="Choose How You Want to Fish"
-            description={`Every registration includes the required ${price(REGISTRATION_PRICING.baseEntry)} Tournament Entry. Big Bass is optional, and eligible members may add one Bronze, Silver, or Gold bonus pot plus the Insurance Pot.`}
-          />
-
-          <div className="mt-8 grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
-            {entryOptions.map((option) => (
-              <article
-                key={option.name}
-                className={`relative flex h-full flex-col border bg-[#111111] p-5 shadow-[0_12px_35px_rgba(0,0,0,0.3)] ${option.accent}`}
-              >
-                {PAYBACK_BADGE_TITLES.has(option.name) && (
-                  <span className="absolute right-4 top-4 inline-flex whitespace-nowrap rounded border border-[#c9aa4a]/70 bg-black/70 px-2 py-0.5 text-[0.58rem] font-black uppercase leading-none tracking-[0.18em] text-[#c9aa4a]">
-                    100% Payback
-                  </span>
-                )}
-                <div>
-                  <p className="text-[10px] font-black uppercase tracking-[0.22em] text-red-500">
-                    {option.eyebrow}
-                  </p>
-
-                  <div className="mt-3 flex items-end justify-between gap-3 border-b border-white/10 pb-4">
-                    <h2 className="text-xl font-black uppercase tracking-wide">
-                      {option.name}
-                    </h2>
-
-                    <p
-                      className={`shrink-0 text-2xl font-black ${option.priceColor}`}
-                    >
-                      {option.price}
-                    </p>
-                  </div>
-
-                  <p className="mt-4 text-sm leading-6 text-neutral-400">
-                    {option.description}
-                  </p>
-                </div>
-
-                <ul className="mt-5 space-y-3 border-t border-white/10 pt-5">
-                  {option.features.map((feature) => (
-                    <li
-                      key={feature}
-                      className="flex items-start gap-3 text-sm font-semibold text-neutral-200"
-                    >
-                      <span className="mt-1 text-red-500">◆</span>
-                      <span>{feature}</span>
-                    </li>
-                  ))}
-                </ul>
-              </article>
-            ))}
-          </div>
-
-          <div className="mt-5 border border-[#8f762f]/60 bg-[#14120d] px-5 py-4">
-            <p className="text-sm font-bold leading-6 text-neutral-200">
-              Bronze, Silver, and Gold do not stack. Eligible members may choose
-              only one of those pots per tournament.
-            </p>
-          </div>
-        </div>
-      </section>
-
-      <section className="border-b border-white/10 bg-black px-4 py-12 sm:px-6 lg:py-16">
-        <div className="mx-auto max-w-[1300px]">
+      <section className="py-10 md:py-14">
+        <div className={PUBLIC_PAGE_CONTAINER}>
           <SectionHeading
             eyebrow="Payout Opportunities"
             title="Multiple Ways to Win"
@@ -431,8 +372,8 @@ export default function HowItWorksPage() {
         </div>
       </section>
 
-      <section id="frequently-asked-questions" className="scroll-mt-24 bg-black px-4 py-12 sm:px-6 lg:py-16">
-        <div className="mx-auto max-w-[1000px]">
+      <section id="frequently-asked-questions" className="scroll-mt-24 py-10 md:py-14">
+        <div className={PUBLIC_PAGE_CONTAINER}>
           <SectionHeading
             eyebrow="Questions & Answers"
             title="Frequently Asked Questions"
@@ -469,8 +410,8 @@ export default function HowItWorksPage() {
         </div>
       </section>
 
-      <section className="border-t border-[#8f762f]/60 bg-[#13100a] px-4 py-12 sm:px-6 lg:py-16">
-        <div className="mx-auto flex max-w-[1300px] flex-col items-start justify-between gap-7 lg:flex-row lg:items-center">
+      <section className="border-t border-[#8f762f]/60 bg-[#13100a] py-10 md:py-14">
+        <div className={`${PUBLIC_PAGE_CONTAINER} flex flex-col items-start justify-between gap-7 lg:flex-row lg:items-center`}>
           <div>
             <p className="text-xs font-black uppercase tracking-[0.25em] text-red-500">
               Ready to Compete?
@@ -494,7 +435,7 @@ export default function HowItWorksPage() {
           </span>
         </div>
 
-        <div className="mx-auto mt-10 max-w-[1300px] border-t border-white/10 pt-7">
+        <div className={`${PUBLIC_PAGE_CONTAINER} mt-8 border-t border-white/10 pt-7`}>
           <Link
             href="/"
             className="inline-flex items-center gap-2 text-xs font-black uppercase tracking-[0.2em] text-[#d0ae4c] transition hover:text-red-500"
@@ -520,7 +461,7 @@ function SectionHeading({
   description,
 }: SectionHeadingProps) {
   return (
-    <div className="max-w-3xl">
+    <div className="max-w-3xl border-b border-[#D4A017]/30 pb-6">
       <p className="text-xs font-black uppercase tracking-[0.25em] text-red-500">
         {eyebrow}
       </p>

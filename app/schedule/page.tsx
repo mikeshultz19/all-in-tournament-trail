@@ -1,12 +1,14 @@
 import Image from "next/image";
 
 import Header from "@/components/Header";
+import { PUBLIC_PAGE_CONTAINER } from "@/config/layout";
 import {
   getTournamentImage,
 } from "@/data/tournaments";
 import {
   getActiveSeasonSchedule,
 } from "@/lib/tournaments";
+import { getEffectiveTournamentDate } from "@/data/tournaments";
 import {
   toPublicTournament,
   type PublicTournamentRecord,
@@ -68,7 +70,7 @@ function TournamentRow({ tournament }: { tournament: PublicTournamentRecord }) {
         <dl className="mt-4 grid grid-cols-1 gap-x-5 gap-y-3 border-t border-white/10 pt-4 sm:grid-cols-2 xl:grid-cols-5">
           <div>
             <dt className="text-[10px] font-black uppercase tracking-[0.12em] text-[#D4A017]">Date</dt>
-            <dd className="mt-1 text-xs font-semibold text-[#F2F2F2]"><time dateTime={tournament.date}>{display.date}</time></dd>
+            <dd className="mt-1 text-xs font-semibold text-[#F2F2F2]"><time dateTime={getEffectiveTournamentDate(tournament)}>{display.date}</time></dd>
           </div>
           <div>
             <dt className="text-[10px] font-black uppercase tracking-[0.12em] text-[#D4A017]">Ramp</dt>
@@ -118,15 +120,20 @@ export default async function SchedulePage() {
     <main className="min-h-screen bg-[#0B0B0B] text-[#F2F2F2]">
       <Header />
 
-      <section className="border-b border-[#4A3A12] bg-[#111111]">
-        <div className="mx-auto max-w-[1400px] px-5 py-9 sm:px-6 sm:py-11">
-          <h1 className="text-3xl font-black uppercase tracking-[0.04em] text-[#D4A017] sm:text-4xl">
-            Tournament Schedule
-          </h1>
+      <section className="py-10 md:py-14">
+        <div className={PUBLIC_PAGE_CONTAINER}>
+          <header className="border-b border-[#D4A017]/30 pb-6">
+            <p className="text-xs font-black uppercase tracking-[0.3em] text-red-500">
+              All-In Tournament Trail
+            </p>
+            <h1 className="mt-3 text-4xl font-black uppercase tracking-tight text-white md:text-5xl">
+              Tournament Schedule
+            </h1>
+          </header>
         </div>
       </section>
 
-      <section className="mx-auto max-w-[1400px] px-5 py-8 sm:px-6 sm:py-10">
+      <section className={`${PUBLIC_PAGE_CONTAINER} py-10 md:py-14`}>
         <div className="overflow-hidden border border-[#4A3A12] bg-[#111111]">
           <div className="hidden grid-cols-[180px_minmax(0,1fr)_140px] items-center gap-6 border-b border-[#4A3A12] px-5 py-4 text-xs font-black uppercase tracking-[0.14em] text-[#D4A017] lg:grid">
             <span>Lake</span>

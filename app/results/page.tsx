@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { LatestTournamentResults } from "@/types/results";
 import Header from "@/components/Header";
+import { PUBLIC_PAGE_CONTAINER } from "@/config/layout";
 import {
   calculateResultPayouts,
   displayResultsPayout,
@@ -45,19 +46,21 @@ export default async function ResultsPage() {
     <main className="min-h-screen bg-black text-white">
       <Header />
 
-      <section className="border-b border-white/10 bg-[#0d0d0d]">
-        <div className="mx-auto max-w-[1500px] px-6 py-16">
-          <p className="text-sm font-black uppercase tracking-[0.25em] text-red-500">
-            All-In Tournament Trail
-          </p>
+      <section className="py-10 md:py-14">
+        <div className={PUBLIC_PAGE_CONTAINER}>
+          <header className="border-b border-[#D4A017]/30 pb-6">
+            <p className="text-xs font-black uppercase tracking-[0.3em] text-red-500">
+              All-In Tournament Trail
+            </p>
 
-          <h1 className="mt-4 text-5xl font-black uppercase tracking-tight">
-            Tournament Results
-          </h1>
+            <h1 className="mt-3 text-4xl font-black uppercase tracking-tight text-white md:text-5xl">
+              Tournament Results
+            </h1>
 
-          <p className="mt-5 max-w-3xl text-lg text-neutral-400">
-            Official tournament standings, weights, payouts, and event details.
-          </p>
+            <p className="mt-4 max-w-3xl text-base leading-7 text-neutral-400">
+              Official tournament standings, weights, payouts, and event details.
+            </p>
+          </header>
         </div>
       </section>
 
@@ -66,7 +69,7 @@ export default async function ResultsPage() {
           aria-label="Results archive"
           className="border-b border-white/10 bg-[#111111]"
         >
-          <div className="mx-auto flex max-w-[1500px] items-center gap-4 overflow-x-auto px-6 py-3">
+          <div className={`${PUBLIC_PAGE_CONTAINER} flex items-center gap-4 overflow-x-auto py-3`}>
             <span className="shrink-0 text-xs font-black uppercase tracking-[0.15em] text-neutral-500">
               Archive
             </span>
@@ -84,7 +87,7 @@ export default async function ResultsPage() {
         </nav>
       ) : null}
 
-      <section className="mx-auto max-w-[1500px] px-6 py-12">
+      <section className={`${PUBLIC_PAGE_CONTAINER} py-10 md:py-14`}>
         {!latestResults ? (
           <div className="border border-white/10 bg-[#111111] p-10 text-center">
             <h2 className="text-2xl font-black uppercase">

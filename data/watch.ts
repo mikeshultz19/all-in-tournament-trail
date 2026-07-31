@@ -1,11 +1,28 @@
+import { getFeaturedTournament, getEffectiveTournamentDate } from "@/data/tournaments";
+import { getTournamentDisplay } from "@/lib/tournament-display";
+
+const featuredTournament = getFeaturedTournament();
+const featuredDisplay = featuredTournament
+  ? getTournamentDisplay(featuredTournament)
+  : null;
+
 export const watchPageData = {
-  tournament: {
-    label: "Current Tournament",
-    lake: "Eagle Mountain Lake",
-    date: "November 1, 2026",
-    venue: "Twin Points Park",
-    location: "Azle, TX",
-  },
+  tournament: featuredTournament
+    ? {
+        label: "Current Tournament",
+        lake: `${featuredTournament.lake} Lake`,
+        date: featuredDisplay?.date ?? featuredTournament.date,
+        venue: featuredTournament.venue ?? "To Be Announced",
+        location: featuredTournament.city
+          ? `${featuredTournament.city}, ${
+              featuredTournament.state === "Texas"
+                ? "TX"
+                : featuredTournament.state
+            }`
+          : "To Be Announced",
+        dateTime: getEffectiveTournamentDate(featuredTournament),
+      }
+    : null,
   socialLinks: [
     { label: "Facebook", href: "#facebook" },
     { label: "Instagram", href: "#instagram" },

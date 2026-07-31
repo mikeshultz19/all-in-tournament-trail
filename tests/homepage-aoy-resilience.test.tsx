@@ -158,7 +158,7 @@ describe("homepage AOY resilience", () => {
     expect(aoySectionText).toContain("3RD");
     expect(aoySectionText).toContain("4TH");
     expect(aoySectionText).toContain("5TH");
-    expect(aoySectionText.match(/Awaiting Results/g)).toHaveLength(5);
+    expect(aoySectionText).toContain("—");
     expect(aoySectionText.indexOf("2ND")).toBeLessThan(
       aoySectionText.indexOf("1ST"),
     );

@@ -49,11 +49,12 @@ export default function FeaturedTournament({
     minutes: 0,
     seconds: 0,
   });
+  const countdownDate = operations?.effectiveDate ?? tournament?.date ?? null;
 
   useEffect(() => {
     const updateCountdown = () => {
-      if (tournament) {
-        setCountdown(calculateCountdown(tournament.date));
+      if (countdownDate) {
+        setCountdown(calculateCountdown(countdownDate));
       }
     };
 
@@ -62,7 +63,7 @@ export default function FeaturedTournament({
     const interval = window.setInterval(updateCountdown, 1000);
 
     return () => window.clearInterval(interval);
-  }, [tournament]);
+  }, [countdownDate]);
 
   const countdownItems = [
     { label: "Days", value: countdown.days },
@@ -114,10 +115,7 @@ export default function FeaturedTournament({
           </h3>
 
           <p className="mt-1 text-[9px] font-black uppercase tracking-[0.15em] text-yellow-500">
-            {new Date(`${tournament.date}T12:00:00`).toLocaleDateString(
-              "en-US",
-              { month: "long", day: "numeric", year: "numeric" },
-            )}
+            {display.date}
           </p>
           <p className="mt-2 text-sm text-zinc-300">
             {tournament.lake}
@@ -161,7 +159,7 @@ export default function FeaturedTournament({
           <dl className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-5">
             <div className="border-b border-white/10 p-4 sm:border-r xl:border-b-0">
               <dt className="text-[9px] font-black uppercase tracking-[0.14em] text-[#D4A017]">Date</dt>
-              <dd className="mt-2 text-sm font-bold text-white"><time dateTime={operations?.effectiveDate ?? tournament.date}>{display.date}</time></dd>
+              <dd className="mt-2 text-sm font-bold text-white"><time dateTime={countdownDate ?? tournament.date}>{display.date}</time></dd>
               <dd className="mt-1 text-xs text-zinc-400">{display.dayOfWeek}</dd>
             </div>
             <div className="border-b border-white/10 p-4 xl:border-b-0 xl:border-r">

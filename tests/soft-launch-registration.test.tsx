@@ -57,7 +57,7 @@ describe("Soft Launch registration", () => {
   });
 
   it("renders the required Registration page banner copy", () => {
-    const source = readFileSync("app/register/page.tsx", "utf8");
+    const source = readFileSync("components/RegistrationForm.tsx", "utf8");
     const normalizedSource = source.replace(/\s+/g, " ");
 
     expect(normalizedSource).toContain("Registration is Currently Closed");

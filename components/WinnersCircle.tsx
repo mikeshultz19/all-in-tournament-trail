@@ -1,6 +1,5 @@
 import {
   BadgeDollarSign,
-  ClipboardList,
   Crown,
   Fish,
   Medal,
@@ -27,6 +26,7 @@ type Icon = ComponentType<SVGProps<SVGSVGElement>>;
 type SidePotName = "bronze" | "silver" | "gold";
 
 const SIDE_POT_ORDER: SidePotName[] = ["bronze", "silver", "gold"];
+const RESULTS_COMING_SOON_IMAGE = "/images/featured-tournament.png";
 
 const SIDE_POT_THEMES: Record<
   SidePotName,
@@ -48,6 +48,20 @@ const SIDE_POT_THEMES: Record<
     divider: "rgba(212,175,55,0.45)",
   },
 };
+
+interface DisplayStandingEntry {
+  placeLabel: string;
+  team: string;
+  weight: number | null;
+  baseWinnings: number | null;
+}
+
+interface DisplaySidePotWinner {
+  placeLabel: string;
+  team: string;
+  weight: number | null;
+  sidePotPayout: number | null;
+}
 
 function formatOrdinal(value: number): string {
   const absValue = Math.abs(value);
@@ -123,9 +137,7 @@ function TournamentHeader({
 
       <div className="relative flex min-h-12 items-center justify-center text-center">
         <div>
-          <h2 className={styles.bannerTitle}>
-            {title}
-          </h2>
+          <h2 className={styles.bannerTitle}>{title}</h2>
           {subtitle ? (
             <p className="mt-1 text-[0.72rem] font-semibold uppercase tracking-[0.14em] text-neutral-500 sm:text-[0.8rem]">
               {subtitle}
@@ -171,33 +183,30 @@ function MediaCard({
           {name}
         </p>
         <p className="mt-0.5 text-[0.92rem] font-black tabular-nums text-[#c9aa4a] sm:text-[1rem]">
-          {weight === null ? "Not recorded" : `${weight.toFixed(2)} lbs`}
+          {weight === null ? "—" : `${weight.toFixed(2)} lbs`}
         </p>
       </div>
     </article>
   );
 }
 
-function StandingRow({
-  entry,
-}: {
-  entry: ResultEntry;
-}) {
+function StandingRow({ entry }: { entry: DisplayStandingEntry }) {
   const placeTone =
-    entry.place <= 3 ? "text-[#c9aa4a]" : "text-[#F4EEE7]";
+    entry.placeLabel === "—" ? "text-[#F4EEE7]" : "text-[#c9aa4a]";
+
   return (
     <li className="border-b border-white/10 py-1 last:border-b-0">
       <div className={`${styles.finalStandingsGrid} items-center gap-2.5`}>
         <span
           className={`text-left text-[0.56rem] font-black uppercase leading-4 tracking-[0.08em] ${placeTone}`}
         >
-          {formatOrdinal(entry.place)}
+          {entry.placeLabel}
         </span>
         <span className="min-w-0 whitespace-nowrap text-left text-[0.65rem] font-semibold leading-4 text-[#F4EEE7]">
           {entry.team}
         </span>
         <span className="whitespace-nowrap text-right text-[0.65rem] font-semibold leading-4 tabular-nums text-neutral-500">
-          {entry.weight.toFixed(2)} lbs
+          {entry.weight === null ? "—" : `${entry.weight.toFixed(2)} lbs`}
         </span>
         <span className="whitespace-nowrap text-right text-[0.65rem] font-black leading-4 tabular-nums text-[#c9aa4a]">
           {displayResultsPayout(entry.baseWinnings)}
@@ -207,22 +216,18 @@ function StandingRow({
   );
 }
 
-function SidePotRow({
-  winner,
-}: {
-  winner: ResultEntry & { sidePot: SidePotName };
-}) {
+function SidePotRow({ winner }: { winner: DisplaySidePotWinner }) {
   return (
     <li className="border-b border-white/10 py-1.5 last:border-b-0">
       <div className={styles.sidePotGrid}>
         <span className="text-[0.62rem] font-black uppercase leading-4 tracking-[0.08em] text-neutral-500">
-          {formatOrdinal(winner.sidePotPlacement ?? winner.place)}
+          {winner.placeLabel}
         </span>
         <span className="min-w-0 whitespace-nowrap text-left text-[0.65rem] font-semibold leading-4 text-[#F4EEE7]">
           {winner.team}
         </span>
         <span className="whitespace-nowrap text-right text-[0.65rem] font-semibold leading-4 tabular-nums text-neutral-500">
-          {winner.weight.toFixed(2)} lbs
+          {winner.weight === null ? "—" : `${winner.weight.toFixed(2)} lbs`}
         </span>
         <span className="whitespace-nowrap text-right text-[0.65rem] font-black leading-4 tabular-nums text-[#c9aa4a]">
           {displayResultsPayout(winner.sidePotPayout)}
@@ -237,15 +242,12 @@ function SidePotSection({
   winners,
 }: {
   sidePot: SidePotName;
-  winners: Array<ResultEntry & { sidePot: SidePotName }>;
+  winners: DisplaySidePotWinner[];
 }) {
   const theme = SIDE_POT_THEMES[sidePot];
 
   return (
-    <section
-      className="border-t pt-3"
-      style={{ borderTopColor: theme.divider }}
-    >
+    <section className="border-t pt-3" style={{ borderTopColor: theme.divider }}>
       <div className="flex items-center gap-2">
         <Medal
           aria-hidden="true"
@@ -261,7 +263,9 @@ function SidePotSection({
       </div>
 
       <div className="mt-2">
-        <div className={`${styles.sidePotGrid} border-b border-white/10 pb-2 text-[0.65rem] font-black uppercase leading-4 tracking-[0.09em] text-neutral-500`}>
+        <div
+          className={`${styles.sidePotGrid} border-b border-white/10 pb-2 text-[0.65rem] font-black uppercase leading-4 tracking-[0.09em] text-neutral-500`}
+        >
           <span>Place</span>
           <span>Team</span>
           <span className="text-right">Weight</span>
@@ -270,7 +274,7 @@ function SidePotSection({
         <ol className="mt-1">
           {winners.map((winner) => (
             <SidePotRow
-              key={`${winner.sidePot}-${winner.sidePotPlacement ?? winner.place}-${winner.team}`}
+              key={`${sidePot}-${winner.placeLabel}-${winner.team}`}
               winner={winner}
             />
           ))}
@@ -304,7 +308,9 @@ function SummaryRow({
       </span>
       <span
         className={`whitespace-nowrap text-right font-black tabular-nums ${
-          emphasis ? "text-[1.05rem] text-[#c9aa4a]" : "text-[0.78rem] text-[#F4EEE7]"
+          emphasis
+            ? "text-[1.05rem] text-[#c9aa4a]"
+            : "text-[0.78rem] text-[#F4EEE7]"
         }`}
       >
         {displayResultsPayout(value)}
@@ -313,237 +319,305 @@ function SummaryRow({
   );
 }
 
+function AoyLeaderPlaceholder() {
+  return (
+    <section
+      aria-labelledby="aoy-points-leader-heading"
+      className="mt-5 border border-[#8f762f]/60 bg-[#111111] p-3 text-center"
+    >
+      <div className="flex items-center justify-center gap-2">
+        <Trophy
+          aria-hidden="true"
+          className="size-4 shrink-0 text-[#c9aa4a]"
+        />
+        <h4
+          id="aoy-points-leader-heading"
+          className="text-[0.72rem] font-black uppercase tracking-[0.12em] text-[#c9aa4a]"
+        >
+          AOY POINTS LEADER
+        </h4>
+      </div>
+      <p className="mt-4 text-2xl font-black uppercase text-white">—</p>
+      <p className="mt-1 text-[0.92rem] font-black tabular-nums text-[#c9aa4a]">
+        —
+      </p>
+    </section>
+  );
+}
+
+function ResultsActionButton({
+  href,
+  disabled,
+  children,
+}: {
+  href: string;
+  disabled: boolean;
+  children: string;
+}) {
+  const className =
+    "mx-auto mt-4 inline-flex min-h-9 items-center justify-center border border-[#8f762f]/70 bg-[#171717] px-4 text-[0.68rem] font-black uppercase tracking-[0.12em] text-[#c9aa4a] transition hover:bg-[#111111] hover:text-[#F4EEE7] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#c9aa4a]";
+
+  if (disabled) {
+    return (
+      <span aria-disabled="true" className={`${className} cursor-default opacity-70`}>
+        {children}
+      </span>
+    );
+  }
+
+  return (
+    <Link href={href} className={className}>
+      {children}
+    </Link>
+  );
+}
+
 export default function WinnersCircle({
   latestResults,
 }: {
   latestResults: LatestTournamentResults | null;
 }) {
-  const finalEntries = latestResults
-    ? [...latestResults.results.entries]
+  const hasResults = Boolean(latestResults);
+  const results = latestResults?.results ?? null;
+
+  const finalEntries = results
+    ? [...results.entries]
         .filter(isFinalEntry)
         .sort((a, b) => a.place - b.place)
     : [];
-  const displayFinalEntries = finalEntries.slice(0, 20);
 
-  const sidePotGroups = SIDE_POT_ORDER.map((sidePot) => ({
-    sidePot,
-    winners:
-      latestResults?.results.entries
-        .filter(
-          (entry): entry is ResultEntry & { sidePot: SidePotName } =>
-            isSidePotEntry(entry) && entry.sidePot === sidePot,
-        )
-        .sort(
-          (a, b) =>
-            (a.sidePotPlacement ?? a.place) - (b.sidePotPlacement ?? b.place),
-        )
-        .slice(0, 1) ?? [],
-  }));
+  const displayFinalEntries: DisplayStandingEntry[] = hasResults
+    ? finalEntries.slice(0, 20).map((entry) => ({
+        placeLabel: formatOrdinal(entry.place),
+        team: entry.team,
+        weight: entry.weight,
+        baseWinnings: entry.baseWinnings ?? null,
+      }))
+    : Array.from({ length: 20 }, () => ({
+        placeLabel: "—",
+        team: "—",
+        weight: null,
+        baseWinnings: null,
+      }));
 
-  const payoutTotals = calculateResultPayouts(
-    latestResults?.results ?? {},
-  );
+  const sidePotGroups = SIDE_POT_ORDER.map((sidePot) => {
+    const winners = results
+      ? results.entries
+          .filter(
+            (entry): entry is ResultEntry & { sidePot: SidePotName } =>
+              isSidePotEntry(entry) && entry.sidePot === sidePot,
+          )
+          .sort(
+            (a, b) =>
+              (a.sidePotPlacement ?? a.place) -
+              (b.sidePotPlacement ?? b.place),
+          )
+          .slice(0, 1)
+          .map((winner) => ({
+            placeLabel: formatOrdinal(winner.sidePotPlacement ?? winner.place),
+            team: winner.team,
+            weight: winner.weight,
+            sidePotPayout: winner.sidePotPayout ?? null,
+          }))
+      : [
+          {
+            placeLabel: "—",
+            team: "—",
+            weight: null,
+            sidePotPayout: null,
+          },
+        ];
+
+    return { sidePot, winners };
+  });
+
+  const payoutTotals = calculateResultPayouts(latestResults?.results ?? {});
 
   const champion = finalEntries[0] ?? null;
-  const championImage =
-    latestResults?.championImage ?? "/images/results/overall-winner.jpg";
-  const bigBassImage =
-    latestResults?.bigBassImage ?? "/images/results/big-bass.jpg";
+  const championImage = latestResults?.championImage
+    ? latestResults.championImage
+    : hasResults
+      ? "/images/results/overall-winner.jpg"
+      : RESULTS_COMING_SOON_IMAGE;
+  const bigBassImage = latestResults?.bigBassImage
+    ? latestResults.bigBassImage
+    : hasResults
+      ? "/images/results/big-bass.jpg"
+      : RESULTS_COMING_SOON_IMAGE;
+  const championName = hasResults ? champion?.team ?? "—" : "—";
+  const championWeight = hasResults ? champion?.weight ?? null : null;
+  const bigBassName = results?.big_bass_angler ?? "—";
+  const bigBassWeight = results?.big_bass_weight ?? null;
 
   return (
-    <section
-      id="results"
-      className="bg-black px-4 py-8 sm:px-6"
-    >
+    <section id="results" className="bg-black px-4 py-8 sm:px-6">
       <div className={`${styles.showcaseContainer} bg-[#0B0A09]`}>
         <article className="overflow-visible border border-[#8f762f]/60 bg-[#111111] shadow-[0_10px_30px_rgba(0,0,0,0.35)]">
-          {latestResults ? (
-            <>
-              <TournamentHeader
-                title={latestResults.tournament.name}
-                subtitle={`${latestResults.tournament.lake} • ${formatResultsDate(
-                  latestResults.tournament.tournament_date,
-                )}`}
+          <TournamentHeader
+            title={hasResults && latestResults ? latestResults.tournament.name : "Latest Tournament Results"}
+            subtitle={
+              hasResults && latestResults
+                ? `${latestResults.tournament.lake} • ${formatResultsDate(
+                    latestResults.tournament.tournament_date,
+                  )}`
+                : undefined
+            }
+          />
+
+          <div
+            className={`${styles.showcaseGrid} divide-y divide-white/10 md:divide-x md:divide-y-0`}
+          >
+            <section className="flex min-w-0 flex-col border border-[#8f762f]/60 bg-[#111111] p-4 sm:p-5">
+              <SectionHeading title="FINAL STANDINGS" icon={Trophy} />
+
+              <div
+                className={`${styles.finalStandingsGrid} mt-3 border-b border-white/10 pb-1.5 text-[0.65rem] font-black uppercase leading-4 tracking-[0.09em] text-neutral-500`}
+              >
+                <span>Place</span>
+                <span>Team</span>
+                <span className="text-right">Weight</span>
+                <span className="text-right">Base Payout</span>
+              </div>
+
+              <ol className="mt-1">
+                {displayFinalEntries.map((entry, index) => (
+                  <StandingRow key={`${index}-${entry.placeLabel}`} entry={entry} />
+                ))}
+              </ol>
+
+              <ResultsActionButton
+                href={hasResults && latestResults ? latestResults.completeResultsUrl : "#"}
+                disabled={!hasResults}
+              >
+                View Complete Results
+              </ResultsActionButton>
+            </section>
+
+            <section className="flex min-w-0 flex-col border border-[#8f762f]/60 bg-[#111111] p-4 sm:p-5">
+              <SectionHeading title="OVERALL CHAMPION" icon={Crown} centered />
+
+              <MediaCard
+                image={championImage}
+                alt={
+                  hasResults
+                    ? `Overall champion ${championName} at ${latestResults!.tournament.name}`
+                    : "Tournament champion placeholder"
+                }
+                name={championName}
+                weight={championWeight}
+                priority
               />
 
-              <div className={`${styles.showcaseGrid} divide-y divide-white/10 md:divide-x md:divide-y-0`}>
-                <section className="flex min-w-0 flex-col border border-[#8f762f]/60 bg-[#111111] p-4 sm:p-5">
-                  <SectionHeading
-                    title="FINAL STANDINGS"
-                    icon={Trophy}
+              <div className="mt-5 border border-[#8f762f]/60 bg-[#111111] p-3">
+                <SummaryRow label="Tournament Entry Payout" value={hasResults ? payoutTotals.standardTournament : 0} />
+                <SummaryRow label="Bronze Side Pot Payout" value={hasResults ? payoutTotals.bronze : 0} />
+                <SummaryRow label="Silver Side Pot Payout" value={hasResults ? payoutTotals.silver : 0} />
+                <SummaryRow label="Gold Side Pot Payout" value={hasResults ? payoutTotals.gold : 0} />
+                <SummaryRow label="Insurance Pot" value={hasResults ? payoutTotals.insurance : 0} />
+                <SummaryRow label="Big Bass Pot" value={hasResults ? payoutTotals.bigBass : 0} />
+                <div className="my-2 border-t border-[#c9aa4a]/60" />
+                <SummaryRow
+                  label="TOTAL PAID OUT TO ANGLERS"
+                  value={hasResults ? payoutTotals.totalPaidOutToAnglers : 0}
+                  emphasis
+                />
+              </div>
+
+              {hasResults ? (
+                <div
+                  aria-hidden="true"
+                  className="relative hidden min-h-0 flex-1 overflow-hidden md:block"
+                >
+                  <Image
+                    src="/images/logo.png"
+                    alt=""
+                    width={60}
+                    height={23}
+                    className="absolute bottom-1 left-1/2 h-auto max-h-full w-[60px] max-w-full -translate-x-1/2 object-contain opacity-[0.13]"
                   />
+                </div>
+              ) : (
+                <AoyLeaderPlaceholder />
+              )}
+            </section>
 
-                  <div
-                    className={`${styles.finalStandingsGrid} mt-3 border-b border-white/10 pb-1.5 text-[0.65rem] font-black uppercase leading-4 tracking-[0.09em] text-neutral-500`}
-                  >
-                    <span>Place</span>
-                    <span>Team</span>
-                    <span className="text-right">Weight</span>
-                    <span className="text-right">Base Payout</span>
+            <section
+              className={`${styles.rightPanel} min-w-0 border border-[#8f762f]/60 bg-[#111111] p-4 sm:p-5`}
+            >
+              <SectionHeading title="SIDE POTS & PAYOUTS" icon={BadgeDollarSign} />
+
+              <div className="mt-4 space-y-4">
+                {sidePotGroups.map((group) => (
+                  <SidePotSection
+                    key={group.sidePot}
+                    sidePot={group.sidePot}
+                    winners={group.winners}
+                  />
+                ))}
+
+                <section className="border-t border-[#c9aa4a]/50 pt-3">
+                  <div className="flex items-center gap-2">
+                    <Shield
+                      aria-hidden="true"
+                      className="size-4 shrink-0 text-[#C0C0C0]"
+                    />
+                    <h4 className="text-[0.72rem] font-black uppercase tracking-[0.12em] text-[#F4EEE7]">
+                      INSURANCE POT
+                    </h4>
                   </div>
-
-                  <ol className="mt-1">
-                    {displayFinalEntries.map((entry) => (
-                      <StandingRow key={`${entry.place}-${entry.team}`} entry={entry} />
-                    ))}
-                  </ol>
-
-                  <Link
-                    href={latestResults.completeResultsUrl}
-                    className="mx-auto mt-4 inline-flex min-h-9 items-center justify-center border border-[#8f762f]/70 bg-[#171717] px-4 text-[0.68rem] font-black uppercase tracking-[0.12em] text-[#c9aa4a] transition hover:bg-[#111111] hover:text-[#F4EEE7] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#c9aa4a]"
-                  >
-                    View Complete Results
-                  </Link>
+                  <div className="mt-2 flex items-center justify-between gap-4 border-b border-white/10 pb-2">
+                    <span className="text-[0.58rem] font-black uppercase tracking-[0.09em] text-neutral-500">
+                      Amount
+                    </span>
+                    <span className="whitespace-nowrap text-right text-[0.78rem] font-black tabular-nums text-[#c9aa4a]">
+                      {hasResults
+                        ? displayResultsPayout(payoutTotals.insurance)
+                        : "—"}
+                    </span>
+                  </div>
                 </section>
 
-                <section className="flex min-w-0 flex-col border border-[#8f762f]/60 bg-[#111111] p-4 sm:p-5">
-                  <SectionHeading
-                    title="OVERALL CHAMPION"
-                    icon={Crown}
-                    centered
-                  />
-
-                  <MediaCard
-                    image={championImage}
-                    alt={`Overall champion ${champion?.team ?? "winner"} at ${latestResults.tournament.name}`}
-                    name={champion?.team ?? "Winner"}
-                    weight={champion?.weight ?? null}
-                    priority
-                  />
-
-                  <div className="mt-5 border border-[#8f762f]/60 bg-[#111111] p-3">
-                    <SummaryRow label="Tournament Entry Payout" value={payoutTotals.standardTournament} />
-                    <SummaryRow label="Bronze Side Pot Payout" value={payoutTotals.bronze} />
-                    <SummaryRow label="Silver Side Pot Payout" value={payoutTotals.silver} />
-                    <SummaryRow label="Gold Side Pot Payout" value={payoutTotals.gold} />
-                    <SummaryRow label="Insurance Pot" value={payoutTotals.insurance} />
-                    <SummaryRow label="Big Bass Pot" value={payoutTotals.bigBass} />
-                    <div className="my-2 border-t border-[#c9aa4a]/60" />
-                    <SummaryRow
-                      label="TOTAL PAID OUT TO ANGLERS"
-                      value={payoutTotals.totalPaidOutToAnglers}
-                      emphasis
+                <section className="border-t border-[#c9aa4a]/45 pt-3">
+                  <div className="flex items-center justify-center gap-2">
+                    <Fish
+                      aria-hidden="true"
+                      className="size-4 shrink-0 text-[#c9aa4a]"
                     />
+                    <h4 className="text-center text-[0.72rem] font-black uppercase tracking-[0.12em] text-[#c9aa4a]">
+                      BIG BASS WINNER
+                    </h4>
                   </div>
 
                   <div
-                    aria-hidden="true"
-                    className="relative hidden min-h-0 flex-1 overflow-hidden md:block"
+                    className={`${styles.resultImageFrame} mt-3 rounded-[4px] border border-[#8f762f]/70 shadow-[0_10px_24px_rgba(0,0,0,0.38)]`}
                   >
                     <Image
-                      src="/images/logo.png"
-                      alt=""
-                      width={60}
-                      height={23}
-                      className="absolute bottom-1 left-1/2 h-auto max-h-full w-[60px] max-w-full -translate-x-1/2 object-contain opacity-[0.13]"
+                      src={bigBassImage}
+                      alt={
+                        hasResults
+                          ? `Big bass winner ${bigBassName} with tournament fish`
+                          : "Tournament big bass placeholder"
+                      }
+                      fill
+                      sizes="(max-width: 768px) 100vw, 33vw"
+                      className={styles.resultImage}
                     />
                   </div>
-                </section>
 
-                <section
-                  className={`${styles.rightPanel} min-w-0 border border-[#8f762f]/60 bg-[#111111] p-4 sm:p-5`}
-                >
-                  <SectionHeading
-                    title="SIDE POTS & PAYOUTS"
-                    icon={BadgeDollarSign}
-                  />
-
-                  <div className="mt-4 space-y-4">
-                    {sidePotGroups.map((group) => (
-                      <SidePotSection
-                        key={group.sidePot}
-                        sidePot={group.sidePot}
-                        winners={group.winners}
-                      />
-                    ))}
-
-                    <section className="border-t border-[#c9aa4a]/50 pt-3">
-                      <div className="flex items-center gap-2">
-                        <Shield
-                          aria-hidden="true"
-                          className="size-4 shrink-0 text-[#C0C0C0]"
-                        />
-                        <h4 className="text-[0.72rem] font-black uppercase tracking-[0.12em] text-[#F4EEE7]">
-                          INSURANCE POT
-                        </h4>
-                      </div>
-                      <div className="mt-2 flex items-center justify-between gap-4 border-b border-white/10 pb-2">
-                        <span className="text-[0.58rem] font-black uppercase tracking-[0.09em] text-neutral-500">
-                          Amount
-                        </span>
-                        <span className="whitespace-nowrap text-right text-[0.78rem] font-black tabular-nums text-[#c9aa4a]">
-                          {displayResultsPayout(payoutTotals.insurance)}
-                        </span>
-                      </div>
-                    </section>
-
-                    <section className="border-t border-[#c9aa4a]/45 pt-3">
-                      <div className="flex items-center justify-center gap-2">
-                        <Fish
-                          aria-hidden="true"
-                          className="size-4 shrink-0 text-[#c9aa4a]"
-                        />
-                        <h4 className="text-center text-[0.72rem] font-black uppercase tracking-[0.12em] text-[#c9aa4a]">
-                          BIG BASS WINNER
-                        </h4>
-                      </div>
-
-                      <div
-                        className={`${styles.resultImageFrame} mt-3 rounded-[4px] border border-[#8f762f]/70 shadow-[0_10px_24px_rgba(0,0,0,0.38)]`}
-                      >
-                        <Image
-                          src={bigBassImage}
-                          alt={`Big bass winner ${latestResults.results.big_bass_angler ?? "angler"} with tournament fish`}
-                          fill
-                          sizes="(max-width: 768px) 100vw, 33vw"
-                          className={styles.resultImage}
-                        />
-                      </div>
-
-                      <div className="pt-3 text-center">
-                        <p className="text-[0.92rem] font-black uppercase tracking-[0.05em] text-[#F4EEE7] sm:text-[1rem]">
-                          {latestResults.results.big_bass_angler ?? "Not recorded"}
-                        </p>
-                        <p className="mt-0.5 text-[0.92rem] font-black tabular-nums text-[#c9aa4a] sm:text-[1rem]">
-                          {latestResults.results.big_bass_weight === null
-                            ? "Not recorded"
-                            : `${latestResults.results.big_bass_weight.toFixed(2)} lbs`}
-                        </p>
-                      </div>
-                    </section>
+                  <div className="pt-3 text-center">
+                    <p className="text-[0.92rem] font-black uppercase tracking-[0.05em] text-[#F4EEE7] sm:text-[1rem]">
+                      {bigBassName}
+                    </p>
+                    <p className="mt-0.5 text-[0.92rem] font-black tabular-nums text-[#c9aa4a] sm:text-[1rem]">
+                      {bigBassWeight === null
+                        ? "—"
+                        : `${bigBassWeight.toFixed(2)} lbs`}
+                    </p>
                   </div>
                 </section>
               </div>
-            </>
-          ) : (
-            <>
-              <TournamentHeader title="Latest Tournament Results" />
-
-              <div className="relative min-h-[330px] overflow-hidden">
-                <Image
-                  src="/images/results/overall-winner.jpg"
-                  alt=""
-                  fill
-                  sizes="(max-width: 1650px) 100vw, 1650px"
-                  priority
-                  className="object-cover"
-                />
-                <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(12,10,9,0.78),rgba(43,8,16,0.72))]" />
-                <div className="relative z-10 flex min-h-[330px] flex-col items-center justify-center px-6 py-12 text-center">
-                  <ClipboardList
-                    aria-hidden="true"
-                    className="size-10 text-[#c9aa4a]"
-                  />
-                  <h3 className="mt-4 text-xl font-black uppercase tracking-tight text-[#F4EEE7] sm:text-2xl">
-                    No Results Available
-                  </h3>
-                  <p className="mt-2 text-sm text-neutral-500">
-                    Results will appear here after the next tournament.
-                  </p>
-                </div>
-              </div>
-            </>
-          )}
+            </section>
+          </div>
         </article>
       </div>
     </section>

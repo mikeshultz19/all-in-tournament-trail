@@ -1,7 +1,22 @@
 import type { watchPageData } from "@/data/watch";
 
-type Tournament = typeof watchPageData.tournament;
-export default function UpcomingTournamentPanel({ tournament }: { tournament: Tournament }) {
+type Tournament = NonNullable<typeof watchPageData.tournament>;
+export default function UpcomingTournamentPanel({ tournament }: { tournament: Tournament | null }) {
+  if (!tournament) {
+    return (
+      <aside className="h-full border border-[#5B4715] bg-[#131313] p-5 sm:p-6 lg:p-7">
+        <p className="text-xs font-black uppercase tracking-[0.22em] text-red-500">Up Next</p>
+        <div className="mt-4 border-b border-[#5B4715] pb-6">
+          <p className="text-xs font-bold uppercase tracking-[0.16em] text-[#D4A017]">Current Tournament</p>
+          <h2 className="mt-2 text-2xl font-black uppercase leading-tight text-white">Tournament details unavailable</h2>
+          <p className="mt-3 font-bold text-white">TBA</p>
+          <p className="mt-1 text-sm text-zinc-400">Check back soon for schedule updates.</p>
+          <p className="text-sm text-zinc-400">Live tournament details will appear here once available.</p>
+        </div>
+      </aside>
+    );
+  }
+
   return (
     <aside className="h-full border border-[#5B4715] bg-[#131313] p-5 sm:p-6 lg:p-7">
       <p className="text-xs font-black uppercase tracking-[0.22em] text-red-500">Up Next</p>

@@ -1,11 +1,13 @@
 "use client";
 
 import { FormEvent, useMemo, useRef, useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
 
 import PaymentOptions from "@/components/PaymentOptions";
 import SafeLightCard from "@/components/SafeLightCard";
 import TournamentInfoIcon from "@/components/TournamentInfoIcon";
+import { PUBLIC_PAGE_CONTAINER } from "@/config/layout";
 import { REGISTRATION_PRICING } from "@/data/registration";
 import { formatCurrencyFromCents } from "@/config/payment-policy";
 import { SOFT_LAUNCH_REGISTRATION_CLOSED } from "@/config/launch-mode";
@@ -243,11 +245,20 @@ export default function RegistrationForm({
 
   const disabledReason = registrationType === "team" ? "Both anglers must be members to receive team member benefits." : "Membership is required for this option";
 
-  return <form ref={formRef} noValidate className="mx-auto grid max-w-[1400px] gap-8 px-5 py-8 sm:px-6 lg:grid-cols-[minmax(0,2fr)_minmax(300px,1fr)] lg:items-start lg:gap-10 lg:py-10" onSubmit={submit}>
-    <header className="grid min-w-0 gap-5 border-b border-amber-500/30 pb-6 sm:grid-cols-2 lg:col-span-2 lg:grid-cols-[minmax(0,1fr)_minmax(250px,auto)_minmax(250px,auto)] lg:items-center">
+  return <form ref={formRef} noValidate className={`${PUBLIC_PAGE_CONTAINER} grid gap-8 py-8 lg:grid-cols-[minmax(0,2fr)_minmax(300px,1fr)] lg:items-start lg:gap-10 lg:py-10`} onSubmit={submit}>
+    <header className="grid min-w-0 gap-5 border-b border-amber-500/30 pb-6 sm:grid-cols-2 lg:col-span-2 lg:grid-cols-[minmax(0,1fr)_auto_minmax(250px,auto)_minmax(250px,auto)] lg:items-center">
       <div className="min-w-0 sm:col-span-2 lg:col-span-1">
         <h1 className="text-2xl font-semibold tracking-tight text-white sm:text-3xl">Tournament Registration</h1>
         <Link href="/registrations" className="mt-2 inline-block text-xs font-black uppercase tracking-[0.12em] text-yellow-400 transition hover:text-yellow-300 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-yellow-400">Tournament Entries</Link>
+      </div>
+      <div className="hidden min-w-0 items-center justify-center lg:flex">
+        <Image
+          src="/images/payments/pay-at-the-ramp.png"
+          alt="Square and Apple Pay accepted at the ramp"
+          width={460}
+          height={112}
+          className="h-auto w-[190px] object-contain"
+        />
       </div>
       <div className="flex min-w-0 items-start gap-3">
         <TournamentInfoIcon src="/icons/calendar-deadline.svg" className="size-8 text-red-600 sm:size-9" />
@@ -258,6 +269,18 @@ export default function RegistrationForm({
       </div>
       <SafeLightCard safeLight={operations.safeLight} compact />
     </header>
+    {SOFT_LAUNCH_REGISTRATION_CLOSED && (
+      <div className="border-l-2 border-[#D4A017] bg-[#D4A017]/5 px-5 py-4 lg:col-span-2">
+        <h2 className="text-sm font-black uppercase tracking-[0.12em] text-[#D4A017]">
+          Registration is Currently Closed
+        </h2>
+
+        <p className="mt-2 max-w-4xl text-sm leading-6 text-neutral-300">
+          Thank you for your interest in the All In Tournament Trail. Official
+          registration dates for our inaugural season will be announced soon.
+        </p>
+      </div>
+    )}
     <nav aria-label="Registration progress" className="lg:col-span-2">
       <ol className="grid grid-cols-2 gap-2 text-center text-[10px] font-black uppercase tracking-[0.08em] text-neutral-400 sm:grid-cols-4">
         {["Team Info", "Options", "Review", "Payment"].map((step, index) => <li key={step} className={`border-b-2 px-1 pb-2 ${index < 3 ? "border-[#D4A017] text-white" : "border-neutral-700"}`}>{index + 1}. {step}</li>)}

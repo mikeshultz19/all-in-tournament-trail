@@ -179,11 +179,18 @@ describe("homepage latest tournament results", () => {
       <WinnersCircle latestResults={null} />,
     );
 
-    expect(html).toContain("No Results Available");
-    expect(html).toContain(
-      "Results will appear here after the next tournament.",
-    );
-    expect(html).toContain("%2Fimages%2Fresults%2Foverall-winner.jpg");
-    expect(html).not.toContain("Total Paid Out to All Anglers");
+    expect(html).toContain("Latest Tournament Results");
+    expect(html).toContain("FINAL STANDINGS");
+    expect(html).toContain("OVERALL CHAMPION");
+    expect(html).toContain("SIDE POTS &amp; PAYOUTS");
+    expect(html).toContain("BIG BASS WINNER");
+    expect(html).toContain("AOY POINTS LEADER");
+    expect(html).toContain("%2Fimages%2Ffeatured-tournament.png");
+    expect(html).toContain("aria-disabled=\"true\"");
+    expect(html).not.toContain('href="/results"');
+    expect(html).toContain("—");
+    expect(html).not.toContain("No Results Available");
+    expect(html).not.toContain("Awaiting Results");
+    expect(html).not.toContain("Pending");
   });
 });

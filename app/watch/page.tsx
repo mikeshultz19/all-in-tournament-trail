@@ -1,35 +1,68 @@
-import { Radio } from "lucide-react";
+import { getNextUpcomingTournament } from "@/lib/tournaments";
+import { toPublicTournament } from "@/lib/tournament-record-adapter";
 
 import Header from "@/components/Header";
 import LiveStreamPlayer from "@/components/LiveStreamPlayer";
 import TroubleshootingBanner from "@/components/TroubleshootingBanner";
 import UpcomingTournamentPanel from "@/components/UpcomingTournamentPanel";
 import WatchInfoCard from "@/components/WatchInfoCard";
+import { PUBLIC_PAGE_CONTAINER } from "@/config/layout";
 import { watchPageData } from "@/data/watch";
+import { getTournamentDisplay } from "@/lib/tournament-display";
 
-export default function WatchPage() {
+export default async function WatchPage() {
+  let upcomingTournament = watchPageData.tournament;
+
+  try {
+    const nextTournament = await getNextUpcomingTournament();
+    if (nextTournament) {
+      const publicTournament = toPublicTournament(nextTournament);
+      const display = getTournamentDisplay(publicTournament);
+      upcomingTournament = {
+        label: "Current Tournament",
+        lake: `${publicTournament.lake} Lake`,
+        date: display.date,
+        venue: publicTournament.venue ?? "To Be Announced",
+        location: publicTournament.city
+          ? `${publicTournament.city}, ${
+              publicTournament.state === "Texas"
+                ? "TX"
+                : publicTournament.state
+            }`
+          : "To Be Announced",
+        dateTime: publicTournament.date,
+      };
+    }
+  } catch (error) {
+    console.error("Watch page tournament load failed.", error);
+  }
+
   return (
     <main className="min-h-screen overflow-x-hidden bg-[#0B0B0B] text-white">
       <Header activeItem="Watch" />
 
-      <section className="border-b border-[#5B4715] bg-[#111111]">
-        <div className="mx-auto max-w-[1400px] px-5 py-9 sm:px-6 sm:py-11">
-          <div className="flex items-center gap-3">
-            <span className="inline-flex size-10 items-center justify-center rounded-full bg-red-700/15 text-red-500 ring-1 ring-red-600/40" aria-hidden="true">
-              <Radio className="size-5" />
-            </span>
-            <div>
-              <h1 className="text-3xl font-black uppercase tracking-[0.04em] text-red-500 sm:text-4xl">Watch Live</h1>
-              <p className="mt-1 text-sm font-semibold uppercase tracking-[0.14em] text-zinc-400 sm:text-base">Live Weigh-In Broadcast</p>
-            </div>
-          </div>
+      <section className="py-10 md:py-14">
+        <div className={PUBLIC_PAGE_CONTAINER}>
+          <header className="border-b border-[#D4A017]/30 pb-6">
+            <p className="text-xs font-black uppercase tracking-[0.3em] text-red-500">
+              All-In Tournament Trail
+            </p>
+
+            <h1 className="mt-3 text-4xl font-black uppercase tracking-tight text-white md:text-5xl">
+              Watch Live
+            </h1>
+
+            <p className="mt-4 text-sm font-semibold uppercase tracking-[0.14em] text-zinc-400 sm:text-base">
+              Live Weigh-In Broadcast
+            </p>
+          </header>
         </div>
       </section>
 
-      <div className="mx-auto max-w-[1400px] px-5 py-8 sm:px-6 sm:py-10">
+      <div className={`${PUBLIC_PAGE_CONTAINER} py-10 md:py-14`}>
         <div className="grid items-stretch gap-6 lg:grid-cols-[minmax(0,2fr)_minmax(300px,0.78fr)]">
           <LiveStreamPlayer />
-          <UpcomingTournamentPanel tournament={watchPageData.tournament} />
+          <UpcomingTournamentPanel tournament={upcomingTournament} />
         </div>
 
         <section aria-label="Watching information" className="mt-8 grid gap-5 md:grid-cols-3">
