@@ -39,8 +39,8 @@ describe("Bass Stack schedule badges", () => {
   it("renders the Bass Stack badge and about copy only for the approved events", async () => {
     const html = renderToStaticMarkup(await SchedulePage());
 
-    expect((html.match(/BASS STACK/g) ?? []).length).toBe(2);
-    expect(html).toContain("This event is an AITT Bass Stack Challenge.");
+    expect((html.match(/BASS STACK/g) ?? []).length).toBe(4);
+    expect((html.match(/This event is an AITT Bass Stack Challenge\./g) ?? [])).toHaveLength(2);
     expect(html).not.toContain("AITT Bass Stack Challenge event");
     expect(html).toContain("Squaw Creek");
     expect(html).toContain("Lewisville");

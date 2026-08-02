@@ -6,6 +6,7 @@ interface PolicyDocumentProps {
   version: string;
   status: string;
   effectiveDate: string;
+  publicLabels?: readonly [string, string];
   returnHref?: string;
   returnLabel?: string;
 }
@@ -161,7 +162,7 @@ function slugify(value: string): string {
     .replace(/(^-|-$)/g, "");
 }
 
-export default function PolicyDocument({ source, version, status, effectiveDate, returnHref = "/register", returnLabel = "Return to Registration" }: PolicyDocumentProps) {
+export default function PolicyDocument({ source, version, status, effectiveDate, publicLabels, returnHref = "/register", returnLabel = "Return to Registration" }: PolicyDocumentProps) {
   const blocks = parseBlocks(source);
 
   return (
@@ -170,11 +171,18 @@ export default function PolicyDocument({ source, version, status, effectiveDate,
         ← {returnLabel}
       </Link>
 
-      <dl className="mt-7 flex flex-wrap gap-x-8 gap-y-3 border-y border-white/10 py-4 text-sm">
-        <div><dt className="font-black uppercase tracking-wide text-neutral-500">Version</dt><dd className="mt-1 font-semibold text-white">{version}</dd></div>
-        <div><dt className="font-black uppercase tracking-wide text-neutral-500">Status</dt><dd className="mt-1 font-semibold text-[#D4A017]">{status}</dd></div>
-        <div><dt className="font-black uppercase tracking-wide text-neutral-500">Effective Date</dt><dd className="mt-1 font-semibold text-white">{effectiveDate}</dd></div>
-      </dl>
+      {publicLabels ? (
+        <div className="mt-7 border-y border-white/10 py-4 text-sm">
+          <p className="font-black uppercase tracking-wide text-white">{publicLabels[0]}</p>
+          <p className="mt-1 font-semibold text-[#D4A017]">{publicLabels[1]}</p>
+        </div>
+      ) : (
+        <dl className="mt-7 flex flex-wrap gap-x-8 gap-y-3 border-y border-white/10 py-4 text-sm">
+          <div><dt className="font-black uppercase tracking-wide text-neutral-500">Version</dt><dd className="mt-1 font-semibold text-white">{version}</dd></div>
+          <div><dt className="font-black uppercase tracking-wide text-neutral-500">Status</dt><dd className="mt-1 font-semibold text-[#D4A017]">{status}</dd></div>
+          <div><dt className="font-black uppercase tracking-wide text-neutral-500">Effective Date</dt><dd className="mt-1 font-semibold text-white">{effectiveDate}</dd></div>
+        </dl>
+      )}
 
       <div className="mt-7 min-w-0">
         {blocks.map((block, index) => {

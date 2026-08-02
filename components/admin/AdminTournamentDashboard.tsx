@@ -84,7 +84,8 @@ export default function AdminTournamentDashboard({
               ["Tournament Conditions", "/admin/conditions"],
               ["Tournament Results", "/admin/results"],
               ["Import WeighFish", `/admin/tournament-manager/import?tournament=${encodeURIComponent(currentTournament.slug || currentTournament.id)}`],
-              ["Insurance Review", `/admin/tournament-manager/insurance?tournament=${encodeURIComponent(currentTournament.slug || currentTournament.id)}`],
+              ["Insurance Pot Calculator", `/admin/tournament-manager/insurance?tournament=${encodeURIComponent(currentTournament.slug || currentTournament.id)}`],
+              ["Publish Insurance Pot Results", `/admin/tournament-manager/insurance/results?tournament=${encodeURIComponent(currentTournament.slug || currentTournament.id)}`],
               ["Winner Photos", `/admin/tournament-manager/photos?tournament=${encodeURIComponent(currentTournament.slug || currentTournament.id)}`],
               ["Publish Tournament", `/admin/tournament-manager/publish?tournament=${encodeURIComponent(currentTournament.slug || currentTournament.id)}`],
             ].map(([label, href]) => (

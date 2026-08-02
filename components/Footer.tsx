@@ -2,16 +2,23 @@
 
 import Link from "next/link";
 import SiteCraftBadge from "@/components/SiteCraftBadge";
+import { SOCIAL_LINKS } from "@/config/social-links";
 
 const footerLinks = [
   { label: "Home", href: "/" },
-  { label: "Tournament Schedule", href: "/schedule" },
+  { label: "Schedule", href: "/schedule" },
   { label: "Results", href: "/results" },
   { label: "Rules", href: "/rules" },
-  { label: "Contact", href: "/contact" },
+  { label: "Privacy", href: "/privacy" },
+  { label: "Terms", href: "/terms" },
   {
     label: "Facebook",
-    href: "https://www.facebook.com/groups/",
+    href: SOCIAL_LINKS.facebook.href,
+    external: true,
+  },
+  {
+    label: "Instagram",
+    href: SOCIAL_LINKS.instagram.href,
     external: true,
   },
 ];
@@ -52,9 +59,18 @@ export default function Footer() {
       </nav>
 
       <div className="border-t border-zinc-900 px-3 py-2 sm:px-8">
-        <div className="mx-auto grid max-w-[1400px] grid-cols-[1fr_auto_1fr] items-center gap-2 text-[9px] leading-tight text-zinc-500 sm:text-xs">
-          <p className="text-left">© 2025 All In Tournament Trail</p>
-          <div className="flex justify-center">
+        <div className="mx-auto grid max-w-[1400px] grid-cols-[minmax(0,1fr)_auto] items-center gap-x-3 gap-y-2 text-[9px] leading-tight text-zinc-500 sm:grid-cols-[1fr_auto_1fr] sm:text-xs">
+          <div className="text-left">
+            <p className="text-[10px] font-black uppercase tracking-[0.12em] text-[#d0ae4c] sm:text-xs">
+              Fish Your Way. Bet Your Way. Win Your Way.
+            </p>
+            <p className="mt-1 text-[10px] text-zinc-400 sm:text-xs">
+              © 2026 All In Tournament Trail
+            </p>
+            <p className="mt-0.5">All Rights Reserved.</p>
+          </div>
+          <div className="col-span-2 row-start-2 flex flex-col items-center justify-center text-center text-[8px] text-zinc-600 sm:col-span-1 sm:col-start-2 sm:row-start-1 sm:text-[10px]">
+            <p>Website Designed by SiteCraft Web Design</p>
             <SiteCraftBadge />
           </div>
           <button

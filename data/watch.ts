@@ -1,4 +1,5 @@
 import { getFeaturedTournament, getEffectiveTournamentDate } from "@/data/tournaments";
+import { SOCIAL_LINKS } from "@/config/social-links";
 import { getTournamentDisplay } from "@/lib/tournament-display";
 
 const featuredTournament = getFeaturedTournament();
@@ -24,8 +25,7 @@ export const watchPageData = {
       }
     : null,
   socialLinks: [
-    { label: "Facebook", href: "#facebook" },
-    { label: "Instagram", href: "#instagram" },
-    { label: "YouTube", href: "#youtube" },
+    SOCIAL_LINKS.facebook,
+    SOCIAL_LINKS.instagram,
   ],
 } as const;

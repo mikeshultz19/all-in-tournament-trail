@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { LatestTournamentResults } from "@/types/results";
 import Header from "@/components/Header";
+import InsurancePotWinnersSection from "@/components/InsurancePotWinnersSection";
 import { PUBLIC_PAGE_CONTAINER } from "@/config/layout";
 import {
   calculateResultPayouts,
@@ -44,7 +45,7 @@ export default async function ResultsPage() {
 
   return (
     <main className="min-h-screen bg-black text-white">
-      <Header />
+      <Header activeItem="Results" />
 
       <section className="py-10 md:py-14">
         <div className={PUBLIC_PAGE_CONTAINER}>
@@ -255,6 +256,7 @@ export default async function ResultsPage() {
                 </tbody>
               </table>
             </div>
+            <InsurancePotWinnersSection result={latestResults.insurancePotResult} />
           </>
         )}
       </section>

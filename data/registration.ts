@@ -19,7 +19,7 @@ export const REGISTRATION_OPTION_CONFIG = {
   },
   big_bass: {
     name: "Big Bass",
-    description: "Optional entry for the event's heaviest bass.",
+    description: "The optional Big Bass side pot pays two places.",
     priceCents: REGISTRATION_PRICING.bigBass * 100,
     required: false,
     priceBasis: "per_registration",

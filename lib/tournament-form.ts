@@ -11,6 +11,8 @@ export interface TournamentFormErrors {
   name?: string;
   lake?: string;
   tournamentDate?: string;
+  hours?: string;
+  stopFishing?: string;
   registrationCloses?: string;
   registrationInformation?: string;
   practiceInformation?: string;
@@ -68,6 +70,8 @@ export function tournamentToFormValues(
     tournamentDate: timestampToInputValue(tournament.tournament_date),
     description: tournament.description ?? "",
     ramp: tournament.ramp ?? "",
+    hours: tournament.hours ?? "",
+    stopFishing: tournament.stop_fishing ?? "",
     launchType: tournament.launch_type ?? "",
     morningRegistration: tournament.morning_registration ?? "",
     registrationOpens: timestampToInputValue(tournament.registration_opens),
@@ -88,6 +92,8 @@ export function tournamentFormData(formData: FormData): TournamentFormValues {
     tournamentDate: String(formData.get("tournamentDate") ?? "").trim(),
     description: String(formData.get("description") ?? "").trim(),
     ramp: String(formData.get("ramp") ?? "").trim(),
+    hours: String(formData.get("hours") ?? "").trim(),
+    stopFishing: String(formData.get("stopFishing") ?? "").trim(),
     launchType: String(formData.get("launchType") ?? "").trim(),
     morningRegistration: String(
       formData.get("morningRegistration") ?? "",
@@ -161,6 +167,14 @@ export function validateTournamentForm(
       "Keep practice information to 1,000 characters or fewer.";
   }
 
+  if (values.hours.length > 200) {
+    errors.hours = "Keep hours to 200 characters or fewer.";
+  }
+
+  if (values.stopFishing.length > 200) {
+    errors.stopFishing = "Keep stop-fishing information to 200 characters or fewer.";
+  }
+
   if (values.registrationInformation.length > 1000) {
     errors.registrationInformation =
       "Keep registration information to 1,000 characters or fewer.";
@@ -178,6 +192,8 @@ export function tournamentFormToUpdate(
     tournament_date: inputValueToTimestamp(values.tournamentDate) ?? "",
     description: values.description || null,
     ramp: values.ramp || null,
+    hours: values.hours || null,
+    stop_fishing: values.stopFishing || null,
     launch_type: values.launchType || null,
     morning_registration: values.morningRegistration || null,
     registration_opens: inputValueToTimestamp(values.registrationOpens),

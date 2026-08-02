@@ -33,6 +33,8 @@ export interface Tournament {
   tournament_date: string;
   tournament_end_date: string | null;
   ramp: string | null;
+  hours?: string | null;
+  stop_fishing?: string | null;
   launch_type: string | null;
   morning_registration: string | null;
   registration_opens: string | null;
@@ -81,6 +83,8 @@ export type TournamentUpdate = Partial<
     | "tournament_date"
     | "tournament_end_date"
     | "ramp"
+    | "hours"
+    | "stop_fishing"
     | "launch_type"
     | "morning_registration"
     | "registration_opens"
@@ -119,6 +123,8 @@ export interface TournamentFormValues {
   tournamentDate: string;
   description: string;
   ramp: string;
+  hours: string;
+  stopFishing: string;
   launchType: string;
   morningRegistration: string;
   registrationOpens: string;

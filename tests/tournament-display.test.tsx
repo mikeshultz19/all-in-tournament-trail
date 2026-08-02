@@ -37,7 +37,11 @@ describe("shared tournament display data", () => {
       startTimeDisplay: "Safe Light",
       stopFishingTime: "15:00",
       launchType: "NUMBERED_START" as const,
+      hours: "Safe Light – 3:00 PM",
+      stopFishing: "Stop Fishing: 3:00 PM",
+      launchTypeText: "Numbered Start",
       tournamentMorningRegistrationOpensAt: "05:00",
+      morningRegistrationText: "5:00 AM",
     };
 
     expect(getTournamentDisplay(tournament)).toMatchObject({
@@ -52,9 +56,13 @@ describe("shared tournament display data", () => {
     });
 
     const homepage = renderToStaticMarkup(<FeaturedTournament tournament={tournament} />);
-    for (const value of ["Test Ramp", "Test City, Texas", "Safe Light – 3:00 PM", "Stop Fishing: 3:00 PM", "Numbered Start"]) {
+    for (const value of ["Test Ramp", "Test City", "Safe Light – 3:00 PM", "Stop Fishing: 3:00 PM", "Numbered Start"]) {
       expect(homepage).toContain(value);
     }
+    expect(homepage).not.toContain("Test City, Texas");
+    expect(homepage).not.toContain("Subject to change by Tournament Director");
+    expect(homepage).not.toContain("Opens at");
+    expect(homepage).not.toContain("In person at the ramp");
     expect(homepage).toContain("Morning Registration");
     expect(homepage).toContain("5:00 AM");
   });

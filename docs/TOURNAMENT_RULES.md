@@ -214,6 +214,27 @@ Membership pricing or benefits may not be inferred beyond the current
 published registration choices. Any future member discount must be approved
 and published before it applies.
 
+<a id="insurance-pot"></a>
+### Insurance Pot
+
+- Participation in the Insurance Pot is optional.
+- Only entries that joined the Insurance Pot are eligible for its payouts.
+- Payouts begin with the highest-finishing eligible entry outside the regular
+  Tournament Entry payout. Entries that did not join the Insurance Pot are
+  skipped.
+- The entire Insurance Pot is distributed. AITT retains none of the Insurance
+  Pot, and every winning entry receives an equal payout, subject only to the
+  one-cent adjustments required to distribute the exact total.
+- One through nine (1–9) entries pay one place; ten through fourteen (10–14)
+  pay two places; fifteen through nineteen (15–19) pay three places; twenty
+  through twenty-four (20–24) pay four places; and twenty-five through
+  twenty-nine (25–29) pay five places.
+- One additional payout place is added for each additional group of five
+  entries. Any positive number of Insurance Pot entries pays at least one
+  place.
+
+[Learn more about the AITT Insurance Pot.](/insurance-pot)
+
 <a id="team-rules"></a>
 ## 5. Team Rules
 
@@ -350,6 +371,7 @@ weather data does not make an automatic tournament decision.
 <a id="fishing-rules"></a>
 ## 9. Fishing Rules
 
+<a id="forward-facing-sonar"></a>
 ### Methods and Equipment
 
 - Only artificial lures may be used during competition.
@@ -357,9 +379,13 @@ weather data does not make an automatic tournament decision.
 - Trolling as a method of fishing is prohibited.
 - Drones may not be used to locate fish, scout water, monitor competitors, or
   otherwise assist a participant during official practice or competition.
-- Forward-facing sonar is prohibited during AITT competition.
 - Participants must comply with applicable fishing-license, length, limit,
   possession, and waterbody regulations.
+- Forward-facing sonar is prohibited during official tournament competition.
+- Forward-facing sonar may be used during legal practice periods unless another
+  published event rule states otherwise.
+
+[Why did AITT adopt this policy?](/no-forward-facing-sonar)
 
 ### Fish Care, Dead Fish, Short Fish, and Big Bass
 
@@ -394,25 +420,37 @@ Example:
 Big Bass is an optional add-on to Tournament Entry and is not a standalone
 entry.
 
-Only legal live fish are eligible for the Big Bass award.
+The Big Bass side pot pays two (2) places. Payout distribution is governed by
+the official payout schedule.
 
-Any fish presented dead at weigh-in is not eligible for Big Bass.
+Only legal live fish are eligible for a Big Bass payout.
 
-### AITT Bass Stack Challenge Rules
+Any fish presented dead at weigh-in is not eligible for a Big Bass payout.
 
-The AITT Bass Stack Challenge is an MLF-inspired cumulative-weight format
-used only at tournaments specifically designated as Bass Stack Challenge
-events.
+<a id="bass-stack"></a>
+### Bass Stack Competition Format
 
-- The angler or team with the greatest cumulative weight of all legal fish
-  officially weighed wins.
-- Anglers may weigh an unlimited number of legal fish during the tournament.
-- No more than three fish may be presented for weighing at one time.
-- Culling up to three fish is permitted.
-- Every fish counted toward the final total must satisfy all applicable AITT
-  legal-fish, size, species, handling, and tournament requirements.
-- These rules apply only to tournaments specifically designated as AITT Bass
-  Stack Challenge events.
+- Bass Stack applies only to tournaments designated as Bass Stack events.
+- For designated Bass Stack events, this section replaces the general
+  five-fish tournament limit with the cumulative-weight format below.
+- Every legal bass officially weighed contributes to the competitor's
+  cumulative tournament weight.
+- A competitor may possess a maximum of three legal bass in the livewell at
+  any one time.
+- A competitor may replace (cull) any fish currently in the livewell with a
+  larger legal bass before presenting fish for weigh-in.
+- No more than three legal bass may be presented during any single weigh-in.
+- Competitors may weigh fish as many times as desired during official
+  tournament hours.
+- Every official weigh-in becomes part of the competitor's cumulative
+  tournament total.
+- At the conclusion of tournament hours, competitors shall present any
+  remaining legal fish in the livewell (up to three) for the final official
+  weigh-in.
+- Final placement is determined by cumulative official tournament weight after
+  all penalties have been assessed.
+- All other AITT tournament rules remain fully in effect during Bass Stack
+  competitions.
 
 ### Cell Phones and Communication
 

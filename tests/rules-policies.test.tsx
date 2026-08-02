@@ -22,12 +22,14 @@ describe("approved weigh-in and late check-in policies", () => {
     expect(html).toContain("Receives no tournament weight.");
     expect(html).toContain("Does not count toward the legal tournament limit.");
     expect(html).toContain("one (1) pound penalty will be deducted for each legal fish");
-    expect(html).toContain("Only legal live fish are eligible for the Big Bass award.");
-    expect(html).toContain("AITT Bass Stack Challenge Rules");
-    expect(html).toContain("greatest cumulative weight of all legal fish officially weighed wins");
-    expect(html).toContain("weigh an unlimited number of legal fish");
-    expect(html).toContain("No more than three fish may be presented for weighing at one time.");
-    expect(html).toContain("Culling up to three fish is permitted.");
+    expect(html).toContain("Only legal live fish are eligible for a Big Bass payout.");
+    expect(html).toContain("The Big Bass side pot pays two (2) places.");
+    expect(html).toContain('id="bass-stack"');
+    expect(html).toContain("Bass Stack Competition Format");
+    expect(html).toContain("replaces the general five-fish tournament limit");
+    expect(html).toContain("maximum of three legal bass in the livewell");
+    expect(html).toContain("weigh fish as many times as desired");
+    expect(html).toContain("cumulative official tournament weight after all penalties");
     expect(html).toContain("one (1) pound penalty will be assessed for each minute");
     expect(html).toContain("up to fifteen (15) minutes");
     expect(html).toContain("more than fifteen (15) minutes");
@@ -56,6 +58,10 @@ describe("approved weigh-in and late check-in policies", () => {
     for (const question of approvedFaqQuestions) {
       expect(html).toContain(question);
     }
+    expect(html).toContain("Only legal live fish are eligible for either of the two Big Bass payouts.");
+    expect(html).toContain("The optional Big Bass side pot pays two places.");
+    expect(html).not.toMatch(/Big Bass[^.]*divided equally/i);
+    expect(html.match(/Choose Only One/g) ?? []).toHaveLength(3);
     expect(html).toContain("MLF-inspired cumulative-weight tournament format");
     expect(html).toContain("greatest cumulative weight of all legal fish officially weighed wins");
     expect(html).toContain(

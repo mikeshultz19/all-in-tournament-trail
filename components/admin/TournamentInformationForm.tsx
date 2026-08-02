@@ -152,6 +152,32 @@ export default function TournamentInformationForm({
             />
           </label>
           <label className={labelClassName}>
+            Hours
+            <input
+              name="hours"
+              maxLength={200}
+              defaultValue={values.hours}
+              aria-invalid={Boolean(state.errors.hours)}
+              aria-describedby={state.errors.hours ? "hours-error" : undefined}
+              className={inputClassName}
+            />
+            <FieldError errors={state.errors} field="hours" />
+          </label>
+          <label className={labelClassName}>
+            Stop Fishing
+            <input
+              name="stopFishing"
+              maxLength={200}
+              defaultValue={values.stopFishing}
+              aria-invalid={Boolean(state.errors.stopFishing)}
+              aria-describedby={
+                state.errors.stopFishing ? "stopFishing-error" : undefined
+              }
+              className={inputClassName}
+            />
+            <FieldError errors={state.errors} field="stopFishing" />
+          </label>
+          <label className={labelClassName}>
             Launch Type
             <input
               name="launchType"
@@ -163,7 +189,6 @@ export default function TournamentInformationForm({
             Morning Registration
             <input
               name="morningRegistration"
-              type="time"
               defaultValue={values.morningRegistration}
               className={inputClassName}
             />

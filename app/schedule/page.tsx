@@ -118,7 +118,7 @@ export default async function SchedulePage() {
 
   return (
     <main className="min-h-screen bg-[#0B0B0B] text-[#F2F2F2]">
-      <Header />
+      <Header activeItem="Schedule" />
 
       <section className="py-10 md:py-14">
         <div className={PUBLIC_PAGE_CONTAINER}>

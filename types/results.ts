@@ -1,4 +1,5 @@
 import type { Tournament } from "@/types/tournament";
+import type { TournamentInsurancePotResultRecord } from "@/types/insurance-pot";
 
 export interface ResultEntry {
   place: number;
@@ -39,4 +40,6 @@ export interface LatestTournamentResults {
   championImage: string;
   bigBassImage: string;
   completeResultsUrl: string;
+  insurancePotResult?: TournamentInsurancePotResultRecord | null;
+  insurancePotWinnersUrl?: string;
 }

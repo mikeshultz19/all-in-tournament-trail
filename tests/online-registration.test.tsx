@@ -138,7 +138,8 @@ describe("online payment presentation", () => {
     expect(html).toContain("Registration Closed");
     expect(html).toContain('disabled=""');
     expect(html).toContain("Secure payment through Square");
-    expect(html).not.toMatch(/Visa|Mastercard|American Express|Discover|Apple Pay/i);
+    expect(html).toContain("Square and Apple Pay accepted at the ramp");
+    expect(html).not.toMatch(/Visa|Mastercard|American Express|Discover/i);
   });
   it("moves tournament data into one condensed header", () => {
     const operations = operationsBySlug[tournaments[0].slug];

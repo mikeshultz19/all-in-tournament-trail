@@ -106,10 +106,13 @@ export function toPublicTournament(
     regularSeasonNumber: tournament.regular_season_number,
     startTimeDisplay: "Safe Light",
     stopFishingTime: "15:00",
+    hours: optionalDisplayText(tournament.hours ?? null),
+    stopFishing: optionalDisplayText(tournament.stop_fishing ?? null),
     launchType:
       tournament.launch_type?.toLowerCase().includes("number")
         ? "NUMBERED_START"
         : "TRAILERING",
+    launchTypeText: optionalDisplayText(tournament.launch_type),
     description:
       tournament.description ?? "Tournament details will be available soon.",
     status:
@@ -128,6 +131,9 @@ export function toPublicTournament(
       tournament.registration_closes,
     ),
     tournamentMorningRegistrationOpensAt: optionalDisplayText(
+      tournament.morning_registration,
+    ),
+    morningRegistrationText: optionalDisplayText(
       tournament.morning_registration,
     ),
     tournamentMorningRegistrationClosesAt: null,

@@ -13,6 +13,8 @@ function validFormData(): FormData {
   formData.set("name", "Lake Fork Open");
   formData.set("lake", "Lake Fork");
   formData.set("tournamentDate", "2026-08-16T06:00");
+  formData.set("hours", "Safe Light – 3:00 PM");
+  formData.set("stopFishing", "Stop Fishing: 3:00 PM");
   formData.set("registrationOpens", "2026-07-01T08:00");
   formData.set("registrationCloses", "2026-08-15T18:00");
   formData.set(
@@ -38,6 +40,8 @@ describe("Tournament Information form", () => {
       lake: "Eagle Mountain",
       tournamentDate: "2026-11-01T06:00",
       registrationCloses: "2026-10-31T21:00",
+      hours: "Safe Light – 3:00 PM",
+      stopFishing: "Stop Fishing: 3:00 PM",
       registrationInformation:
         "Online registration closes Friday, October 30 at 6:00 PM.",
       practiceInformation:
@@ -78,6 +82,8 @@ describe("Tournament Information form", () => {
       status: "Registration Open",
       is_featured: true,
       show_on_homepage: true,
+      hours: "Safe Light – 3:00 PM",
+      stop_fishing: "Stop Fishing: 3:00 PM",
       registration_information:
         "Online registration closes Friday at 6:00 PM.",
       practice_information:
@@ -103,5 +109,16 @@ describe("Tournament Information form", () => {
     const errors = validateTournamentForm(tournamentFormData(formData));
 
     expect(errors.registrationInformation).toContain("1,000 characters");
+  });
+
+  it("keeps hours fields optional and rejects oversized text", () => {
+    const formData = validFormData();
+    formData.set("hours", "x".repeat(201));
+    formData.set("stopFishing", "x".repeat(201));
+
+    const errors = validateTournamentForm(tournamentFormData(formData));
+
+    expect(errors.hours).toContain("200 characters");
+    expect(errors.stopFishing).toContain("200 characters");
   });
 });

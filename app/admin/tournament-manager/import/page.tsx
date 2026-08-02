@@ -101,7 +101,7 @@ export default async function WeighFishImportPage({
           <li>{weighfishImported ? "✓" : "•"} Preview imported data</li>
           <li>{weighfishImported ? "✓" : "•"} Validate payouts</li>
           <li>{weighfishImported ? "✓" : "•"} Save to database</li>
-          <li>{weighfishImported ? "✓" : "•"} Continue to Insurance Review</li>
+          <li>{weighfishImported ? "✓" : "•"} Continue to the Insurance Pot Calculator</li>
         </ul>
       </section>
     </>

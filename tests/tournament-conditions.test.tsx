@@ -286,7 +286,16 @@ describe("Tournament Conditions", () => {
 
   it("keeps all five admin-managed tournament information boxes", () => {
     const html = renderToStaticMarkup(
-      <FeaturedTournament tournament={tournament} operations={operations} />,
+      <FeaturedTournament
+        tournament={{
+          ...tournament,
+          hours: "Safe Light – 3:00 PM",
+          stopFishing: "Stop Fishing: 3:00 PM",
+          launchTypeText: "Numbered Start",
+          morningRegistrationText: "5:00 AM",
+        }}
+        operations={operations}
+      />,
     );
     for (const label of [
       "Date",
@@ -297,6 +306,9 @@ describe("Tournament Conditions", () => {
     ]) {
       expect(html).toContain(`>${label}</dt>`);
     }
+    expect(html).toContain("Safe Light – 3:00 PM");
+    expect(html).toContain("Stop Fishing: 3:00 PM");
+    expect(html).toContain("Numbered Start");
     expect(html).toContain("5:00 AM");
   });
 });

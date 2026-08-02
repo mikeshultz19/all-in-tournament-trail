@@ -112,7 +112,7 @@ export function getTournamentOperationSteps(
 
   const closeoutItems: TournamentOperationItem[] = [
     complete("Import WeighFish CSV", tournament.weighfish_imported),
-    complete("Enter Insurance Pot Amount", tournament.insurance_reviewed),
+    complete("Calculate Insurance Pot Payouts", tournament.insurance_reviewed),
     complete("Upload Winner Photo", Boolean(tournament.champion_photo_url)),
     complete("Upload Big Bass Photo", Boolean(tournament.big_bass_photo_url)),
     complete("Publish Results", tournament.status === "Results Published"),

@@ -3,6 +3,7 @@ import { existsSync, readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 
 import SponsorsPage from "@/app/sponsors/page";
+import Header from "@/components/Header";
 import Hero from "@/components/Hero";
 import SponsorHome from "@/components/SponsorHome";
 import FeaturedSponsor from "@/components/home/FeaturedSponsor";
@@ -160,16 +161,16 @@ describe("public sponsorship paths", () => {
     expect(html).toContain("break-words");
   });
 
-  it("links the emphasized homepage phrase to the existing How It Works route", () => {
-    const html = renderToStaticMarkup(<Hero />);
+  it("keeps the hero uncluttered and links How AITT Works from global navigation", () => {
+    const heroHtml = renderToStaticMarkup(<Hero />);
+    const headerHtml = renderToStaticMarkup(<Header />);
 
-    expect(html).not.toContain("See How AITT Works");
-    expect(html).toContain('href="/how-it-works"');
-    expect(html).toContain("How AITT Works");
-    expect(html).toContain("font-bold");
-    expect(html).toContain("text-yellow-400");
-    expect(html).toContain("hover:text-yellow-300");
-    expect(html).toContain("focus-visible:outline");
+    expect(heroHtml).not.toContain("See How AITT Works");
+    expect(headerHtml).toContain('href="/how-it-works"');
+    expect(headerHtml).toContain("How AITT Works");
+    expect(headerHtml).toContain("font-black");
+    expect(headerHtml).toContain("text-yellow-400");
+    expect(headerHtml).toContain("hover:text-yellow-300");
   });
 
   it("uses only the approved existing public routes", () => {

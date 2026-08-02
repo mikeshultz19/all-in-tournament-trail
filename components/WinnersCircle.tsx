@@ -26,7 +26,8 @@ type Icon = ComponentType<SVGProps<SVGSVGElement>>;
 type SidePotName = "bronze" | "silver" | "gold";
 
 const SIDE_POT_ORDER: SidePotName[] = ["bronze", "silver", "gold"];
-const RESULTS_COMING_SOON_IMAGE = "/images/featured-tournament.png";
+const RESULTS_COMING_SOON_IMAGE =
+  "/images/placeholders/tournament-coming-soon.png";
 
 const SIDE_POT_THEMES: Record<
   SidePotName,
@@ -156,6 +157,7 @@ function MediaCard({
   weight,
   centered = true,
   priority = false,
+  placeholder = false,
 }: {
   image: string;
   alt: string;
@@ -163,6 +165,7 @@ function MediaCard({
   weight: number | null;
   centered?: boolean;
   priority?: boolean;
+  placeholder?: boolean;
 }) {
   return (
     <article className={`w-full ${centered ? "text-center" : ""}`}>
@@ -174,7 +177,7 @@ function MediaCard({
           alt={alt}
           fill
           sizes="(max-width: 768px) 100vw, 50vw"
-          className={styles.resultImage}
+          className={placeholder ? styles.resultPlaceholderImage : styles.resultImage}
           priority={priority}
         />
       </div>
@@ -506,6 +509,7 @@ export default function WinnersCircle({
                 name={championName}
                 weight={championWeight}
                 priority
+                placeholder={!hasResults}
               />
 
               <div className="mt-5 border border-[#8f762f]/60 bg-[#111111] p-3">
@@ -562,19 +566,21 @@ export default function WinnersCircle({
                       className="size-4 shrink-0 text-[#C0C0C0]"
                     />
                     <h4 className="text-[0.72rem] font-black uppercase tracking-[0.12em] text-[#F4EEE7]">
-                      INSURANCE POT
+                      AITT INSURANCE POT
                     </h4>
                   </div>
-                  <div className="mt-2 flex items-center justify-between gap-4 border-b border-white/10 pb-2">
-                    <span className="text-[0.58rem] font-black uppercase tracking-[0.09em] text-neutral-500">
-                      Amount
+                  {latestResults?.insurancePotResult?.published && latestResults.insurancePotWinnersUrl ? (
+                    <a
+                      href={latestResults.insurancePotWinnersUrl}
+                      className="mt-2 inline-flex text-[0.65rem] font-black uppercase tracking-[0.1em] text-[#c9aa4a] transition hover:text-red-500"
+                    >
+                      View Insurance Pot Winners →
+                    </a>
+                  ) : (
+                    <span className="mt-2 inline-flex cursor-not-allowed text-[0.65rem] font-black uppercase tracking-[0.1em] text-neutral-600" aria-disabled="true">
+                      View Insurance Pot Winners — Coming Soon
                     </span>
-                    <span className="whitespace-nowrap text-right text-[0.78rem] font-black tabular-nums text-[#c9aa4a]">
-                      {hasResults
-                        ? displayResultsPayout(payoutTotals.insurance)
-                        : "—"}
-                    </span>
-                  </div>
+                  )}
                 </section>
 
                 <section className="border-t border-[#c9aa4a]/45 pt-3">
@@ -600,7 +606,7 @@ export default function WinnersCircle({
                       }
                       fill
                       sizes="(max-width: 768px) 100vw, 33vw"
-                      className={styles.resultImage}
+                      className={hasResults ? styles.resultImage : styles.resultPlaceholderImage}
                     />
                   </div>
 

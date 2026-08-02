@@ -7,6 +7,7 @@ import type {
   ResultEntry,
   TournamentResultsRecord,
 } from "@/types/results";
+import type { TournamentInsurancePotResultRecord } from "@/types/insurance-pot";
 
 export class ResultsDataError extends Error {
   constructor(message: string, options?: ErrorOptions) {
@@ -207,8 +208,21 @@ export async function getPublishedTournamentResultsArchive(): Promise<
     );
   }
 
+  const { data: insurancePotRecords, error: insurancePotError } = await supabase
+    .from("tournament_insurance_pot_results")
+    .select("*")
+    .in("tournament_id", tournamentIds)
+    .eq("published", true);
+
+  if (insurancePotError) {
+    throw new ResultsDataError("We could not load published Insurance Pot results.", {
+      cause: insurancePotError,
+    });
+  }
+
   return buildPublishedResultsArchive(
     publishedTournaments,
     (resultsRecords ?? []) as TournamentResultsRecord[],
+    (insurancePotRecords ?? []) as TournamentInsurancePotResultRecord[],
   );
 }

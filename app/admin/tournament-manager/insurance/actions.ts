@@ -1,70 +1,25 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { redirect } from "next/navigation";
-
 import { requireAdminUser } from "@/lib/admin-auth";
+import { expectedInsurancePotCents, getInsurancePotPlaces, splitInsurancePotCents } from "@/lib/insurance-pot";
+import { saveTournamentInsurancePotCalculation } from "@/lib/insurance-pot-results";
 import { updateTournament } from "@/lib/tournaments";
 
-export interface InsuranceReviewFormState {
-  status: "idle" | "success" | "error";
-  message: string;
-}
+export interface InsuranceReviewFormState { status: "idle" | "success" | "error"; message: string; }
+const dollarsToCents = (value: FormDataEntryValue | null) => { const amount = Number(String(value ?? "").trim()); return Number.isFinite(amount) && amount >= 0 ? Math.round(amount * 100) : null; };
 
-export async function saveInsuranceReviewAction(
-  tournamentId: string,
-  _previousState: InsuranceReviewFormState,
-  formData: FormData,
-): Promise<InsuranceReviewFormState> {
+export async function saveInsuranceCalculationAction(tournamentId: string, _state: InsuranceReviewFormState, formData: FormData): Promise<InsuranceReviewFormState> {
   await requireAdminUser();
-
-  const payoutValue = String(
-    formData.get("insurancePayout") ?? "",
-  ).trim();
-
-  const insuranceNotes = String(
-    formData.get("insuranceNotes") ?? "",
-  ).trim();
-
-  const insuranceReviewed =
-    formData.get("insuranceReviewed") === "on";
-
-  const insurancePayout =
-    payoutValue === "" ? null : Number(payoutValue);
-
-  if (
-    insurancePayout !== null &&
-    (!Number.isFinite(insurancePayout) || insurancePayout < 0)
-  ) {
-    return {
-      status: "error",
-      message: "Enter a valid insurance payout.",
-    };
-  }
-
+  const entryCount = Number(String(formData.get("entryCount") ?? ""));
+  const totalPotCents = dollarsToCents(formData.get("totalPot"));
+  if (!Number.isInteger(entryCount) || entryCount < 0 || totalPotCents === null) return { status: "error", message: "Enter a valid entry count and total Insurance Pot." };
+  const placesPaid = getInsurancePotPlaces(entryCount);
+  const calculatedPayouts = splitInsurancePotCents(totalPotCents, placesPaid);
   try {
-    await updateTournament(tournamentId, {
-      insurance_payout: insurancePayout,
-      insurance_notes: insuranceNotes || null,
-      insurance_reviewed: insuranceReviewed,
-      insurance_reviewed_at: insuranceReviewed
-        ? new Date().toISOString()
-        : null,
-    });
-
-    revalidatePath("/admin/tournament-manager");
-    revalidatePath("/admin/tournament-manager/insurance");
-    revalidatePath("/admin/tournament-manager/publish");
-    revalidatePath("/admin");
-
-  } catch (error) {
-    console.error("Insurance review save failed.", error);
-
-    return {
-      status: "error",
-      message: "We could not save the insurance review.",
-    };
-  }
-
-  redirect(`/admin?tournament=${encodeURIComponent(tournamentId)}`);
+    await saveTournamentInsurancePotCalculation(tournamentId, { entryCount, totalPotCents, placesPaid, calculatedPayouts });
+    await updateTournament(tournamentId, { insurance_payout: totalPotCents / 100, insurance_reviewed: true, insurance_reviewed_at: new Date().toISOString(), insurance_notes: totalPotCents === expectedInsurancePotCents(entryCount) ? null : `Manual pot correction: expected $${(expectedInsurancePotCents(entryCount) / 100).toFixed(2)}.` });
+    ["/admin", "/admin/tournament-manager/insurance", "/admin/tournament-manager/insurance/results"].forEach((path) => revalidatePath(path));
+    return { status: "success", message: "Payout calculation saved. Nothing was published." };
+  } catch (error) { console.error("Insurance Pot calculation save failed.", error); return { status: "error", message: "We could not save the payout calculation." }; }
 }

@@ -76,7 +76,7 @@ function FeedbackWidgetContent({ initiallyOpen }: { initiallyOpen: boolean }) {
       <button
         type="button"
         onClick={openModal}
-        className="fixed right-0 top-1/2 z-[80] -translate-y-1/2 rounded-l-md border border-r-0 border-red-500/50 bg-red-700 px-2 py-4 text-xs font-black uppercase tracking-[0.18em] text-white shadow-2xl transition hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-yellow-400"
+        className="fixed right-0 top-1/2 z-[80] -translate-y-1/2 rounded-l-md border border-r-0 border-red-500/50 bg-red-700 px-1.5 py-4 text-xs font-black uppercase tracking-[0.14em] text-white shadow-2xl transition hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-yellow-400"
         style={{ writingMode: "vertical-rl" }}
         aria-label="Open contact information"
       >

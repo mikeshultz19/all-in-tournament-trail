@@ -90,42 +90,48 @@ const waysToWin = [
     description:
       "An independent members-only payout competition with its own payout pool. Pays 1 in 5 — one payout place for every five entries in the pot.",
     label: "Members",
+    chooseOnlyOne: true,
   },
   {
     title: "Silver Pot",
     description:
       "A separate higher-entry members-only payout competition. Pays 1 in 5 — one payout place for every five entries in the pot.",
     label: "Members",
+    chooseOnlyOne: true,
   },
   {
     title: "Gold Pot",
     description:
       "The premium members-only payout competition for anglers seeking the largest potential reward. Pay 1 in 7 — one payout place for every seven entries in the pot.",
     label: "Members",
+    chooseOnlyOne: true,
   },
   {
     title: "Big Bass",
     description:
-      "An optional add-on for the heaviest individual bass. Big Bass is not a standalone tournament entry.",
+      "The optional Big Bass side pot pays two places.",
     label: "Bonus",
   },
   {
     title: "Insurance Pot",
     description:
-      "Pays first out of the money from the Tournament Entry Pot until the available Insurance Pot money is exhausted.",
+      "Pays eligible participants beginning with the first eligible entry outside the regular Tournament Entry payout.",
     label: `${price(REGISTRATION_PRICING.insurance)} Optional`,
+    href: "/insurance-pot",
   },
   {
     title: "AOY Points",
     description:
       "Eligible members earn season points toward the Angler of the Year standings.",
-    note: "Depending on sponsorship and participation, AITT staff are evaluating AOY Winner Bonus Bucks.",
+    note: "As participation and sponsorship grow, AITT intends to increase AOY Winner Bonus Bucks.",
     label: "Season",
+    href: "/aoy-points",
   },
   {
     title: "Championship Qualification",
     description:
       "Compete in 5 of the 8 regular season tournaments to qualify for the Championship.",
+    note: "As participation and sponsorship grow, AITT intends to increase Championship Winner Bonus Bucks.",
     label: "Season",
   },
 ];
@@ -194,7 +200,7 @@ const faqs = [
   {
     question: "How does the Insurance Pot work?",
     answer:
-      `The ${price(REGISTRATION_PRICING.insurance)} optional Insurance Pot pays first out of the money from the Tournament Entry Pot until the available Insurance Pot money is exhausted. Payment continues in finishing order until those funds are depleted.`,
+      `The ${price(REGISTRATION_PRICING.insurance)} Insurance Pot is optional. Only participating entries are eligible. Payouts begin with the highest-finishing eligible entry outside the regular Tournament Entry payout, skip entries that did not join, and divide the entire pot equally among the winning places. AITT retains none of the Insurance Pot.`,
   },
   {
     question: "How are AOY standings calculated?",
@@ -249,7 +255,7 @@ const faqs = [
   {
     question: "Are dead fish eligible for Big Bass?",
     answer:
-      "No. Only legal live fish are eligible for the Big Bass award.",
+      "No. Only legal live fish are eligible for either of the two Big Bass payouts.",
   },
   {
     question: "What happens if I am late to check-in?",
@@ -324,7 +330,7 @@ export default function HowItWorksPage() {
             {waysToWin.map((opportunity) => (
               <article
                 key={opportunity.title}
-                className="relative border border-white/10 bg-[#111111] p-5 transition hover:border-[#8f762f]/70"
+                className="relative flex flex-col border border-white/10 bg-[#111111] p-5 transition hover:border-[#8f762f]/70"
               >
                 {PAYBACK_BADGE_TITLES.has(opportunity.title) && (
                   <span className="absolute right-4 top-4 inline-flex whitespace-nowrap rounded border border-[#c9aa4a]/70 bg-black/70 px-2 py-0.5 text-[0.58rem] font-black uppercase leading-none tracking-[0.18em] text-[#c9aa4a]">
@@ -343,9 +349,24 @@ export default function HowItWorksPage() {
                   {opportunity.description}
                 </p>
 
+                {"href" in opportunity && typeof opportunity.href === "string" && (
+                  <Link
+                    href={opportunity.href}
+                    className="mt-3 inline-flex text-xs font-black uppercase tracking-[0.14em] text-[#d0ae4c] transition hover:text-red-500"
+                  >
+                    Learn More →
+                  </Link>
+                )}
+
                 {"note" in opportunity && (
-                  <p className="mt-3 text-xs leading-5 text-[#d0ae4c]">
+                  <p className="mt-auto pt-4 text-center text-xs text-neutral-500">
                     {opportunity.note}
+                  </p>
+                )}
+
+                {"chooseOnlyOne" in opportunity && opportunity.chooseOnlyOne && (
+                  <p className="mt-auto pt-4 text-center text-xs text-neutral-500">
+                    Choose Only One
                   </p>
                 )}
               </article>
@@ -410,41 +431,44 @@ export default function HowItWorksPage() {
         </div>
       </section>
 
-      <section className="border-t border-[#8f762f]/60 bg-[#13100a] py-10 md:py-14">
-        <div className={`${PUBLIC_PAGE_CONTAINER} flex flex-col items-start justify-between gap-7 lg:flex-row lg:items-center`}>
-          <div>
-            <p className="text-xs font-black uppercase tracking-[0.25em] text-red-500">
-              Ready to Compete?
-            </p>
+    <section className="py-10 md:py-14">
+  <div className={PUBLIC_PAGE_CONTAINER}>
+    <div className="border-t border-[#8f762f]/60 bg-[#13100a] px-6 py-10 sm:px-8 md:py-12">
+      <div className="flex flex-col items-start justify-between gap-7 lg:flex-row lg:items-center">
+        <div>
+          <p className="text-xs font-black uppercase tracking-[0.25em] text-red-500">
+            Ready to Compete?
+          </p>
 
-            <h2 className="mt-3 text-3xl font-black uppercase tracking-tight text-white sm:text-4xl">
-              Choose Your Entry. Take Your Shot.
-            </h2>
+          <h2 className="mt-3 text-3xl font-black uppercase tracking-tight text-white sm:text-4xl">
+            Choose Your Entry. Take Your Shot.
+          </h2>
 
-            <p className="mt-3 max-w-2xl text-neutral-400">
-              Register with the required Tournament Entry and choose any eligible
-              optional payout opportunities.
-            </p>
-          </div>
-
-          <span
-            aria-disabled="true"
-            className="inline-flex min-h-14 w-full cursor-not-allowed items-center justify-center border border-red-950 bg-red-950 px-8 py-4 text-sm font-black uppercase tracking-wider text-zinc-400 sm:w-auto"
-          >
-            Register Now
-          </span>
+          <p className="mt-3 max-w-2xl text-neutral-400">
+            Register with the required Tournament Entry and choose any eligible
+            optional payout opportunities.
+          </p>
         </div>
+<Link
+  href="/register"
+  className="inline-flex min-h-14 w-full items-center justify-center border border-red-700 bg-red-800 px-8 py-4 text-sm font-black uppercase tracking-wider text-white transition hover:bg-red-700 sm:w-auto"
+>
+  Register Now
+</Link>
+      </div>
 
-        <div className={`${PUBLIC_PAGE_CONTAINER} mt-8 border-t border-white/10 pt-7`}>
-          <Link
-            href="/"
-            className="inline-flex items-center gap-2 text-xs font-black uppercase tracking-[0.2em] text-[#d0ae4c] transition hover:text-red-500"
-          >
-            <span aria-hidden="true">←</span>
-            Return to Home
-          </Link>
-        </div>
-      </section>
+      <div className="mt-8 border-t border-white/10 pt-7">
+        <Link
+          href="/"
+          className="inline-flex items-center gap-2 text-xs font-black uppercase tracking-[0.2em] text-[#d0ae4c] transition hover:text-red-500"
+        >
+          <span aria-hidden="true">←</span>
+          Return to Home
+        </Link>
+      </div>
+    </div>
+  </div>
+</section>
     </main>
   );
 }

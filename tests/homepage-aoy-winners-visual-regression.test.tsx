@@ -45,7 +45,7 @@ describe("homepage AOY and Winner's Circle visual structure", () => {
     expect(html).toContain("AOY POINTS LEADER");
     expect(html).toContain("SIDE POTS &amp; PAYOUTS");
     expect(html).toContain("BIG BASS WINNER");
-    expect(html).toContain("%2Fimages%2Ffeatured-tournament.png");
+    expect(html).toContain("%2Fimages%2Fplaceholders%2Ftournament-coming-soon.png");
     expect(html).toContain("aria-disabled=\"true\"");
     expect(html).not.toContain("No Results Available");
     expect(html).not.toContain("Awaiting Results");

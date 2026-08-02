@@ -42,7 +42,7 @@ describe("Tournament Operations Dashboard", () => {
       "Verify tournament morning registrations entered",
       "Verify final tournament field",
       "Import WeighFish CSV",
-      "Enter Insurance Pot Amount",
+      "Calculate Insurance Pot Payouts",
       "Upload Winner Photo",
       "Upload Big Bass Photo",
       "Publish Results",

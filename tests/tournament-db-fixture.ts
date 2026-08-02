@@ -14,6 +14,8 @@ export const databaseTournament: Tournament = {
   tournament_date: "2026-11-01T06:00:00-06:00",
   tournament_end_date: null,
   ramp: "Twin Points Park",
+  hours: "Safe Light – 3:00 PM",
+  stop_fishing: "Stop Fishing: 3:00 PM",
   launch_type: "Trailering",
   morning_registration: "05:00",
   registration_opens: "2026-07-01T06:00:00-05:00",

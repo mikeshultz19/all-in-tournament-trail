@@ -28,6 +28,11 @@
   object-position: center;
 }
 
+.resultPlaceholderImage {
+  object-fit: cover;
+  object-position: center;
+}
+
 .bannerTitle {
   font-size: clamp(24px, 2.2vw, 32px);
   font-weight: 900;

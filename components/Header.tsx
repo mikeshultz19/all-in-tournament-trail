@@ -6,7 +6,7 @@ import HeaderSocialLinks from "@/components/HeaderSocialLinks";
 
 const navItems = [
   { label: "Home", href: "/" },
-  { label: "Watch", href: "/watch" },
+  { label: "Bass Stack", href: "/bass-stack", bassStack: true },
   { label: "Results", href: "/results" },
   { label: "Schedule", href: "/schedule" },
   { label: "Standings", href: "/standings" },
@@ -47,6 +47,30 @@ function NavLink({
   );
 }
 
+function BassStackNavLink({
+  activeItem,
+  className,
+}: {
+  activeItem?: string;
+  className?: string;
+}) {
+  const isActive = activeItem === "Bass Stack";
+
+  return (
+    <Link
+      href="/bass-stack"
+      aria-current={isActive ? "page" : undefined}
+      className={`inline-flex items-center whitespace-nowrap text-sm font-black uppercase tracking-[0.08em] transition duration-200 hover:text-red-500 ${
+        isActive ? "text-red-500" : "text-zinc-100"
+      } ${className ?? ""}`.trim()}
+    >
+      <span className="rounded border border-[#c9aa4a]/70 bg-black/70 px-2 py-1 text-[0.58rem] leading-none tracking-[0.18em] text-[#c9aa4a]">
+        BASS STACK
+      </span>
+    </Link>
+  );
+}
+
 export default function Header({ activeItem }: { activeItem?: string }) {
   return (
     <>
@@ -59,19 +83,23 @@ export default function Header({ activeItem }: { activeItem?: string }) {
               width={1774}
               height={887}
               priority
-              className="h-auto w-[128px] sm:w-[160px] xl:w-[192px]"
+              className="h-auto w-[112px] min-[375px]:w-[120px] sm:w-[160px] xl:w-[192px]"
             />
           </Link>
 
           <nav className="hidden min-w-0 flex-1 items-center justify-center gap-4 xl:flex xl:gap-5">
-            {navItems.map((item) => (
-              <NavLink
-                key={item.label}
-                label={item.label}
-                href={item.href}
-                activeItem={activeItem}
-              />
-            ))}
+            {navItems.map((item) =>
+              item.bassStack ? (
+                <BassStackNavLink key={item.label} activeItem={activeItem} />
+              ) : (
+                <NavLink
+                  key={item.label}
+                  label={item.label}
+                  href={item.href}
+                  activeItem={activeItem}
+                />
+              ),
+            )}
 
             <span className="flex items-center border-x border-zinc-800 px-3">
               <HeaderSocialLinks className="gap-3" />
@@ -104,20 +132,20 @@ export default function Header({ activeItem }: { activeItem?: string }) {
           <div className="ml-auto flex shrink-0 items-center gap-2 xl:hidden">
             <Link
               href="/register"
-              className="rounded-md bg-red-700 px-4 py-2.5 text-xs font-black uppercase tracking-wide text-white transition hover:bg-red-600"
+              className="rounded-md bg-red-700 px-3 py-2.5 text-xs font-black uppercase tracking-wide text-white transition hover:bg-red-600 sm:px-4"
             >
               Register
             </Link>
 
             <Link
               href="/admin"
-              className="cursor-pointer rounded-md border border-zinc-800 px-4 py-2.5 text-xs font-black uppercase tracking-wide text-zinc-600 transition hover:border-zinc-600 hover:text-zinc-300 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-yellow-400"
+              className="hidden cursor-pointer rounded-md border border-zinc-800 px-3 py-2.5 text-xs font-black uppercase tracking-wide text-zinc-600 transition hover:border-zinc-600 hover:text-zinc-300 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-yellow-400 min-[430px]:inline-flex sm:px-4"
             >
               Login
             </Link>
 
             <details className="group relative">
-              <summary className="flex list-none items-center gap-2 rounded-md border border-zinc-800 px-3 py-2.5 text-xs font-black uppercase tracking-[0.08em] text-zinc-100/90 transition duration-200 hover:border-zinc-600 hover:text-red-500 [&::-webkit-details-marker]:hidden">
+              <summary className="flex list-none items-center gap-2 rounded-md border border-zinc-800 px-2.5 py-2.5 text-xs font-black uppercase tracking-[0.08em] text-zinc-100/90 transition duration-200 hover:border-zinc-600 hover:text-red-500 sm:px-3 [&::-webkit-details-marker]:hidden">
                 <Menu aria-hidden="true" className="h-4 w-4" />
                 <span className="hidden sm:inline">Menu</span>
                 <ChevronDown
@@ -134,15 +162,23 @@ export default function Header({ activeItem }: { activeItem?: string }) {
                 </div>
 
                 <div className="grid gap-1 p-3">
-                  {mobileNavItems.map((item) => (
-                    <NavLink
-                      key={item.label}
-                      label={item.label}
-                      href={item.href}
-                      activeItem={activeItem}
-                      className="rounded-lg px-3 py-2 text-sm text-zinc-100 hover:bg-white/5"
-                    />
-                  ))}
+                  {mobileNavItems.map((item) =>
+                    item.bassStack ? (
+                      <BassStackNavLink
+                        key={item.label}
+                        activeItem={activeItem}
+                        className="rounded-lg px-3 py-2 hover:bg-white/5"
+                      />
+                    ) : (
+                      <NavLink
+                        key={item.label}
+                        label={item.label}
+                        href={item.href}
+                        activeItem={activeItem}
+                        className="rounded-lg px-3 py-2 text-sm text-zinc-100 hover:bg-white/5"
+                      />
+                    ),
+                  )}
                 </div>
 
                 <div className="border-t border-zinc-800 px-4 py-4">

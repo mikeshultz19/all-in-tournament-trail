@@ -8,16 +8,22 @@ describe("SiteCraft footer credit", () => {
   const html = renderToStaticMarkup(<Footer />);
 
   it("renders one accessible badge linking to the Contact page", () => {
-    expect(html.match(/href="\/contact"/g)).toHaveLength(2);
+    expect(html.match(/href="\/contact"/g)).toHaveLength(1);
     expect(html).toContain("url=%2Fbrands%2Fsitecraft.png");
     expect(html).toContain('alt="SiteCraft Web Design"');
   });
 
   it("renders the compact navigation and avoids nested controls", () => {
-    for (const href of ["/", "/schedule", "/results", "/rules", "/contact"]) {
+    for (const href of ["/", "/schedule", "/results", "/rules", "/privacy", "/terms"]) {
       expect(html).toContain(`href="${href}"`);
     }
+    expect(html).toContain(">Schedule</a>");
+    expect(html).not.toContain(">Tournament Schedule</a>");
     expect(html).toContain(">Facebook</a>");
+    expect(html).toContain(">Instagram</a>");
+    expect(html).toContain("© 2026 All In Tournament Trail");
+    expect(html).toContain("All Rights Reserved.");
+    expect(html).toContain("Website Designed by SiteCraft Web Design");
     expect(html).toContain('rel="noopener noreferrer"');
     expect(html).toContain("Back to Top");
     expect(renderToStaticMarkup(<SiteCraftBadge />)).not.toContain("<button");

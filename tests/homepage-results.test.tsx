@@ -169,6 +169,7 @@ describe("homepage latest tournament results", () => {
     expect(html).toContain("GOLD SIDE POT WINNER");
     expect(html).toContain("View Complete Results");
     expect(html).toContain("%2Fimages%2Ffeatured-tournament.png");
+    expect(html).not.toContain("%2Fimages%2Fplaceholders%2Ftournament-coming-soon.png");
     expect(html).toContain("%2Fimages%2Ftournament-hero.png");
     expect(html).toContain('href="/results"');
     expect(html).not.toContain(">Latest Tournament<");
@@ -185,7 +186,8 @@ describe("homepage latest tournament results", () => {
     expect(html).toContain("SIDE POTS &amp; PAYOUTS");
     expect(html).toContain("BIG BASS WINNER");
     expect(html).toContain("AOY POINTS LEADER");
-    expect(html).toContain("%2Fimages%2Ffeatured-tournament.png");
+    expect(html).toContain("%2Fimages%2Fplaceholders%2Ftournament-coming-soon.png");
+    expect((html.match(/resultPlaceholderImage/g) ?? [])).toHaveLength(2);
     expect(html).toContain("aria-disabled=\"true\"");
     expect(html).not.toContain('href="/results"');
     expect(html).toContain("—");

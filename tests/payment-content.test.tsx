@@ -63,9 +63,11 @@ describe("approved payment content", () => {
     expect(html).toContain("Card Processing Fee (3%)");
     expect(html).toContain("Subtotal");
     expect(html).toContain("Final Total");
-    expect(html).toContain("Continue to Payment");
+    expect(html).toContain("Registration Closed");
+    expect(html).toContain('disabled=""');
     expect(html).toContain("Secure payment through Square");
-    expect(html).not.toMatch(/Cash|Apple Pay|Visa|Mastercard|Discover/i);
+    expect(html).toContain("Square and Apple Pay accepted at the ramp");
+    expect(html).not.toMatch(/Cash|Visa|Mastercard|Discover/i);
   });
 
   it("keeps the server credential out of client-facing source", () => {

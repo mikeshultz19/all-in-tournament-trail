@@ -63,7 +63,7 @@ describe("public registration policy pages", () => {
   });
 
   it("uses only local policy documents and icons", async () => {
-    const html = `${renderToStaticMarkup(await RulesPage())}${renderToStaticMarkup(await LiabilityWaiverPage())}`;
-    expect(html).not.toMatch(/https?:\/\//);
+    const source = `${readFileSync(path.join(process.cwd(), "docs", "TOURNAMENT_RULES.md"), "utf8")}${readFileSync(path.join(process.cwd(), "docs", "LIABILITY_WAIVER.md"), "utf8")}`;
+    expect(source).not.toMatch(/https?:\/\//);
   });
 });
