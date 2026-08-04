@@ -38,6 +38,7 @@ export interface LatestTournamentResults {
   results: TournamentResultsRecord;
   tournamentImage: string | null;
   championImage: string;
+  tournamentRecap?: string;
   bigBassImage: string;
   completeResultsUrl: string;
   insurancePotResult?: TournamentInsurancePotResultRecord | null;
