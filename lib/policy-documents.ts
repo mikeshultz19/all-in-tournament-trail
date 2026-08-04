@@ -1,6 +1,3 @@
-import { readFile } from "node:fs/promises";
-import path from "node:path";
-
 export type PolicyDocumentName = "rules" | "liability-waiver";
 
 export interface PolicyDocument {
@@ -12,7 +9,9 @@ export interface PolicyDocument {
 
 function readMetadata(source: string, label: string): string {
   const escapedLabel = label.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-  const match = source.match(new RegExp(`\\*\\*${escapedLabel}:\\*\\*\\s*([^\\r\\n]+)`));
+  const match = source.match(
+    new RegExp(`\\*\\*${escapedLabel}:\\*\\*\\s*([^\\r\\n]+)`),
+  );
 
   if (!match?.[1]) {
     throw new Error(`Policy document is missing ${label} metadata.`);
@@ -21,11 +20,42 @@ function readMetadata(source: string, label: string): string {
   return match[1].trim();
 }
 
-export async function loadPolicyDocument(name: PolicyDocumentName): Promise<PolicyDocument> {
-  const documentPath = name === "rules"
-    ? path.join(process.cwd(), "docs", "TOURNAMENT_RULES.md")
-    : path.join(process.cwd(), "docs", "LIABILITY_WAIVER.md");
-  const source = await readFile(documentPath, "utf8");
+async function readPolicySource(filename: string): Promise<string> {
+  try {
+    const { getCloudflareContext } = await import("@opennextjs/cloudflare");
+    const { env } = await getCloudflareContext({ async: true });
+
+    if (env?.ASSETS) {
+      const response = await env.ASSETS.fetch(
+        new Request(`https://assets.local/docs/${filename}`),
+      );
+
+      if (response.ok) {
+        return await response.text();
+      }
+    }
+  } catch {
+    // Cloudflare bindings are unavailable during the normal Next.js build.
+  }
+
+  const { readFile } = await import("node:fs/promises");
+  const path = await import("node:path");
+
+  return readFile(
+    path.join(process.cwd(), "docs", filename),
+    "utf8",
+  );
+}
+
+export async function loadPolicyDocument(
+  name: PolicyDocumentName,
+): Promise<PolicyDocument> {
+  const filename =
+    name === "rules"
+      ? "TOURNAMENT_RULES.md"
+      : "LIABILITY_WAIVER.md";
+
+  const source = await readPolicySource(filename);
 
   return {
     source,

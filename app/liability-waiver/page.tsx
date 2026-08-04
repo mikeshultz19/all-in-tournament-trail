@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import Header from "@/components/Header";
 import PolicyDocument from "@/components/PolicyDocument";
 import { loadPolicyDocument } from "@/lib/policy-documents";
-
+export const dynamic = "force-dynamic";
 export const metadata: Metadata = {
   title: "Participant Liability Waiver | All-In Tournament Trail",
   description: "Review the All-In Tournament Trail Participant Liability Waiver and Assumption of Risk.",
