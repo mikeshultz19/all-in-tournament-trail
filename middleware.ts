@@ -10,7 +10,7 @@ function isActiveAdmin(user: {
   );
 }
 
-export async function proxy(request: NextRequest) {
+export async function middleware(request: NextRequest) {
   let response = NextResponse.next({ request });
   const url =
     process.env.SUPABASE_URL?.trim() ||
