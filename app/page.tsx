@@ -110,8 +110,20 @@ export default async function HomePage() {
               </span>
             </Link>
           </div>
+<div className="mt-4 space-y-5 md:hidden">
+  <LatestTournamentNews announcements={announcements.slice(0, 1)} />
 
-          <div data-homepage-tournament-grid className="mt-2 grid min-w-0 grid-cols-1 items-start gap-6 lg:grid-cols-2">
+  <FeaturedTournament
+    tournament={featuredTournament ?? null}
+    operations={operations}
+    earlyRegistrationSummary={earlyRegistrationSummary}
+    earlyRegistrationStatsUnavailable={earlyRegistrationStatsUnavailable}
+  />
+</div>
+          <div
+  data-homepage-tournament-grid
+  className="mt-2 hidden min-w-0 grid-cols-1 items-start gap-6 md:grid lg:grid-cols-2"
+>
             <div data-tournament-column="right" className="flex min-w-0 flex-col gap-6 lg:col-start-2 lg:row-start-1">
               <FeaturedTournament
                 tournament={featuredTournament ?? null}

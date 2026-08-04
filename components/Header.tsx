@@ -139,7 +139,7 @@ export default function Header({ activeItem }: { activeItem?: string }) {
 
             <Link
               href="/admin"
-              className="hidden cursor-pointer rounded-md border border-zinc-800 px-3 py-2.5 text-xs font-black uppercase tracking-wide text-zinc-600 transition hover:border-zinc-600 hover:text-zinc-300 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-yellow-400 min-[430px]:inline-flex sm:px-4"
+              className="hidden cursor-pointer rounded-md border border-zinc-800 px-3 py-2.5 text-xs font-black uppercase tracking-wide text-zinc-600 transition hover:border-zinc-600 hover:text-zinc-300 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-yellow-400 lg:inline-flex sm:px-4"
             >
               Login
             </Link>
