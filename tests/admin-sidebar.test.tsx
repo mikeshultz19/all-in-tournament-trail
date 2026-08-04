@@ -20,7 +20,7 @@ describe("AdminSidebar", () => {
     const markup = renderToStaticMarkup(<AdminSidebar />);
 
     expect(markup).toContain("Home");
-    expect(markup).toContain("Tournament");
+    expect(markup).toContain("Tournament Manager");
     expect(markup).toContain("Members");
     expect(markup).toContain("Website");
     expect(markup).toContain("Registration Review");

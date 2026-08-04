@@ -1,8 +1,9 @@
 import { describe, expect, it } from "vitest";
 import {
   getInsurancePotPlaces,
+  INSURANCE_POT_ENTRY_FEE_CENTS,
+  isInsurancePotWinnerDraftComplete,
   expectedInsurancePotCents,
-  selectInsurancePotWinners,
   splitInsurancePotCents,
   validateInsurancePotResult,
 } from "@/lib/insurance-pot";
@@ -21,16 +22,21 @@ describe("Insurance Pot calculations", () => {
   });
 
   it("validates the expected pot at $20 per eligible entry", () => {
+    expect(INSURANCE_POT_ENTRY_FEE_CENTS).toBe(2000);
     expect(expectedInsurancePotCents(0)).toBe(0);
-    expect(expectedInsurancePotCents(14)).toBe(28000);
+    expect(expectedInsurancePotCents(1)).toBe(2000);
+    expect(expectedInsurancePotCents(5)).toBe(10000);
+    expect(expectedInsurancePotCents(20)).toBe(40000);
+    expect(expectedInsurancePotCents(21)).toBe(42000);
+    expect(getInsurancePotPlaces(21)).toBe(4);
+    expect(splitInsurancePotCents(expectedInsurancePotCents(21), getInsurancePotPlaces(21))).toEqual([10500, 10500, 10500, 10500]);
+    expect(expectedInsurancePotCents(37)).toBe(74000);
   });
 
-  it("skips nonparticipants and regular-payout recipients", () => {
-    expect(selectInsurancePotWinners([
-      { entryId: "a", entryName: "Paid", finishingPosition: 4, enteredInsurancePot: true, receivedTournamentEntryPayout: true },
-      { entryId: "b", entryName: "Skipped", finishingPosition: 5, enteredInsurancePot: false, receivedTournamentEntryPayout: false },
-      { entryId: "c", entryName: "Winner", finishingPosition: 6, enteredInsurancePot: true, receivedTournamentEntryPayout: false },
-    ], 1)[0]?.entryName).toBe("Winner");
+  it("requires every saved winner and accepts an explicitly saved zero-entry pot", () => {
+    expect(isInsurancePotWinnerDraftComplete({ entryCount: 0, totalPotCents: 0, placesPaid: 0, winners: [], published: false })).toBe(true);
+    expect(isInsurancePotWinnerDraftComplete({ entryCount: 10, totalPotCents: 20000, placesPaid: 2, winners: [{ entryName: "Smith / Jones", finishingPosition: 8, amountCents: 10000 }], published: false })).toBe(false);
+    expect(isInsurancePotWinnerDraftComplete({ entryCount: 10, totalPotCents: 20000, placesPaid: 2, winners: [{ entryName: "Smith / Jones", finishingPosition: 8, amountCents: 10000 }, { entryName: "Brown / Davis", finishingPosition: 10, amountCents: 10000 }], published: false })).toBe(true);
   });
 
   it("blocks missing, duplicate, and incorrectly assigned winners", () => {
@@ -42,5 +48,10 @@ describe("Insurance Pot calculations", () => {
     expect(validateInsurancePotResult({ ...base, winners: [
       { entryName: "One", amountCents: 10000 }, { entryName: "Two", amountCents: 9999 },
     ] }).join(" ")).toMatch(/equal the total/i);
+  });
+
+  it("rejects a winner without a team name", () => {
+    const errors = validateInsurancePotResult({ entryCount: 1, totalPotCents: 2000, placesPaid: 1, published: false, winners: [{ entryName: "", finishingPosition: 4, amountCents: 2000 }] });
+    expect(errors.join(" ")).toMatch(/entry name/i);
   });
 });

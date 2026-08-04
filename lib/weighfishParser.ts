@@ -34,6 +34,7 @@ export interface WeighfishResultRow {
   cashPayout: number;
   payoutBreakdown: string;
   prizeDescription: string;
+  validationMessages?: string[];
 }
 
 export interface WeighfishPayoutTotals {
@@ -59,6 +60,37 @@ export interface WeighfishParseResult {
 
 export interface WeighfishParserOptions {
   requiredHeaders?: readonly string[];
+}
+
+export function getWeighfishTieWarning(
+  row: WeighfishResultRow,
+  rows: readonly WeighfishResultRow[],
+): string | null {
+  if (row.place === null) return null;
+  const tiedRows = rows.filter((candidate) => candidate.place === row.place);
+  if (tiedRows.length < 2) return null;
+
+  const allZeroWeight = tiedRows.every((candidate) => candidate.totalWeight === 0);
+  const affectsPayout = tiedRows.some((candidate) =>
+    candidate.cashPayout > 0 ||
+    candidate.basePayout > 0 ||
+    candidate.bronzePayout > 0 ||
+    candidate.silverPayout > 0 ||
+    candidate.goldPayout > 0 ||
+    candidate.bigBassPayout > 0
+  );
+  const affectsBigBass = tiedRows.some((candidate) =>
+    candidate.bigFishWeight > 0 || candidate.bigBassPlace !== null
+  );
+  const occursAtEnd = !rows.some((candidate) =>
+    candidate.place !== null && candidate.place > row.place!
+  );
+
+  if (allZeroWeight && occursAtEnd && !affectsPayout && !affectsBigBass) {
+    return null;
+  }
+
+  return `More than one entry is listed in place ${row.place}. This may represent an official tie.`;
 }
 
 const DEFAULT_REQUIRED_HEADERS = [
@@ -212,6 +244,30 @@ function getCell(
   }
 
   return "";
+}
+
+function hasHeader(headerIndexes: Map<string, number>, aliases: readonly string[]) {
+  return aliases.some((alias) => headerIndexes.has(normalizeHeader(alias)));
+}
+
+function parseSidePotColumn(record: string[], headerIndexes: Map<string, number>, aliases: readonly string[], label: string, rowNumber: number, validationMessages: string[], errors: string[]): number | null {
+  if (!hasHeader(headerIndexes, aliases)) return null;
+  const raw = getCell(record, headerIndexes, aliases);
+  if (!raw) return 0;
+  if (!/^\s*\$?\s*-?[\d,]+(?:\.\d{1,2})?\s*$/.test(raw)) {
+    const message = `Result row ${rowNumber} has an invalid ${label} value: "${raw}".`;
+    validationMessages.push(message);
+    errors.push(message);
+    return 0;
+  }
+  const value = parseNumber(raw);
+  if (value < 0) {
+    const message = `Result row ${rowNumber} has a negative ${label} value: "${raw}".`;
+    validationMessages.push(message);
+    errors.push(message);
+    return 0;
+  }
+  return value;
 }
 
 function extractNamedPayout(
@@ -488,6 +544,8 @@ export function parseWeighfishCsv(
   const resultRecords = records.slice(resultsHeaderIndex + 1);
 
   resultRecords.forEach((record, recordIndex) => {
+    const rowNumber = recordIndex + 1;
+    const validationMessages: string[] = [];
     const entryName = getCell(record, headerIndexes, [
       "Angler",
       "Team",
@@ -533,15 +591,18 @@ export function parseWeighfishCsv(
 const basePayout = extractNamedPayout(payoutBreakdown, [
   "Main Pot",
 ]);
-    const bronzePayout = extractNamedPayout(payoutBreakdown, [
+const directBronzePayout = parseSidePotColumn(record, headerIndexes, ["Bronze", "Bronze Payout", "Bronze Side Pot", "Bronze Side Pot Payout", "Side Pot 1", "Side Pot 1 Payout"], "Bronze payout", rowNumber, validationMessages, errors);
+const directSilverPayout = parseSidePotColumn(record, headerIndexes, ["Silver", "Silver Payout", "Silver Side Pot", "Silver Side Pot Payout", "Side Pot 2", "Side Pot 2 Payout"], "Silver payout", rowNumber, validationMessages, errors);
+const directGoldPayout = parseSidePotColumn(record, headerIndexes, ["Gold", "Gold Payout", "Gold Side Pot", "Gold Side Pot Payout", "Side Pot 3", "Side Pot 3 Payout"], "Gold payout", rowNumber, validationMessages, errors);
+    const bronzePayout = directBronzePayout ?? extractNamedPayout(payoutBreakdown, [
   "Bronze",
 ]);
 
-const silverPayout = extractNamedPayout(payoutBreakdown, [
+const silverPayout = directSilverPayout ?? extractNamedPayout(payoutBreakdown, [
   "Silver",
 ]);
 
-const goldPayout = extractNamedPayout(payoutBreakdown, [
+const goldPayout = directGoldPayout ?? extractNamedPayout(payoutBreakdown, [
   "Gold",
 ]);
 
@@ -606,6 +667,7 @@ const bigBassPayout = extractBigBassPayout(
       cashPayout,
       payoutBreakdown,
       prizeDescription,
+      validationMessages,
     });
   });
 
@@ -613,18 +675,13 @@ const bigBassPayout = extractBigBassPayout(
     errors.push("The CSV does not contain any tournament result entries.");
   }
 
-  const seenPlaces = new Set<number>();
+  const warnedPlaces = new Set<number>();
 
   for (const row of rows) {
-    if (row.place !== null) {
-      if (seenPlaces.has(row.place)) {
-        warnings.push(
-          `More than one entry is listed in place ${row.place}. This may represent an official tie.`,
-        );
-      }
-
-      seenPlaces.add(row.place);
-    }
+    if (row.place === null || warnedPlaces.has(row.place)) continue;
+    const warning = getWeighfishTieWarning(row, rows);
+    if (warning) warnings.push(warning);
+    warnedPlaces.add(row.place);
   }
 
   const tournamentInfo = readTournamentInfo(
@@ -633,12 +690,6 @@ const bigBassPayout = extractBigBassPayout(
   );
 
   const statistics = readStatistics(records, resultsHeaderIndex);
-
-  if (!tournamentInfo.tournament) {
-    warnings.push(
-      "The tournament name was not found in the WeighFish export.",
-    );
-  }
 
   const payoutTotals = rows.reduce<WeighfishPayoutTotals>(
     (totals, row) => {

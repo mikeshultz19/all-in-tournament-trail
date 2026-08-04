@@ -1,11 +1,16 @@
-import WeighfishCsvUploader from "@/components/admin/WeighfishCsvUploader";
-import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
+import { ArrowLeft } from "lucide-react";
 
+import ImportedResultsReview from "@/components/admin/ImportedResultsReview";
+import WeighfishCsvUploader from "@/components/admin/WeighfishCsvUploader";
+import { requireAdminUser } from "@/lib/admin-auth";
+import { getTournamentPreparationStatus } from "@/lib/tournament-preparation";
+import { getNextUpcomingTournament, getTournamentByIdentifier } from "@/lib/tournaments";
+import { createSupabaseServerClient } from "@/lib/supabase/server";
 import {
-  getNextUpcomingTournament,
-  getTournamentByIdentifier,
-} from "@/lib/tournaments";
+  getTournamentRegistrationRoster,
+  summarizeTournamentRegistrationRoster,
+} from "@/lib/tournament-registration-roster";
 
 interface ImportPageProps {
   searchParams: Promise<{ tournament?: string | string[] }>;
@@ -16,6 +21,7 @@ export const dynamic = "force-dynamic";
 export default async function WeighFishImportPage({
   searchParams,
 }: ImportPageProps) {
+  await requireAdminUser();
   const params = await searchParams;
 
   const requestedTournament = Array.isArray(params.tournament)
@@ -26,15 +32,40 @@ export default async function WeighFishImportPage({
     ? await getTournamentByIdentifier(requestedTournament)
     : await getNextUpcomingTournament();
 
-  const weighfishImported = tournament?.weighfish_imported ?? false;
+  if (!tournament) {
+    return (
+      <section className="border border-red-500/30 bg-red-500/10 p-6">
+        <p className="text-sm font-semibold text-red-200">
+          Select a tournament before importing results.
+        </p>
+      </section>
+    );
+  }
+
+  const { data: importedRows } = await createSupabaseServerClient()
+    .from("tournament_result_entries")
+    .select(
+      "id,place,team_name,total_weight,big_fish_weight,bronze_payout,silver_payout,gold_payout,original_import_data",
+    )
+    .eq("tournament_id", tournament.id)
+    .order("place");
+  const hasImportedRows = Boolean(importedRows?.length);
+  const roster = await getTournamentRegistrationRoster(tournament.id);
+  const summary = summarizeTournamentRegistrationRoster(roster);
+  const preparationStatus = getTournamentPreparationStatus(tournament, summary);
+  const preparationComplete = preparationStatus === "Complete";
+  const tournamentContext = encodeURIComponent(tournament.slug || tournament.id);
+  const membersReturn = `/admin/tournament-manager?tournament=${tournamentContext}&step=1`;
 
   return (
     <>
       <Link
         href={
           requestedTournament
-            ? `/admin?tournament=${encodeURIComponent(requestedTournament)}`
-            : "/admin"
+            ? `/admin/tournament-manager?tournament=${encodeURIComponent(
+                requestedTournament,
+              )}&step=2`
+            : "/admin/tournament-manager?step=2"
         }
         className="inline-flex items-center gap-2 text-sm text-neutral-400 hover:text-[#D4A017]"
       >
@@ -44,7 +75,7 @@ export default async function WeighFishImportPage({
 
       <header className="mt-6">
         <p className="text-xs font-black uppercase tracking-[0.18em] text-red-500">
-          Step 2 of 5
+          Step 2 of 6
         </p>
 
         <h1 className="mt-2 text-4xl font-black uppercase text-white">
@@ -58,52 +89,71 @@ export default async function WeighFishImportPage({
       </header>
 
       <section className="mt-8 border border-[#D4A017]/20 bg-[#D4A017]/5 p-6">
-        <h2 className="text-lg font-black uppercase text-white">
-          Tournament
-        </h2>
+        <h2 className="text-lg font-black uppercase text-white">Tournament</h2>
 
         <p className="mt-2 text-neutral-300">
-          {tournament ? (
-            <>
-              Ready to import results for{" "}
-              <strong>{tournament.name}</strong>
-            </>
-          ) : (
-            "No tournament selected."
-          )}
+          Ready to import results for <strong>{tournament.name}</strong>
         </p>
       </section>
 
-      {tournament ? (
-        <div className="mt-8">
-     <WeighfishCsvUploader
-  key={tournament.id}
-  tournamentId={tournament.id}
-  returnToDashboard
-/>
-        </div>
-      ) : (
-        <section className="mt-8 border border-red-500/30 bg-red-500/10 p-6">
-          <p className="text-sm font-semibold text-red-200">
-            Select a tournament before importing results.
+      <section className="mt-8 border border-white/10 bg-[#111111] p-5">
+        <p className="text-xs font-black uppercase tracking-[0.18em] text-red-500">
+          Tournament Preparation
+        </p>
+
+        {preparationComplete ? (
+          <p className="mt-2 text-sm leading-6 text-emerald-300">
+            Tournament preparation is complete. Import Results is unlocked.
           </p>
-        </section>
-      )}
-
-      <section className="mt-8 border border-white/10 bg-[#111111] p-6">
-        <h2 className="text-lg font-black uppercase text-white">
-          Import Checklist
-        </h2>
-
-        <ul className="mt-4 space-y-3 text-neutral-300">
-          <li>{tournament ? "✓" : "•"} Tournament selected</li>
-          <li>{weighfishImported ? "✓" : "•"} Upload WeighFish CSV</li>
-          <li>{weighfishImported ? "✓" : "•"} Preview imported data</li>
-          <li>{weighfishImported ? "✓" : "•"} Validate payouts</li>
-          <li>{weighfishImported ? "✓" : "•"} Save to database</li>
-          <li>{weighfishImported ? "✓" : "•"} Continue to the Insurance Pot Calculator</li>
-        </ul>
+        ) : (
+          <div className="mt-2 space-y-3">
+            <p className="text-sm leading-6 text-neutral-300">
+              Complete Tournament Preparation before importing results.
+            </p>
+            <p className="text-sm leading-6 text-neutral-400">
+              Resolve registration review issues and confirm the paper
+              membership checklist first.
+            </p>
+            {hasImportedRows ? (
+              <p className="text-xs font-black uppercase tracking-[0.12em] text-amber-300">
+                An import already exists for this tournament. Changing
+                preparation confirmations later will lock Import Results until
+                preparation is confirmed again.
+              </p>
+            ) : null}
+            <div className="flex flex-wrap gap-3">
+              <Link
+                href={`/admin/registration-review?tournament=${tournamentContext}`}
+                className="inline-flex min-h-10 items-center border border-white/15 px-4 text-xs font-black uppercase text-white transition hover:border-[#D4A017] hover:text-[#D4A017]"
+              >
+                Registration Review
+              </Link>
+              <Link
+                href={`/admin/members?tournament=${tournamentContext}&returnTo=${encodeURIComponent(membersReturn)}`}
+                className="inline-flex min-h-10 items-center border border-white/15 px-4 text-xs font-black uppercase text-white transition hover:border-[#D4A017] hover:text-[#D4A017]"
+              >
+                {tournament.name} Members List →
+              </Link>
+            </div>
+          </div>
+        )}
       </section>
+
+      {preparationComplete ? (
+        <div className="mt-8">
+          {!hasImportedRows ? (
+            <WeighfishCsvUploader key={tournament.id} tournamentId={tournament.id} />
+          ) : (
+            <ImportedResultsReview
+              tournamentId={tournament.id}
+              tournamentSlug={tournament.slug || tournament.id}
+              rows={importedRows ?? []}
+              verified={Boolean(tournament.results_verified_at)}
+              published={tournament.result_status === "official"}
+            />
+          )}
+        </div>
+      ) : null}
     </>
   );
 }

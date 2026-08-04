@@ -31,15 +31,15 @@ export default async function WinnerPhotosPage({
       <Link
         href={
           requestedTournament
-            ? `/admin?tournament=${encodeURIComponent(
+            ? `/admin/tournament-manager?tournament=${encodeURIComponent(
                 requestedTournament,
-              )}`
-            : "/admin"
+              )}&step=5`
+            : "/admin/tournament-manager?step=5"
         }
         className="inline-flex min-h-11 items-center gap-2 text-xs font-black uppercase tracking-[0.14em] text-neutral-400 transition-colors hover:text-[#D4A017]"
       >
         <ArrowLeft className="size-4" />
-        Back to Tournament Operations
+        Back to Publish Results
       </Link>
 
       <div className="mt-6 border-b border-white/10 pb-6">

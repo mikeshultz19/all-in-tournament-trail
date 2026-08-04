@@ -1,9 +1,11 @@
 import { ArrowLeft, ShieldCheck } from "lucide-react";
 import Link from "next/link";
 
-import InsuranceReviewForm from "@/components/admin/InsuranceReviewForm";
+import InsurancePotWorkflow from "@/components/admin/InsurancePotWorkflow";
+import type { ImportedRow } from "@/components/admin/ImportedResultsReview";
 import { getTournamentInsurancePotResult } from "@/lib/insurance-pot-results";
 import { getTournamentByIdentifier } from "@/lib/tournaments";
+import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 interface InsuranceReviewPageProps {
   searchParams: Promise<{ tournament?: string | string[] }>;
@@ -23,6 +25,14 @@ export default async function InsuranceReviewPage({
   const tournament = identifier
     ? await getTournamentByIdentifier(identifier)
     : null;
+  const { data: importedRows } = tournament
+    ? await createSupabaseServerClient()
+        .from("tournament_result_entries")
+        .select("id,place,team_name,total_weight,big_fish_weight,bronze_payout,silver_payout,gold_payout,original_import_data")
+        .eq("tournament_id", tournament.id)
+        .order("place")
+    : { data: [] };
+  const typedImportedRows = (importedRows ?? []) as ImportedRow[];
   const insuranceResult = tournament
     ? await getTournamentInsurancePotResult(tournament.id)
     : null;
@@ -32,15 +42,13 @@ export default async function InsuranceReviewPage({
       <Link
         href={
           identifier
-            ? `/admin?tournament=${encodeURIComponent(
-                identifier,
-              )}`
-            : "/admin"
+            ? `/admin/tournament-manager?tournament=${encodeURIComponent(identifier)}&step=3`
+            : "/admin/tournament-manager?step=3"
         }
         className="inline-flex min-h-11 items-center gap-2 text-xs font-black uppercase tracking-[0.14em] text-neutral-400 transition-colors hover:text-[#D4A017] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#D4A017]"
       >
         <ArrowLeft aria-hidden="true" className="size-4" />
-        Back to Tournament Operations
+        Back to Insurance Pot
       </Link>
 
       <header className="mt-6 border-b border-white/10 pb-6">
@@ -62,9 +70,10 @@ export default async function InsuranceReviewPage({
 
       {tournament ? (
         <div className="mt-6">
-          <InsuranceReviewForm
+          <InsurancePotWorkflow
             key={tournament.id}
             tournament={tournament}
+            importedRows={typedImportedRows}
             insuranceResult={insuranceResult}
           />
         </div>

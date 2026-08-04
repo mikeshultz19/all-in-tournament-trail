@@ -16,6 +16,18 @@ export class ResultsDataError extends Error {
   }
 }
 
+export async function listTournamentResultsRecords(
+  tournamentIds: readonly string[],
+): Promise<Record<string, TournamentResultsRecord>> {
+  if (!tournamentIds.length) return {};
+  const { data, error } = await createSupabaseServerClient()
+    .from("tournament_results")
+    .select("*")
+    .in("tournament_id", [...tournamentIds]);
+  if (error) throw new ResultsDataError("Tournament results records could not be loaded.", { cause: error });
+  return Object.fromEntries((data ?? []).map((row) => [row.tournament_id, row as TournamentResultsRecord]));
+}
+
 export async function getTournamentResults(
   tournamentId: string,
 ): Promise<TournamentResultsRecord | null> {

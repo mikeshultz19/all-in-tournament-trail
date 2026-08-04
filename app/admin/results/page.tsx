@@ -36,11 +36,11 @@ export default async function ResultsAdminPage({
   return (
     <>
       <Link
-        href="/admin"
+        href={tournament ? `/admin/tournament-manager?tournament=${encodeURIComponent(tournament.slug || tournament.id)}&step=5` : "/admin/tournament-manager?step=5"}
         className="inline-flex min-h-11 items-center gap-2 text-xs font-black uppercase tracking-[0.14em] text-neutral-400"
       >
         <ArrowLeft aria-hidden="true" className="size-4" />
-        Back to Admin Center
+        Back to Publish Results
       </Link>
       <div className="mt-6 border-b border-white/10 pb-6">
         <p className="text-xs font-black uppercase tracking-[0.2em] text-red-500">
@@ -65,8 +65,6 @@ export default async function ResultsAdminPage({
             initialBigBassAngler={results?.big_bass_angler ?? null}
             initialBigBassTeam={results?.big_bass_team ?? null}
             initialBigBassWeight={results?.big_bass_weight ?? null}
-            initialChampionImageUrl={results?.champion_image_url ?? null}
-            initialBigBassImageUrl={results?.big_bass_image_url ?? null}
           />
         </>
       ) : (

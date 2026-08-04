@@ -154,9 +154,9 @@ export default async function PublishPage({
   return (
     <>
       <Link
-        href={`/admin?tournament=${encodeURIComponent(
+        href={`/admin/tournament-manager?tournament=${encodeURIComponent(
           identifier,
-        )}`}
+        )}&step=5`}
         className="inline-flex min-h-11 items-center gap-2 text-xs font-black uppercase tracking-[0.14em] text-neutral-400 hover:text-[#D4A017]"
       >
         <ArrowLeft
@@ -164,7 +164,7 @@ export default async function PublishPage({
           className="size-4"
         />
 
-        Back to Tournament Operations
+        Back to Publish Results
       </Link>
 
       <header className="mt-6 border-b border-white/10 pb-6">
@@ -208,7 +208,7 @@ export default async function PublishPage({
         </section>
       ) : (
         <div className="mt-6 space-y-4">
-          <section className="border border-white/10 bg-[#111111] p-5 sm:p-6">
+          <section id="public-preview" className="scroll-mt-28 border border-white/10 bg-[#111111] p-5 sm:p-6">
             <div className="flex flex-wrap items-center justify-between gap-4">
               <div>
                 <p className="text-xs font-black uppercase tracking-[0.14em] text-[#D4A017]">
@@ -306,10 +306,12 @@ export default async function PublishPage({
             </div>
           </section>
 
-          <PublishTournamentForm
-  tournamentId={tournament.id}
-  identifier={identifier}
-/>
+          <div id="publish-results" className="scroll-mt-28">
+            <PublishTournamentForm
+              tournamentId={tournament.id}
+              identifier={identifier}
+            />
+          </div>
 
           <section className="border border-white/10 bg-[#111111] p-5 sm:p-6">
             <p className="text-xs font-black uppercase tracking-[0.14em] text-[#D4A017]">

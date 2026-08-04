@@ -13,19 +13,18 @@ describe("Admin Registration Review organization", () => {
     );
 
     expect(dashboard).not.toContain("Registration Identity Review");
-    expect(dashboard).not.toContain("/admin/registration-review");
     expect(page).not.toContain("getTournamentRegistrationReviewSummary");
     expect(page).not.toContain("getRegistrationReviewPendingCount");
   });
 
-  it("uses the shared review summarizer on Home and Registration Review", () => {
+  it("uses the selected tournament review summary on Home", () => {
     const home = readFileSync("app/admin/page.tsx", "utf8");
     const review = readFileSync(
       "app/admin/registration-review/page.tsx",
       "utf8",
     );
 
-    expect(home).toContain("getRegistrationReviewDashboardSummary()");
+    expect(home).toContain("getTournamentRegistrationReviewSummary(currentTournament.id)");
     expect(review).toContain("summarizeRegistrationReviewItems(items)");
   });
 });

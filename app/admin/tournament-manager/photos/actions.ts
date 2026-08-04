@@ -76,5 +76,5 @@ export async function saveWinnerPhotosAction(
     };
   }
 
-  redirect(`/admin?tournament=${encodeURIComponent(tournamentId)}`);
+  redirect(`/admin/tournament-manager?tournament=${encodeURIComponent(tournamentId)}&step=5`);
 }

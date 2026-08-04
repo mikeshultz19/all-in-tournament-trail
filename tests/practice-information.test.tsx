@@ -12,7 +12,7 @@ describe("Tournament practice information", () => {
       <FeaturedTournament tournament={toPublicTournament(databaseTournament)} />,
     );
 
-    const tournamentInformation = html.indexOf("Tournament Information");
+    const tournamentInformation = html.indexOf("Tournament Details");
     const practiceInformation = html.indexOf("Practice Information");
     const viewEntries = html.indexOf("View Tournament Entries");
 
@@ -72,7 +72,7 @@ describe("Featured Tournament registration information", () => {
       <FeaturedTournament tournament={toPublicTournament(databaseTournament)} />,
     );
 
-    const tournamentInformation = html.indexOf("Tournament Information");
+    const tournamentInformation = html.indexOf("Tournament Details");
     const registrationInformation = html.indexOf("Registration Information");
     const practiceInformation = html.indexOf("Practice Information");
 

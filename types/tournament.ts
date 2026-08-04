@@ -43,6 +43,8 @@ export interface Tournament {
   non_member_practice_rule: string | null;
   member_practice_rule: string | null;
   practice_information: string | null;
+  prepare_registration_review_complete?: boolean | null;
+  paper_membership_reminder_checked?: boolean | null;
   status: TournamentStatus;
   description: string | null;
   hero_image_url: string | null;
@@ -60,6 +62,8 @@ export interface Tournament {
   photos_reviewed_at: string | null;
   weighfish_imported: boolean;
   weighfish_imported_at: string | null;
+  results_verified_at?: string | null;
+  results_verified_by?: string | null;
   result_status: TournamentResultStatus;
   official_results_published_at: string | null;
   official_results_published_by: string | null;
@@ -93,6 +97,8 @@ export type TournamentUpdate = Partial<
     | "non_member_practice_rule"
     | "member_practice_rule"
     | "practice_information"
+    | "prepare_registration_review_complete"
+    | "paper_membership_reminder_checked"
     | "status"
     | "description"
     | "hero_image_url"

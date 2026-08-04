@@ -4,7 +4,9 @@ import Link from "next/link";
 import MembersList from "@/components/admin/MembersList";
 import { listMembersForSeason } from "@/lib/memberships";
 import { getActiveSeason } from "@/lib/seasons";
+import { getTournamentById, getTournamentByIdentifier } from "@/lib/tournaments";
 import type { AdminMemberListRow, Season } from "@/types/aoy";
+import type { Tournament } from "@/types/tournament";
 
 export const dynamic = "force-dynamic";
 
@@ -17,6 +19,8 @@ export default async function MembersAdminPage({
     q?: string;
     status?: string;
     page?: string;
+    tournament?: string;
+    returnTo?: string;
   }>;
 }) {
   const params = await searchParams;
@@ -28,22 +32,32 @@ export default async function MembersAdminPage({
       ? params.status
       : "all";
   const page = Math.max(1, Number.parseInt(params.page ?? "1", 10) || 1);
+  const requestedTournament = params.tournament?.trim() ?? "";
+  const returnTo = params.returnTo?.trim() ?? "";
+  const pageSize = requestedTournament ? 10000 : 25;
   let activeSeason: Season | null = null;
+  let selectedTournament: Tournament | null = null;
   let members: AdminMemberListRow[] = [];
   let total = 0;
   let loadFailed = false;
 
   try {
     activeSeason = await getActiveSeason();
+    selectedTournament = requestedTournament
+      ? await getTournamentByIdentifier(requestedTournament)
+      : null;
     if (activeSeason) {
       const result = await listMembersForSeason(activeSeason.id, {
         search,
         active: status === "all" ? null : status === "active",
         page,
-        pageSize: 25,
+        pageSize,
       });
-      members = result.members;
-      total = result.total;
+      const filteredMembers = selectedTournament
+        ? await filterMembersForTournament(result.members, selectedTournament)
+        : result.members;
+      members = filteredMembers;
+      total = selectedTournament ? filteredMembers.length : result.total;
     }
   } catch (error) {
     console.error("Admin members load failed.", error);
@@ -52,13 +66,24 @@ export default async function MembersAdminPage({
 
   return (
     <>
-      <Link
-        href="/admin"
-        className="inline-flex min-h-11 items-center gap-2 text-xs font-black uppercase tracking-[0.14em] text-neutral-400 transition-colors hover:text-[#D4A017] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#D4A017]"
-      >
-        <ArrowLeft aria-hidden="true" className="size-4" />
-        Back to Admin Center
-      </Link>
+      <div className="flex flex-wrap gap-3">
+        {returnTo ? (
+          <Link
+            href={returnTo}
+            className="inline-flex min-h-11 items-center gap-2 text-xs font-black uppercase tracking-[0.14em] text-neutral-400 transition-colors hover:text-[#D4A017] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#D4A017]"
+          >
+            <ArrowLeft aria-hidden="true" className="size-4" />
+            Back to Insurance Pot
+          </Link>
+        ) : null}
+        <Link
+          href="/admin"
+          className="inline-flex min-h-11 items-center gap-2 text-xs font-black uppercase tracking-[0.14em] text-neutral-400 transition-colors hover:text-[#D4A017] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#D4A017]"
+        >
+          <ArrowLeft aria-hidden="true" className="size-4" />
+          Back to Admin Center
+        </Link>
+      </div>
 
       <div className="mt-8 flex flex-col gap-5 border-b border-white/10 pb-7 sm:flex-row sm:items-end sm:justify-between">
         <div>
@@ -72,6 +97,11 @@ export default async function MembersAdminPage({
             Manage AITT members and view their eligibility for the current
             season.
           </p>
+          {selectedTournament ? (
+            <p className="mt-3 text-xs font-black uppercase tracking-[0.14em] text-[#D4A017]">
+              Filtered for {selectedTournament.name}
+            </p>
+          ) : null}
         </div>
 
         <Link
@@ -118,7 +148,7 @@ export default async function MembersAdminPage({
             members={members}
             total={total}
             page={page}
-            pageSize={25}
+            pageSize={pageSize}
             initialSearch={search}
             statusFilter={status}
           />
@@ -126,4 +156,47 @@ export default async function MembersAdminPage({
       )}
     </>
   );
+}
+
+async function filterMembersForTournament(
+  members: AdminMemberListRow[],
+  tournament: Tournament,
+): Promise<AdminMemberListRow[]> {
+  const filtered = await Promise.all(
+    members.map(async (member) => {
+      if (!member.is_active || member.membership_status !== "active") {
+        return false;
+      }
+
+      if (!member.first_eligible_tournament_id) {
+        return true;
+      }
+
+      const firstEligibleTournament = await getTournamentById(
+        member.first_eligible_tournament_id,
+      );
+
+      if (!firstEligibleTournament || firstEligibleTournament.season_id !== tournament.season_id) {
+        return false;
+      }
+
+      if (tournament.event_type === "championship") {
+        return true;
+      }
+
+      if (
+        tournament.regular_season_number === null ||
+        firstEligibleTournament.regular_season_number === null
+      ) {
+        return false;
+      }
+
+      return (
+        firstEligibleTournament.regular_season_number <=
+        tournament.regular_season_number
+      );
+    }),
+  );
+
+  return members.filter((_, index) => filtered[index]);
 }

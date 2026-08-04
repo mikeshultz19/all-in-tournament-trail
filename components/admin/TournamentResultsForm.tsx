@@ -113,8 +113,7 @@ export default function TournamentResultsForm({
   initialBigBassAngler,
   initialBigBassTeam,
   initialBigBassWeight,
-  initialChampionImageUrl,
-  initialBigBassImageUrl,
+  showWeighfishImport = false,
 }: {
   tournament: Tournament;
   initialEntries: readonly ResultEntry[];
@@ -127,8 +126,7 @@ export default function TournamentResultsForm({
   initialBigBassAngler: string | null;
   initialBigBassTeam: string | null;
   initialBigBassWeight: number | null;
-  initialChampionImageUrl: string | null;
-  initialBigBassImageUrl: string | null;
+  showWeighfishImport?: boolean;
 }) {
   const action = saveResultsAction.bind(null, tournament.id);
   const resetAction = resetResultsAction.bind(null, tournament.id);
@@ -178,11 +176,6 @@ export default function TournamentResultsForm({
   const [insuranceReviewed, setInsuranceReviewed] = useState(
     initialEntries.length > 0,
   );
-
-  const championImageUrl =
-    initialChampionImageUrl ?? "/images/results/overall-winner.jpg";
-  const bigBassImageUrl =
-    initialBigBassImageUrl ?? "/images/results/big-bass.jpg";
 
   const resetDialogRef = useRef<HTMLDialogElement>(null);
 
@@ -296,10 +289,12 @@ export default function TournamentResultsForm({
           </div>
         </fieldset>
 
-      <WeighfishCsvUploader
-  tournamentId={tournament.id}
-  onImport={handleWeighfishImport}
-/> 
+        {showWeighfishImport ? (
+          <WeighfishCsvUploader
+            tournamentId={tournament.id}
+            onImport={handleWeighfishImport}
+          />
+        ) : null}
 
         {importedResult && (
           <section className="border border-[#D4A017]/35 bg-[#111111] p-5 sm:p-7">
@@ -558,61 +553,14 @@ export default function TournamentResultsForm({
 
           <section className="mt-5 border border-white/10 bg-[#0B0B0B] p-4">
             <h2 className="text-sm font-black uppercase tracking-[0.12em] text-white">
-              🏆 Winner Photos
+              Big Bass Results
             </h2>
 
             <p className="mt-2 text-sm text-neutral-400">
-              Upload the overall winner and Big Bass winner photos.
+              Confirm the published Big Bass result and payout.
             </p>
 
-            <div className="mt-4 grid gap-6 sm:grid-cols-2">
-              <div className="rounded border border-white/10 bg-[#111111] p-4">
-                <h3 className="font-bold text-white">Overall Winner</h3>
-
-                <div className="mt-3 flex h-40 items-center justify-center rounded border border-dashed border-white/15 bg-black/20 text-sm text-neutral-500">
-                  Photo Preview
-                </div>
-
-                <input
-                  name="overallWinnerPhoto"
-                  type="file"
-                  accept="image/*"
-                  className="mt-4 block w-full text-sm text-neutral-300"
-                />
-
-                <p className="mt-3 text-xs text-neutral-400">
-                  Rename photo to:
-                </p>
-
-                <p className="font-semibold text-[#D4A017]">
-                  {tournament.lake} Overall Winner.jpg
-                </p>
-              </div>
-
-              <div className="rounded border border-white/10 bg-[#111111] p-4">
-                <h3 className="font-bold text-white">Big Bass Winner</h3>
-
-                <div className="mt-3 flex h-40 items-center justify-center rounded border border-dashed border-white/15 bg-black/20 text-sm text-neutral-500">
-                  Photo Preview
-                </div>
-
-                <input
-                  name="bigBassWinnerPhoto"
-                  type="file"
-                  accept="image/*"
-                  className="mt-4 block w-full text-sm text-neutral-300"
-                />
-
-                <p className="mt-3 text-xs text-neutral-400">
-                  Rename photo to:
-                </p>
-
-                <p className="font-semibold text-[#D4A017]">
-                  {tournament.lake} Big Bass Winner.jpg
-                </p>
-              </div>
-
-              <label className={labelClassName}>
+            <div className="mt-4 grid gap-6 sm:grid-cols-2">              <label className={labelClassName}>
                 Big Bass Angler
                 <input
                   name="bigBassAngler"

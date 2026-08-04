@@ -154,7 +154,7 @@ export default function FeaturedTournament({
 
         <section aria-labelledby="tournament-information-heading" className="mt-4 border border-[#4A3A12] bg-[#0d0d0d]">
           <h4 id="tournament-information-heading" className="border-b border-[#4A3A12] px-4 py-3 text-center text-[10px] font-black uppercase tracking-[0.16em] text-[#D4A017]">
-            Tournament Information
+            Tournament Details
           </h4>
           <dl className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-5">
             <div className="border-b border-white/10 p-4 sm:border-r xl:border-b-0">

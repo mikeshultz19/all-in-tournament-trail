@@ -326,7 +326,7 @@ function AoyLeaderPlaceholder() {
   return (
     <section
       aria-labelledby="aoy-points-leader-heading"
-      className="mt-5 border border-[#8f762f]/60 bg-[#111111] p-3 text-center"
+      className="mt-21 border border-[#8f762f]/60 bg-[#111111] p-3 text-center"
     >
       <div className="flex items-center justify-center gap-2">
         <Trophy
@@ -488,12 +488,14 @@ export default function WinnersCircle({
                 ))}
               </ol>
 
-              <ResultsActionButton
-                href={hasResults && latestResults ? latestResults.completeResultsUrl : "#"}
-                disabled={!hasResults}
-              >
-                View Complete Results
-              </ResultsActionButton>
+             <ResultsActionButton
+  href={hasResults && latestResults ? latestResults.completeResultsUrl : "#"}
+  disabled={!hasResults}
+>
+  View Complete Results
+</ResultsActionButton>
+
+<AoyLeaderPlaceholder />
             </section>
 
             <section className="flex min-w-0 flex-col border border-[#8f762f]/60 bg-[#111111] p-4 sm:p-5">
@@ -511,7 +513,16 @@ export default function WinnersCircle({
                 priority
                 placeholder={!hasResults}
               />
+<div className="mt-5 rounded-md border border-[#8f762f]/60 bg-[#171717] p-4">
+  <p className="text-[0.68rem] font-black uppercase tracking-[0.12em] text-[#c9aa4a]">
+    Tournament Recap
+  </p>
 
+  <p className="mt-3 text-sm leading-7 text-neutral-300">
+    {latestResults?.tournamentRecap ??
+      "Tournament recap will be published after results become official."}
+  </p>
+</div>
               <div className="mt-5 border border-[#8f762f]/60 bg-[#111111] p-3">
                 <SummaryRow label="Tournament Entry Payout" value={hasResults ? payoutTotals.standardTournament : 0} />
                 <SummaryRow label="Bronze Side Pot Payout" value={hasResults ? payoutTotals.bronze : 0} />
@@ -527,22 +538,20 @@ export default function WinnersCircle({
                 />
               </div>
 
-              {hasResults ? (
-                <div
-                  aria-hidden="true"
-                  className="relative hidden min-h-0 flex-1 overflow-hidden md:block"
-                >
-                  <Image
-                    src="/images/logo.png"
-                    alt=""
-                    width={60}
-                    height={23}
-                    className="absolute bottom-1 left-1/2 h-auto max-h-full w-[60px] max-w-full -translate-x-1/2 object-contain opacity-[0.13]"
-                  />
-                </div>
-              ) : (
-                <AoyLeaderPlaceholder />
-              )}
+            {hasResults ? (
+  <div
+    aria-hidden="true"
+    className="relative hidden min-h-0 flex-1 overflow-hidden md:block"
+  >
+    <Image
+      src="/images/logo.png"
+      alt=""
+      width={60}
+      height={23}
+      className="absolute bottom-1 left-1/2 h-auto max-h-full w-[60px] max-w-full -translate-x-1/2 object-contain opacity-[0.13]"
+    />
+  </div>
+) : null}
             </section>
 
             <section

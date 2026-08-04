@@ -51,14 +51,14 @@ export default async function TournamentAdminPage({
     <>
       <Link
         href={
-          requestedTournament
-            ? `/admin?tournament=${encodeURIComponent(requestedTournament)}`
-            : "/admin"
+          tournament
+            ? `/admin/tournament-manager?tournament=${encodeURIComponent(tournament.slug || tournament.id)}`
+            : "/admin/tournament-manager"
         }
         className="inline-flex min-h-11 items-center gap-2 text-xs font-black uppercase tracking-[0.14em] text-neutral-400 transition-colors hover:text-[#D4A017] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#D4A017]"
       >
         <ArrowLeft aria-hidden="true" className="size-4" />
-        Back to Tournament Operations
+        Back to Tournament Manager
       </Link>
 
       <div className="mt-6 border-b border-white/10 pb-6">

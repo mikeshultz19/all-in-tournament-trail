@@ -19,6 +19,25 @@ export async function getTournamentInsurancePotResult(
   return data as TournamentInsurancePotResultRecord | null;
 }
 
+export async function listTournamentInsurancePotPublicationStatuses(tournamentIds: string[]): Promise<Record<string, boolean>> {
+  if (!tournamentIds.length) return {};
+  const { data, error } = await createSupabaseServerClient().from("tournament_insurance_pot_results").select("tournament_id,published").in("tournament_id", tournamentIds);
+  if (error) throw new Error("Insurance Pot publication statuses could not be loaded.", { cause: error });
+  return Object.fromEntries((data ?? []).map((row) => [row.tournament_id, Boolean(row.published)]));
+}
+
+export async function listTournamentInsurancePotResults(tournamentIds: string[]): Promise<Record<string, TournamentInsurancePotResultRecord>> {
+  if (!tournamentIds.length) return {};
+  const { data, error } = await createSupabaseServerClient()
+    .from("tournament_insurance_pot_results")
+    .select("*")
+    .in("tournament_id", tournamentIds);
+  if (error) throw new Error("Insurance Pot results could not be loaded.", { cause: error });
+  return Object.fromEntries(
+    (data ?? []).map((row) => [row.tournament_id, row as TournamentInsurancePotResultRecord]),
+  );
+}
+
 export async function saveTournamentInsurancePotResult(
   tournamentId: string,
   result: InsurancePotResult,
@@ -52,7 +71,7 @@ export async function saveTournamentInsurancePotCalculation(
   const supabase = createSupabaseServerClient();
   const { data: existing } = await supabase
     .from("tournament_insurance_pot_results")
-    .select("winners,published")
+    .select("entry_count,total_pot_cents,places_paid,calculated_payouts,winners,published")
     .eq("tournament_id", tournamentId)
     .maybeSingle();
   if (existing?.published) throw new Error("Published Insurance Pot results cannot be changed.");
@@ -62,11 +81,26 @@ export async function saveTournamentInsurancePotCalculation(
     total_pot_cents: calculation.totalPotCents,
     places_paid: calculation.placesPaid,
     calculated_payouts: calculation.calculatedPayouts,
-    winners: existing?.winners ?? [],
+    winners: existing && existing.entry_count === calculation.entryCount && existing.total_pot_cents === calculation.totalPotCents && existing.places_paid === calculation.placesPaid && JSON.stringify(existing.calculated_payouts) === JSON.stringify(calculation.calculatedPayouts) ? existing.winners : [],
     published: false,
     published_at: null,
   }, { onConflict: "tournament_id" }).select("*").single();
   if (error) throw new Error("We could not save the Insurance Pot calculation.", { cause: error });
+  return data as TournamentInsurancePotResultRecord;
+}
+
+export async function saveTournamentInsurancePotWinnerDraft(
+  tournamentId: string,
+  winners: InsurancePotResult["winners"],
+): Promise<TournamentInsurancePotResultRecord> {
+  const { data, error } = await createSupabaseServerClient()
+    .from("tournament_insurance_pot_results")
+    .update({ winners, updated_at: new Date().toISOString() })
+    .eq("tournament_id", tournamentId)
+    .eq("published", false)
+    .select("*")
+    .single();
+  if (error) throw new Error("We could not save the Insurance Pot winner draft.", { cause: error });
   return data as TournamentInsurancePotResultRecord;
 }
 

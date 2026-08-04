@@ -1,6 +1,7 @@
 import { requireAdminUser } from "@/lib/admin-auth";
 import { listMembersForSeason } from "@/lib/memberships";
 import { getActiveSeason } from "@/lib/seasons";
+import { getTournamentById, getTournamentByIdentifier } from "@/lib/tournaments";
 
 function csv(value: string | null): string {
   const text = value ?? "";
@@ -19,17 +20,24 @@ export async function GET(request: Request) {
 
   const url = new URL(request.url);
   const status = url.searchParams.get("status");
+  const requestedTournament = url.searchParams.get("tournament")?.trim() ?? "";
+  const tournament = requestedTournament
+    ? await getTournamentByIdentifier(requestedTournament)
+    : null;
   const { members } = await listMembersForSeason(season.id, {
     search: url.searchParams.get("q") ?? "",
     active: status === "active" ? true : status === "inactive" ? false : null,
     pageSize: 10000,
   });
+  const filteredMembers = tournament
+    ? await filterMembersForTournament(members, tournament)
+    : members;
   const header = [
     "First Name", "Last Name", "Email", "Phone", "Status",
     "Membership Season", "First Eligible Tournament",
     "Membership Effective Date",
   ];
-  const rows = members.map((member) => [
+  const rows = filteredMembers.map((member) => [
     member.first_name, member.last_name, member.email, member.phone,
     member.membership_status, member.season_name,
     member.first_eligible_tournament_name, member.effective_date,
@@ -41,4 +49,47 @@ export async function GET(request: Request) {
       "Content-Disposition": `attachment; filename="aitt-members-${season.slug}.csv"`,
     },
   });
+}
+
+async function filterMembersForTournament(
+  members: Awaited<ReturnType<typeof listMembersForSeason>>["members"],
+  tournament: NonNullable<Awaited<ReturnType<typeof getTournamentByIdentifier>>>,
+) {
+  const filtered = await Promise.all(
+    members.map(async (member) => {
+      if (!member.is_active || member.membership_status !== "active") {
+        return false;
+      }
+
+      if (!member.first_eligible_tournament_id) {
+        return true;
+      }
+
+      const firstEligibleTournament = await getTournamentById(
+        member.first_eligible_tournament_id,
+      );
+
+      if (!firstEligibleTournament || firstEligibleTournament.season_id !== tournament.season_id) {
+        return false;
+      }
+
+      if (tournament.event_type === "championship") {
+        return true;
+      }
+
+      if (
+        tournament.regular_season_number === null ||
+        firstEligibleTournament.regular_season_number === null
+      ) {
+        return false;
+      }
+
+      return (
+        firstEligibleTournament.regular_season_number <=
+        tournament.regular_season_number
+      );
+    }),
+  );
+
+  return members.filter((_, index) => filtered[index]);
 }

@@ -9,7 +9,7 @@ import {
   isTournamentResetEnabled,
   resetTournamentActivity,
 } from "@/lib/tournament-reset";
-import { getTournamentByIdentifier } from "@/lib/tournaments";
+import { getTournamentByIdentifier, updateTournament } from "@/lib/tournaments";
 
 export async function resetTournamentAction(formData: FormData) {
   const user = await requireAdminUser();
@@ -33,6 +33,17 @@ export async function resetTournamentAction(formData: FormData) {
     adminUserId: user.id,
     adminEmail: user.email ?? "unknown-admin",
   });
+  try {
+    await updateTournament(tournamentId, {
+      prepare_registration_review_complete: false,
+      paper_membership_reminder_checked: false,
+    });
+  } catch (error) {
+    console.error("Prepare Tournament reminder reset failed.", {
+      tournamentId,
+      error,
+    });
+  }
   await deleteTournamentTemporaryFiles(tournamentId, resetResult);
 
   revalidatePath("/");
@@ -40,6 +51,8 @@ export async function resetTournamentAction(formData: FormData) {
   revalidatePath("/registrations");
   revalidatePath("/admin");
   revalidatePath("/admin/tournament-manager");
+  revalidatePath("/admin/tournament-manager/prepare");
+  revalidatePath("/admin/tournament-manager/import");
   revalidatePath("/admin/tournament");
   redirect(`/admin/tournament?tournament=${encodeURIComponent(tournamentId)}&reset=1`);
 }

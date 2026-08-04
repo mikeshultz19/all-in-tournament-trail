@@ -1,55 +1,39 @@
 import Link from "next/link";
-import {
-  CalendarDays,
-  CircleAlert,
-  CircleCheck,
-  Globe,
-  UserRoundSearch,
-  UsersRound,
-} from "lucide-react";
+import { CalendarDays, Globe, UsersRound } from "lucide-react";
 
-import {
-  getTournamentOperationSteps,
-  getTournamentRegistrationStatus,
-} from "@/lib/admin-tournament-operations";
+import { getTournamentRegistrationStatus } from "@/lib/admin-tournament-operations";
 import { formatAdminTournamentDate } from "@/lib/admin-tournaments";
+import type { TournamentRegistrationReviewSummary } from "@/lib/registration-identity-review";
+import type { TournamentMembershipSummary } from "@/lib/admin-home-membership-summary";
+import type { TournamentRegistrationRosterSummary } from "@/lib/tournament-registration-roster";
 import type { Tournament } from "@/types/tournament";
-import type { RegistrationReviewDashboardSummary } from "@/lib/registration-identity-review";
 
 export default function AdminHomeOverview({
   tournament,
   comparisonDate,
   registrationReviewSummary,
+  resultsPublished,
+  membershipSummary,
+  onlineRegistrationSummary,
 }: {
   tournament: Tournament;
   comparisonDate: string;
-  registrationReviewSummary: RegistrationReviewDashboardSummary;
+  registrationReviewSummary: TournamentRegistrationReviewSummary;
+  resultsPublished: boolean;
+  membershipSummary: TournamentMembershipSummary;
+  onlineRegistrationSummary: TournamentRegistrationRosterSummary;
 }) {
-  const {
-    pendingReviewCount,
-    duplicateCount,
-    membershipMatchCount,
-  } = registrationReviewSummary;
-  const now = new Date(comparisonDate);
-  const registrationStatus = getTournamentRegistrationStatus(tournament, now);
-  const nextStep = getTournamentOperationSteps(tournament, now).find(
-    (step) => step.state === "current",
+  const registrationStatus = getTournamentRegistrationStatus(
+    tournament,
+    new Date(comparisonDate),
   );
-  const workflowRequiresAction = nextStep?.items.some(
-    (item) => item.status === "incomplete",
+  const tournamentContext = encodeURIComponent(
+    tournament.slug || tournament.id,
   );
-  const resultsAwaitingCertification = [
-    "imported",
-    "under_review",
-    "ready_to_publish",
-  ].includes(tournament.result_status);
-  const hasOutstandingActions =
-    resultsAwaitingCertification ||
-    Boolean(nextStep && workflowRequiresAction);
-  const tournamentContext = encodeURIComponent(tournament.slug || tournament.id);
+  const { total, verified, pending } = registrationReviewSummary;
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-5">
       <section
         aria-labelledby="home-current-tournament"
         className="border border-white/10 bg-[#111111] p-5 sm:p-6"
@@ -64,13 +48,14 @@ export default function AdminHomeOverview({
           {tournament.name}
         </h1>
         <p className="mt-2 text-sm text-neutral-400">
+          {tournament.lake} ·{" "}
           {formatAdminTournamentDate(tournament.tournament_date, true)}
         </p>
 
-        <dl className="mt-5 grid gap-4 border-t border-white/10 pt-5 text-sm sm:grid-cols-2">
+        <dl className="mt-5 grid gap-4 border-t border-white/10 pt-4 text-sm sm:grid-cols-2">
           <div>
             <dt className="text-xs font-bold uppercase text-neutral-500">
-              Registration Status
+              Registration
             </dt>
             <dd className="mt-1 font-black uppercase text-white">
               {registrationStatus}
@@ -78,124 +63,62 @@ export default function AdminHomeOverview({
           </div>
           <div>
             <dt className="text-xs font-bold uppercase text-neutral-500">
-              Results Status
+              Results
             </dt>
             <dd className="mt-1 font-black uppercase text-white">
-              {tournament.result_status.replaceAll("_", " ")}
+              {resultsPublished ? "Published" : "Not Published"}
             </dd>
           </div>
         </dl>
-      </section>
 
-      <section
-        aria-labelledby="registration-review-summary"
-        className="rounded-2xl border border-white/10 bg-zinc-950 p-5 lg:p-6"
-      >
-        <div className="flex flex-col gap-6 lg:flex-row lg:items-center">
-          <div className="flex min-w-0 flex-1 items-start gap-4">
-            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-white/5 text-zinc-300">
-              <UsersRound aria-hidden="true" className="h-5 w-5" />
-            </div>
-            <div>
-              <h2
-                id="registration-review-summary"
-                className="text-lg font-bold text-white"
-              >
-                Registration Review
-              </h2>
-              <p className="mt-4 text-4xl font-bold text-white">
-                {pendingReviewCount}
-              </p>
-              <p className="mt-1 text-sm text-zinc-400">
-                Registrations need attention
-              </p>
-            </div>
-          </div>
-
-          <div className="grid flex-1 grid-cols-2 divide-x divide-white/10">
-            <div className="px-3 sm:px-5">
-              <p className="text-xs font-semibold uppercase tracking-wide text-zinc-500">
-                Possible Duplicates
-              </p>
-              <p className="mt-2 text-2xl font-bold text-white">
-                {duplicateCount}
-              </p>
-            </div>
-            <div className="px-3 sm:px-5">
-              <p className="text-xs font-semibold uppercase tracking-wide text-zinc-500">
-                Membership Matches
-              </p>
-              <p className="mt-2 text-2xl font-bold text-white">
-                {membershipMatchCount}
-              </p>
-            </div>
-          </div>
-
-          <div className="flex shrink-0 flex-col items-start gap-4 lg:items-end">
-            {pendingReviewCount === 0 ? (
-              <span className="inline-flex items-center gap-2 text-sm font-semibold text-green-400">
-                All Clear
-                <CircleCheck aria-hidden="true" className="h-5 w-5" />
-              </span>
-            ) : (
-              <span className="inline-flex items-center gap-2 text-sm font-semibold text-red-400">
-                Action Needed
-                <CircleAlert aria-hidden="true" className="h-5 w-5" />
-              </span>
-            )}
+        <div className="mt-4 border-t border-white/10 pt-4">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <h2 className="text-sm font-black uppercase text-white">
+              Registration Review
+            </h2>
             <Link
               href="/admin/registration-review"
-              className="inline-flex items-center justify-center rounded-lg border border-white/20 px-5 py-2.5 text-sm font-bold text-white transition hover:bg-white/5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#D4A017]"
+              className="text-xs font-black uppercase text-[#D4A017] hover:text-white"
             >
-              Review Registrations
+              View Registration Review →
             </Link>
           </div>
+          <dl className="mt-3 grid grid-cols-3 gap-3 text-sm">
+            <CompactMetric label="Registered" value={total} />
+            <CompactMetric label="Verified" value={verified} />
+            <CompactMetric label="Need Review" value={pending} attention={pending > 0} />
+          </dl>
         </div>
-      </section>
 
-      <section aria-labelledby="needs-attention">
-        <h2
-          id="needs-attention"
-          className="text-lg font-black uppercase text-white"
-        >
-          Needs Attention
-        </h2>
-        <div className="mt-3 divide-y divide-white/10 border border-white/10 bg-[#111111]">
-          {resultsAwaitingCertification && (
+        <div className="mt-4 border-t border-white/10 pt-4">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <h2 className="text-sm font-black uppercase text-white">Online Registrations</h2>
+            <Link href={`/admin/tournament-manager/prepare?tournament=${tournamentContext}`} className="text-xs font-black uppercase text-[#D4A017] hover:text-white">View Registration Roster →</Link>
+          </div>
+          <dl className="mt-3 grid grid-cols-3 gap-3 text-sm">
+            <CompactMetric label="Teams" value={onlineRegistrationSummary.total} />
+            <CompactMetric label="Paid" value={onlineRegistrationSummary.paid} />
+            <CompactMetric label="Need Review" value={onlineRegistrationSummary.needReview} attention={onlineRegistrationSummary.needReview > 0} />
+          </dl>
+        </div>
+
+        <div className="mt-4 border-t border-white/10 pt-4">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <h2 className="text-sm font-black uppercase text-white">
+              Membership Summary
+            </h2>
             <Link
-              href={`/admin/tournament-manager/publish?tournament=${tournamentContext}`}
-              className="flex items-center justify-between gap-4 px-5 py-4 hover:text-[#D4A017]"
+              href="/admin/members"
+              className="text-xs font-black uppercase text-[#D4A017] hover:text-white"
             >
-              <span className="font-bold text-white">Tournament Results</span>
-              <span className="text-right text-sm font-black text-[#D4A017]">
-                Awaiting Certification
-              </span>
+              View Membership Details →
             </Link>
-          )}
-
-          {nextStep && workflowRequiresAction && (
-            <Link
-              href={`${nextStep.actionHref}${
-                nextStep.actionHref.includes("?")
-                  ? ""
-                  : `?tournament=${tournamentContext}`
-              }`}
-              className="flex items-center justify-between gap-4 px-5 py-4 hover:text-[#D4A017]"
-            >
-              <span className="font-bold text-white">
-                Next Tournament Workflow Step
-              </span>
-              <span className="text-right text-sm font-black text-[#D4A017]">
-                {nextStep.title}
-              </span>
-            </Link>
-          )}
-
-          {!hasOutstandingActions && (
-            <p className="px-5 py-4 font-bold text-neutral-300">
-              <span aria-hidden="true">✓</span> No Outstanding Actions
-            </p>
-          )}
+          </div>
+          <dl className="mt-3 grid grid-cols-3 gap-3 text-sm">
+            <CompactMetric label="Online Memberships" value={membershipSummary.online} />
+            <CompactMetric label="Event Memberships" value={membershipSummary.event} />
+            <CompactMetric label="Total Memberships" value={membershipSummary.total} />
+          </dl>
         </div>
       </section>
 
@@ -203,36 +126,23 @@ export default function AdminHomeOverview({
         <h2 className="text-lg font-black uppercase text-white">
           Quick Actions
         </h2>
-        <div className="mt-3 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+        <div className="mt-3 grid gap-2 sm:grid-cols-3">
           {[
             {
               label: "Open Tournament",
               href: `/admin/tournament-manager?tournament=${tournamentContext}`,
               icon: CalendarDays,
             },
-            {
-              label: "Registration Review",
-              href: "/admin/registration-review",
-              icon: UserRoundSearch,
-            },
-            {
-              label: "Members",
-              href: "/admin/members",
-              icon: UsersRound,
-            },
-            {
-              label: "Website",
-              href: "/admin/announcements",
-              icon: Globe,
-            },
+            { label: "Members", href: "/admin/members", icon: UsersRound },
+            { label: "Website", href: "/admin/announcements", icon: Globe },
           ].map(({ label, href, icon: Icon }) => (
             <Link
               key={href}
               href={href}
-              className="group flex min-h-24 items-center gap-4 rounded-xl border border-white/10 bg-zinc-950 p-4 text-left transition hover:border-white/20 hover:bg-white/[0.03] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#D4A017]"
+              className="group flex min-h-14 items-center gap-3 rounded-lg border border-white/10 bg-zinc-950 px-4 py-3 text-left transition hover:border-white/20 hover:bg-white/[0.03] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#D4A017]"
             >
-              <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-white/5 text-zinc-400 transition group-hover:bg-red-600/15 group-hover:text-red-400">
-                <Icon aria-hidden="true" className="h-5 w-5" />
+              <span className="flex size-8 shrink-0 items-center justify-center rounded bg-white/5 text-zinc-400 transition group-hover:bg-red-600/15 group-hover:text-red-400">
+                <Icon aria-hidden="true" className="size-4" />
               </span>
               <span className="text-sm font-bold text-white">{label}</span>
             </Link>
@@ -241,4 +151,8 @@ export default function AdminHomeOverview({
       </nav>
     </div>
   );
+}
+
+function CompactMetric({ label, value, attention = false }: { label: string; value: number; attention?: boolean }) {
+  return <div><dt className="text-xs uppercase text-neutral-500">{label}</dt><dd className={`mt-1 font-black ${attention ? "text-[#D4A017]" : "text-white"}`}>{value}</dd></div>;
 }

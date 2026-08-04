@@ -238,95 +238,63 @@ and published before it applies.
 <a id="team-rules"></a>
 ## 5. Team Rules
 
-### One or Two Anglers
+### Championship Identity
 
-An entry may compete as either:
+Every registration establishes a Championship Identity.
 
-- One solo angler; or
-- One team of two anglers
+Your Championship Identity determines where your tournament results, Angler of
+the Year (AOY) points, Championship qualification, and season awards are
+earned.
 
-The Tournament Entry price applies per registration, not per angler. A team's
-finish, payouts, and season points belong to the registered team entry.
+You may compete as either:
 
-### Team Continuity and Substitute Partners
+- An Established Team
+- An Individual Angler
 
-AITT is a team tournament trail. Angler of the Year (AOY), Championship
-qualification, Member Side Pots, and all season-long awards are earned by the
-registered team, not by interchangeable partners.
+### Established Team
 
-To preserve the integrity of the season-long competition, substitute partners
-are not permitted.
+An Established Team consists of two registered anglers.
 
-Because teams count only their best five (5) tournament finishes toward AOY,
-and only five (5) qualifying tournaments are required for Championship
-qualification, allowing substitute partners would create an unfair competitive
-advantage.
+Both anglers share:
 
-If one partner is unable to fish:
+- Tournament results
+- AOY points
+- Championship qualification
+- Season awards
 
-- A Team registration must continue to identify both established partners, and
-  all season credit belongs to the Team Competitive Record; or
-- The remaining angler may register as Solo, in which case all season credit
-  belongs exclusively to that angler's Solo Competitive Record.
+### Fishing Without Your Partner
 
-Team and Solo Competitive Records are independent. Results never transfer
-between them.
+If your partner cannot attend a tournament, you may still compete alone.
 
-If the remaining angler chooses to fish with another partner, that pairing is
-treated as a **new team entry**.
+To keep earning points for your Established Team:
 
-The new team:
+- Register as a Team.
+- List your established partner.
+- Fish alone if necessary.
 
-- Appears in the official tournament results.
-- Does **not** earn AOY points for the original team.
-- Does **not** count toward the original team's Championship qualification.
-- Does **not** earn Member Side Pot eligibility for the original team.
+No substitute anglers are permitted.
 
-The Tournament Director may correct a documented administrative, clerical,
-identity, software, or mathematical error. The Director may not waive or
-rewrite Competition Rules except where expressly authorized.
+### Individual Anglers
 
-<a id="angler-of-the-year"></a>
-## 6. Angler of the Year
+An angler may register as an Individual instead of as a Team.
 
-### Participation and Membership
+Tournament results, AOY points, and Championship qualification earned as an
+Individual belong only to that Individual Championship Identity.
 
-AOY points are available only to eligible member entries. Both anglers on a
-team must be members for the team to earn AOY points. Paying an entry fee
-without physically launching and competing does not count as participation.
+### New Team
 
-### Points Calculation and Dropped Events
+Fishing with a different partner creates a new Team.
 
-Official Results remain unchanged. Ineligible competitors are removed from the
-AOY calculation only, and eligible Competitive Records are reranked in their
-original relative finishing order. Points are awarded from that reranked AOY
-position.
+Results, AOY points, and Championship qualification do not transfer between
+different Teams or between Team and Individual Championship Identities.
 
-The regular season contains eight scheduled tournaments. Each Competitive
-Record's **five highest point totals** determine its final AOY score. The three
-lowest totals, including tournaments not fished, are dropped from the season
-total.
+### Administrative Corrections
 
-Official WeighFish results control finish data used for AOY calculations. AITT
-publishes standings after official results are processed. Any final points
-schedule or tie-breaking method not stated here must be approved and published
-before it is applied.
+The Tournament Director may correct administrative, clerical, identity,
+software, payment, or mathematical errors.
 
-<a id="championship-qualification"></a>
-## 7. Championship Qualification
-
-To qualify for the Championship, an eligible Competitive Record must physically
-compete in at least **five of the eight regular-season tournaments**.
-
-- A Solo Competitive Record must satisfy the membership and participation
-  requirements.
-- Both anglers on a Team Competitive Record must satisfy the membership
-  requirements for the Team to receive Championship eligibility.
-- Payment without launching and competing does not count as participation.
-- Official tournament records determine participation and qualification.
-
-Any additional Championship field size, entry, substitution, invitation, or
-tie-breaking requirements must be approved and published before they apply.
+Administrative corrections may not be used to change a Championship Identity or
+allow a prohibited substitution.
 
 <a id="boat-safety"></a>
 ## 8. Boat & Safety
@@ -365,7 +333,7 @@ The Tournament Director may delay, shorten, postpone, cancel, or reschedule an
 event because of lightning, severe storms, flooding, unsafe ramps or water,
 dense fog, government or marina closure, or any other unsafe condition. Wind
 gusts of **30 MPH or greater** will normally result in a delay or postponement.
-Open-Meteo and Weather Underground are primary human decision references;
+AccuWeather and Weather Underground are primary human decision references;
 weather data does not make an automatic tournament decision.
 
 <a id="fishing-rules"></a>
@@ -381,8 +349,8 @@ weather data does not make an automatic tournament decision.
   otherwise assist a participant during official practice or competition.
 - Participants must comply with applicable fishing-license, length, limit,
   possession, and waterbody regulations.
-- Forward-facing sonar is prohibited during official tournament competition.
-- Forward-facing sonar may be used during legal practice periods unless another
+- Forward-facing sonar\Perspective view is prohibited during official tournament competition.
+- Forward-facing sonar\Perspective view may be used during legal practice periods unless another
   published event rule states otherwise.
 
 [Why did AITT adopt this policy?](/no-forward-facing-sonar)

@@ -10,37 +10,39 @@ type NavigationItem = {
 };
 
 const navigationItems: NavigationItem[] = [
-  {
-    href: "/admin",
-    label: "Home",
-  },
+  { href: "/admin", label: "Home" },
   {
     href: "/admin/tournament-manager",
-    label: "Tournament",
+    label: "Tournament Manager",
     activePaths: [
       "/admin/tournament-manager",
-      "/admin/tournament",
       "/admin/conditions",
       "/admin/results",
     ],
   },
+  { href: "/admin/members", label: "Members" },
+  { href: "/admin/registration-review", label: "Registration Review" },
   {
-    href: "/admin/members",
-    label: "Members",
-  },
-  {
-    href: "/admin/registration-review",
-    label: "Registration Review",
+    href: "/admin/tournament",
+    label: "Tournament Info",
+    activePaths: ["/admin/tournament"],
   },
   {
     href: "/admin/announcements",
-    label: "Website",
-    activePaths: ["/admin/announcements", "/admin/sponsors"],
+    label: "Announcements",
+    activePaths: ["/admin/announcements"],
   },
   {
-    href: "/admin/settings",
-    label: "Settings",
+    href: "/admin/rules",
+    label: "Rules",
+    activePaths: ["/admin/rules"],
   },
+  {
+    href: "/admin/faq",
+    label: "FAQ",
+    activePaths: ["/admin/faq"],
+  },
+  { href: "/admin/settings", label: "Settings" },
   {
     href: "/admin/analytics",
     label: "Website Analytics",
@@ -48,7 +50,10 @@ const navigationItems: NavigationItem[] = [
   },
 ];
 
-function isNavigationItemActive(pathname: string, item: NavigationItem) {
+function isNavigationItemActive(
+  pathname: string,
+  item: NavigationItem,
+) {
   if (item.href === "/admin") {
     return pathname === item.href;
   }
@@ -68,11 +73,18 @@ export default function AdminSidebar() {
     >
       <nav className="px-4 py-5 md:py-6">
         <ul className="space-y-1">
-          {navigationItems.map((item) => {
+          {navigationItems.map((item, index) => {
             const active = isNavigationItemActive(pathname, item);
+            const showWebsiteHeading = index === 4;
 
             return (
               <li key={item.href}>
+                {showWebsiteHeading ? (
+                  <p className="mb-2 mt-5 px-4 text-[10px] font-black uppercase tracking-[0.18em] text-neutral-600">
+                    Website
+                  </p>
+                ) : null}
+
                 <Link
                   href={item.href}
                   aria-current={active ? "page" : undefined}

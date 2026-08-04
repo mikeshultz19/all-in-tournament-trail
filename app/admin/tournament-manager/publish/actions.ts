@@ -8,6 +8,8 @@ import {
   OfficialResultsError,
   publishOfficialResults,
 } from "@/lib/official-results";
+import { validateInsurancePotResult } from "@/lib/insurance-pot";
+import { getTournamentInsurancePotResult, publishTournamentInsurancePotResult } from "@/lib/insurance-pot-results";
 
 export interface PublishTournamentState {
   status: "idle" | "error";
@@ -36,7 +38,27 @@ export async function publishTournamentAction(
   }
 
   try {
+    const insuranceResult = await getTournamentInsurancePotResult(tournamentId);
+    if (insuranceResult && !insuranceResult.published && insuranceResult.entry_count > 0) {
+      const insuranceErrors = validateInsurancePotResult({
+        entryCount: insuranceResult.entry_count,
+        totalPotCents: insuranceResult.total_pot_cents,
+        placesPaid: insuranceResult.places_paid,
+        winners: insuranceResult.winners,
+        published: false,
+      });
+      if (insuranceErrors.length) return { status: "error", message: `Insurance Pot Winners: ${insuranceErrors[0]}` };
+    }
     await publishOfficialResults(tournamentId, admin.id);
+    if (insuranceResult && !insuranceResult.published && insuranceResult.entry_count > 0) {
+      await publishTournamentInsurancePotResult(tournamentId, {
+        entryCount: insuranceResult.entry_count,
+        totalPotCents: insuranceResult.total_pot_cents,
+        placesPaid: insuranceResult.places_paid,
+        winners: insuranceResult.winners,
+        published: false,
+      });
+    }
   } catch (error) {
     console.error("Official Results publication failed.", error);
     return {
@@ -54,5 +76,5 @@ export async function publishTournamentAction(
   revalidatePath("/admin");
   revalidatePath("/admin/tournament-manager");
   revalidatePath("/admin/tournament-manager/publish");
-  redirect(`/admin?tournament=${encodeURIComponent(identifier)}`);
+  redirect(`/admin/tournament-manager?tournament=${encodeURIComponent(identifier)}&step=5`);
 }

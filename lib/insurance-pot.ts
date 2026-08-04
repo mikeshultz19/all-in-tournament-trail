@@ -15,13 +15,7 @@ export type InsurancePotResult = {
   publishedAt?: string;
 };
 
-export type InsurancePotStanding = {
-  entryId?: string;
-  entryName: string;
-  finishingPosition: number;
-  enteredInsurancePot: boolean;
-  receivedTournamentEntryPayout: boolean;
-};
+export const INSURANCE_POT_ENTRY_FEE_CENTS = 2_000;
 
 export function getInsurancePotPlaces(entryCount: number): number {
   if (!Number.isFinite(entryCount) || entryCount <= 0) return 0;
@@ -47,21 +41,7 @@ export function splitInsurancePotCents(
 }
 
 export function expectedInsurancePotCents(entryCount: number): number {
-  return Math.max(0, Math.floor(Number.isFinite(entryCount) ? entryCount : 0)) * 2000;
-}
-
-export function selectInsurancePotWinners(
-  standings: readonly InsurancePotStanding[],
-  placesPaid: number,
-): InsurancePotStanding[] {
-  return [...standings]
-    .sort((left, right) => left.finishingPosition - right.finishingPosition)
-    .filter(
-      (entry) =>
-        entry.enteredInsurancePot &&
-        !entry.receivedTournamentEntryPayout,
-    )
-    .slice(0, Math.max(0, placesPaid));
+  return Math.max(0, Math.floor(Number.isFinite(entryCount) ? entryCount : 0)) * INSURANCE_POT_ENTRY_FEE_CENTS;
 }
 
 export function validateInsurancePotResult(
@@ -116,4 +96,9 @@ export function insurancePotAssignedCents(
   winners: readonly InsurancePotWinner[],
 ): number {
   return winners.reduce((total, winner) => total + winner.amountCents, 0);
+}
+
+export function isInsurancePotWinnerDraftComplete(result: InsurancePotResult): boolean {
+  if (result.entryCount === 0) return result.placesPaid === 0 && result.totalPotCents === 0 && result.winners.length === 0;
+  return validateInsurancePotResult(result).length === 0 && result.winners.every((winner) => Number.isInteger(winner.finishingPosition) && (winner.finishingPosition ?? 0) > 0);
 }

@@ -144,7 +144,7 @@ export default function WinnerPhotosForm({
 
         <div className="mt-6 grid gap-6 lg:grid-cols-2">
           <PhotoUploader
-            title="Champion Photo"
+            title="Overall Winner Photo"
             description="Upload the winning team or tournament champion photo."
             previewUrl={championPhotoUrl}
             uploading={uploadingPhoto === "champion"}
@@ -153,7 +153,7 @@ export default function WinnerPhotosForm({
           />
 
           <PhotoUploader
-            title="Big Bass Photo"
+            title="Big Bass Winner Photo"
             description="Upload the tournament Big Bass winner photo."
             previewUrl={bigBassPhotoUrl}
             uploading={uploadingPhoto === "big-bass"}

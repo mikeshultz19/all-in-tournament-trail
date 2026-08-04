@@ -1,37 +1,24 @@
 "use client";
 
 import { LogOut } from "lucide-react";
-import { useState } from "react";
-
-import { createSupabaseBrowserClient } from "@/lib/supabase/client";
+import { useRouter } from "next/navigation";
 
 export default function AdminLogoutButton() {
-  const [pending, setPending] = useState(false);
+  const router = useRouter();
 
-  async function logout() {
-    if (pending) {
-      return;
-    }
-
-    setPending(true);
-
-    try {
-      const supabase = createSupabaseBrowserClient();
-      await supabase.auth.signOut({ scope: "local" });
-    } finally {
-      window.location.assign("/admin/login");
-    }
+  function handleLogout() {
+    router.push("/admin/login");
+    router.refresh();
   }
 
   return (
     <button
       type="button"
-      disabled={pending}
-      onClick={logout}
-      className="inline-flex min-h-10 items-center gap-2 text-xs font-bold uppercase tracking-[0.14em] text-neutral-400 transition-colors hover:text-[#D4A017] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#D4A017] disabled:cursor-not-allowed disabled:opacity-50"
+      onClick={handleLogout}
+      className="inline-flex min-h-10 items-center gap-2 border border-white/15 px-4 text-xs font-black uppercase tracking-[0.12em] text-neutral-300 transition hover:border-[#D4A017] hover:text-white"
     >
       <LogOut aria-hidden="true" className="size-4" />
-      {pending ? "Logging Out…" : "Logout"}
+      Log Out
     </button>
   );
 }

@@ -69,6 +69,8 @@ describe("approved weigh-in and late check-in policies", () => {
     );
     expect(html).toContain('href="/rules"');
     expect(html).toContain("View Official Rules");
+    expect(html).toContain("AITT Tournament Officials monitor AccuWeather and Weather Underground");
+    expect(html).not.toMatch(/weather decisions[^]*Open-Meteo/i);
     expect(html).not.toContain("Major League Fishing logo");
     expect(html).not.toContain("official association");
   });
