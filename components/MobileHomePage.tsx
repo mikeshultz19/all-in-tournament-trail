@@ -1,15 +1,18 @@
 import LatestTournamentNews from "@/components/LatestTournamentNews";
-import FeaturedTournament from "@/components/FeaturedTournament";
+import MobileFeaturedTournament from "@/components/MobileFeaturedTournament";
 import SponsorHome from "@/components/SponsorHome";
 import type { Announcement } from "@/types/announcement";
-import type { TournamentEntrySummary } from "@/lib/public-early-entry";
+
 
 type MobileHomePageProps = {
   announcements: Announcement[];
-  featuredTournament: Parameters<typeof FeaturedTournament>[0]["tournament"];
-  operations: Parameters<typeof FeaturedTournament>[0]["operations"];
-  earlyRegistrationSummary: TournamentEntrySummary;
-  earlyRegistrationStatsUnavailable: boolean;
+  featuredTournament: Parameters<
+  typeof MobileFeaturedTournament
+>[0]["tournament"];
+operations: Parameters<
+  typeof MobileFeaturedTournament
+>[0]["operations"];
+ 
   homepageSponsors: Parameters<typeof SponsorHome>[0]["sponsors"];
 };
 
@@ -17,8 +20,7 @@ export default function MobileHomePage({
   announcements,
   featuredTournament,
   operations,
-  earlyRegistrationSummary,
-  earlyRegistrationStatsUnavailable,
+  
   homepageSponsors,
 }: MobileHomePageProps) {
   return (
@@ -26,14 +28,10 @@ export default function MobileHomePage({
       <div className="mx-auto w-full max-w-[430px] space-y-6">
         <LatestTournamentNews announcements={announcements.slice(0, 1)} />
 
-        <FeaturedTournament
-          tournament={featuredTournament}
-          operations={operations}
-          earlyRegistrationSummary={earlyRegistrationSummary}
-          earlyRegistrationStatsUnavailable={
-            earlyRegistrationStatsUnavailable
-          }
-        />
+        <MobileFeaturedTournament
+  tournament={featuredTournament}
+  operations={operations}
+/>
 
         <SponsorHome sponsors={homepageSponsors} />
       </div>
