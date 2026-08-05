@@ -1,7 +1,9 @@
 import LatestTournamentNews from "@/components/LatestTournamentNews";
 import MobileFeaturedTournament from "@/components/MobileFeaturedTournament";
 import SponsorHome from "@/components/SponsorHome";
+import MobileWinnerCircle from "@/components/MobileWinnerCircle";
 import type { Announcement } from "@/types/announcement";
+
 
 
 type MobileHomePageProps = {
@@ -14,14 +16,15 @@ operations: Parameters<
 >[0]["operations"];
  
   homepageSponsors: Parameters<typeof SponsorHome>[0]["sponsors"];
+  latestResults: Parameters<typeof MobileWinnerCircle>[0]["latestResults"];
 };
 
 export default function MobileHomePage({
   announcements,
   featuredTournament,
   operations,
-  
   homepageSponsors,
+  latestResults,
 }: MobileHomePageProps) {
   return (
     <section className="bg-black px-4 py-6 md:hidden">
@@ -34,6 +37,7 @@ export default function MobileHomePage({
 />
 
         <SponsorHome sponsors={homepageSponsors} />
+        <MobileWinnerCircle latestResults={latestResults} />
       </div>
     </section>
   );

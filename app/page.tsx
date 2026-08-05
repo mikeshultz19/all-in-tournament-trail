@@ -98,6 +98,7 @@ export default async function HomePage() {
   operations={operations}
 
   homepageSponsors={homepageSponsors}
+  latestResults={latestResults}
 />
 
 <DesktopHomePage
