@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+
 import SiteCraftBadge from "@/components/SiteCraftBadge";
 import { SOCIAL_LINKS } from "@/config/social-links";
 
@@ -27,6 +28,10 @@ function scrollToTop() {
   window.scrollTo({ top: 0, behavior: "smooth" });
 }
 
+function openContactModal() {
+  window.dispatchEvent(new Event("open-contact"));
+}
+
 export default function Footer() {
   return (
     <footer className="border-t border-zinc-800 bg-black text-zinc-400">
@@ -45,6 +50,7 @@ export default function Footer() {
                   •
                 </span>
               )}
+
               <Link
                 href={link.href}
                 target={link.external ? "_blank" : undefined}
@@ -55,6 +61,29 @@ export default function Footer() {
               </Link>
             </li>
           ))}
+
+          {/*
+           * MOBILE-ONLY CONTACT BUTTON
+           *
+           * This dispatches the same open-contact event already handled by
+           * FeedbackWidget. It therefore opens the same modal as the desktop
+           * floating Contact tab.
+           *
+           * md:hidden keeps this footer item off the desktop version.
+           */}
+          <li className="flex items-center gap-x-2.5 sm:gap-x-3 md:hidden">
+            <span aria-hidden="true" className="text-yellow-500/70">
+              •
+            </span>
+
+            <button
+              type="button"
+              onClick={openContactModal}
+              className="whitespace-nowrap font-semibold text-yellow-400 transition-colors hover:text-yellow-300 focus-visible:text-yellow-300 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-yellow-400"
+            >
+              Contact
+            </button>
+          </li>
         </ul>
       </nav>
 
@@ -64,21 +93,26 @@ export default function Footer() {
             <p className="text-[10px] font-black uppercase tracking-[0.12em] text-[#d0ae4c] sm:text-xs">
               Fish Your Way. Bet Your Way. Win Your Way.
             </p>
+
             <p className="mt-1 text-[10px] text-zinc-400 sm:text-xs">
               © 2026 All In Tournament Trail
             </p>
+
             <p className="mt-0.5">All Rights Reserved.</p>
           </div>
+
           <div className="col-span-2 row-start-2 flex flex-col items-center justify-center text-center text-[8px] text-zinc-600 sm:col-span-1 sm:col-start-2 sm:row-start-1 sm:text-[10px]">
             <p>Website Designed by SiteCraft Web Design</p>
             <SiteCraftBadge />
           </div>
+
           <button
             type="button"
             onClick={scrollToTop}
             className="inline-flex items-center justify-self-end gap-1 text-right uppercase tracking-[0.08em] transition-colors hover:text-yellow-400 focus-visible:text-yellow-400 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-yellow-400 sm:tracking-[0.12em]"
           >
-            <span aria-hidden="true">↑</span> Back to Top
+            <span aria-hidden="true">↑</span>
+            Back to Top
           </button>
         </div>
       </div>

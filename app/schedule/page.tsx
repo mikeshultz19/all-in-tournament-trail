@@ -1,5 +1,5 @@
 import Image from "next/image";
-
+import Link from "next/link";
 import Header from "@/components/Header";
 import { PUBLIC_PAGE_CONTAINER } from "@/config/layout";
 import {
@@ -24,7 +24,7 @@ function TournamentRow({ tournament }: { tournament: PublicTournamentRecord }) {
   const isBassStackChallenge = tournament.tournamentFormat === "bass-stack";
 
   return (
-    <article className="grid gap-5 border-b border-[#4A3A12] px-4 py-6 lg:grid-cols-[180px_minmax(0,1fr)_140px] lg:items-center lg:gap-6 lg:px-5 lg:py-5">
+    <article className="grid gap-4 border-b border-[#4A3A12] px-4 py-5 lg:grid-cols-[180px_minmax(0,1fr)_140px] lg:items-center lg:gap-6 lg:px-5 lg:py-5">
       <div>
         <p className="mb-2 text-xs font-bold uppercase tracking-[0.14em] text-[#D4A017] lg:hidden">
           Lake
@@ -62,11 +62,12 @@ function TournamentRow({ tournament }: { tournament: PublicTournamentRecord }) {
             </p>
           )}
         </div>
-        <span
-          className="mt-3 inline-flex border border-neutral-500/40 px-2.5 py-1 text-[10px] font-black uppercase tracking-[0.12em] text-neutral-300"
-        >
-          {LAUNCH_REGISTRATION_STATUS}
-        </span>
+       <Link
+  href={`/register?tournament=${tournament.slug}`}
+  className="mt-3 inline-flex h-9 w-full items-center justify-center rounded-md bg-red-700 px-4 text-[0.68rem] font-black uppercase tracking-[0.08em] text-white transition hover:bg-red-600 lg:hidden"
+>
+  Register
+</Link>
         <dl className="mt-4 grid grid-cols-1 gap-x-5 gap-y-3 border-t border-white/10 pt-4 sm:grid-cols-2 xl:grid-cols-5">
           <div>
             <dt className="text-[10px] font-black uppercase tracking-[0.12em] text-[#D4A017]">Date</dt>
@@ -93,12 +94,12 @@ function TournamentRow({ tournament }: { tournament: PublicTournamentRecord }) {
         </dl>
       </div>
 
-      <span
-        aria-disabled="true"
-        className="inline-flex min-h-11 w-full cursor-not-allowed items-center justify-center rounded-sm border border-neutral-700 px-3 py-3 text-center text-xs font-black uppercase tracking-[0.08em] text-neutral-500"
-      >
-        {LAUNCH_REGISTRATION_STATUS}
-      </span>
+     <span
+  aria-disabled="true"
+  className="hidden min-h-11 w-full cursor-not-allowed items-center justify-center rounded-sm border border-neutral-700 px-3 py-3 text-center text-xs font-black uppercase tracking-[0.08em] text-neutral-500 lg:inline-flex"
+>
+  {LAUNCH_REGISTRATION_STATUS}
+</span>
     </article>
   );
 }
@@ -120,20 +121,38 @@ export default async function SchedulePage() {
     <main className="min-h-screen bg-[#0B0B0B] text-[#F2F2F2]">
       <Header activeItem="Schedule" />
 
-      <section className="py-10 md:py-14">
-        <div className={PUBLIC_PAGE_CONTAINER}>
-          <header className="border-b border-[#D4A017]/30 pb-6">
-            <p className="text-xs font-black uppercase tracking-[0.3em] text-red-500">
-              All-In Tournament Trail
-            </p>
-            <h1 className="mt-3 text-4xl font-black uppercase tracking-tight text-white md:text-5xl">
-              Tournament Schedule
-            </h1>
-          </header>
-        </div>
-      </section>
+     <section className="pb-3 pt-6 md:pb-5 md:pt-10">
+  <div className={PUBLIC_PAGE_CONTAINER}>
+    <header className="border-b border-[#D4A017]/30 pb-6">
+      <p className="text-xs font-black uppercase tracking-[0.3em] text-red-500">
+        All-In Tournament Trail
+      </p>
 
-      <section className={`${PUBLIC_PAGE_CONTAINER} py-10 md:py-14`}>
+      <h1 className="mt-3 text-4xl font-black uppercase tracking-tight text-white md:text-5xl">
+        Tournament Schedule
+      </h1>
+    </header>
+
+    <div className="mt-4 border-b border-[#D4A017]/20 pb-3">
+      <p className="text-[0.65rem] font-black uppercase tracking-[0.14em] text-[#D4A017]">
+        Practice Rules
+      </p>
+
+      <p className="mt-1.5 text-sm leading-6 text-[#B8B8B8]">
+        These practice rules apply to every scheduled tournament except the
+        Championship.
+      </p>
+
+      <a
+        href="/rules?from=schedule#practice-off-limits"
+        className="mt-2 inline-flex text-xs font-black uppercase tracking-[0.1em] text-[#D4A017] transition hover:text-yellow-300"
+      >
+        View Practice Rules →
+      </a>
+    </div>
+  </div>
+</section>
+      <section className={`${PUBLIC_PAGE_CONTAINER} pb-10 pt-1 md:pb-14 md:pt-3`}>
         <div className="overflow-hidden border border-[#4A3A12] bg-[#111111]">
           <div className="hidden grid-cols-[180px_minmax(0,1fr)_140px] items-center gap-6 border-b border-[#4A3A12] px-5 py-4 text-xs font-black uppercase tracking-[0.14em] text-[#D4A017] lg:grid">
             <span>Lake</span>

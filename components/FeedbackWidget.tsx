@@ -6,7 +6,7 @@ import { usePathname } from "next/navigation";
 const contactEmail = "info@allintrail.com";
 
 const emailSubject = encodeURIComponent(
-  "All-In Tournament Trail Website Inquiry"
+  "All-In Tournament Trail Website Inquiry",
 );
 
 const emailBody = encodeURIComponent(
@@ -22,7 +22,7 @@ const emailBody = encodeURIComponent(
     "",
     "Message:",
     "",
-  ].join("\n")
+  ].join("\n"),
 );
 
 const mailtoLink = `mailto:${contactEmail}?subject=${emailSubject}&body=${emailBody}`;
@@ -73,10 +73,17 @@ function FeedbackWidgetContent({ initiallyOpen }: { initiallyOpen: boolean }) {
 
   return (
     <>
+      {/*
+       * DESKTOP-ONLY FLOATING CONTACT TAB
+       *
+       * Changed from sm:block to md:block.
+       * This hides the floating tab below 768px while preserving the
+       * existing desktop appearance and behavior.
+       */}
       <button
         type="button"
         onClick={openModal}
-        className="fixed right-0 top-1/2 z-[80] hidden -translate-y-1/2 rounded-l-md border border-r-0 border-red-500/50 bg-red-700 px-1.5 py-4 text-xs font-black uppercase tracking-[0.14em] text-white shadow-2xl transition hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-yellow-400 sm:block"
+        className="fixed right-0 top-1/2 z-[80] hidden -translate-y-1/2 rounded-l-md border border-r-0 border-red-500/50 bg-red-700 px-1.5 py-4 text-xs font-black uppercase tracking-[0.14em] text-white shadow-2xl transition hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-yellow-400 md:block"
         style={{ writingMode: "vertical-rl" }}
         aria-label="Open contact information"
       >

@@ -249,7 +249,6 @@ export default function RegistrationForm({
     <header className="grid min-w-0 gap-5 border-b border-amber-500/30 pb-6 sm:grid-cols-2 lg:col-span-2 lg:grid-cols-[minmax(0,1fr)_auto_minmax(250px,auto)_minmax(250px,auto)] lg:items-center">
       <div className="min-w-0 sm:col-span-2 lg:col-span-1">
         <h1 className="text-2xl font-semibold tracking-tight text-white sm:text-3xl">Tournament Registration</h1>
-        <Link href="/registrations" className="mt-2 inline-block text-xs font-black uppercase tracking-[0.12em] text-yellow-400 transition hover:text-yellow-300 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-yellow-400">Tournament Entries</Link>
       </div>
       <div className="hidden min-w-0 items-center justify-center lg:flex">
         <Image

@@ -1,5 +1,6 @@
-import LatestTournamentNews from "@/components/LatestTournamentNews";
+import MobileLatestNews from "@/components/MobileLatestNews";
 import MobileFeaturedTournament from "@/components/MobileFeaturedTournament";
+import TournamentInformationCard from "@/components/TournamentInformationCard";
 import SponsorHome from "@/components/SponsorHome";
 import MobileWinnerCircle from "@/components/MobileWinnerCircle";
 import type { Announcement } from "@/types/announcement";
@@ -27,18 +28,19 @@ export default function MobileHomePage({
   latestResults,
 }: MobileHomePageProps) {
   return (
-    <section className="bg-black px-4 py-6 md:hidden">
-      <div className="mx-auto w-full max-w-[430px] space-y-6">
-        <LatestTournamentNews announcements={announcements.slice(0, 1)} />
+  <section className="bg-black px-4 pb-4 pt-2 md:hidden">
+    <div className="mx-auto w-full max-w-[430px] space-y-4">
+      <MobileLatestNews announcements={announcements} />
 
-        <MobileFeaturedTournament
-  tournament={featuredTournament}
-  operations={operations}
-/>
+      <MobileFeaturedTournament
+        tournament={featuredTournament}
+        operations={operations}
+      />
 
-        <SponsorHome sponsors={homepageSponsors} />
-        <MobileWinnerCircle latestResults={latestResults} />
-      </div>
-    </section>
-  );
+      <SponsorHome sponsors={homepageSponsors} />
+
+      <MobileWinnerCircle latestResults={latestResults} />
+    </div>
+  </section>
+);
 }

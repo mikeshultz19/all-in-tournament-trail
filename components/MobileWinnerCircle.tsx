@@ -1,4 +1,4 @@
-import { Crown, Medal, Trophy } from "lucide-react";
+import { Crown, Fish, Medal, Trophy } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -40,7 +40,7 @@ export default function MobileWinnerCircle({
         />
 
         <p className="mt-3 text-xs font-black uppercase tracking-[0.16em] text-[#c9aa4a]">
-          Latest Tournament Results
+          Tournament Results
         </p>
 
         <p className="mt-3 text-sm text-neutral-400">
@@ -60,6 +60,12 @@ export default function MobileWinnerCircle({
     latestResults.championImage ||
     "/images/placeholders/tournament-coming-soon.png";
 
+  const bigBassName =
+    latestResults.results.big_bass_angler ?? "—";
+
+  const bigBassWeight =
+    latestResults.results.big_bass_weight ?? null;
+
   return (
     <section className="overflow-hidden rounded-xl border border-[#8f762f]/60 bg-[#101010] shadow-[0_12px_30px_rgba(0,0,0,0.35)]">
       <div className="border-b border-white/10 px-5 py-4 text-center">
@@ -70,7 +76,7 @@ export default function MobileWinnerCircle({
           />
 
           <p className="text-[0.65rem] font-black uppercase tracking-[0.18em] text-[#c9aa4a]">
-            Latest Tournament Results
+            Tournament Results
           </p>
         </div>
 
@@ -175,6 +181,32 @@ export default function MobileWinnerCircle({
               </div>
             );
           })}
+
+          {/* Big Bass result — mobile text only, no photo */}
+          <div className="flex items-center justify-between gap-4 border-t border-white/10 pt-3">
+            <div className="flex min-w-0 items-center gap-2">
+              <Fish
+                aria-hidden="true"
+                className="size-4 shrink-0 text-[#c9aa4a]"
+              />
+
+              <span className="text-[0.68rem] font-black uppercase tracking-[0.1em] text-[#c9aa4a]">
+                Big Bass Winner
+              </span>
+            </div>
+
+            <div className="min-w-0 text-right">
+              <p className="truncate text-xs font-bold text-white">
+                {bigBassName}
+              </p>
+
+              <p className="mt-0.5 text-xs font-black tabular-nums text-[#c9aa4a]">
+                {bigBassWeight === null
+                  ? "—"
+                  : `${bigBassWeight.toFixed(2)} lbs`}
+              </p>
+            </div>
+          </div>
         </div>
 
         <Link

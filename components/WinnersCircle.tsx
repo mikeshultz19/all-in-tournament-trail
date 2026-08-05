@@ -457,7 +457,7 @@ export default function WinnersCircle({
       <div className={`${styles.showcaseContainer} bg-[#0B0A09]`}>
         <article className="overflow-visible border border-[#8f762f]/60 bg-[#111111] shadow-[0_10px_30px_rgba(0,0,0,0.35)]">
           <TournamentHeader
-            title={hasResults && latestResults ? latestResults.tournament.name : "Latest Tournament Results"}
+            title={hasResults && latestResults ? latestResults.tournament.name : "Tournament Results "}
             subtitle={
               hasResults && latestResults
                 ? `${latestResults.tournament.lake} • ${formatResultsDate(
