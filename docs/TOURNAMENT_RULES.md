@@ -1,8 +1,8 @@
 # Official Tournament Rules
 
-**Version:** 1.4
-**Status:** Approved Draft
-**Effective Date:** (TBD)
+**Version:** 1.5
+**Status:** Official
+**Effective Date:** July 26, 2026
 **Last Updated:** July 30, 2026
 
 These rules govern All-In Tournament Trail (AITT) events. They are intended to
@@ -99,10 +99,25 @@ current membership status.
 
 ### Age Requirements
 
-**Pending approval:** The repository does not establish a minimum participant
-age or final parental-consent requirements for minors. AITT must publish those
-requirements before applying an age restriction or accepting a minor without
-the required approval documents.
+Participants who are sixteen (16) years of age or older may compete as a solo
+angler, subject to all registration, waiver, safety, licensing, and eligibility
+requirements.
+
+A participant under eighteen (18) years of age must have a parent or legal
+guardian complete and sign all required registration acknowledgments, liability
+waivers, and participation approvals before the participant may compete.
+
+A participant under sixteen (16) years of age may not compete as a solo angler
+and must compete with a parent, legal guardian, or another adult approved by the
+parent or legal guardian.
+
+The accompanying adult is responsible for the minor participant's supervision,
+safety, compliance with tournament rules, and lawful operation of the boat.
+
+All participants must also satisfy applicable state fishing-license,
+boater-education, vessel-operation, and waterbody requirements. When applicable
+law imposes a stricter age, licensing, supervision, or boat-operation
+requirement, the stricter legal requirement controls.
 
 ### Team Eligibility
 
@@ -295,6 +310,136 @@ software, payment, or mathematical errors.
 
 Administrative corrections may not be used to change a Championship Identity or
 allow a prohibited substitution.
+
+<a id="angler-of-the-year"></a>
+## 6. Angler of the Year
+
+Angler of the Year (AOY) is a season-long points competition available only to
+eligible AITT member Competitive Records.
+
+### AOY Eligibility
+
+To earn AOY points:
+
+- A Solo Competitive Record must belong to a current AITT member.
+- Both anglers associated with a Team Competitive Record must be current AITT
+  members.
+- The Competitive Record must physically launch and compete in the tournament.
+- Paying an entry fee without physically competing does not earn AOY points.
+- Team and Individual Championship Identities remain separate.
+- AOY points do not transfer between different Teams or between Team and
+  Individual Championship Identities.
+- Substitute anglers are not permitted.
+
+### AOY Points
+
+AOY points are calculated from the official tournament results after all
+penalties, corrections, protests, and disqualifications have been resolved.
+
+Official tournament results remain unchanged when determining AOY points.
+Competitors who are not eligible for AOY points are removed only from the AOY
+calculation. The remaining eligible Competitive Records are then ranked in
+their original relative finishing order for the purpose of awarding AOY points.
+
+### Best Five of Eight
+
+The regular season consists of eight scheduled tournaments.
+
+Each eligible Competitive Record's five highest tournament point totals
+determine its final AOY score.
+
+The three lowest tournament totals, including tournaments not fished, are
+dropped from the final AOY calculation.
+
+An eligible Competitive Record may compete in all eight tournaments and use
+its five highest point totals.
+
+### AOY Ties
+
+If two or more eligible Competitive Records finish the regular season with the
+same final AOY point total, the tie will be resolved using the current
+published AOY tiebreaker procedure.
+
+If no separate tiebreaker procedure has been published, the Tournament Director
+will resolve the tie using the official tournament records and a fair,
+consistently applied method.
+
+### Official AOY Standings
+
+AOY standings are unofficial until the applicable tournament results have been
+reviewed and the AOY points have been processed.
+
+AITT may correct clerical, mathematical, identity, membership, or software
+errors discovered in published standings.
+
+<a id="championship-qualification"></a>
+## 7. Championship Qualification
+
+Championship qualification is earned by an eligible Competitive Record during
+the eight-tournament regular season.
+
+### Five of Eight Participation Requirement
+
+An eligible Competitive Record must physically compete in at least five of the
+eight regular-season tournaments to satisfy the Championship participation
+requirement.
+
+Paying an entry fee, registering, or appearing on a tournament roster without
+physically launching and competing does not count as participation.
+
+### Championship Identity
+
+Championship qualification belongs to the Competitive Record under which it
+was earned.
+
+- Team qualification belongs to the established Team Championship Identity.
+- Individual qualification belongs only to the Individual Championship
+  Identity.
+- Qualification does not transfer between different Teams.
+- Qualification does not transfer between Team and Individual Championship
+  Identities.
+- Substitute anglers are not permitted.
+
+### Established Team Participation
+
+When one established team partner cannot attend, the Team may continue earning
+participation credit by registering under the established Team Championship
+Identity and having the remaining partner compete alone.
+
+The absent established partner may remain listed as part of the Team
+Championship Identity.
+
+If the remaining angler instead registers as an Individual, participation
+credit from that tournament belongs only to the separate Individual
+Championship Identity.
+
+### Membership Requirement
+
+A Solo Competitive Record must satisfy the applicable membership requirement
+to receive Championship eligibility.
+
+Both anglers associated with a Team Competitive Record must satisfy the
+applicable membership requirement for the Team to receive Championship
+eligibility.
+
+### Championship Field and Procedures
+
+AITT will publish Championship dates, location, entry requirements, payout
+information, registration procedures, and any additional qualification
+requirements before the Championship.
+
+Qualification does not guarantee participation when an otherwise eligible
+Competitive Record fails to complete the required Championship registration,
+payment, acknowledgment, or verification process.
+
+### Administrative Review
+
+AITT may review and correct Championship qualification records when necessary
+to resolve a clerical, mathematical, identity, membership, software, or
+participation-record error.
+
+Administrative corrections may not be used to transfer qualification between
+Competitive Records or permit a prohibited substitution.
 
 <a id="boat-safety"></a>
 ## 8. Boat & Safety
@@ -591,7 +736,7 @@ administrative notes, and internal identifiers must not be displayed publicly.
 ## 17. Version History
 
 | Version | Date | Summary |
-| --- | --- | --- |
+| | 1.5 | August 5, 2026 | Added approved participant age, parental-consent, adult-supervision, and applicable-law requirements. |--- | --- | --- |
 | 1.4 | July 31, 2026 | Added Bass Stack Challenge rules for the designated Squaw Creek #5 and Lewisville #8 events. |
 | 1.3 | July 30, 2026 | Approved the event-specific Practice and Off-Limits Policy: registered non-members are off-limits beginning Monday at 12:00 AM; current members registered for the event may practice either Friday or Saturday, but not both. |
 | 1.2 | July 28, 2026 | Finalized team continuity and substitute-partner rules and aligned AOY and Championship qualification with the five-tournament standard. |
