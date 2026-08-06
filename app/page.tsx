@@ -1,6 +1,3 @@
-import Link from "next/link";
-import { RadioTower } from "lucide-react";
-
 import Header from "@/components/Header";
 import Hero from "@/components/Hero";
 import DesktopHomePage from "@/components/DesktopHomePage";
@@ -12,7 +9,10 @@ import { getNextUpcomingTournament } from "@/lib/tournaments";
 import { toPublicTournament } from "@/lib/tournament-record-adapter";
 import { getTournamentOperationsViewModel } from "@/lib/tournament-view-model";
 import { getOpenMeteoTournamentForecast } from "@/lib/open-meteo";
-import { getTournamentEntrySummary, type TournamentEntrySummary } from "@/lib/public-early-entry";
+import {
+  getTournamentEntrySummary,
+  type TournamentEntrySummary,
+} from "@/lib/public-early-entry";
 import type { Announcement } from "@/types/announcement";
 import { getLatestPublishedTournamentResults } from "@/lib/results";
 import type { LatestTournamentResults } from "@/types/results";
@@ -30,6 +30,7 @@ export default async function HomePage() {
 
   try {
     featuredTournamentDb = await getNextUpcomingTournament();
+
     featuredTournament = featuredTournamentDb
       ? toPublicTournament(featuredTournamentDb)
       : null;
@@ -37,26 +38,35 @@ export default async function HomePage() {
     console.error("Homepage featured tournament load failed.", error);
   }
 
-  const operations = featuredTournament ? getTournamentOperationsViewModel(featuredTournament) : null;
+  const operations = featuredTournament
+    ? getTournamentOperationsViewModel(featuredTournament)
+    : null;
+
   let earlyRegistrationStatsUnavailable = false;
-  let earlyRegistrationSummary: TournamentEntrySummary = getTournamentEntrySummary([]);
+  let earlyRegistrationSummary: TournamentEntrySummary =
+    getTournamentEntrySummary([]);
 
   if (featuredTournamentDb) {
     try {
       earlyRegistrationSummary = getTournamentEntrySummary(
         await getPublicEarlyEntriesForTournament(featuredTournamentDb.id),
       );
-    } catch {
+    } catch (error) {
+      console.error("Homepage early registration load failed.", error);
       earlyRegistrationStatsUnavailable = true;
     }
   }
-  const weather = featuredTournament && operations
-    ? await getOpenMeteoTournamentForecast({
-        latitude: featuredTournament.weatherLatitude,
-        longitude: featuredTournament.weatherLongitude,
-      })
-    : null;
+
+  const weather =
+    featuredTournament && operations
+      ? await getOpenMeteoTournamentForecast({
+          latitude: featuredTournament.weatherLatitude,
+          longitude: featuredTournament.weatherLongitude,
+        })
+      : null;
+
   const homepageSponsors = getHomepageSponsors();
+
   let announcements: Announcement[] = [];
   let latestResults: LatestTournamentResults | null = null;
   let aoyStandings: PublicAoyStanding[] = [];
@@ -75,6 +85,7 @@ export default async function HomePage() {
   }
 
   const aoyResult = await getHomepageAoyStandings();
+
   aoyStandings = aoyResult.standings;
   aoyStandingsUnavailable = aoyResult.status === "unavailable";
 
@@ -84,27 +95,30 @@ export default async function HomePage() {
 
       <Hero />
 
-<MobileHomePage
-  announcements={announcements}
-  featuredTournament={featuredTournament}
-  operations={operations}
+      <MobileHomePage
+        announcements={announcements}
+        featuredTournament={featuredTournament}
+        operations={operations}
+        homepageSponsors={homepageSponsors}
+        latestResults={latestResults}
+      />
 
-  homepageSponsors={homepageSponsors}
-  latestResults={latestResults}
-/>
-
-<DesktopHomePage
-  announcements={announcements}
-  featuredTournament={featuredTournament}
-  operations={operations}
-  earlyRegistrationSummary={earlyRegistrationSummary}
-  earlyRegistrationStatsUnavailable={earlyRegistrationStatsUnavailable}
-  homepageSponsors={homepageSponsors}
-  weather={weather}
-  aoyStandings={aoyStandings}
-  aoyStandingsUnavailable={aoyStandingsUnavailable}
-  latestResults={latestResults}
-/>
+      <div className="hidden md:block">
+        <DesktopHomePage
+          announcements={announcements}
+          featuredTournament={featuredTournament}
+          operations={operations}
+          earlyRegistrationSummary={earlyRegistrationSummary}
+          earlyRegistrationStatsUnavailable={
+            earlyRegistrationStatsUnavailable
+          }
+          homepageSponsors={homepageSponsors}
+          weather={weather}
+          aoyStandings={aoyStandings}
+          aoyStandingsUnavailable={aoyStandingsUnavailable}
+          latestResults={latestResults}
+        />
+      </div>
     </main>
   );
 }
