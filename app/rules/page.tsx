@@ -4,7 +4,7 @@ import Header from "@/components/Header";
 import PolicyDocument from "@/components/PolicyDocument";
 import { loadPolicyDocument } from "@/lib/policy-documents";
 
-export const dynamic = "force-dynamic";
+export const dynamic = "force-static";
 
 export const metadata: Metadata = {
   title: "Official Tournament Rules | All-In Tournament Trail",
@@ -26,23 +26,6 @@ function toPublicRulesSource(source: string): string {
       /^\*\*Pending approval:\*\*[^\r\n]*(?:\r?\n(?!\r?$)[^\r\n]*)*\r?\n?/gm,
       "",
     );
-}
-
-function addScheduleReturnLink(source: string): string {
-  const nextSectionAnchor = '<a id="tournament-operations"></a>';
-
-  const returnLink = [
-    "",
-    "---",
-    "",
-    "[← Back to Tournament Schedule](/schedule)",
-    "",
-  ].join("\n");
-
-  return source.replace(
-    nextSectionAnchor,
-    `${returnLink}${nextSectionAnchor}`,
-  );
 }
 
 function addQuickLinks(source: string): string {
@@ -70,25 +53,12 @@ function addQuickLinks(source: string): string {
   );
 }
 
-type RulesPageProps = {
-  searchParams: Promise<{
-    from?: string;
-  }>;
-};
-
-export default async function RulesPage({
-  searchParams,
-}: RulesPageProps) {
+export default async function RulesPage() {
   const rules = await loadPolicyDocument("rules");
-  const params = await searchParams;
 
-  let publicSource = addQuickLinks(
+  const publicSource = addQuickLinks(
     toPublicRulesSource(rules.source),
   );
-
-  if (params.from === "schedule") {
-    publicSource = addScheduleReturnLink(publicSource);
-  }
 
   return (
     <main className="min-h-screen overflow-x-hidden bg-[#0B0B0B] text-white">
@@ -103,7 +73,6 @@ export default async function RulesPage({
           "Official Tournament Rules",
           "2026–2027 Inaugural Season",
         ]}
-
       />
     </main>
   );
