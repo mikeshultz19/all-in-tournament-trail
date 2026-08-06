@@ -1,17 +1,17 @@
-export default function RulesPage() {
+export default function FAQPage() {
   return (
-    <section className="max-w-4xl space-y-6">
+    <section className="space-y-8">
       <div>
-        <p className="text-xs font-black uppercase tracking-[0.18em] text-red-500">
+        <p className="text-sm font-black uppercase tracking-[0.18em] text-[#D4A017]">
           Website
         </p>
 
         <h1 className="mt-2 text-3xl font-black uppercase text-white">
-          Rules
+          Frequently Asked Questions
         </h1>
 
         <p className="mt-3 text-neutral-400">
-          Manage the official tournament rules shown on the public website.
+          Manage the frequently asked questions shown on the public website.
         </p>
       </div>
 
@@ -21,8 +21,8 @@ export default function RulesPage() {
         </h2>
 
         <p className="mt-4 max-w-2xl text-neutral-400">
-          This page will allow administrators to create, edit, publish,
-          and preview the official tournament rules.
+          This page will allow administrators to create, edit, publish, and
+          preview frequently asked questions.
         </p>
       </div>
     </section>

@@ -208,7 +208,7 @@ export default function HowItWorksPage() {
                 href="/register"
                 className="inline-flex min-h-12 items-center justify-center border border-red-700 bg-red-800 px-7 py-3 text-sm font-black uppercase tracking-wider text-white transition hover:bg-red-700"
               >
-                Register Now
+                Registration Closed
               </Link>
 
               <Link
@@ -422,7 +422,7 @@ export default function HowItWorksPage() {
             href="/register"
             className="inline-flex min-h-14 items-center justify-center border border-red-700 bg-red-800 px-8 py-4 text-sm font-black uppercase tracking-wider text-white transition hover:bg-red-700"
           >
-            Register Now
+            Registration Closed
           </Link>
 
           <Link
