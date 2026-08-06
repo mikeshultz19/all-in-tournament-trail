@@ -1,6 +1,5 @@
 import MobileLatestNews from "@/components/MobileLatestNews";
 import MobileFeaturedTournament from "@/components/MobileFeaturedTournament";
-import TournamentInformationCard from "@/components/TournamentInformationCard";
 import SponsorHome from "@/components/SponsorHome";
 import MobileWinnerCircle from "@/components/MobileWinnerCircle";
 import type { Announcement } from "@/types/announcement";

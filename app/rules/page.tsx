@@ -44,6 +44,7 @@ function addScheduleReturnLink(source: string): string {
     `${returnLink}${nextSectionAnchor}`,
   );
 }
+
 function addQuickLinks(source: string): string {
   const quickLinks = [
     "## Quick Links",
@@ -53,6 +54,8 @@ function addQuickLinks(source: string): string {
     "- [Registration](#registration)",
     "- [Membership](#membership)",
     "- [Team Rules](#team-rules)",
+    "- [Angler of the Year](#angler-of-the-year)",
+    "- [Championship Qualification](#championship-qualification)",
     "- [Boat & Safety](#boat-safety)",
     "- [Fishing Rules](#fishing-rules)",
     "- [Tournament Operations](#tournament-operations)",
@@ -66,6 +69,7 @@ function addQuickLinks(source: string): string {
     `${quickLinks}## Complete Table of Contents`,
   );
 }
+
 type RulesPageProps = {
   searchParams: Promise<{
     from?: string;
@@ -79,8 +83,8 @@ export default async function RulesPage({
   const params = await searchParams;
 
   let publicSource = addQuickLinks(
-  toPublicRulesSource(rules.source),
-);
+    toPublicRulesSource(rules.source),
+  );
 
   if (params.from === "schedule") {
     publicSource = addScheduleReturnLink(publicSource);
@@ -99,6 +103,7 @@ export default async function RulesPage({
           "Official Tournament Rules",
           "2026–2027 Inaugural Season",
         ]}
+
       />
     </main>
   );

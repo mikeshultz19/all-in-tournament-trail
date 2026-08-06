@@ -16,7 +16,7 @@ export default function AdminHeader({
           className="group inline-flex min-w-0 items-center gap-4 self-start focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#D4A017]"
         >
           <Image
-            src="/images/logo.png"
+            src="/logo.png"
             alt="All-In Tournament Trail"
             width={210}
             height={80}

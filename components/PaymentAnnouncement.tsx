@@ -45,7 +45,7 @@ export default function PaymentAnnouncement() {
         Fast. Secure. Less time at the registration table.
       </p>
       <Link
-        href="/how-it-works#frequently-asked-questions"
+        href="/faq"
         className="mt-3 inline-flex text-xs font-black uppercase tracking-[0.12em] text-[#D4A017] transition hover:text-yellow-300 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#D4A017]"
       >
         View Payment Details

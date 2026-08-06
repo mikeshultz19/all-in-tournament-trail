@@ -538,20 +538,6 @@ export default function WinnersCircle({
                 />
               </div>
 
-            {hasResults ? (
-  <div
-    aria-hidden="true"
-    className="relative hidden min-h-0 flex-1 overflow-hidden md:block"
-  >
-    <Image
-      src="/images/logo.png"
-      alt=""
-      width={60}
-      height={23}
-      className="absolute bottom-1 left-1/2 h-auto max-h-full w-[60px] max-w-full -translate-x-1/2 object-contain opacity-[0.13]"
-    />
-  </div>
-) : null}
             </section>
 
             <section

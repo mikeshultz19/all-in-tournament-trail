@@ -1,9 +1,9 @@
 # Official Tournament Rules
 
-**Version:** 1.5
+**Version:** 1.6
 **Status:** Official
 **Effective Date:** July 26, 2026
-**Last Updated:** July 30, 2026
+**Last Updated:** August 5, 2026
 
 These rules govern All-In Tournament Trail (AITT) events. They are intended to
 provide a fair, safe, and professionally administered tournament experience.
@@ -14,11 +14,6 @@ these rules, and material changes will be reflected in the version history.
 > rules and must not be enforced or represented as approved policy until AITT
 > publishes the applicable requirement.
 >
-> **Competition Rules precedence:** Competitive Record ownership, AOY
-> calculation, Championship qualification, and Official Results finality are
-> governed by [AITT Competition Rules Version 1.0](AITT_COMPETITION_RULES.md).
-> That document supersedes conflicting language in this Approved Draft.
-
 ## Table of Contents
 
 1. [Introduction](#introduction)
@@ -736,13 +731,14 @@ administrative notes, and internal identifiers must not be displayed publicly.
 ## 17. Version History
 
 | Version | Date | Summary |
-| | 1.5 | August 5, 2026 | Added approved participant age, parental-consent, adult-supervision, and applicable-law requirements. |--- | --- | --- |
+| --- | --- | --- |
+| 1.6 | August 5, 2026 | Added approved participant age, parental-consent, adult-supervision, and applicable-law requirements. |
+| 1.5 | August 5, 2026 | Restored AOY and Championship Qualification sections. Confirmed best five of eight for AOY and five-of-eight participation for Championship qualification. |
 | 1.4 | July 31, 2026 | Added Bass Stack Challenge rules for the designated Squaw Creek #5 and Lewisville #8 events. |
 | 1.3 | July 30, 2026 | Approved the event-specific Practice and Off-Limits Policy: registered non-members are off-limits beginning Monday at 12:00 AM; current members registered for the event may practice either Friday or Saturday, but not both. |
 | 1.2 | July 28, 2026 | Finalized team continuity and substitute-partner rules and aligned AOY and Championship qualification with the five-tournament standard. |
 | 1.1 | July 22, 2026 | Added approved short-fish, dead-fish, Big Bass, and late check-in rules and FAQ guidance. |
 | 1.0 | July 22, 2026 | Initial website rulebook. |
-
 
 ---
 For an overview of the project, begin with **00_START_HERE.md**.

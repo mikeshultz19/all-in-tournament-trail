@@ -7,8 +7,6 @@ interface PolicyDocumentProps {
   status: string;
   effectiveDate: string;
   publicLabels?: readonly [string, string];
-  returnHref?: string;
-  returnLabel?: string;
 }
 
 type Block =
@@ -162,14 +160,12 @@ function slugify(value: string): string {
     .replace(/(^-|-$)/g, "");
 }
 
-export default function PolicyDocument({ source, version, status, effectiveDate, publicLabels, returnHref = "/register", returnLabel = "Return to Registration" }: PolicyDocumentProps) {
+export default function PolicyDocument({ source, version, status, effectiveDate, publicLabels, }: PolicyDocumentProps) {
   const blocks = parseBlocks(source);
 
   return (
     <article className="mx-auto w-full max-w-4xl px-5 py-10 sm:px-6 sm:py-14">
-      <Link href={returnHref} className="inline-flex min-h-11 items-center text-sm font-black uppercase tracking-[0.12em] text-yellow-400 transition hover:text-yellow-300 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-yellow-400">
-        ← {returnLabel}
-      </Link>
+  
 
       {publicLabels ? (
         <div className="mt-7 border-y border-white/10 py-4 text-sm">
@@ -209,11 +205,7 @@ export default function PolicyDocument({ source, version, status, effectiveDate,
         })}
       </div>
 
-      <div className="mt-12 border-t border-white/10 pt-7">
-        <Link href={returnHref} className="inline-flex min-h-11 items-center text-sm font-black uppercase tracking-[0.12em] text-yellow-400 transition hover:text-yellow-300 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-yellow-400">
-          ← {returnLabel}
-        </Link>
-      </div>
+
     </article>
   );
 }

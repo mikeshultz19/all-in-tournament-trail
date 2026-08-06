@@ -5,12 +5,6 @@ import Header from "@/components/Header";
 import Hero from "@/components/Hero";
 import DesktopHomePage from "@/components/DesktopHomePage";
 import MobileHomePage from "@/components/MobileHomePage";
-import LatestTournamentNews from "@/components/LatestTournamentNews";
-import FeaturedTournament from "@/components/FeaturedTournament";
-import WinnersCircle from "@/components/WinnersCircle";
-import AOYPointsRaceStrip from "@/components/AOYPointsRaceStrip";
-import TournamentConditions from "@/components/TournamentConditions";
-import SponsorHome from "@/components/SponsorHome";
 import { getHomepageSponsors } from "@/data/sponsors";
 import { getPublishedAnnouncements } from "@/lib/news";
 import { getPublicEarlyEntriesForTournament } from "@/lib/tournament-registrations";
@@ -26,8 +20,6 @@ import {
   getHomepageAoyStandings,
   type PublicAoyStanding,
 } from "@/lib/aoy-standings";
-import RegistrationInterest from "@/components/RegistrationInterest";
-import AnalyticsSectionView from "@/components/AnalyticsSectionView";
 
 export const revalidate = 10800;
 export const dynamic = "force-dynamic";
