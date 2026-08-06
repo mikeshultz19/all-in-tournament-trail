@@ -156,50 +156,77 @@ export default function FeaturedTournament({
           <h4 id="tournament-information-heading" className="border-b border-[#4A3A12] px-4 py-3 text-center text-[10px] font-black uppercase tracking-[0.16em] text-[#D4A017]">
             Tournament Details
           </h4>
-          <dl className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-5">
-            <div className="border-b border-white/10 p-4 sm:border-r xl:border-b-0">
-              <dt className="text-[9px] font-black uppercase tracking-[0.14em] text-[#D4A017]">Date</dt>
-              <dd className="mt-2 text-sm font-bold text-white"><time dateTime={countdownDate ?? tournament.date}>{display.date}</time></dd>
-              <dd className="mt-1 text-xs text-zinc-400">{display.dayOfWeek}</dd>
-            </div>
-            <div className="border-b border-white/10 p-4 xl:border-b-0 xl:border-r">
-              <dt className="text-[9px] font-black uppercase tracking-[0.14em] text-[#D4A017]">Ramp</dt>
-              {tournament.venue && (
-                <dd className="mt-2 whitespace-pre-line text-sm font-bold text-white">
-                  {tournament.venue}
-                </dd>
-              )}
-            </div>
-            <div className="border-b border-white/10 p-4 sm:border-r sm:border-b-0">
-              <dt className="text-[9px] font-black uppercase tracking-[0.14em] text-[#D4A017]">Hours</dt>
-              {tournament.hours && (
-                <dd className="mt-2 whitespace-pre-line text-sm font-bold text-white">
-                  {tournament.hours}
-                </dd>
-              )}
-              {tournament.stopFishing && (
-                <dd className="mt-1 whitespace-pre-line text-xs text-zinc-400">
-                  {tournament.stopFishing}
-                </dd>
-              )}
-            </div>
-            <div className="p-4">
-              <dt className="text-[9px] font-black uppercase tracking-[0.14em] text-[#D4A017]">Launch Type</dt>
-              {tournament.launchTypeText && (
-                <dd className="mt-2 whitespace-pre-line text-sm font-bold text-white">
-                  {tournament.launchTypeText}
-                </dd>
-              )}
-            </div>
-            <div className="border-t border-white/10 p-4 sm:col-span-2 xl:col-span-1 xl:border-l xl:border-t-0">
-              <dt className="text-[9px] font-black uppercase tracking-[0.14em] text-[#D4A017]">Morning Registration</dt>
-              {tournament.morningRegistrationText && (
-                <dd className="mt-2 whitespace-pre-line text-sm font-bold text-white">
-                  {tournament.morningRegistrationText}
-                </dd>
-              )}
-            </div>
-          </dl>
+          <dl className="grid grid-cols-1 text-center sm:grid-cols-2 md:grid-cols-6 min-[1280px]:grid-cols-5">
+  <div className="border-b border-white/10 p-3 sm:border-r md:col-span-2 min-[1280px]:col-span-1 min-[1280px]:border-b-0">
+    <dt className="text-[9px] font-black uppercase tracking-[0.14em] text-[#D4A017]">
+      Date
+    </dt>
+
+    <dd className="mt-1.5 text-sm font-bold text-white">
+      <time dateTime={countdownDate ?? tournament.date}>
+        {display.date}
+      </time>
+    </dd>
+
+    <dd className="mt-1 text-xs text-zinc-400">
+      {display.dayOfWeek}
+    </dd>
+  </div>
+
+  <div className="border-b border-white/10 p-3 md:col-span-2 md:border-r min-[1280px]:col-span-1 min-[1280px]:border-b-0">
+    <dt className="text-[9px] font-black uppercase tracking-[0.14em] text-[#D4A017]">
+      Ramp
+    </dt>
+
+    {tournament.venue && (
+      <dd className="mt-1.5 whitespace-pre-line text-sm font-bold text-white">
+        {tournament.venue}
+      </dd>
+    )}
+  </div>
+
+  <div className="border-b border-white/10 p-3 md:col-span-2 min-[1280px]:col-span-1 min-[1280px]:border-b-0 min-[1280px]:border-r">
+    <dt className="text-[9px] font-black uppercase tracking-[0.14em] text-[#D4A017]">
+      Hours
+    </dt>
+
+    {tournament.hours && (
+      <dd className="mt-1.5 whitespace-pre-line text-sm font-bold text-white">
+        {tournament.hours}
+      </dd>
+    )}
+
+    {tournament.stopFishing && (
+      <dd className="mt-1 whitespace-pre-line text-xs text-zinc-400">
+        {tournament.stopFishing}
+      </dd>
+    )}
+  </div>
+
+  <div className="border-b border-white/10 p-3 sm:border-r md:col-span-3 md:border-b-0 min-[1280px]:col-span-1">
+    <dt className="text-[9px] font-black uppercase tracking-[0.14em] text-[#D4A017]">
+      Launch Type
+    </dt>
+
+    {tournament.launchTypeText && (
+      <dd className="mt-1.5 whitespace-pre-line text-sm font-bold text-white">
+        {tournament.launchTypeText}
+      </dd>
+    )}
+  </div>
+
+  <div className="p-3 sm:col-span-2 md:col-span-3 min-[1280px]:col-span-1 min-[1280px]:border-l">
+    <dt className="text-[9px] font-black uppercase tracking-[0.14em] text-[#D4A017]">
+      Morning Registration
+    </dt>
+
+    {tournament.morningRegistrationText && (
+      <dd className="mt-1.5 whitespace-pre-line text-sm font-bold text-white">
+        {tournament.morningRegistrationText}
+      </dd>
+    )}
+  </div>
+</dl>
         </section>
 
         {tournament.registrationInformation && (

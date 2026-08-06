@@ -87,3 +87,41 @@
     grid-column: auto;
   }
 }
+
+
+/*
+ * TABLET ONLY: keep Big Bass constrained on the left and payout details
+ * on the right. This range stops before the 1360px desktop layout.
+ */
+@media (min-width: 768px) and (max-width: 1359px) {
+  .sidePayoutContent {
+    display: grid;
+    grid-template-columns:
+      minmax(0, 0.95fr)
+      minmax(0, 1.05fr);
+    align-items: start;
+    gap: 28px;
+  }
+
+  .sidePayoutContent > * {
+    grid-column: 2;
+    min-width: 0;
+  }
+
+  .bigBassSection {
+    grid-column: 1;
+    grid-row: 1 / span 5;
+    min-width: 0;
+    border-top: 0;
+    padding-top: 0;
+  }
+}
+@media (min-width: 768px) and (max-width: 1359px) {
+  .tabletPayoutHeading > div > div {
+    justify-content: center;
+  }
+
+  .tabletPayoutHeading h3 {
+    text-align: center;
+  }
+}

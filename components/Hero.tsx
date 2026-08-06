@@ -25,21 +25,7 @@ export default function Hero() {
 
         <div className="h-px bg-gradient-to-r from-transparent via-red-700/60 to-transparent" />
 
-        {/* Mobile-only No FFS link */}
-        <div className="py-2 md:hidden">
-          <Link
-            href="/no-forward-facing-sonar"
-            className="group text-[0.68rem] leading-5"
-          >
-            <span className="font-semibold text-[#D4A017]">
-              Forward-Facing Sonar:
-            </span>{" "}
-
-            <span className="text-neutral-500 transition group-hover:text-neutral-300">
-              Learn why AITT chose No FFS →
-            </span>
-          </Link>
-        </div>
+        
       </div>
     </section>
   );

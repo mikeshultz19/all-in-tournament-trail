@@ -32,22 +32,66 @@ export default function InsurancePotPage() {
           <p className="mt-4 text-xl font-black uppercase tracking-wide text-[#d0ae4c] sm:text-2xl">More Teams Get Paid.</p>
         </header>
         <div className="divide-y divide-white/10">
-          <TextSection id="insurance-how-it-works" title="How It Works">
-            <p>Participation in the AITT Insurance Pot is optional.</p>
-            <p>Only teams or solo entries that entered the Insurance Pot are eligible to receive an Insurance Pot payout.</p>
-            <p>After the regular Tournament Entry payouts have been determined, Insurance Pot payouts begin with the highest-finishing eligible entry that did not receive a regular Tournament Entry payout.</p>
-            <p>If a higher-finishing entry did not enter the Insurance Pot, that entry is skipped and the next eligible Insurance Pot participant receives the payout.</p>
-            <p>The entire Insurance Pot is distributed. AITT does not retain any portion of the Insurance Pot.</p>
-            <p>Every winning entry receives an equal share of the total Insurance Pot.</p>
-          </TextSection>
+  <TextSection id="insurance-how-it-works" title="How It Works">
+  <p>Participation in the AITT Insurance Pot is optional.</p>
+
+  <p>
+    AITT membership is required to qualify for an Insurance Pot payout.
+    Only eligible members who entered the Insurance Pot may receive an
+    Insurance Pot payout.
+  </p>
+
+  <p>
+    After the regular Tournament Entry payouts have been determined,
+    Insurance Pot payouts begin with the highest-finishing eligible entry
+    that did not receive a regular Tournament Entry payout.
+  </p>
+
+  <p>
+    If a higher-finishing entry did not enter the Insurance Pot, is not an
+    eligible AITT member, or already received a main tournament Entry
+    payout, that entry is skipped. The payout then moves to the next eligible
+    Insurance Pot participant.
+  </p>
+
+  <p>
+    The Insurance Pot follows a one-in-five payout structure. One payout
+    place is guaranteed with fewer than ten entries, and an additional payout
+    place is created each time the Insurance Pot reaches another group of five
+    entries beginning with ten entries.
+  </p>
+
+  <p>
+    The entire Insurance Pot is distributed. AITT does not retain any portion
+    of the Insurance Pot.
+  </p>
+
+  <p>
+    Every winning entry receives an equal share of the total Insurance Pot.
+  </p>
+</TextSection>
           <section className="py-10" aria-labelledby="payout-structure">
             <h2 id="payout-structure" className={headingClass}>Payout Structure</h2>
             <div className="mt-6 max-w-2xl overflow-hidden border border-white/10">
               <div className="grid grid-cols-2 bg-[#171717] text-xs font-black uppercase tracking-[0.12em] text-[#D4A017]"><span className="px-4 py-3">Insurance Pot Entries</span><span className="px-4 py-3 text-right">Places Paid</span></div>
               <div className="divide-y divide-white/10 bg-[#111111]">{payoutRows.map(([entries, places]) => <div key={entries} className="grid grid-cols-2"><span className="px-4 py-3 text-neutral-300">{entries}</span><span className="px-4 py-3 text-right font-black text-white">{places}</span></div>)}</div>
             </div>
-            <div className={copyClass}><p>Additional payout places are created at each new group of five entries beginning with ten entries.</p><p>Each winning entry receives an equal share of the total Insurance Pot.</p></div>
-          </section>
+<div className={copyClass}>
+  <p>
+    The Insurance Pot uses a one-in-five payout structure. One place is paid
+    with one through nine entries. At ten entries, two places are paid. An
+    additional payout place is created for every five additional entries.
+  </p>
+
+  <p>
+    Only eligible AITT members who entered the Insurance Pot may receive a
+    payout.
+  </p>
+
+  <p>
+    Each winning entry receives an equal share of the total Insurance Pot.
+  </p>
+</div>          </section>
           <section className="py-10" aria-labelledby="insurance-examples">
             <h2 id="insurance-examples" className={headingClass}>Insurance Pot Examples</h2>
             <p className="mt-5 max-w-3xl text-base leading-7 text-neutral-300">The examples below illustrate how the AITT Insurance Pot is distributed.</p>

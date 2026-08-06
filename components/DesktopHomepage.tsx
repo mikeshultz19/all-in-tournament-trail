@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { RadioTower } from "lucide-react";
+import { Mail, RadioTower } from "lucide-react";
 
 import AnalyticsSectionView from "@/components/AnalyticsSectionView";
 import AOYPointsRaceStrip from "@/components/AOYPointsRaceStrip";
@@ -49,21 +49,23 @@ export default function DesktopHomePage({
       >
         <div className="mx-auto w-full max-w-[1700px] px-4 pb-6 pt-3 sm:pb-8 sm:pt-4 lg:px-8">
           {/*
-           * TOP LINK ROW
+           * TOP ACTION ROW
            *
-           * This uses the same two-column grid as the content below.
-           * That makes the No FFS link line up exactly with Latest News
-           * and the Watch Live link line up with the Featured Tournament.
+           * Keeps the existing compact row height while presenting three
+           * evenly balanced actions.
            */}
-          <div className="grid min-w-0 grid-cols-1 items-center gap-3 lg:grid-cols-2 lg:gap-6">
-            {/* Left side — aligned with Latest News & Announcements */}
-           <div className="flex min-w-0 justify-center lg:col-start-1">
+          <div className="grid min-w-0 grid-cols-3 items-center gap-3">
+<div className="flex min-w-0 justify-center">
   <Link
     href="/no-forward-facing-sonar"
-    className="group inline-flex w-fit items-center gap-2 text-sm font-black uppercase tracking-[0.08em] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-yellow-400"
+    className="group inline-flex w-fit items-center gap-2 whitespace-nowrap text-sm font-black uppercase tracking-[0.08em] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-yellow-400"
   >
     <span className="text-[#D4A017]">
-      No Forward-Facing Sonar
+      <span className="min-[1360px]:hidden">No FFS</span>
+
+      <span className="hidden min-[1360px]:inline">
+        No Forward-Facing Sonar
+      </span>
     </span>
 
     <span className="text-zinc-400 transition group-hover:text-yellow-300">
@@ -72,8 +74,19 @@ export default function DesktopHomePage({
   </Link>
 </div>
 
-            {/* Right side — aligned with Featured Tournament */}
-            <div className="flex min-w-0 justify-start lg:col-start-2 lg:justify-center">
+            <div className="flex min-w-0 justify-center">
+              <RegistrationInterest
+                display="inline"
+                icon={
+                  <Mail
+                    aria-hidden="true"
+                    className="h-5 w-5 text-[#D4A017] transition group-hover:text-yellow-300"
+                  />
+                }
+              />
+            </div>
+
+            <div className="flex min-w-0 justify-center">
               <Link
                 href="/watch"
                 className="group inline-flex items-center gap-3 text-sm focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-red-500"
@@ -90,18 +103,14 @@ export default function DesktopHomePage({
                   Watch Live
                 </span>
 
-                <span className="hidden text-neutral-400 transition group-hover:text-neutral-200 sm:inline">
+                <span className="hidden text-neutral-400 transition group-hover:text-neutral-200 xl:inline">
                   Tournament Stream &amp; Live Weigh-In
                 </span>
               </Link>
             </div>
           </div>
 
-          {/*
-           * MAIN TWO-COLUMN HOMEPAGE GRID
-           */}
           <div className="mt-4 grid min-w-0 grid-cols-1 items-start gap-6 lg:grid-cols-2">
-            {/* Right column */}
             <div className="flex min-w-0 flex-col gap-6 lg:col-start-2 lg:row-start-1">
               <FeaturedTournament
                 tournament={featuredTournament}
@@ -111,11 +120,8 @@ export default function DesktopHomePage({
                   earlyRegistrationStatsUnavailable
                 }
               />
-
-              <RegistrationInterest />
             </div>
 
-            {/* Left column */}
             <div className="flex min-w-0 flex-col gap-6 lg:col-start-1 lg:row-start-1">
               <LatestTournamentNews announcements={announcements} />
 

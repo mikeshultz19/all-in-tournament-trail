@@ -29,11 +29,15 @@ export default function LatestTournamentNews({
       <div className="mx-auto w-full max-w-[1700px]">
         <div className="mb-4 flex items-center gap-4">
           <h2
-            id="latest-news-heading"
-            className="min-w-0 break-words font-serif text-xl font-bold uppercase tracking-tight text-white sm:shrink-0 sm:text-3xl"
-          >
-            Latest News &amp; Announcements
-          </h2>
+  id="latest-news-heading"
+  className="min-w-0 break-words font-serif text-xl font-bold uppercase tracking-tight text-white sm:shrink-0 min-[1360px]:text-3xl"
+>
+  <span className="min-[1360px]:hidden">AITT Latest News</span>
+
+  <span className="hidden min-[1360px]:inline">
+    Latest News &amp; Announcements
+  </span>
+</h2>
 
           <div
             aria-hidden="true"

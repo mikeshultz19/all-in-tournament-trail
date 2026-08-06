@@ -543,9 +543,14 @@ export default function WinnersCircle({
             <section
               className={`${styles.rightPanel} min-w-0 border border-[#8f762f]/60 bg-[#111111] p-4 sm:p-5`}
             >
-              <SectionHeading title="SIDE POTS & PAYOUTS" icon={BadgeDollarSign} />
+              <div className={styles.tabletPayoutHeading}>
+  <SectionHeading
+    title="SIDE POTS & PAYOUTS"
+    icon={BadgeDollarSign}
+  />
+</div>
 
-              <div className="mt-4 space-y-4">
+              <div className={`${styles.sidePayoutContent} mt-4 space-y-4`}>
                 {sidePotGroups.map((group) => (
                   <SidePotSection
                     key={group.sidePot}
@@ -578,7 +583,7 @@ export default function WinnersCircle({
                   )}
                 </section>
 
-                <section className="border-t border-[#c9aa4a]/45 pt-3">
+                <section className={`${styles.bigBassSection} border-t border-[#c9aa4a]/45 pt-3`}>
                   <div className="flex items-center justify-center gap-2">
                     <Fish
                       aria-hidden="true"

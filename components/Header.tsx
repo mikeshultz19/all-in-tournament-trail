@@ -94,7 +94,7 @@ export default function Header({ activeItem }: { activeItem?: string }) {
               width={1774}
               height={887}
               priority
-              className="h-auto w-[88px] min-[360px]:w-[96px] min-[375px]:w-[104px] sm:w-[160px] xl:w-[192px]"
+              className="h-auto w-[88px] min-[360px]:w-[96px] min-[375px]:w-[104px] sm:w-[160px] min-[1440px]:w-[192px]"
             />
           </Link>
 
@@ -104,7 +104,7 @@ export default function Header({ activeItem }: { activeItem?: string }) {
            * This section remains unchanged and is only visible at xl screens
            * and larger.
            */}
-          <nav className="hidden min-w-0 flex-1 items-center justify-center gap-4 xl:flex xl:gap-5">
+          <nav className="hidden min-w-0 flex-1 items-center justify-center gap-4 min-[1440px]:flex min-[1440px]:gap-5">
             {navItems.map((item) =>
               item.bassStack ? (
                 <BassStackNavLink key={item.label} activeItem={activeItem} />
@@ -135,7 +135,7 @@ export default function Header({ activeItem }: { activeItem?: string }) {
            *
            * Register and Login remain unchanged on desktop.
            */}
-          <div className="ml-auto hidden shrink-0 items-center gap-4 xl:flex">
+          <div className="ml-auto hidden shrink-0 items-center gap-4 min-[1440px]:flex">
             <Link
               href="/register"
               className="rounded-md bg-red-700 px-5 py-3 text-sm font-black uppercase tracking-wide text-white transition hover:bg-red-600"
@@ -163,7 +163,7 @@ export default function Header({ activeItem }: { activeItem?: string }) {
            *
            * The desktop header above is not affected.
            */}
-          <div className="ml-auto flex min-w-0 shrink-0 items-center gap-1 xl:hidden min-[375px]:gap-1.5 sm:gap-2">
+          <div className="ml-auto flex min-w-0 shrink-0 items-center gap-1 min-[1440px]:hidden min-[375px]:gap-1.5 sm:gap-2">
   {/*
    * MOBILE BASS STACK EMBLEM
    *

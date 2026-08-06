@@ -45,6 +45,7 @@ export default function AOYPointsRaceStrip({
       isPlaceholder: true as const,
     }),
   );
+
   let displayLeaders: AoyDisplayLeader[] = [];
 
   if (!unavailable) {
@@ -78,6 +79,7 @@ export default function AOYPointsRaceStrip({
               ❧
             </span>
           </h2>
+
           <Link
             href="/standings"
             className="absolute right-0 whitespace-nowrap text-[0.48rem] font-black uppercase tracking-[0.06em] text-neutral-600 transition hover:text-[#c9aa4a] sm:text-[0.58rem] sm:tracking-[0.09em]"
@@ -108,21 +110,29 @@ export default function AOYPointsRaceStrip({
                     ) : null}
                     {formatOrdinalRank(standing.place)}
                   </span>
-                  <span className={`mt-1 max-w-full truncate whitespace-nowrap text-[0.7rem] uppercase tracking-wide text-white ${
-                    standing.place === 1 ? "font-black" : "font-bold"
-                  } ${"isPlaceholder" in standing ? "opacity-80" : ""}`}>
+
+                  <span
+                    className={`mt-1 max-w-full truncate whitespace-nowrap text-[0.65rem] uppercase tracking-wide text-white min-[1360px]:text-[0.7rem] ${
+                      standing.place === 1 ? "font-black" : "font-bold"
+                    } ${
+                      "isPlaceholder" in standing ? "opacity-80" : ""
+                    }`}
+                  >
                     {standing.angler}
                   </span>
+
                   {"isPlaceholder" in standing ? (
                     <span className="mt-1 whitespace-nowrap text-[0.62rem] font-black tabular-nums text-neutral-500">
                       —
                     </span>
                   ) : (
-                    <span className={`mt-1 whitespace-nowrap text-[0.62rem] font-black tabular-nums ${
-                      standing.place === 1
-                        ? "text-[#d6b84f]"
-                        : "text-[#c9aa4a]"
-                    }`}>
+                    <span
+                      className={`mt-1 whitespace-nowrap text-[0.62rem] font-black tabular-nums ${
+                        standing.place === 1
+                          ? "text-[#d6b84f]"
+                          : "text-[#c9aa4a]"
+                      }`}
+                    >
                       {standing.points.toLocaleString()} PTS
                     </span>
                   )}
