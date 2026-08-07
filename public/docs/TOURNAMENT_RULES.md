@@ -492,6 +492,7 @@ weather data does not make an automatic tournament decision.
 - Forward-facing sonar\Perspective view is prohibited during official tournament competition.
 - Forward-facing sonar\Perspective view may be used during legal practice periods unless another
   published event rule states otherwise.
+- 360-degree imaging systems, such as Humminbird 360, that display a non-live snapshot or historical scan are permitted.
 
 [Why did AITT adopt this policy?](/no-forward-facing-sonar)
 
@@ -741,4 +742,3 @@ administrative notes, and internal identifiers must not be displayed publicly.
 | 1.0 | July 22, 2026 | Initial website rulebook. |
 
 ---
-For an overview of the project, begin with **00_START_HERE.md**.

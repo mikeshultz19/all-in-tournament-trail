@@ -229,7 +229,7 @@ export default function HowItWorksPage() {
 <SectionHeading
   eyebrow="Tournament Strategy"
   title="One Tournament. Four Ways to Compete."
-  description={`Every angler enters the required ${price(
+  description={`Every team or solo angler enters the required ${price(
     REGISTRATION_PRICING.baseEntry,
   )} Tournament Entry and competes against the full tournament field. Eligible members may then choose Bronze (+$40), Silver (+$100), or Gold (+$500) based on how much they want to risk. There isn't a right choice—only the one that fits your strategy.`}
 />
