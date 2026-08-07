@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import Header from "@/components/Header";
@@ -103,6 +104,14 @@ function TournamentRow({ tournament }: { tournament: PublicTournamentRecord }) {
     </article>
   );
 }
+export const metadata: Metadata = {
+  title: "Tournament Schedule",
+  description:
+    "View the All-In Tournament Trail tournament schedule, upcoming Texas bass fishing events, tournament dates, lakes, registration information, and event details.",
+  alternates: {
+    canonical: "/schedule",
+  },
+};
 
 export const dynamic = "force-dynamic";
 

@@ -24,6 +24,14 @@ import {
 export const revalidate = 10800;
 export const dynamic = "force-dynamic";
 
+const websiteStructuredData = {
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  name: "All-In Tournament Trail",
+  alternateName: "AITT",
+  url: "https://allintrail.com",
+};
+
 export default async function HomePage() {
   let featuredTournamentDb = null;
   let featuredTournament = null;
@@ -91,6 +99,13 @@ export default async function HomePage() {
 
   return (
     <main className="min-h-screen overflow-x-hidden bg-black text-white">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(websiteStructuredData),
+        }}
+      />
+
       <Header />
 
       <Hero />

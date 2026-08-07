@@ -11,8 +11,12 @@ import { loadPolicyDocument } from "@/lib/policy-documents";
 import { getTournamentOperationsViewModel } from "@/lib/tournament-view-model";
 
 export const metadata: Metadata = {
-  title: "Register | All-In Tournament Trail",
-  description: "Register for an upcoming All-In Tournament Trail event.",
+  title: "Tournament Registration",
+  description:
+    "Register for an upcoming All-In Tournament Trail bass fishing tournament and select your eligible tournament entry and optional payout opportunities.",
+  alternates: {
+    canonical: "/register",
+  },
 };
 
 export default async function RegistrationPage({

@@ -7,9 +7,12 @@ import { loadPolicyDocument } from "@/lib/policy-documents";
 export const dynamic = "force-static";
 
 export const metadata: Metadata = {
-  title: "Official Tournament Rules | All-In Tournament Trail",
+  title: "Official Tournament Rules",
   description:
-    "Read the current All-In Tournament Trail Official Tournament Rules.",
+    "Read the current All-In Tournament Trail Official Tournament Rules, including eligibility, practice restrictions, sonar rules, tournament procedures, AOY requirements, and Championship qualification.",
+  alternates: {
+    canonical: "/rules",
+  },
 };
 
 function toPublicRulesSource(source: string): string {

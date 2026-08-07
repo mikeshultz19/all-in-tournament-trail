@@ -4,9 +4,12 @@ import Header from "@/components/Header";
 import PageHeader from "@/components/PageHeader";
 
 export const metadata: Metadata = {
-  title: "Contact | All-In Tournament Trail",
+  title: "Contact AITT",
   description:
-    "Contact All-In Tournament Trail with tournament, sponsorship, website, or general questions.",
+    "Contact All-In Tournament Trail with tournament, sponsorship, registration, website, or general questions.",
+  alternates: {
+    canonical: "/contact",
+  },
 };
 
 export default function ContactPage() {

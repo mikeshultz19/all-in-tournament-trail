@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import type { LatestTournamentResults } from "@/types/results";
 import Header from "@/components/Header";
@@ -15,6 +16,14 @@ import {
   getPublishedTournamentResultsArchive,
 } from "@/lib/results";
 
+export const metadata: Metadata = {
+  title: "Tournament Results",
+  description:
+    "View official All-In Tournament Trail tournament results, standings, weights, payouts, Big Bass results, and archived event results.",
+  alternates: {
+    canonical: "/results",
+  },
+};
 export const dynamic = "force-dynamic";
 
 export default async function ResultsPage() {

@@ -1,9 +1,18 @@
+import type { Metadata } from "next";
 import Header from "@/components/Header";
 import { PUBLIC_PAGE_CONTAINER } from "@/config/layout";
 import {
   getPublishedAoyStandings,
   type PublicAoyStanding,
 } from "@/lib/aoy-standings";
+export const metadata: Metadata = {
+  title: "AOY Standings",
+  description:
+    "View the current All-In Tournament Trail Angler of the Year standings, tournament participation, rankings, and season points.",
+  alternates: {
+    canonical: "/standings",
+  },
+};
 
 export const dynamic = "force-dynamic";
 

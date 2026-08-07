@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import {
   Fish,
@@ -10,6 +11,15 @@ import { PUBLIC_PAGE_CONTAINER } from "@/config/layout";
 
 import { REGISTRATION_PRICING } from "@/data/registration";
 
+export const metadata: Metadata = {
+  title: "How AITT Works",
+  description:
+    "Learn how All-In Tournament Trail works, including the required Tournament Entry, optional Bronze, Silver and Gold pots, membership benefits, AOY points, Championship qualification, and tournament format.",
+  alternates: {
+    canonical: "/how-it-works",
+  },
+};
+
 const price = (amount: number, additional = false) =>
   `${additional ? "+" : ""}$${amount}`;
 
@@ -19,7 +29,7 @@ const entryOptions = [
     price: price(REGISTRATION_PRICING.baseEntry),
     eyebrow: "Required Entry",
    description:
-  "The required $60 Tournament Entry puts every angler into the main tournament. Fish for a traditional 1-in-5 payout, then decide if you want to add Bronze, Silver, or Gold.",
+  "Puts every team or solo angler into the main tournament. Fish for a traditional 1-in-5 payout, then decide if you want to add Bronze, Silver, or Gold.",
    features: [
   "Required $60 Tournament Entry",
   "Traditional 1-in-5 payout",
@@ -287,13 +297,13 @@ export default function HowItWorksPage() {
   </p>
 
   <p className="mt-3 text-base leading-8 text-neutral-300">
-    Every angler enters the <strong className="text-white">$60 Tournament Entry</strong> and
-    competes against the full field. Then, if you're an eligible member,
-    choose <strong className="text-white">Bronze</strong>,
-    <strong className="text-white"> Silver</strong>, or
-    <strong className="text-white"> Gold</strong> to match your confidence,
-    budget, and tournament strategy.
-  </p>
+  Every team or solo angler enters the <strong className="text-white">$60 Tournament Entry</strong> and
+  competes against the full field. Then, if you're an eligible member,
+  choose <strong className="text-white">Bronze</strong>,
+  <strong className="text-white"> Silver</strong>, or
+  <strong className="text-white"> Gold</strong> to match your confidence,
+  budget, and tournament strategy.
+</p>
 </div>
         </div>
       </section>
