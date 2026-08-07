@@ -24,7 +24,11 @@ const navItems = [
  * FAQ is inherited from navItems, so it appears once on desktop and once
  * inside the mobile dropdown.
  */
-const mobileNavItems = [...navItems];
+const mobileNavItems = [
+  navItems[0],
+  { label: "How AITT Works", href: "/how-it-works" },
+  ...navItems.slice(1),
+];
 
 function NavLink({
   label,

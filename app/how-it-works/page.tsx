@@ -25,82 +25,81 @@ const price = (amount: number, additional = false) =>
 
 const entryOptions = [
   {
+    number: "01",
     name: "Tournament Entry",
     price: price(REGISTRATION_PRICING.baseEntry),
-    eyebrow: "Required Entry",
-   description:
-  "Puts every team or solo angler into the main tournament. Fish for a traditional 1-in-5 payout, then decide if you want to add Bronze, Silver, or Gold.",
-   features: [
-  "Required $60 Tournament Entry",
-  "Traditional 1-in-5 payout",
-  "Compete against the full field",
-  "Team or solo entry",
-  "Optional Bronze, Silver & Gold",
-],
+    eyebrow: "Open to Everyone",
+    description:
+      "The required $60 Tournament Entry is open to every team or solo angler, member or non-member.",
+    features: [
+      "Required $60 Tournament Entry",
+      "Traditional 1-in-5 payout",
+      "Compete against the full field",
+      "Team or solo entry",
+      "No membership required",
+      "Optional Big Bass — open to everyone",
+      "Members may choose ONE side pot: Bronze, Silver or Gold",
+    ],
     accent: "border-red-500/70",
     priceColor: "text-red-500",
     bestFor: "Low Risk • High Reward",
- },
+  },
   {
+    number: "02",
     name: "Bronze Pot",
     price: price(REGISTRATION_PRICING.bronze, true),
     eyebrow: "Members Only",
-   description:
-  "Perfect for anglers who want bigger payouts while keeping their investment modest.",
-
-features: [
-  "+$40 Optional Pot",
-  "Unlimited payout growth",
-  "Traditional 1-in-5 payout",
-  "Tournament Entry required",
-  "Excellent risk vs. reward",
-],
-
-bestFor: "Low Risk, Bigger Reward Potential",
+    description:
+      "Perfect for anglers who want bigger payouts while keeping their investment modest.",
+    features: [
+      "+$40 Optional Pot",
+      "Unlimited payout growth",
+      "Traditional 1-in-5 payout",
+      "Tournament Entry required",
+      "Choose only ONE side pot",
+      "Compete only against Bronze Pot entries",
+    ],
+    bestFor: "Low Risk, Bigger Reward Potential",
   },
   {
+    number: "03",
     name: "Silver Pot",
     price: price(REGISTRATION_PRICING.silver, true),
     eyebrow: "Members Only",
     description:
-  "A balanced option for anglers who want stronger payout potential without making the full Gold investment.",
-
-features: [
-  "+$100 Optional Pot",
-  "Unlimited payout growth",
-  "Traditional 1-in-5 payout",
-  "Tournament Entry required",
-  "Balanced risk and reward",
-],
-
-bestFor: "Balanced Risk, Strong Reward Potential",
+      "A balanced option for anglers who want stronger payout potential without making the full Gold investment.",
+    features: [
+      "+$100 Optional Pot",
+      "Unlimited payout growth",
+      "Traditional 1-in-5 payout",
+      "Tournament Entry required",
+      "Choose only ONE side pot",
+      "Compete only against Silver Pot entries",
+    ],
+    bestFor: "Balanced Risk, Strong Reward Potential",
     accent: "border-neutral-400/60",
     priceColor: "text-neutral-200",
-  
   },
   {
+    number: "04",
     name: "Gold Pot",
     price: price(REGISTRATION_PRICING.gold, true),
     eyebrow: "Members Only",
-  description:
-  "For anglers ready to compete for the biggest payouts AITT has to offer.",
-
-features: [
-  "+$500 Optional Pot",
-  "Unlimited payout growth",
-  "Traditional 1-in-7 payout",
-  "Tournament Entry required",
-  "Maximum payout opportunity",
-],
-
-
-bestFor: "Maximum Opportunity",
+    description:
+      "For anglers ready to compete for the biggest payouts AITT has to offer.",
+    features: [
+      "+$500 Optional Pot",
+      "Unlimited payout growth",
+      "Traditional 1-in-7 payout",
+      "Tournament Entry required",
+      "Choose only ONE side pot",
+      "Compete only against Gold Pot entries",
+    ],
+    bestFor: "Maximum Opportunity",
     accent: "border-[#b99a3f]/80",
     priceColor: "text-[#d4b34f]",
-    
   },
 ];
-
 const keyBenefits = [
   {
    eyebrow: "Big Opportunity",
@@ -120,8 +119,7 @@ description:
     eyebrow: "One Tournament",
     title: "One Field. One Tournament.",
 description:
-  "Whether you fish Tournament Entry, Bronze, Silver, or Gold, every angler competes in the same tournament against the same field. Optional pots simply create additional payout opportunities.",
-  },
+  "Every entry competes in the same tournament, but Bronze, Silver, and Gold are separate side-pot competitions. Choose one side pot and compete only against the entries in that pot.",  },
  {
   eyebrow: "Flexible Season",
   title: "Drop Your Bad Finishes",
@@ -151,17 +149,19 @@ description:
 const waysToWin = [
   {
     title: "Big Bass",
-      icon: Fish,
+    icon: Fish,
     description:
-      "The optional Big Bass side pot pays two places and is open to eligible tournament entries.",
+      "The optional Big Bass side pot pays two places and is open to every team or solo angler entered in the tournament. No membership required.",
     label: "Bonus",
+    eligibility: "Open to Everyone",
   },
   {
     title: "Insurance Pot",
-     icon: Shield,
+    icon: Shield,
     description:
       "Pays eligible participants beginning with the first eligible entry outside the regular Tournament Entry payout.",
     label: `${price(REGISTRATION_PRICING.insurance)} Optional`,
+    eligibility: "Members Only",
     href: "/insurance-pot",
   },
   {
@@ -172,6 +172,7 @@ const waysToWin = [
     note:
       "Each entry's highest point totals determine its final AOY score under the current season rules.",
     label: "Season",
+    eligibility: "Members Only",
     href: "/aoy-points",
   },
   {
@@ -182,6 +183,7 @@ const waysToWin = [
     note:
       "See the Official Rules for the current participation requirement and all controlling eligibility details.",
     label: "Season",
+    eligibility: "Members Only",
   },
 ];
 
@@ -194,7 +196,7 @@ export default function HowItWorksPage() {
         <div className={PUBLIC_PAGE_CONTAINER}>
           <div className="max-w-4xl">
             <p className="text-xs font-black uppercase tracking-[0.3em] text-red-500">
-              All-In Tournament Trail
+              All In Tournament Trail
             </p>
 
             <h1 className="mt-4 text-4xl font-black uppercase tracking-tight text-white sm:text-5xl md:text-6xl">
@@ -239,9 +241,7 @@ export default function HowItWorksPage() {
 <SectionHeading
   eyebrow="Tournament Strategy"
   title="One Tournament. Four Ways to Compete."
-  description={`Every team or solo angler enters the required ${price(
-    REGISTRATION_PRICING.baseEntry,
-  )} Tournament Entry and competes against the full tournament field. Eligible members may then choose Bronze (+$40), Silver (+$100), or Gold (+$500) based on how much they want to risk. There isn't a right choice—only the one that fits your strategy.`}
+  description="Every team or solo angler starts with the $60 Tournament Entry. Members can add Bronze, Silver, or Gold for additional payout opportunities."
 />
 
           <div className="mt-8 grid gap-5 lg:grid-cols-2 xl:grid-cols-4">
@@ -250,9 +250,15 @@ export default function HowItWorksPage() {
                 key={option.name}
                 className={`flex h-full flex-col rounded-xl border bg-[#111111] p-6 transition duration-300 hover:-translate-y-1 hover:border-[#D4A017]/60 ${option.accent}`}
               >
-                <p className="text-[10px] font-black uppercase tracking-[0.2em] text-neutral-500">
-                  {option.eyebrow}
-                </p>
+                <div className="flex items-start justify-between gap-4">
+                  <span className="text-sm font-black tracking-[0.18em] text-[#D4A017]">
+                    {option.number}
+                  </span>
+
+                  <span className="rounded border border-[#D4A017]/40 bg-[#D4A017]/10 px-2.5 py-1 text-[10px] font-black uppercase tracking-[0.16em] text-[#D4A017]">
+                    {option.eyebrow}
+                  </span>
+                </div>
 
                 <div className="mt-4 flex items-end justify-between gap-4">
                   <h2 className="text-2xl font-black uppercase tracking-wide text-white">
@@ -374,9 +380,15 @@ export default function HowItWorksPage() {
   strokeWidth={2}
   className="mb-5 text-[#D4A017]"
 />
-                <p className="text-[10px] font-black uppercase tracking-[0.2em] text-red-500">
-                  {opportunity.label}
-                </p>
+                <div className="flex flex-wrap items-center gap-2">
+                  <p className="text-[10px] font-black uppercase tracking-[0.2em] text-red-500">
+                    {opportunity.label}
+                  </p>
+
+                  <span className="rounded border border-[#D4A017]/40 bg-[#D4A017]/10 px-2.5 py-1 text-[10px] font-black uppercase tracking-[0.14em] text-[#D4A017]">
+                    {opportunity.eligibility}
+                  </span>
+                </div>
 
                 <h3 className="mt-3 text-lg font-black uppercase tracking-wide text-white">
                   {opportunity.title}

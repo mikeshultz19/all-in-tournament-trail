@@ -154,11 +154,17 @@ export default function RegistrationInterest({
             and other important AITT information.
           </p>
 
-          {complete ? (
-            <p className="mt-5 text-sm leading-6">
-              Thank you! You are now on the AITT mailing list.
-            </p>
-          ) : (
+      {complete ? (
+  <div className="mt-5 space-y-3">
+    <p className="text-sm leading-6">
+      Thank you! You are now on the AITT mailing list.
+    </p>
+
+    <p className="text-sm leading-6 text-neutral-300">
+      Be sure to check your junk or spam folder and mark AITT emails as safe so you don’t miss tournament notifications.
+    </p>
+  </div>
+) : (
             <form onSubmit={submit} className="mt-5 space-y-4">
               <label className="block text-xs font-bold uppercase tracking-wide text-neutral-300">
                 Email Address <span className="text-red-500">*</span>
