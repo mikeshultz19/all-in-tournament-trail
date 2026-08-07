@@ -17,9 +17,16 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "All-In Tournament Trail",
+  metadataBase: new URL("https://allintrail.com"),
+  title: {
+    default: "All-In Tournament Trail",
+    template: "%s | All-In Tournament Trail",
+  },
   description:
     "Texas team bass tournament trail featuring tournament schedules, results, AOY standings, rules, registration information, and event updates.",
+  alternates: {
+    canonical: "/",
+  },
 };
 
 export default function RootLayout({
