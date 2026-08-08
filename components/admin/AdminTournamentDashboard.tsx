@@ -61,7 +61,6 @@ export default function AdminTournamentDashboard({ tournaments, initialTournamen
   if (!showTournamentTools) return <CompactTournamentSummary tournament={currentTournament} stages={stages} />;
 
   const identifier = encodeURIComponent(currentTournament.slug || currentTournament.id);
-  const href = (path: string) => `${path}${path.includes("?") ? "&" : "?"}tournament=${identifier}`;
 
   return <div className="space-y-4">
     <header className="border-b border-white/10 pb-3">

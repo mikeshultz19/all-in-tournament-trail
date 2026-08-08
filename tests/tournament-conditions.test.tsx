@@ -259,11 +259,12 @@ describe("Tournament Conditions", () => {
 
     expect(source).toContain("data-conditions-row");
     expect(source).toContain(
-      "md:grid-cols-[minmax(170px,0.34fr)_minmax(0,1fr)]",
+      "md:grid-cols-[minmax(145px,0.28fr)_minmax(0,1fr)]",
     );
+    expect(source).toContain("min-[1360px]:grid-cols-[minmax(170px,0.34fr)_minmax(0,1fr)]");
     expect(source).toContain("max-w-full");
-    expect(source).toContain("overflow-x-auto");
-    expect(source).toContain("grid-cols-5");
+    expect(source).toContain("grid grid-cols-3");
+    expect(source).toContain("min-[1360px]:grid-cols-5");
     expect(source).not.toMatch(
       /w-screen|100vw|min-w-\[100vw\]|full-bleed|-mx-|left-\[50%\]|-ml-\[50vw\]|max-w-none/,
     );

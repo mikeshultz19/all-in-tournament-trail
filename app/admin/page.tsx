@@ -12,53 +12,37 @@ import { listOnSiteCloseouts } from "@/lib/on-site-closeout";
 export const dynamic = "force-dynamic";
 
 export default async function AdminHomePage() {
-  const now = new Date();
+  let data: Awaited<ReturnType<typeof loadAdminHomeData>> | null = null;
 
   try {
-    const [tournaments, nextTournament] = await Promise.all([
-      getActiveSeasonSchedule(),
-      getNextUpcomingTournament(),
-    ]);
+    data = await loadAdminHomeData();
+  } catch (error) {
+    console.error("Admin home dashboard load failed.", error);
+  }
 
-    const tournamentIds = tournaments.map((tournament) => tournament.id);
-
-    const [
-      registrationSummaries,
-      importEvidence,
-      insuranceResults,
-      closeouts,
-    ] = await Promise.all([
-      listTournamentRegistrationRosterSummaries(tournamentIds),
-      listTournamentImportEvidence(tournamentIds),
-      listTournamentInsurancePotResults(tournamentIds),
-      listOnSiteCloseouts(tournamentIds),
-    ]);
-
-    const selectedTournament =
-      nextTournament ?? tournaments[0] ?? null;
-
-    const selectedId = selectedTournament?.id;
-    const selectedIdentifier = selectedTournament
-      ? encodeURIComponent(selectedTournament.slug || selectedTournament.id)
-      : "";
-
-    const registrationSummary = selectedId
-      ? registrationSummaries[selectedId]
-      : undefined;
-
-    const imported = selectedId
-      ? Boolean(importEvidence[selectedId])
-      : false;
-
-    const insuranceSaved = selectedId
-      ? Boolean(insuranceResults[selectedId])
-      : false;
-
-    const payoutComplete = selectedId
-      ? closeouts[selectedId]?.status === "complete"
-      : false;
-
+  if (!data) {
     return (
+      <section className="border border-red-500/30 bg-red-500/10 p-6">
+        <h1 className="text-xl font-black uppercase text-white">
+          Admin Dashboard Unavailable
+        </h1>
+        <p className="mt-3 text-sm leading-6 text-neutral-300">
+          We could not load the admin dashboard. Please try again.
+        </p>
+      </section>
+    );
+  }
+
+  const {
+    selectedTournament,
+    selectedIdentifier,
+    registrationSummary,
+    imported,
+    insuranceSaved,
+    payoutComplete,
+  } = data;
+
+  return (
       <div className="space-y-6">
         <header className="border-b border-white/10 pb-5">
           <p className="text-xs font-black uppercase tracking-[0.18em] text-red-500">
@@ -163,21 +147,42 @@ export default async function AdminHomePage() {
           </div>
         </section>
       </div>
-    );
-  } catch (error) {
-    console.error("Admin home dashboard load failed.", error);
+  );
+}
 
-    return (
-      <section className="border border-red-500/30 bg-red-500/10 p-6">
-        <h1 className="text-xl font-black uppercase text-white">
-          Admin Dashboard Unavailable
-        </h1>
-        <p className="mt-3 text-sm leading-6 text-neutral-300">
-          We could not load the admin dashboard. Please try again.
-        </p>
-      </section>
-    );
-  }
+async function loadAdminHomeData() {
+  const [tournaments, nextTournament] = await Promise.all([
+    getActiveSeasonSchedule(),
+    getNextUpcomingTournament(),
+  ]);
+
+  const tournamentIds = tournaments.map((tournament) => tournament.id);
+
+  const [registrationSummaries, importEvidence, insuranceResults, closeouts] =
+    await Promise.all([
+      listTournamentRegistrationRosterSummaries(tournamentIds),
+      listTournamentImportEvidence(tournamentIds),
+      listTournamentInsurancePotResults(tournamentIds),
+      listOnSiteCloseouts(tournamentIds),
+    ]);
+
+  const selectedTournament = nextTournament ?? tournaments[0] ?? null;
+  const selectedId = selectedTournament?.id;
+
+  return {
+    selectedTournament,
+    selectedIdentifier: selectedTournament
+      ? encodeURIComponent(selectedTournament.slug || selectedTournament.id)
+      : "",
+    registrationSummary: selectedId
+      ? registrationSummaries[selectedId]
+      : undefined,
+    imported: selectedId ? Boolean(importEvidence[selectedId]) : false,
+    insuranceSaved: selectedId ? Boolean(insuranceResults[selectedId]) : false,
+    payoutComplete: selectedId
+      ? closeouts[selectedId]?.status === "complete"
+      : false,
+  };
 }
 
 function StatusCard({

@@ -26,10 +26,11 @@ describe("payout-only reset workflow", () => {
 
   it("explains the distinction from Reset Import and prevents duplicate submission", () => {
     expect(control).toContain("Reset payout calculations?");
-    expect(control).toContain("The verified WeighFish import will remain available");
-    expect(control).toContain("Reset Import, in Step 2");
-    expect(control).toContain("Reset Payouts");
+    expect(control).toContain("Your verified WeighFish import will remain available");
+    expect(control).toContain("Your verified WeighFish import is not affected.");
+    expect(control).toContain("Reset Payout Calculations");
+    expect(control).toContain("Start Over");
     expect(control).toContain("disabled={pending");
-    expect(control).toContain("Any unpublished Insurance Pot calculation and saved winner draft will also be cleared.");
+    expect(control).toContain("clear all payout calculations and Insurance Pot work");
   });
 });

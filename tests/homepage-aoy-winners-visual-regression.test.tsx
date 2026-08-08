@@ -39,7 +39,7 @@ describe("homepage AOY and Winner's Circle visual structure", () => {
     const html = renderToStaticMarkup(<WinnersCircle latestResults={null} />);
     const source = readFileSync("components/WinnersCircle.tsx", "utf8");
 
-    expect(html).toContain("Latest Tournament Results");
+    expect(html).toContain("Tournament Results");
     expect(html).toContain("FINAL STANDINGS");
     expect(html).toContain("OVERALL CHAMPION");
     expect(html).toContain("AOY POINTS LEADER");
@@ -58,7 +58,7 @@ describe("homepage AOY and Winner's Circle visual structure", () => {
   });
 
   it("keeps AOY and Winner's Circle as direct visual siblings", () => {
-    const homepage = readFileSync("app/page.tsx", "utf8");
+    const homepage = readFileSync("components/DesktopHomePage.tsx", "utf8");
     const aoyIndex = homepage.indexOf("<AOYPointsRaceStrip");
     const winnersIndex = homepage.indexOf("<WinnersCircle");
     const trackingIndex = homepage.indexOf(

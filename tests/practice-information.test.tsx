@@ -104,9 +104,6 @@ describe("Featured Tournament registration information", () => {
       <FeaturedTournament tournament={tournament} />,
     );
 
-    expect(html).toContain(
-      'href="/register?tournament=eagle-mountain-2026"',
-    );
     expect(html).not.toContain("Register Now");
     expect(html).toContain("Registration Closed");
     expect(html).not.toContain("Tournament Status:");

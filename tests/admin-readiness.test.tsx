@@ -25,11 +25,9 @@ describe("Tournament Operations Dashboard", () => {
 
   it("shows the operational tournament header", () => {
     expect(markup).toContain("Tournament Manager");
-    expect(markup).toContain("Manage Tournament Details");
-    expect(markup).toContain("Tournament Operations");
     expect(markup).toContain("Current Tournament");
     expect(markup).toContain("Lake Fork Open");
-    expect(markup).toContain("Next Step:");
+    expect(markup).toContain("workflow steps complete");
     expect(markup).toContain("Change Tournament");
   });
 
@@ -58,21 +56,14 @@ describe("Tournament Operations Dashboard", () => {
   it("shows every publishing workspace when prerequisites are complete", () => {
     const readyMarkup = renderPublishReadyDashboardFixture();
     for (const label of [
-      "Tournament Ready for Publication",
-      "Results Imported",
-      "Results Verified",
-      "Tournament Payouts Completed",
-      "Insurance Pot Saved",
-      "Edit Final Results",
-      "Insurance Pot Winners",
-      "Winner&#x27;s Circle Photos",
-      "Preview Public Results",
-      "Publish Tournament Results",
+      "Publish Results",
+      "Final Website Check",
+      "Winner Photos",
+      "Preview Website",
     ]) {
       expect(readyMarkup).toContain(label);
     }
-    expect(readyMarkup).toContain("#public-preview");
-    expect(readyMarkup).toContain("I have reviewed the imported tournament results.");
+    expect(readyMarkup).toContain("Everything is complete. Publish the tournament to the website.");
   });
 
   it("shows the real CSV chooser directly in Import Results after preparation is confirmed", () => {
@@ -132,7 +123,7 @@ describe("Tournament Operations Dashboard", () => {
       "Big Bass — 1st Place",
       "Big Bass — 2nd Place",
       "Insurance Pot",
-      "Complete Tournament Payouts",
+      "Complete Tournament",
     ]) {
       expect(payoutMarkup).toContain(label);
     }

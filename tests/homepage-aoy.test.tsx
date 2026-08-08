@@ -40,7 +40,7 @@ describe("homepage AOY standings", () => {
       "components/AOYPointsRaceStrip.module.css",
       "utf8",
     );
-    const homepage = readFileSync("app/page.tsx", "utf8");
+    const homepage = readFileSync("components/DesktopHomePage.tsx", "utf8");
 
     expect(winners).not.toContain("AOY Points Race");
     expect(winners).not.toContain("aoyStandings");

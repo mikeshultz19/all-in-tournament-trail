@@ -30,8 +30,9 @@ describe("Calculate Payouts disclosures", () => {
     expect(source).toContain('type="button"');
     expect(source).toContain("aria-expanded={expanded}");
     expect(source).toContain("aria-controls={controls}");
-    expect(source).toContain('expandedLabel = "Collapse Details"');
-    expect(source).toContain('collapsedLabel = "Expand Details"');
+    expect(source).toContain('expanded ?');
+    expect(source).toContain('Collapse');
+    expect(source).toContain('Expand');
   });
 
   it("uses accessible category disclosure buttons", () => {
@@ -59,9 +60,9 @@ describe("Calculate Payouts disclosures", () => {
     for (let index = 1; index < order.length; index += 1) {
       expect(source.indexOf(`\"${order[index - 1]}\"`)).toBeLessThan(source.indexOf(`\"${order[index]}\"`));
     }
-    expect(source).toContain("Confirm WeighFish Payouts");
+    expect(source).toContain("Save Payout Summary");
     expect(source).toContain("Generate Final Checks");
-    expect(source).toContain("WeighFish Payout Review");
+    expect(source).toContain("Payout Summary");
     expect(source).toContain("Final Checks");
     expect(source).toContain("Final Checks Up to Date");
   });

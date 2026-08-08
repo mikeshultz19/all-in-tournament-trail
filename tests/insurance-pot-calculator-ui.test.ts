@@ -11,26 +11,26 @@ describe("Insurance Pot calculator presentation", () => {
     expect(calculation).toContain("Insurance Pot Entries");
     expect(calculation).toContain("expectedInsurancePotCents(entryCount)");
     expect(calculation).toContain("getInsurancePotPlaces(entryCount)");
-    expect(calculation).toContain("Save Insurance Pot Calculation");
+    expect(calculation).toContain("Save Results");
     expect(calculation).toContain("Edit Insurance Pot");
     expect(calculation).toContain("Cancel Editing");
   });
 
   it("shows the manual eligibility instruction", () => {
-    expect(calculation).toContain("Determine Insurance Pot winners manually.");
-    expect(calculation).toContain("current tournament&apos;s member list");
-    expect(calculation).toContain("Skip any ineligible team");
+    expect(calculation).toContain("Manually determine eligible Insurance Pot winners.");
+    expect(calculation).toContain("tournament member list");
+    expect(calculation).toContain("beginning with the first team outside the money");
     expect(calculation).toContain("Do not attempt to select Insurance Pot winners automatically.");
     expect(calculation).toContain("Members List →");
   });
 
   it("renders one manual winner row per calculated place", () => {
     expect(winners).toContain("Array.from({ length: insuranceResult.places_paid }");
-    expect(winners).toContain("Team or Solo Entry Name");
-    expect(winners).toContain("Final Tournament Place");
-    expect(winners).toContain("Amount Paid");
-    expect(winners).toContain("Save Insurance Pot Winners");
-    expect(winners).toContain("Edit Insurance Pot");
+    expect(winners).toContain(">Team<input");
+    expect(winners).toContain(">Place<input");
+    expect(winners).toContain(">Amount<input");
+    expect(winners).toContain("Save Results");
+    expect(winners).toContain("Edit Results");
     expect(winners).toContain("Cancel Editing");
   });
 

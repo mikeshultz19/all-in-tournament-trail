@@ -78,7 +78,8 @@ describe("shared tournament display data", () => {
     }
     expect(schedule).toContain("Morning Registration");
     expect(schedule).toContain(display.morningRegistration);
-    expect(schedule).toContain("Registration Closed");
+    expect(schedule).toContain(">Register</a>");
+    expect(schedule).toContain('href="/register?tournament=eagle-mountain-2026"');
     expect(schedule).not.toContain("Registration Open");
     expect(schedule).not.toContain("Register Now");
   });

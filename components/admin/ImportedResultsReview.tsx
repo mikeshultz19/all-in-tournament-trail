@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { resetImportedResultsAction, verifyImportedResultsAction } from "@/app/admin/tournament-manager/import/workflow-actions";
@@ -9,7 +8,10 @@ import type { WeighfishResultRow } from "@/lib/weighfishParser";
 
 export interface ImportedRow { id: string; place: number | null; team_name: string; total_weight: number; big_fish_weight: number | null; bronze_payout: number; silver_payout: number; gold_payout: number; original_import_data?: WeighfishResultRow | null; }
 
-export default function ImportedResultsReview({ tournamentId, tournamentSlug, rows, verified, published }: { tournamentId: string; tournamentSlug: string; rows: ImportedRow[]; verified: boolean; published: boolean }) {
+type ImportedResultsReviewProps = { tournamentId: string; tournamentSlug: string; rows: ImportedRow[]; verified: boolean; published: boolean };
+
+export default function ImportedResultsReview(props: ImportedResultsReviewProps) {
+  const { tournamentId, rows, verified, published } = props;
   const [confirmingReset, setConfirmingReset] = useState(false);
   const [resultsExpanded, setResultsExpanded] = useState(() => !verified);
   const [overridePublished, setOverridePublished] = useState(false);

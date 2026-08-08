@@ -491,7 +491,7 @@ export default function HowItWorksPage() {
 
   <p className="mt-3 text-base leading-8 text-neutral-300">
   Every team or solo angler enters the <strong className="text-white">$60 Tournament Entry</strong> and
-  competes against the full field. Then, if you're an eligible member,
+  competes against the full field. Then, if you&apos;re an eligible member,
   choose <strong className="text-white">Bronze</strong>,
   <strong className="text-white"> Silver</strong>, or
   <strong className="text-white"> Gold</strong> to match your confidence,
@@ -620,7 +620,7 @@ export default function HowItWorksPage() {
           </h2>
 
           <p className="mt-4 max-w-2xl text-base leading-8 text-neutral-300">
-            Whether you're looking for low-risk competition, chasing the biggest
+            Whether you&apos;re looking for low-risk competition, chasing the biggest
             payouts, or simply want to fish a traditional tournament trail,
             AITT gives you the flexibility to compete on your terms.
           </p>

@@ -9,32 +9,28 @@ describe("compact Tournament Manager workflow", () => {
       "WeighfishCsvUploader",
       "ImportedResultsReview",
       "OnSiteCloseoutCalculator",
-      "WinnerPhotosForm",
       "PublishTournamentForm",
     ]) expect(source).toContain(component);
+    expect(readFileSync("app/admin/tournament-manager/photos/page.tsx", "utf8")).toContain("WinnerPhotosForm");
   });
 
   it("mounts publishing tools once and labels missing tools honestly", () => {
-    expect(source).toContain("Tournament Ready for Publication");
-    expect(source).toContain("Results Imported");
-    expect(source).toContain("Results Verified");
-    expect(source).toContain("Tournament Payouts Completed");
-    expect(source).toContain("Insurance Pot Saved");
-    expect(source).toContain("Edit Final Results");
-    expect(source).toContain("Preview Public Results");
-    expect(source).toContain("Winner draft ready");
-    expect(source).toContain("Winner&apos;s Circle Photos");
+    expect(source).toContain("Ready to Publish");
+    expect(source).toContain("Final Website Check");
+    expect(source).toContain("Edit Results");
+    expect(source).toContain("Preview Website");
+    expect(source).toContain("Winner Photos");
   });
 
   it("separates the calculator from the post-event publisher", () => {
     expect(readFileSync("components/admin/InsurancePotWorkflow.tsx", "utf8")).toContain("Insurance Pot");
-    expect(readFileSync("components/admin/OnSiteCloseoutCalculator.tsx", "utf8")).toContain("Complete Tournament Payouts");
-    expect(source).toContain("Insurance Pot Winners");
-    expect(source).toContain("Save the Insurance Pot winners in Insurance Pot before publishing.");
+    expect(readFileSync("components/admin/OnSiteCloseoutCalculator.tsx", "utf8")).toContain("Complete Tournament");
+    expect(source).toContain("Insurance Pot");
+    expect(readFileSync("lib/tournament-workflow-state.ts", "utf8")).toContain("Calculate the manual Insurance Pot, enter winners, and save the draft for publication.");
   });
 
   it("shows one continuous payout report without payout tabs", () => {
-    expect(readFileSync("components/admin/OnSiteCloseoutCalculator.tsx", "utf8")).toContain("Verified WeighFish Results Loaded");
+    expect(readFileSync("components/admin/OnSiteCloseoutCalculator.tsx", "utf8")).toContain("Verified Results");
     expect(source).not.toContain('aria-label="Payout tools"');
     expect(source).not.toContain('["Base", "Bronze", "Silver", "Gold", "Big Bass"]');
   });

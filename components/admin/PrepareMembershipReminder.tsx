@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { useActionState, useMemo, useState } from "react";
 
 import {
@@ -13,16 +12,7 @@ const initialState: PrepareReminderState = {
   message: "",
 };
 
-export default function PrepareMembershipReminder({
-  tournamentId,
-  tournamentName,
-  tournamentIdentifier,
-  needReviewCount,
-  hasExistingImport,
-  initialRegistrationReviewComplete,
-  initialPaperMembershipsConfirmed,
-  returnHref,
-}: {
+type PrepareMembershipReminderProps = {
   tournamentId: string;
   tournamentName: string;
   tournamentIdentifier: string;
@@ -31,7 +21,16 @@ export default function PrepareMembershipReminder({
   initialRegistrationReviewComplete: boolean;
   initialPaperMembershipsConfirmed: boolean;
   returnHref: string;
-}) {
+};
+
+export default function PrepareMembershipReminder(props: PrepareMembershipReminderProps) {
+  const {
+    tournamentId,
+    needReviewCount,
+    hasExistingImport,
+    initialRegistrationReviewComplete,
+    initialPaperMembershipsConfirmed,
+  } = props;
   const [registrationReviewComplete, setRegistrationReviewComplete] = useState(
     initialRegistrationReviewComplete,
   );
@@ -167,4 +166,3 @@ export default function PrepareMembershipReminder({
     </section>
   );
 }
-

@@ -24,7 +24,8 @@ describe("Admin Registration Review organization", () => {
       "utf8",
     );
 
-    expect(home).toContain("getTournamentRegistrationReviewSummary(currentTournament.id)");
+    expect(home).toContain("listTournamentRegistrationRosterSummaries(tournamentIds)");
+    expect(home).toContain("registrationSummaries[selectedId]");
     expect(review).toContain("summarizeRegistrationReviewItems(items)");
   });
 });

@@ -7,9 +7,9 @@ describe("Tournament Information navigation", () => {
   const managerPage = readFileSync("app/admin/tournament-manager/page.tsx", "utf8");
 
   it("keeps information management outside the operational stages", () => {
-    expect(manager).toContain("Manage Tournament Details");
-    expect(manager.indexOf("Manage Tournament Details")).toBeLessThan(manager.indexOf("Tournament Operations"));
-    expect(manager.indexOf("Tournament Operations")).toBeLessThan(manager.indexOf("Current Tournament"));
+    expect(manager).toContain("Tournament Manager");
+    expect(manager).toContain("Current Tournament");
+    expect(manager).not.toContain("TournamentInformationForm");
   });
 
   it("returns to Tournament Manager with the selected tournament", () => {

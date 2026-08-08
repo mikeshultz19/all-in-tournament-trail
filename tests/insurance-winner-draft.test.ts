@@ -29,11 +29,11 @@ describe("manual Insurance Pot winner draft workflow", () => {
   });
 
   it("shows saved counts and exact assigned/remaining totals", () => {
-    expect(component).toContain("Insurance Pot Winners Saved");
+    expect(component).toContain("Results Saved");
     expect(component).toContain("Winners Entered");
     expect(component).toContain("Assigned");
     expect(component).toContain("Remaining");
-    expect(component).toContain("Edit Insurance Pot");
+    expect(component).toContain("Edit Results");
     expect(component).toContain("Return to Insurance Pot");
   });
 });

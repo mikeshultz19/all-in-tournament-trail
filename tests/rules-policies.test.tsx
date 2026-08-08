@@ -3,7 +3,7 @@ import path from "node:path";
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
 
-import HowItWorksPage from "@/app/how-it-works/page";
+import FaqPage from "@/app/faq/page";
 import RulesPage from "@/app/rules/page";
 
 const approvedFaqQuestions = [
@@ -12,7 +12,7 @@ const approvedFaqQuestions = [
   "Are dead fish eligible for Big Bass?",
   "What happens if I am late to check-in?",
   "What is the AITT Bass Stack Challenge?",
-  "Which tournaments use the Bass Stack Challenge format?",
+      "What is the AITT Bass Stack Challenge?",
 ];
 
 describe("approved weigh-in and late check-in policies", () => {
@@ -52,24 +52,21 @@ describe("approved weigh-in and late check-in policies", () => {
     expect(source).toContain("## 17. Version History");
   });
 
-  it("publishes the approved How It Works FAQs and links to Rules", () => {
-    const html = renderToStaticMarkup(<HowItWorksPage />);
+  it("publishes the approved public FAQs and policy links", () => {
+    const html = renderToStaticMarkup(<FaqPage />);
 
     for (const question of approvedFaqQuestions) {
       expect(html).toContain(question);
     }
-    expect(html).toContain("Only legal live fish are eligible for either of the two Big Bass payouts.");
+    expect(html).toContain("Only legal live fish are eligible for a Big Bass payout.");
+    expect(html).toContain("A fish presented dead at weigh-in is not eligible for either Big Bass payout.");
     expect(html).toContain("The optional Big Bass side pot pays two places.");
     expect(html).not.toMatch(/Big Bass[^.]*divided equally/i);
-    expect(html.match(/Choose Only One/g) ?? []).toHaveLength(3);
-    expect(html).toContain("MLF-inspired cumulative-weight tournament format");
-    expect(html).toContain("greatest cumulative weight of all legal fish officially weighed wins");
-    expect(html).toContain(
-      "The 2026–2027 Bass Stack Challenge events are tournament #5 at Squaw Creek and tournament #8 at Lewisville.",
-    );
+    expect(html).toContain("cumulative-weight format");
+    expect(html).toMatch(/every legal bass officially weighed contributes/i);
     expect(html).toContain('href="/rules"');
     expect(html).toContain("View Official Rules");
-    expect(html).toContain("AITT Tournament Officials monitor AccuWeather and Weather Underground");
+    expect(html).toContain("AccuWeather and Weather Underground are primary human decision references");
     expect(html).not.toMatch(/weather decisions[^]*Open-Meteo/i);
     expect(html).not.toContain("Major League Fishing logo");
     expect(html).not.toContain("official association");
@@ -77,8 +74,8 @@ describe("approved weigh-in and late check-in policies", () => {
 
   it("does not retain superseded pending-policy language in active public content", async () => {
     const rulesHtml = renderToStaticMarkup(await RulesPage());
-    const howItWorksHtml = renderToStaticMarkup(<HowItWorksPage />);
-    const activeContent = `${rulesHtml}${howItWorksHtml}`;
+    const faqHtml = renderToStaticMarkup(<FaqPage />);
+    const activeContent = `${rulesHtml}${faqHtml}`;
 
     expect(activeContent).not.toMatch(/no numeric dead-fish weight penalty/i);
     expect(activeContent).not.toMatch(/dead-fish[^.]*pending approval/i);

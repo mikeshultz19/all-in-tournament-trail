@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { CircleCheck } from "lucide-react";
 
 import Header from "@/components/Header";
 import { PUBLIC_PAGE_CONTAINER } from "@/config/layout";
@@ -74,9 +75,7 @@ export default function SponsorsPage() {
                     key={benefit}
                     className="flex items-start gap-3 text-sm font-semibold text-neutral-200 sm:text-base"
                   >
-                    <span aria-hidden="true" className="mt-0.5 text-red-500">
-                      â—†
-                    </span>
+                    <CircleCheck aria-hidden="true" className="mt-0.5 size-4 shrink-0 text-red-500" />
                     <span>{benefit}</span>
                   </li>
                 ))}

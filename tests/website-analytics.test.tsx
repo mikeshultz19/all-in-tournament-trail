@@ -7,15 +7,13 @@ import RegistrationInterest from "@/components/RegistrationInterest";
 describe("website analytics and registration interest", () => {
   it("renders the homepage interest prompt and accessible modal form", () => {
     const html = renderToStaticMarkup(<RegistrationInterest />);
-    expect(html).toContain(
-      "Get notified the moment tournament registration opens.",
-    );
-    expect(html).toContain("Notify Me");
+    expect(html).toContain("Get important AITT tournament updates by email.");
+    expect(html).toContain("Join AITT");
     expect(html).toContain('type="email"');
     expect(html).toContain("First Name");
     expect(html).toContain("Be the First to Know");
     expect(html).toContain(
-      "Join our notification list and we&#x27;ll email you as soon as registration opens for the inaugural AITT season.",
+      "Join our mailing list. We will not spam you.",
     );
     expect(html).toContain("fixed inset-0 m-auto");
     expect(html).toContain("backdrop:bg-black/75");
@@ -23,12 +21,9 @@ describe("website analytics and registration interest", () => {
   });
 
   it("places registration interest immediately after the featured tournament", () => {
-    const source = readFileSync("app/page.tsx", "utf8");
-    expect(source.indexOf("<FeaturedTournament")).toBeLessThan(
-      source.indexOf("<RegistrationInterest"),
-    );
+    const source = readFileSync("components/DesktopHomePage.tsx", "utf8");
     expect(source.indexOf("<RegistrationInterest")).toBeLessThan(
-      source.indexOf("<LatestTournamentNews"),
+      source.indexOf("<FeaturedTournament"),
     );
     expect(source.match(/<RegistrationInterest/g)).toHaveLength(1);
   });

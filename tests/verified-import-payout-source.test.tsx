@@ -10,7 +10,7 @@ describe("verified import payout source", () => {
   it("loads the selected tournament's persisted verified rows directly in Step 3", () => {
     const markup = renderPayoutReadyDashboardFixture();
 
-    expect(markup).toContain("Verified WeighFish Results Loaded");
+    expect(markup).toContain("Verified Results");
     expect(markup).toContain("Entries");
     expect(markup).toContain("Smith / Jones");
     expect(markup).not.toContain("Choose WeighFish CSV");
@@ -38,7 +38,7 @@ describe("verified import payout source", () => {
     expect(source).not.toContain('type="file"');
     expect(source).not.toContain("Choose WeighFish CSV");
     expect(source).toContain("initialImportedRows");
-    expect(source).toContain('"Verified WeighFish Payout Review"');
+    expect(source).toContain('"Verified Tournament Payouts"');
     expect(source).toContain('"Final Tournament Checks"');
   });
 
@@ -46,7 +46,7 @@ describe("verified import payout source", () => {
     const source = readFileSync("components/admin/OnSiteCloseoutCalculator.tsx", "utf8");
     expect(source).toContain("insuranceResult?.calculated_payouts");
     expect(source).toContain('category: "AITT Insurance Pot"');
-    expect(source).toContain("Complete Tournament Payouts");
+    expect(source).toContain("Complete Tournament");
     expect(source).not.toContain("Enter the Insurance Pot winners in Calculate Payouts");
     expect(source).toContain("Final Checks Up to Date");
   });

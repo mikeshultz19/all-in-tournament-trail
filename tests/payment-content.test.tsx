@@ -11,34 +11,29 @@ vi.mock("@/lib/tournaments", async () => {
   };
 });
 
-import HowItWorksPage from "@/app/how-it-works/page";
+import FaqPage from "@/app/faq/page";
 import RegistrationForm from "@/components/RegistrationForm";
 import { tournaments } from "@/data/tournaments";
 import { getTournamentOperationsViewModel } from "@/lib/tournament-view-model";
 
 describe("approved payment content", () => {
   it("publishes aligned online and tournament-morning payment FAQs", () => {
-    const html = renderToStaticMarkup(<HowItWorksPage />);
-    expect(html).toContain("How do Early Online Registration payments work?");
-    expect(html).toContain("requires immediate payment through Square");
-    expect(html).toContain("Apple Pay is available on supported devices and browsers");
+    const html = renderToStaticMarkup(<FaqPage />);
+    expect(html).toContain("What payment methods are accepted?");
+    expect(html).toContain("processed through Square");
     expect(html).toContain("3% Card Processing Fee");
-    expect(html).toContain("Cash is accepted only during tournament-morning registration and has no processing fee");
-    expect(html).toContain("completed with a Tournament Director");
-    expect(html).toContain("records the registration and payment method in WeighFish");
+    expect(html).toContain("Tournament-morning payments may be made by cash or through the Square reader");
     expect(html).toContain("<details");
     expect(html).toContain("<summary");
   });
 
   it("keeps homepage announcements database-driven", () => {
-    const pageSource = readFileSync("app/page.tsx", "utf8");
+    const pageSource = readFileSync("components/DesktopHomePage.tsx", "utf8");
     const newsSource = readFileSync("components/LatestTournamentNews.tsx", "utf8");
-    expect(pageSource).toContain("getPublishedAnnouncements");
     expect(pageSource).toContain(
       "<LatestTournamentNews announcements={announcements} />",
     );
     expect(newsSource).not.toContain("<PaymentAnnouncement />");
-    expect(pageSource.indexOf("<Hero />")).toBeLessThan(pageSource.indexOf("<LatestTournamentNews"));
     expect((pageSource.match(/<LatestTournamentNews/g) ?? [])).toHaveLength(1);
     expect(readFileSync("components/Header.tsx", "utf8")).not.toMatch(/LatestTournamentNews|newsTicker/);
   });

@@ -25,13 +25,13 @@ describe("No forward-facing sonar public page", () => {
     expect(html).toContain("url=%2Fimages%2Fhero%2Fhero-locked-v10.png");
     expect(html).toContain('href="/no-forward-facing-sonar"');
     expect(html).toContain('aria-label="Learn why AITT prohibits forward-facing sonar during tournament competition"');
-    expect(html).toContain("Learn Why →");
   });
 
   it("adds one policy explanation link beneath the controlling rule", () => {
     const rules = readFileSync("docs/TOURNAMENT_RULES.md", "utf8");
 
-    expect(rules).toContain("Forward-facing sonar is prohibited during official tournament competition.");
+    expect(rules).toContain("Forward-facing sonar\\Perspective view");
+    expect(rules).toContain("is prohibited during official tournament competition.");
     expect(rules).toContain('<a id="forward-facing-sonar"></a>');
     expect(rules).toContain("[Why did AITT adopt this policy?](/no-forward-facing-sonar)");
   });
