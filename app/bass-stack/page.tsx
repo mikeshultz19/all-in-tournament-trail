@@ -3,6 +3,21 @@ import Link from "next/link";
 import Header from "@/components/Header";
 import { PUBLIC_PAGE_CONTAINER } from "@/config/layout";
 
+const bassStackEvents = [
+  {
+    name: "Squaw Creek",
+    date: "Feb 14, 2027",
+    dateTime: "2027-02-14",
+    href: "/register?tournament=squaw-creek-2027",
+  },
+  {
+    name: "Lewisville",
+    date: "May 16, 2027",
+    dateTime: "2027-05-16",
+    href: "/register?tournament=lewisville-may-2027",
+  },
+] as const;
+
 export default function BassStackPage() {
   return (
     <main className="min-h-screen bg-black text-white">
@@ -28,6 +43,34 @@ export default function BassStackPage() {
             <p className="mt-6 max-w-4xl text-base leading-7 text-neutral-300">
               The AITT Bass Stack Total Weight Challenge is a cumulative-weight tournament format used at selected All In Tournament Trail events. Instead of counting only a traditional five-fish limit, every legal bass officially weighed contributes to the angler&apos;s or team&apos;s tournament total.
             </p>
+            <section className="mt-6 max-w-4xl" aria-labelledby="bass-stack-events">
+              <h2 id="bass-stack-events" className="text-xs font-black uppercase tracking-[0.18em] text-[#D4A017]">
+                Bass Stack Events
+              </h2>
+              <div className="mt-3 grid divide-y divide-white/10 md:mx-auto md:max-w-xl md:grid-cols-2 md:divide-x md:divide-y-0">
+                {bassStackEvents.map((event) => (
+                  <div
+                    key={event.href}
+                    className="py-3 md:px-4 md:text-center"
+                  >
+                    <span className="block text-sm font-black uppercase tracking-[0.08em] text-white">
+                      {event.name}
+                    </span>
+                    <time dateTime={event.dateTime} className="mt-1 block text-xs text-neutral-400">
+                      {event.date}
+                    </time>
+                  </div>
+                ))}
+              </div>
+              <div className="mt-4 flex justify-center">
+                <Link
+                  href="/schedule"
+                  className="inline-flex min-h-11 items-center justify-center rounded-md bg-red-700 px-5 py-3 text-sm font-black uppercase tracking-wider text-white transition active:scale-[0.96] hover:bg-red-600"
+                >
+                  View Schedule
+                </Link>
+              </div>
+            </section>
           </header>
 
           <div className="h-px w-full bg-gradient-to-r from-transparent via-red-700 to-transparent" />

@@ -275,7 +275,7 @@ export default function HowItWorksPage() {
                 </p>
 
                 <p className="mt-1 text-sm text-neutral-400">
-                  Required for everyone.
+                  Required for every team or solo angler.
                 </p>
               </div>
             </div>
@@ -292,7 +292,7 @@ export default function HowItWorksPage() {
                 </p>
 
                 <p className="mt-1 text-sm text-neutral-400">
-                  Open to everyone.
+                  Open to every team or solo angler.
                 </p>
               </div>
             </div>
@@ -342,7 +342,7 @@ export default function HowItWorksPage() {
 
               <div>
                 <p className="font-black uppercase text-white">
-                  Pay $60 Tournament Entry
+                  Pay $60 Tournament Entry per team or solo angler
                 </p>
 
                 <p className="mt-1 text-sm text-neutral-400">
