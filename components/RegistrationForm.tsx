@@ -42,9 +42,9 @@ const ZIP_PATTERN = /^\d{5}(?:-\d{4})?$/;
 const OPTIONAL_POTS = [
   { id: "bronze", name: "Bronze Pot", price: REGISTRATION_PRICING.bronze, description: "Members-only Bronze payout competition. Pays 1 in 5." },
   { id: "silver", name: "Silver Pot", price: REGISTRATION_PRICING.silver, description: "Members-only Silver payout competition. Pays 1 in 5." },
-  { id: "gold", name: "Gold Pot", price: REGISTRATION_PRICING.gold, description: "Members-only premium Gold payout competition. Pays 1 in 5." },
+  { id: "gold", name: "Gold Pot", price: REGISTRATION_PRICING.gold, description: "Members-only premium Gold payout competition. Pays 1 in 7." },
   { id: "big-bass", name: "Big Bass", price: REGISTRATION_PRICING.bigBass, description: "The optional Big Bass side pot pays two places." },
-  { id: "insurance", name: "Insurance Pot", price: REGISTRATION_PRICING.insurance, description: "Pays first out of the money from the Tournament Entry Pot until the available Insurance Pot money is exhausted." },
+  { id: "insurance", name: "Insurance Pot", price: REGISTRATION_PRICING.insurance, description: "Uses a true 1-in-5 payout, with a minimum of one paid place whenever there are Insurance Pot entries. Payouts begin with the first eligible team outside the Tournament Entry payout." },
 ] as const;
 
 function money(value: number) { return `$${value.toFixed(2)}`; }

@@ -43,8 +43,8 @@ export default function InsurancePotPage() {
 
   <p>
     After the regular Tournament Entry payouts have been determined,
-    Insurance Pot payouts begin with the highest-finishing eligible entry
-    that did not receive a regular Tournament Entry payout.
+    Insurance Pot payouts begin with the first eligible team outside the
+    Tournament Entry payout.
   </p>
 
   <p>
@@ -55,10 +55,8 @@ export default function InsurancePotPage() {
   </p>
 
   <p>
-    The Insurance Pot follows a one-in-five payout structure. One payout
-    place is guaranteed with fewer than ten entries, and an additional payout
-    place is created each time the Insurance Pot reaches another group of five
-    entries beginning with ten entries.
+    The Insurance Pot uses a true 1-in-5 payout, with a minimum of one paid
+    place whenever there are Insurance Pot entries.
   </p>
 
   <p>
@@ -78,9 +76,8 @@ export default function InsurancePotPage() {
             </div>
 <div className={copyClass}>
   <p>
-    The Insurance Pot uses a one-in-five payout structure. One place is paid
-    with one through nine entries. At ten entries, two places are paid. An
-    additional payout place is created for every five additional entries.
+    The Insurance Pot uses a true 1-in-5 payout, with a minimum of one paid
+    place whenever there are Insurance Pot entries.
   </p>
 
   <p>

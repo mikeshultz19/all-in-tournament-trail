@@ -159,7 +159,7 @@ const waysToWin = [
     title: "Insurance Pot",
     icon: Shield,
     description:
-      "Pays eligible participants beginning with the first eligible entry outside the regular Tournament Entry payout.",
+      "Uses a true 1-in-5 payout, with a minimum of one paid place whenever there are Insurance Pot entries. Payouts begin with the first eligible team outside the Tournament Entry payout.",
     label: `${price(REGISTRATION_PRICING.insurance)} Optional`,
     eligibility: "Members Only",
     href: "/insurance-pot",
@@ -170,7 +170,7 @@ const waysToWin = [
     description:
       "Eligible members earn season points toward the Angler of the Year standings.",
     note:
-      "Each entry's highest point totals determine its final AOY score under the current season rules.",
+      "Each eligible entry’s five highest point totals from the eight regular-season tournaments determine its final AOY score.",
     label: "Season",
     eligibility: "Members Only",
     href: "/aoy-points",
@@ -404,7 +404,7 @@ export default function HowItWorksPage() {
               </p>
 
               <p className="mt-1 text-sm text-neutral-400">
-                Fish 5 of 8 tournaments to have a shot at both.
+                Best 5 of 8 determine AOY. Compete in 5 of 8 for Championship eligibility.
               </p>
             </div>
 

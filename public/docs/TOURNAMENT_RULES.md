@@ -229,9 +229,10 @@ and published before it applies.
 
 - Participation in the Insurance Pot is optional.
 - Only entries that joined the Insurance Pot are eligible for its payouts.
-- Payouts begin with the highest-finishing eligible entry outside the regular
-  Tournament Entry payout. Entries that did not join the Insurance Pot are
-  skipped.
+- The Insurance Pot uses a true 1-in-5 payout, with a minimum of one paid place
+  whenever there are Insurance Pot entries.
+- Payouts begin with the first eligible team outside the Tournament Entry
+  payout. Entries that did not join the Insurance Pot are skipped.
 - The entire Insurance Pot is distributed. AITT retains none of the Insurance
   Pot, and every winning entry receives an equal payout, subject only to the
   one-cent adjustments required to distribute the exact total.

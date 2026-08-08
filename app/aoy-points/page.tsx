@@ -55,6 +55,7 @@ export default function AoyPointsPage() {
                   <p>Unlike most tournament organizations, AITT Membership is optional.</p>
                   <p>Anyone may fish an AITT tournament.</p>
                   <p>However, only AITT Members earn AOY points and compete for the season-long Angler of the Year title.</p>
+                  <p>The five highest point totals from the eight regular-season tournaments determine the final AOY score.</p>
                   <p>This approach allows anglers to enjoy individual tournaments without requiring an annual membership while rewarding members who commit to competing throughout the season.</p>
                 </div>
               </section>

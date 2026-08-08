@@ -27,7 +27,7 @@ export const REGISTRATION_OPTION_CONFIG = {
   },
   insurance: {
     name: "Insurance Pot",
-    description: "Member-only out-of-the-money protection under the approved tournament rules.",
+    description: "Member-only true 1-in-5 payout, with a minimum of one paid place whenever there are Insurance Pot entries. Payouts begin with the first eligible team outside the Tournament Entry payout.",
     priceCents: REGISTRATION_PRICING.insurance * 100,
     required: false,
     priceBasis: "per_registration",
@@ -51,7 +51,7 @@ export const REGISTRATION_OPTION_CONFIG = {
   },
   gold: {
     name: "Gold Pot",
-    description: "Member-only premium Gold payout competition. Pays 1 in 5.",
+    description: "Member-only premium Gold payout competition. Pays 1 in 7.",
     priceCents: REGISTRATION_PRICING.gold * 100,
     required: false,
     priceBasis: "per_registration",

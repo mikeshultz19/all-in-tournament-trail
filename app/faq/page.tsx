@@ -139,7 +139,7 @@ const faqSections: FaqSection[] = [
       {
         question: "How does the Insurance Pot work?",
         answer:
-          "The Insurance Pot is optional and members-only. Payouts begin with the highest-finishing eligible Insurance Pot entry outside the regular Tournament Entry payout. Entries that did not join the Insurance Pot are skipped.",
+          "The Insurance Pot is optional and members-only. The Insurance Pot uses a true 1-in-5 payout, with a minimum of one paid place whenever there are Insurance Pot entries. Payouts begin with the first eligible team outside the Tournament Entry payout. Entries that did not join the Insurance Pot are skipped.",
         link: {
           label: "Learn About the Insurance Pot",
           href: "/insurance-pot",
