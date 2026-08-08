@@ -332,7 +332,7 @@ export default function HowItWorksPage() {
                 </p>
 
                 <p className="mt-1 text-sm text-neutral-400">
-                  $40 membership.
+                  $40 membership per person.
                 </p>
               </div>
             </div>
