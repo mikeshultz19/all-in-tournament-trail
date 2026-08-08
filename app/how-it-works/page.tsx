@@ -235,7 +235,194 @@ export default function HowItWorksPage() {
    
         </div>
       </section>
+<section className="py-10 md:py-12">
+  <div className={PUBLIC_PAGE_CONTAINER}>
+    <div className="mx-auto max-w-5xl">
+      <div className="mb-7 text-center">
+        <p className="text-xs font-black uppercase tracking-[0.25em] text-red-500">
+          Keep It Simple
+        </p>
 
+        <h2 className="mt-3 text-3xl font-black uppercase tracking-tight text-white sm:text-4xl">
+          AITT 101
+        </h2>
+
+        <p className="mt-3 text-sm text-neutral-400 sm:text-base">
+          Pick the option that fits you. That&apos;s it.
+        </p>
+      </div>
+
+      <div className="grid gap-5 md:grid-cols-2">
+        {/* NON-MEMBER */}
+        <article className="rounded-xl border border-white/15 bg-[#111111] p-6">
+          <div className="mb-6">
+            <p className="text-xs font-black uppercase tracking-[0.2em] text-neutral-400">
+              Option 1
+            </p>
+
+            <h3 className="mt-2 text-2xl font-black uppercase text-white">
+              No Membership?
+            </h3>
+          </div>
+
+          <div className="space-y-5">
+            <div className="flex gap-4">
+              <span className="text-xl font-black text-red-500">01</span>
+
+              <div>
+                <p className="font-black uppercase text-white">
+                  Pay $60 Tournament Entry
+                </p>
+
+                <p className="mt-1 text-sm text-neutral-400">
+                  Required for everyone.
+                </p>
+              </div>
+            </div>
+
+            <div className="flex gap-4">
+              <span className="text-xl font-black text-red-500">02</span>
+
+              <div>
+                <p className="font-black uppercase text-white">
+                  Add Big Bass{" "}
+                  <span className="text-sm font-semibold normal-case text-red-500">
+                    Optional
+                  </span>
+                </p>
+
+                <p className="mt-1 text-sm text-neutral-400">
+                  Open to everyone.
+                </p>
+              </div>
+            </div>
+
+            <div className="border-t border-white/10 pt-5">
+              <p className="text-lg font-black uppercase text-[#D4A017]">
+                Done. Go Fish.
+              </p>
+
+              <p className="mt-3 text-xs leading-5 text-neutral-500">
+                Non-members do not have access to Bronze, Silver, Gold, or the
+                Insurance Pot.
+              </p>
+            </div>
+          </div>
+        </article>
+
+        {/* MEMBER */}
+        <article className="rounded-xl border border-[#D4A017]/50 bg-[#13100a] p-6">
+          <div className="mb-6">
+            <p className="text-xs font-black uppercase tracking-[0.2em] text-[#D4A017]">
+              Option 2
+            </p>
+
+            <h3 className="mt-2 text-2xl font-black uppercase text-white">
+              AITT Member
+            </h3>
+          </div>
+
+          <div className="space-y-5">
+            <div className="flex gap-4">
+              <span className="text-xl font-black text-[#D4A017]">01</span>
+
+              <div>
+                <p className="font-black uppercase text-white">
+                  Join AITT
+                </p>
+
+                <p className="mt-1 text-sm text-neutral-400">
+                  $40 membership.
+                </p>
+              </div>
+            </div>
+
+            <div className="flex gap-4">
+              <span className="text-xl font-black text-[#D4A017]">02</span>
+
+              <div>
+                <p className="font-black uppercase text-white">
+                  Pay $60 Tournament Entry
+                </p>
+
+                <p className="mt-1 text-sm text-neutral-400">
+                  Required for every tournament.
+                </p>
+              </div>
+            </div>
+
+            <div className="flex gap-4">
+              <span className="text-xl font-black text-[#D4A017]">03</span>
+
+              <div>
+                <p className="font-black uppercase text-white">
+                  Choose ONE Side Pot{" "}
+                  <span className="text-sm font-semibold normal-case text-[#D4A017]">
+                    Optional
+                  </span>
+                </p>
+
+                <p className="mt-1 text-sm text-neutral-400">
+                  Bronze, Silver, or Gold.
+                </p>
+              </div>
+            </div>
+
+            <div className="flex gap-4">
+              <span className="text-xl font-black text-[#D4A017]">04</span>
+
+              <div>
+                <p className="font-black uppercase text-white">
+                  Add Big Bass{" "}
+                  <span className="text-sm font-semibold normal-case text-[#D4A017]">
+                    Optional
+                  </span>
+                </p>
+              </div>
+            </div>
+
+            <div className="flex gap-4">
+              <span className="text-xl font-black text-[#D4A017]">05</span>
+
+              <div>
+                <p className="font-black uppercase text-white">
+                  Add Insurance Pot{" "}
+                  <span className="text-sm font-semibold normal-case text-[#D4A017]">
+                    Optional
+                  </span>
+                </p>
+              </div>
+            </div>
+
+            <div className="border-t border-[#D4A017]/20 pt-5">
+              <p className="text-xs font-black uppercase tracking-[0.18em] text-neutral-400">
+                Member Benefits
+              </p>
+
+              <p className="mt-2 font-black uppercase text-white">
+                AOY Eligible • Championship Eligible
+              </p>
+
+              <p className="mt-1 text-sm text-neutral-400">
+                Fish 5 of 8 tournaments to have a shot at both.
+              </p>
+            </div>
+
+            <div className="border-t border-[#D4A017]/20 pt-5">
+              <p className="text-lg font-black uppercase text-[#D4A017]">
+                Done. Go Fish.
+              </p>
+            </div>
+          </div>
+        </article>
+      </div>
+
+      <p className="mt-6 text-center text-sm font-semibold text-neutral-400">
+        See below for full details.
+      </p>
+    </div>
+  </div>
+</section>
       <section className="py-12 md:py-16">
         <div className={PUBLIC_PAGE_CONTAINER}>
 <SectionHeading

@@ -182,7 +182,7 @@ export default function Header({ activeItem }: { activeItem?: string }) {
     className="inline-flex h-9 shrink-0 items-center justify-center sm:h-10"
   >
     <span
-      className={`min-w-[42px] rounded border border-[#c9aa4a]/70 bg-black/70 px-1.5 py-1 text-center text-[0.42rem] font-black uppercase leading-none tracking-[0.08em] text-[#c9aa4a] transition hover:border-[#c9aa4a] hover:text-yellow-300 min-[375px]:min-w-[46px] min-[375px]:px-2 min-[375px]:text-[0.47rem] sm:min-w-[54px] sm:px-2.5 sm:text-[0.55rem] ${
+      className={`min-w-[42px] rounded border border-[#c9aa4a]/70 bg-black/70 px-1.5 py-1 text-center text-[0.42rem] font-black uppercase leading-none tracking-[0.08em] text-[#c9aa4a] transition active:scale-[0.96] hover:border-[#c9aa4a] hover:text-yellow-300 min-[375px]:min-w-[46px] min-[375px]:px-2 min-[375px]:text-[0.47rem] sm:min-w-[54px] sm:px-2.5 sm:text-[0.55rem] ${
         activeItem === "Bass Stack"
           ? "border-[#c9aa4a] text-yellow-300"
           : ""
@@ -204,7 +204,7 @@ export default function Header({ activeItem }: { activeItem?: string }) {
     aria-current={
       activeItem === "How AITT Works" ? "page" : undefined
     }
-    className={`flex h-9 shrink-0 items-center justify-center whitespace-nowrap px-0.5 text-center text-[0.53rem] font-black uppercase leading-[0.95] tracking-[0.02em] text-yellow-400 transition duration-200 hover:text-yellow-300 hover:drop-shadow-[0_0_8px_rgba(250,204,21,0.45)] min-[375px]:text-[0.58rem] sm:h-10 sm:px-1 sm:text-[0.68rem] ${
+    className={`flex h-9 shrink-0 items-center justify-center whitespace-nowrap px-0.5 text-center text-[0.53rem] font-black uppercase leading-[0.95] tracking-[0.02em] text-yellow-400 transition duration-200 active:scale-[0.96] hover:text-yellow-300 hover:drop-shadow-[0_0_8px_rgba(250,204,21,0.45)] min-[375px]:text-[0.58rem] sm:h-10 sm:px-1 sm:text-[0.68rem] ${
       activeItem === "How AITT Works"
         ? "drop-shadow-[0_0_8px_rgba(250,204,21,0.5)]"
         : ""
@@ -225,7 +225,7 @@ export default function Header({ activeItem }: { activeItem?: string }) {
    */}
   <Link
     href="/register"
-    className="inline-flex h-9 shrink-0 items-center justify-center rounded-md bg-red-700 px-1.5 text-[0.56rem] font-black uppercase tracking-[0.025em] text-white transition hover:bg-red-600 min-[375px]:px-2 min-[375px]:text-[0.61rem] sm:h-10 sm:px-3 sm:text-[0.7rem]"
+    className="inline-flex h-9 shrink-0 items-center justify-center rounded-md bg-red-700 px-1.5 text-[0.56rem] font-black uppercase tracking-[0.025em] text-white transition active:scale-[0.96] hover:bg-red-600 min-[375px]:px-2 min-[375px]:text-[0.61rem] sm:h-10 sm:px-3 sm:text-[0.7rem]"
   >
     Register
   </Link>
@@ -242,7 +242,7 @@ export default function Header({ activeItem }: { activeItem?: string }) {
   </Link>
 
   <details className="group relative">
-              <summary className="flex h-9 list-none items-center justify-center gap-1 rounded-md border border-zinc-800 px-2 text-xs font-black uppercase tracking-[0.08em] text-zinc-100/90 transition duration-200 hover:border-zinc-600 hover:text-red-500 min-[375px]:px-2.5 sm:h-10 sm:gap-2 sm:px-3 [&::-webkit-details-marker]:hidden">
+              <summary className="flex h-9 list-none items-center justify-center gap-1 rounded-md border border-zinc-800 px-2 text-xs font-black uppercase tracking-[0.08em] text-zinc-100/90 transition duration-200 active:scale-[0.96] hover:border-zinc-600 hover:text-red-500 min-[375px]:px-2.5 sm:h-10 sm:gap-2 sm:px-3 [&::-webkit-details-marker]:hidden">
                 <Menu aria-hidden="true" className="h-4 w-4 shrink-0" />
 
                 <span className="hidden sm:inline">Menu</span>

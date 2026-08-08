@@ -85,9 +85,30 @@ export async function POST(request: Request) {
                   important All In Tournament Trail news.
                 </p>
 
-                <p style="margin:28px 0 0;font-size:18px;font-weight:bold;color:#d4a017;">
-                  Fish Your Way. Win Your Way.
-                </p>
+<p style="margin:24px 0 0;font-size:15px;line-height:1.7;color:#333333;">
+  Follow AITT:
+  <a
+    href="https://www.facebook.com/AllInTournamentTrail"
+    target="_blank"
+    rel="noopener noreferrer"
+    style="color:#1877F2;font-weight:bold;text-decoration:none;margin-left:6px;"
+  >
+    Facebook
+  </a>
+  <span style="color:#999999;"> | </span>
+  <a
+    href="https://www.instagram.com/allintournamenttrail/"
+    target="_blank"
+    rel="noopener noreferrer"
+    style="color:#E1306C;font-weight:bold;text-decoration:none;"
+  >
+    Instagram
+  </a>
+</p>
+
+<p style="margin:28px 0 0;font-size:18px;font-weight:bold;color:#d4a017;">
+  Fish Your Way. Win Your Way.
+</p>
 
                 <p style="margin:8px 0 0;font-size:14px;color:#777777;">
                   All In Tournament Trail
