@@ -64,7 +64,7 @@ export default function RegistrationInterest({
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="group inline-flex items-center gap-3 text-sm focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#D4A017]"
+        className="group inline-flex cursor-pointer items-center gap-3 text-sm focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#D4A017]"
       >
         {icon}
 
@@ -139,7 +139,7 @@ export default function RegistrationInterest({
               type="button"
               aria-label="Close"
               onClick={() => setOpen(false)}
-              className="min-h-10 min-w-10 text-xl text-neutral-400 hover:text-white focus-visible:outline-2 focus-visible:outline-[#D4A017]"
+              className="min-h-10 min-w-10 cursor-pointer text-xl text-neutral-400 hover:text-white focus-visible:outline-2 focus-visible:outline-[#D4A017]"
             >
               ×
             </button>
@@ -201,7 +201,7 @@ export default function RegistrationInterest({
 
               <button
                 disabled={pending}
-                className="w-full bg-red-700 px-5 py-3 text-xs font-black uppercase tracking-wide text-white disabled:opacity-60"
+                className="w-full cursor-pointer bg-red-700 px-5 py-3 text-xs font-black uppercase tracking-wide text-white transition hover:bg-red-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#D4A017] disabled:cursor-not-allowed disabled:opacity-60"
               >
                 {pending ? "Saving…" : "Join AITT"}
               </button>

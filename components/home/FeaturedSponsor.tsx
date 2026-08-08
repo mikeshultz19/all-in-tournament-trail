@@ -62,7 +62,7 @@ function SponsorLogo({
       target="_blank"
       rel="noopener noreferrer"
       aria-label={`Visit ${sponsor.name} website (opens in a new tab)`}
-      className="flex size-full items-center justify-center focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#D4A017]"
+      className="flex size-full cursor-pointer items-center justify-center opacity-85 grayscale transition-[opacity,filter] hover:opacity-100 hover:grayscale-0 focus-visible:opacity-100 focus-visible:grayscale-0 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#D4A017]"
     >
       {logo}
     </a>
@@ -116,7 +116,7 @@ export default function FeaturedSponsor({
           <Link
             href="/sponsors"
             aria-label="Learn more about AITT sponsorship opportunities"
-            className="font-bold text-[#D4A017] transition hover:text-yellow-300 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#D4A017]"
+            className="cursor-pointer font-bold text-[#D4A017] transition hover:text-yellow-300 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#D4A017]"
           >
             Learn more
           </Link>

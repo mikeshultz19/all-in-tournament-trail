@@ -17,16 +17,16 @@ describe("Soft Launch registration", () => {
     expect(markup).toContain(">Register</");
   });
 
-  it("keeps the Featured Tournament action linked to Registration", () => {
+  it("keeps the Featured Tournament registration action inactive while closed", () => {
     const markup = renderToStaticMarkup(
       <FeaturedTournament tournament={tournaments[0]} />,
     );
 
-    expect(markup).toContain(
+    expect(markup).not.toContain(
       'href="/register?tournament=eagle-mountain-2026"',
     );
     expect(markup).toContain("Registration Closed");
-    expect(markup).toContain("bg-red-700");
+    expect(markup).toContain('aria-disabled="true"');
     expect(markup).not.toContain("Register Now");
   });
 

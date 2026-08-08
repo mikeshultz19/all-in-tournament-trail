@@ -1,4 +1,5 @@
 import { Pin } from "lucide-react";
+import Link from "next/link";
 
 import type { Announcement } from "@/types/announcement";
 
@@ -88,22 +89,24 @@ export default function MobileLatestNews({
             </time>
 
             {announcement.link_label && announcement.link_url ? (
-              <a
-                href={announcement.link_url}
-                target={
-                  announcement.link_url.startsWith("http")
-                    ? "_blank"
-                    : undefined
-                }
-                rel={
-                  announcement.link_url.startsWith("http")
-                    ? "noopener noreferrer"
-                    : undefined
-                }
-                className="text-[0.68rem] font-black uppercase tracking-[0.1em] text-[#D4A017] transition hover:text-yellow-300"
-              >
-                {announcement.link_label}
-              </a>
+              announcement.link_url.startsWith("/") ? (
+                <Link
+                  href={announcement.link_url}
+                  className="cursor-pointer text-[0.68rem] font-black uppercase tracking-[0.1em] text-[#D4A017] transition hover:text-yellow-300 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#D4A017]"
+                >
+                  {announcement.link_label}
+                </Link>
+              ) : (
+                <a
+                  href={announcement.link_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="cursor-pointer text-[0.68rem] font-black uppercase tracking-[0.1em] text-[#D4A017] transition hover:text-yellow-300 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#D4A017]"
+                >
+                  {announcement.link_label}
+                  <span className="sr-only"> (opens in a new tab)</span>
+                </a>
+              )
             ) : null}
           </div>
         </article>

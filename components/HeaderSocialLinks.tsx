@@ -61,7 +61,11 @@ export default function HeaderSocialLinks({
           target="_blank"
           rel="noopener noreferrer"
           aria-label={label}
-          className={`inline-flex items-center justify-center text-zinc-100/90 transition duration-200 hover:text-red-500 ${linkClassName}`.trim()}
+          className={`inline-flex cursor-pointer items-center justify-center transition duration-200 ${
+            label === "Facebook"
+              ? "text-[#1877F2] hover:text-[#4593f5]"
+              : "text-[#E4405F] hover:text-[#f05c76]"
+          } focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-yellow-400 ${linkClassName}`.trim()}
         >
           <Icon className="h-[19px] w-[19px]" />
         </a>

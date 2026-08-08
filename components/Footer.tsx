@@ -55,7 +55,7 @@ export default function Footer() {
                 href={link.href}
                 target={link.external ? "_blank" : undefined}
                 rel={link.external ? "noopener noreferrer" : undefined}
-                className="whitespace-nowrap transition-colors hover:text-red-500 focus-visible:text-red-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-yellow-400"
+                className="cursor-pointer whitespace-nowrap transition-colors hover:text-red-500 focus-visible:text-red-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-yellow-400"
               >
                 {link.label}
               </Link>
@@ -79,7 +79,7 @@ export default function Footer() {
             <button
               type="button"
               onClick={openContactModal}
-              className="whitespace-nowrap font-semibold text-yellow-400 transition-colors hover:text-yellow-300 focus-visible:text-yellow-300 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-yellow-400"
+              className="cursor-pointer whitespace-nowrap font-semibold text-yellow-400 transition-colors hover:text-yellow-300 focus-visible:text-yellow-300 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-yellow-400"
             >
               Contact
             </button>
@@ -109,7 +109,7 @@ export default function Footer() {
           <button
             type="button"
             onClick={scrollToTop}
-            className="inline-flex items-center justify-self-end gap-1 text-right uppercase tracking-[0.08em] transition-colors hover:text-yellow-400 focus-visible:text-yellow-400 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-yellow-400 sm:tracking-[0.12em]"
+            className="inline-flex cursor-pointer items-center justify-self-end gap-1 text-right uppercase tracking-[0.08em] transition-colors hover:text-yellow-400 focus-visible:text-yellow-400 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-yellow-400 sm:tracking-[0.12em]"
           >
             <span aria-hidden="true">↑</span>
             Back to Top

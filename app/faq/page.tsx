@@ -153,7 +153,7 @@ const faqSections: FaqSection[] = [
       {
         question: "How many places does the Insurance Pot pay?",
         answer:
-          "One through nine entries pay one place. Ten through fourteen pay two places. Fifteen through nineteen pay three places. Twenty through twenty-four pay four places. Twenty-five through twenty-nine pay five places. One additional payout place is added for every additional group of five entries.",
+          "The Insurance Pot uses a true 1-in-5 payout. Payouts begin with the first eligible team outside the Tournament Entry payout.",
       },
       {
         question: "How many places does the Big Bass side pot pay?",

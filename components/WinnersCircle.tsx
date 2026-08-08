@@ -369,7 +369,7 @@ function ResultsActionButton({
   }
 
   return (
-    <Link href={href} className={className}>
+    <Link href={href} className={`${className} cursor-pointer`}>
       {children}
     </Link>
   );
@@ -572,7 +572,7 @@ export default function WinnersCircle({
                   {latestResults?.insurancePotResult?.published && latestResults.insurancePotWinnersUrl ? (
                     <a
                       href={latestResults.insurancePotWinnersUrl}
-                      className="mt-2 inline-flex text-[0.65rem] font-black uppercase tracking-[0.1em] text-[#c9aa4a] transition hover:text-red-500"
+                      className="mt-2 inline-flex cursor-pointer text-[0.65rem] font-black uppercase tracking-[0.1em] text-[#c9aa4a] transition hover:text-red-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#c9aa4a]"
                     >
                       View Insurance Pot Winners →
                     </a>

@@ -70,6 +70,7 @@ export default function MobileFeaturedTournament({
 
   const statusLabel =
     TOURNAMENT_STATUS_LABELS[tournament.tournamentStatus];
+  const registrationOpen = operations?.registrationCanSubmit === true;
 
   const formattedDate = new Date(
     `${tournament.date}T12:00:00`,
@@ -152,23 +153,33 @@ export default function MobileFeaturedTournament({
         ) : null}
 
         <div className="grid gap-2.5">
-          <Link
-            href={`/register?tournament=${tournament.slug}`}
-            className="inline-flex min-h-10 items-center justify-center rounded-md bg-red-700 px-4 text-[0.68rem] font-black uppercase tracking-[0.1em] text-white transition hover:bg-red-600"
-          >
-            Register
-          </Link>
+          {registrationOpen ? (
+            <Link
+              href={`/register?tournament=${tournament.slug}`}
+              className="inline-flex min-h-10 cursor-pointer items-center justify-center rounded-md bg-red-700 px-4 text-[0.68rem] font-black uppercase tracking-[0.1em] text-white transition hover:bg-red-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#D4A017]"
+            >
+              Register Now
+            </Link>
+          ) : (
+            <span
+              aria-disabled="true"
+              title={operations?.registrationReason ?? "Registration is not currently available."}
+              className="inline-flex min-h-10 cursor-not-allowed items-center justify-center rounded-md bg-zinc-800 px-4 text-[0.68rem] font-black uppercase tracking-[0.1em] text-zinc-500"
+            >
+              Registration Closed
+            </span>
+          )}
 
           <Link
             href="/registrations"
-            className="inline-flex items-center justify-center py-1 text-[0.68rem] font-black uppercase tracking-[0.1em] text-[#D4A017] transition hover:text-yellow-300 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#D4A017]"
+            className="inline-flex cursor-pointer items-center justify-center py-1 text-[0.68rem] font-black uppercase tracking-[0.1em] text-[#D4A017] transition hover:text-yellow-300 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#D4A017]"
           >
             View Tournament Entries →
           </Link>
 
           <Link
             href="/schedule"
-            className="inline-flex min-h-10 items-center justify-center rounded-md border border-white/15 px-4 text-[0.68rem] font-black uppercase tracking-[0.1em] text-white transition hover:border-[#D4A017] hover:text-[#D4A017]"
+            className="inline-flex min-h-10 cursor-pointer items-center justify-center rounded-md border border-white/15 px-4 text-[0.68rem] font-black uppercase tracking-[0.1em] text-white transition hover:border-[#D4A017] hover:text-[#D4A017] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#D4A017]"
           >
             View Schedule
           </Link>

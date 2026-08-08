@@ -27,6 +27,7 @@ const navItems = [
 const mobileNavItems = [
   navItems[0],
   { label: "How AITT Works", href: "/how-it-works" },
+  { label: "Watch Live", href: "/watch" },
   ...navItems.slice(1),
 ];
 
@@ -54,7 +55,7 @@ function NavLink({
     <Link
       href={href}
       aria-current={activeItem === label ? "page" : undefined}
-      className={`${baseClasses} ${className ?? ""}`.trim()}
+      className={`${baseClasses} cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-yellow-400 ${className ?? ""}`.trim()}
     >
       {label}
     </Link>
@@ -74,7 +75,7 @@ function BassStackNavLink({
     <Link
       href="/bass-stack"
       aria-current={isActive ? "page" : undefined}
-      className={`inline-flex items-center whitespace-nowrap text-sm font-black uppercase tracking-[0.08em] transition duration-200 hover:text-red-500 ${
+      className={`inline-flex cursor-pointer items-center whitespace-nowrap text-sm font-black uppercase tracking-[0.08em] transition duration-200 hover:text-red-500 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-yellow-400 ${
         isActive ? "text-red-500" : "text-zinc-100"
       } ${className ?? ""}`.trim()}
     >
@@ -91,7 +92,7 @@ export default function Header({ activeItem }: { activeItem?: string }) {
       <header className="fixed inset-x-0 top-0 z-[100] w-full border-b border-zinc-800 bg-black/95 backdrop-blur">
         <div className="mx-auto flex w-full max-w-[1800px] items-center gap-2 px-2.5 py-3 min-[375px]:px-3 sm:gap-4 sm:px-4 lg:px-5">
           {/* Logo remains unchanged on desktop and scales down on mobile. */}
-          <Link href="/" className="flex min-w-0 shrink items-center">
+          <Link href="/" className="flex min-w-0 shrink cursor-pointer items-center focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-yellow-400">
             <Image
               src="/images/logo-new.png"
               alt="All In Tournament Trail"
@@ -142,7 +143,7 @@ export default function Header({ activeItem }: { activeItem?: string }) {
           <div className="ml-auto hidden shrink-0 items-center gap-4 min-[1440px]:flex">
             <Link
               href="/register"
-              className="rounded-md bg-red-700 px-5 py-3 text-sm font-black uppercase tracking-wide text-white transition hover:bg-red-600"
+              className="cursor-pointer rounded-md bg-red-700 px-5 py-3 text-sm font-black uppercase tracking-wide text-white transition hover:bg-red-600 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-yellow-400"
             >
               Register
             </Link>
@@ -179,7 +180,7 @@ export default function Header({ activeItem }: { activeItem?: string }) {
     href="/bass-stack"
     aria-label="Bass Stack"
     aria-current={activeItem === "Bass Stack" ? "page" : undefined}
-    className="inline-flex h-9 shrink-0 items-center justify-center sm:h-10"
+    className="inline-flex h-9 shrink-0 cursor-pointer items-center justify-center focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-yellow-400 sm:h-10"
   >
     <span
       className={`min-w-[42px] rounded border border-[#c9aa4a]/70 bg-black/70 px-1.5 py-1 text-center text-[0.42rem] font-black uppercase leading-none tracking-[0.08em] text-[#c9aa4a] transition active:scale-[0.96] hover:border-[#c9aa4a] hover:text-yellow-300 min-[375px]:min-w-[46px] min-[375px]:px-2 min-[375px]:text-[0.47rem] sm:min-w-[54px] sm:px-2.5 sm:text-[0.55rem] ${
@@ -204,7 +205,7 @@ export default function Header({ activeItem }: { activeItem?: string }) {
     aria-current={
       activeItem === "How AITT Works" ? "page" : undefined
     }
-    className={`flex h-9 shrink-0 items-center justify-center whitespace-nowrap px-0.5 text-center text-[0.53rem] font-black uppercase leading-[0.95] tracking-[0.02em] text-yellow-400 transition duration-200 active:scale-[0.96] hover:text-yellow-300 hover:drop-shadow-[0_0_8px_rgba(250,204,21,0.45)] min-[375px]:text-[0.58rem] sm:h-10 sm:px-1 sm:text-[0.68rem] ${
+    className={`flex h-9 shrink-0 cursor-pointer items-center justify-center whitespace-nowrap px-0.5 text-center text-[0.53rem] font-black uppercase leading-[0.95] tracking-[0.02em] text-yellow-400 transition duration-200 active:scale-[0.96] hover:text-yellow-300 hover:drop-shadow-[0_0_8px_rgba(250,204,21,0.45)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-yellow-400 min-[375px]:mx-0.5 min-[375px]:text-[0.58rem] sm:h-10 sm:px-1 sm:text-[0.68rem] ${
       activeItem === "How AITT Works"
         ? "drop-shadow-[0_0_8px_rgba(250,204,21,0.5)]"
         : ""
@@ -225,7 +226,7 @@ export default function Header({ activeItem }: { activeItem?: string }) {
    */}
   <Link
     href="/register"
-    className="inline-flex h-9 shrink-0 items-center justify-center rounded-md bg-red-700 px-1.5 text-[0.56rem] font-black uppercase tracking-[0.025em] text-white transition active:scale-[0.96] hover:bg-red-600 min-[375px]:px-2 min-[375px]:text-[0.61rem] sm:h-10 sm:px-3 sm:text-[0.7rem]"
+    className="inline-flex h-9 shrink-0 cursor-pointer items-center justify-center rounded-md bg-red-700 px-1.5 text-[0.56rem] font-black uppercase tracking-[0.025em] text-white transition active:scale-[0.96] hover:bg-red-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-yellow-400 min-[375px]:px-2 min-[375px]:text-[0.61rem] sm:h-10 sm:px-3 sm:text-[0.7rem]"
   >
     Register
   </Link>
@@ -242,7 +243,7 @@ export default function Header({ activeItem }: { activeItem?: string }) {
   </Link>
 
   <details className="group relative">
-              <summary className="flex h-9 list-none items-center justify-center gap-1 rounded-md border border-zinc-800 px-2 text-xs font-black uppercase tracking-[0.08em] text-zinc-100/90 transition duration-200 active:scale-[0.96] hover:border-zinc-600 hover:text-red-500 min-[375px]:px-2.5 sm:h-10 sm:gap-2 sm:px-3 [&::-webkit-details-marker]:hidden">
+              <summary className="flex h-9 cursor-pointer list-none items-center justify-center gap-1 rounded-md border border-zinc-800 px-2 text-xs font-black uppercase tracking-[0.08em] text-zinc-100/90 transition duration-200 active:scale-[0.96] hover:border-zinc-600 hover:text-red-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-yellow-400 min-[375px]:px-2.5 sm:h-10 sm:gap-2 sm:px-3 [&::-webkit-details-marker]:hidden">
                 <Menu aria-hidden="true" className="h-4 w-4 shrink-0" />
 
                 <span className="hidden sm:inline">Menu</span>

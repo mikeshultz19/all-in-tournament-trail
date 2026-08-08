@@ -82,7 +82,7 @@ export default function AOYPointsRaceStrip({
 
           <Link
             href="/standings"
-            className="absolute right-0 whitespace-nowrap text-[0.48rem] font-black uppercase tracking-[0.06em] text-neutral-600 transition hover:text-[#c9aa4a] sm:text-[0.58rem] sm:tracking-[0.09em]"
+            className="absolute right-0 cursor-pointer whitespace-nowrap text-[0.48rem] font-black uppercase tracking-[0.06em] text-neutral-600 transition hover:text-[#c9aa4a] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#c9aa4a] sm:text-[0.58rem] sm:tracking-[0.09em]"
           >
             View Full Standings →
           </Link>

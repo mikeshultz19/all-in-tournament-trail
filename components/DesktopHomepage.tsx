@@ -58,7 +58,7 @@ export default function DesktopHomePage({
 <div className="flex min-w-0 justify-center">
   <Link
     href="/no-forward-facing-sonar"
-    className="group inline-flex w-fit items-center gap-2 whitespace-nowrap text-sm font-black uppercase tracking-[0.08em] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-yellow-400"
+    className="group inline-flex w-fit cursor-pointer items-center gap-2 whitespace-nowrap text-sm font-black uppercase tracking-[0.08em] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-yellow-400"
   >
     <span className="text-[#D4A017]">
       <span className="min-[1360px]:hidden">No FFS</span>
@@ -89,7 +89,7 @@ export default function DesktopHomePage({
             <div className="flex min-w-0 justify-center">
               <Link
                 href="/watch"
-                className="group inline-flex items-center gap-3 text-sm focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-red-500"
+                className="group inline-flex cursor-pointer items-center gap-3 text-sm focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-red-500"
               >
                 <span
                   className="relative flex h-5 w-5 items-center justify-center"

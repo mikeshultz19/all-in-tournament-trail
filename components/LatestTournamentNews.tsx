@@ -1,4 +1,5 @@
 import { Pin } from "lucide-react";
+import Link from "next/link";
 
 import type { Announcement } from "@/types/announcement";
 
@@ -79,24 +80,26 @@ export default function LatestTournamentNews({
                   {announcement.content}
                 </div>
 
-                {announcement.link_label && announcement.link_url && (
-                  <a
-                    href={announcement.link_url}
-                    target={
-                      announcement.link_url.startsWith("http")
-                        ? "_blank"
-                        : undefined
-                    }
-                    rel={
-                      announcement.link_url.startsWith("http")
-                        ? "noopener noreferrer"
-                        : undefined
-                    }
-                    className="mt-4 inline-flex text-xs font-black uppercase tracking-[0.12em] text-[#D4A017] transition hover:text-yellow-300 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#D4A017]"
-                  >
-                    {announcement.link_label}
-                  </a>
-                )}
+                {announcement.link_label && announcement.link_url ? (
+                  announcement.link_url.startsWith("/") ? (
+                    <Link
+                      href={announcement.link_url}
+                      className="mt-4 inline-flex cursor-pointer text-xs font-black uppercase tracking-[0.12em] text-[#D4A017] transition hover:text-yellow-300 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#D4A017]"
+                    >
+                      {announcement.link_label}
+                    </Link>
+                  ) : (
+                    <a
+                      href={announcement.link_url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="mt-4 inline-flex cursor-pointer text-xs font-black uppercase tracking-[0.12em] text-[#D4A017] transition hover:text-yellow-300 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#D4A017]"
+                    >
+                      {announcement.link_label}
+                      <span className="sr-only"> (opens in a new tab)</span>
+                    </a>
+                  )
+                ) : null}
 
                 <p className="mt-4 text-xs text-neutral-500">
                   Updated{" "}

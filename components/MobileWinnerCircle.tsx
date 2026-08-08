@@ -211,7 +211,7 @@ export default function MobileWinnerCircle({
 
         <Link
           href={latestResults.completeResultsUrl}
-          className="mt-6 inline-flex min-h-12 w-full items-center justify-center rounded-md border border-[#8f762f]/70 bg-[#171717] px-5 text-xs font-black uppercase tracking-[0.12em] text-[#c9aa4a] transition hover:bg-[#111111] hover:text-white"
+          className="mt-6 inline-flex min-h-12 w-full cursor-pointer items-center justify-center rounded-md border border-[#8f762f]/70 bg-[#171717] px-5 text-xs font-black uppercase tracking-[0.12em] text-[#c9aa4a] transition hover:bg-[#111111] hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#c9aa4a]"
         >
           View Full Results
         </Link>

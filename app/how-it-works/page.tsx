@@ -417,7 +417,7 @@ export default function HowItWorksPage() {
         </article>
       </div>
 
-      <p className="mt-6 text-center text-sm font-semibold text-neutral-400">
+      <p className="mt-6 text-center text-sm font-semibold text-red-500">
         See below for full details.
       </p>
     </div>

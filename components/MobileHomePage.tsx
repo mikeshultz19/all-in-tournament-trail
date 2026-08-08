@@ -34,7 +34,7 @@ export default function MobileHomePage({
           <div className="flex min-w-0 flex-1 items-center justify-center pr-3">
             <Link
               href="/no-forward-facing-sonar"
-              className="group inline-flex items-center gap-1.5 whitespace-nowrap text-[0.68rem] font-black uppercase tracking-[0.08em] focus-visible:outline-2 focus-visible:outline-offset-3 focus-visible:outline-yellow-400"
+              className="group inline-flex cursor-pointer items-center gap-1.5 whitespace-nowrap text-[0.68rem] font-black uppercase tracking-[0.08em] focus-visible:outline-2 focus-visible:outline-offset-3 focus-visible:outline-yellow-400"
             >
               <span className="text-[#D4A017]">No FFS</span>
 

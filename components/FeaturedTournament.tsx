@@ -81,6 +81,7 @@ export default function FeaturedTournament({
   }
 
   const display = getTournamentDisplay(tournament);
+  const registrationOpen = operations?.registrationCanSubmit === true;
 
   return (
     <article className="w-full min-w-0 max-w-full overflow-hidden rounded-md border border-yellow-700/50 bg-[#080808]">
@@ -264,15 +265,25 @@ export default function FeaturedTournament({
         )}
 
         <div className="mt-3 space-y-3">
-          <Link
-            href={`/register?tournament=${tournament.slug}`}
-            className="block w-full bg-red-700 px-4 py-3 text-center text-[10px] font-black uppercase tracking-[0.08em] text-white transition hover:bg-red-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#D4A017]"
-          >
-            Register
-          </Link>
+          {registrationOpen ? (
+            <Link
+              href={`/register?tournament=${tournament.slug}`}
+              className="block w-full cursor-pointer bg-red-700 px-4 py-3 text-center text-[10px] font-black uppercase tracking-[0.08em] text-white transition hover:bg-red-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#D4A017]"
+            >
+              Register Now
+            </Link>
+          ) : (
+            <span
+              aria-disabled="true"
+              title={operations?.registrationReason ?? "Registration is not currently available."}
+              className="block w-full cursor-not-allowed bg-zinc-800 px-4 py-3 text-center text-[10px] font-black uppercase tracking-[0.08em] text-zinc-500"
+            >
+              Registration Closed
+            </span>
+          )}
           <Link
             href="/registrations"
-            className="block w-full border border-[#4A3A12] px-3 py-2.5 text-center text-[9px] font-black uppercase tracking-[0.1em] text-yellow-400 transition hover:border-yellow-600 hover:text-yellow-300 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#D4A017]"
+            className="block w-full cursor-pointer border border-[#4A3A12] px-3 py-2.5 text-center text-[9px] font-black uppercase tracking-[0.1em] text-yellow-400 transition hover:border-yellow-600 hover:text-yellow-300 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#D4A017]"
           >
             View Tournament Entries
           </Link>
