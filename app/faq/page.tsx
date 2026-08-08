@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import {
   ChevronDown,
@@ -13,6 +14,15 @@ import {
 
 import Header from "@/components/Header";
 import { PUBLIC_PAGE_CONTAINER } from "@/config/layout";
+
+export const metadata: Metadata = {
+  title: "FAQ | All In Tournament Trail",
+  description:
+    "Find answers about All In Tournament Trail registration, membership, tournament rules, payouts, AOY points, practice, and event formats.",
+  alternates: {
+    canonical: "/faq",
+  },
+};
 
 type FaqItem = {
   question: string;

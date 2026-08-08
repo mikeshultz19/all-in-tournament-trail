@@ -8,6 +8,9 @@ export const metadata: Metadata = {
   title: "AOY Points Race | All In Tournament Trail",
   description:
     "Learn how eligible All In Tournament Trail members earn Angler of the Year points throughout the season.",
+  alternates: {
+    canonical: "/aoy-points",
+  },
 };
 
 const sectionHeadingClass =

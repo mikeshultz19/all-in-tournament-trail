@@ -10,7 +10,7 @@ describe("Admin authentication session behavior", () => {
     "components/admin/AdminLogoutButton.tsx",
     "utf8",
   );
-  const proxySource = readFileSync("proxy.ts", "utf8");
+  const middlewareSource = readFileSync("middleware.ts", "utf8");
   const browserClientSource = readFileSync(
     "lib/supabase/client.ts",
     "utf8",
@@ -20,29 +20,26 @@ describe("Admin authentication session behavior", () => {
     expect(loginSource).toContain("signInWithPassword");
     expect(browserClientSource).toContain("createBrowserClient");
     expect(browserClientSource).not.toContain("persistSession: false");
-    expect(proxySource).toContain("supabase.auth.getUser()");
-    expect(proxySource).toContain("setAll(cookiesToSet)");
+    expect(middlewareSource).toContain("supabase.auth.getUser()");
+    expect(middlewareSource).toContain("setAll(cookiesToSet)");
   });
 
   it("requires an active Admin role at login and at the Admin boundary", () => {
-    for (const source of [loginSource, proxySource]) {
+    for (const source of [loginSource, middlewareSource]) {
       expect(source).toMatch(/role\s*[!=]==?\s*"admin"/);
       expect(source).toContain("active");
     }
   });
 
   it("signs out and redirects to the Admin login page", () => {
-    expect(logoutSource).toContain(
-      'supabase.auth.signOut({ scope: "local" })',
-    );
-    expect(logoutSource).toContain(
-      'window.location.assign("/admin/login")',
-    );
-    expect(proxySource).toContain('new URL("/admin/login"');
+    expect(logoutSource).toContain("supabase.auth.signOut()");
+    expect(logoutSource).toContain('router.replace("/admin/login")');
+    expect(logoutSource).toContain("router.refresh()");
+    expect(middlewareSource).toContain('new URL("/admin/login"');
   });
 
   it("does not add password expiration, reset, or first-login prompts", () => {
-    const combined = `${loginSource}\n${proxySource}`;
+    const combined = `${loginSource}\n${middlewareSource}`;
 
     expect(combined).not.toMatch(/resetPassword|updatePassword/i);
     expect(combined).not.toMatch(/password expiration|password expired/i);

@@ -8,6 +8,9 @@ import { PUBLIC_PAGE_CONTAINER } from "@/config/layout";
 export const metadata: Metadata = {
   title: "The AITT Insurance Pot | All In Tournament Trail",
   description: "Learn how the optional AITT Insurance Pot creates more payout opportunities for eligible tournament entries.",
+  alternates: {
+    canonical: "/insurance-pot",
+  },
 };
 
 const payoutRows = [["1–9", "1"], ["10–14", "2"], ["15–19", "3"], ["20–24", "4"], ["25–29", "5"], ["30–34", "6"]] as const;

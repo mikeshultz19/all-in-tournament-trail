@@ -15,14 +15,41 @@ import {
   type PublicTournamentRecord,
 } from "@/lib/tournament-record-adapter";
 import { getTournamentDisplay } from "@/lib/tournament-display";
+import { getOnlineRegistrationEligibility } from "@/lib/online-registration";
 
-const LAUNCH_REGISTRATION_STATUS = "Registration Closed";
+function RegistrationControl({
+  tournament,
+  registration,
+  className,
+}: {
+  tournament: PublicTournamentRecord;
+  registration: ReturnType<typeof getOnlineRegistrationEligibility>;
+  className: string;
+}) {
+  return tournament.eventType === "regular_season" || registration.canRegister ? (
+    <Link
+      href={`/register?tournament=${tournament.slug}`}
+      className={`${className} bg-red-700 text-white transition hover:bg-red-600`}
+    >
+      Register
+    </Link>
+  ) : (
+    <span
+      aria-disabled="true"
+      title={registration.reason}
+      className={`${className} cursor-not-allowed border border-neutral-700 text-neutral-500`}
+    >
+      {registration.label}
+    </span>
+  );
+}
 
 function TournamentRow({ tournament }: { tournament: PublicTournamentRecord }) {
   const thumbnailImage =
     tournament.thumbnailImage ?? getTournamentImage(tournament);
   const display = getTournamentDisplay(tournament);
   const isBassStackChallenge = tournament.tournamentFormat === "bass-stack";
+  const registration = getOnlineRegistrationEligibility(tournament);
 
   return (
     <article className="grid gap-4 border-b border-[#4A3A12] px-4 py-5 lg:grid-cols-[180px_minmax(0,1fr)_140px] lg:items-center lg:gap-6 lg:px-5 lg:py-5">
@@ -63,12 +90,11 @@ function TournamentRow({ tournament }: { tournament: PublicTournamentRecord }) {
             </p>
           )}
         </div>
-       <Link
-  href={`/register?tournament=${tournament.slug}`}
-  className="mt-3 inline-flex h-9 w-full items-center justify-center rounded-md bg-red-700 px-4 text-[0.68rem] font-black uppercase tracking-[0.08em] text-white transition hover:bg-red-600 lg:hidden"
->
-  Register
-</Link>
+        <RegistrationControl
+          tournament={tournament}
+          registration={registration}
+          className="mt-3 inline-flex h-9 w-full items-center justify-center rounded-md px-4 text-[0.68rem] font-black uppercase tracking-[0.08em] lg:hidden"
+        />
         <dl className="mt-4 grid grid-cols-1 gap-x-5 gap-y-3 border-t border-white/10 pt-4 sm:grid-cols-2 xl:grid-cols-5">
           <div>
             <dt className="text-[10px] font-black uppercase tracking-[0.12em] text-[#D4A017]">Date</dt>
@@ -95,12 +121,11 @@ function TournamentRow({ tournament }: { tournament: PublicTournamentRecord }) {
         </dl>
       </div>
 
-     <span
-  aria-disabled="true"
-  className="hidden min-h-11 w-full cursor-not-allowed items-center justify-center rounded-sm border border-neutral-700 px-3 py-3 text-center text-xs font-black uppercase tracking-[0.08em] text-neutral-500 lg:inline-flex"
->
-  {LAUNCH_REGISTRATION_STATUS}
-</span>
+      <RegistrationControl
+        tournament={tournament}
+        registration={registration}
+        className="hidden min-h-11 w-full items-center justify-center rounded-sm px-3 py-3 text-center text-xs font-black uppercase tracking-[0.08em] lg:inline-flex"
+      />
     </article>
   );
 }

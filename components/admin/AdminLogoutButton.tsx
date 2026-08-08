@@ -2,13 +2,26 @@
 
 import { LogOut } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { createSupabaseBrowserClient } from "@/lib/supabase/client";
 
 export default function AdminLogoutButton() {
   const router = useRouter();
 
-  function handleLogout() {
-    router.push("/admin/login");
-    router.refresh();
+  async function handleLogout() {
+    try {
+      const supabase = createSupabaseBrowserClient();
+      const { error } = await supabase.auth.signOut();
+
+      if (error) {
+        window.alert("Unable to log out. Please try again.");
+        return;
+      }
+
+      router.replace("/admin/login");
+      router.refresh();
+    } catch {
+      window.alert("Unable to log out. Please try again.");
+    }
   }
 
   return (

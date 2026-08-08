@@ -1,6 +1,16 @@
+import type { Metadata } from "next";
 import Header from "@/components/Header";
 import LiveStreamPlayer from "@/components/LiveStreamPlayer";
 import { PUBLIC_PAGE_CONTAINER } from "@/config/layout";
+
+export const metadata: Metadata = {
+  title: "Watch Live | All In Tournament Trail",
+  description:
+    "Watch live All In Tournament Trail tournament weigh-in broadcasts and event coverage.",
+  alternates: {
+    canonical: "/watch",
+  },
+};
 
 export default function WatchPage() {
   return (

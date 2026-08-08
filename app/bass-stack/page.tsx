@@ -1,7 +1,17 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 
 import Header from "@/components/Header";
 import { PUBLIC_PAGE_CONTAINER } from "@/config/layout";
+
+export const metadata: Metadata = {
+  title: "Bass Stack Challenge | All In Tournament Trail",
+  description:
+    "Learn how the AITT Bass Stack Total Weight Challenge counts every legal bass at selected All In Tournament Trail events.",
+  alternates: {
+    canonical: "/bass-stack",
+  },
+};
 
 const bassStackEvents = [
   {

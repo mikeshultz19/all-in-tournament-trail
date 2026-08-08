@@ -8,6 +8,9 @@ export const metadata: Metadata = {
   title: "Sponsors | All-In Tournament Trail",
   description:
     "Partner with All-In Tournament Trail and connect with competitive bass anglers and outdoor enthusiasts.",
+  alternates: {
+    canonical: "/sponsors",
+  },
 };
 
 const sponsorshipBenefits = [

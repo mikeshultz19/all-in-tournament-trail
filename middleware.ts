@@ -15,35 +15,40 @@ export async function middleware(request: NextRequest) {
 const url = process.env.NEXT_PUBLIC_SUPABASE_URL?.trim();
 const anonKey =
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY?.trim();
-
-  if (!url || !anonKey) {
-    return response;
-  }
-
-  const supabase = createServerClient(url, anonKey, {
-    cookies: {
-      getAll() {
-        return request.cookies.getAll();
-      },
-      setAll(cookiesToSet) {
-        for (const cookie of cookiesToSet) {
-          request.cookies.set(cookie.name, cookie.value);
-        }
-
-        response = NextResponse.next({ request });
-
-        for (const cookie of cookiesToSet) {
-          response.cookies.set(cookie.name, cookie.value, cookie.options);
-        }
-      },
-    },
-  });
-
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
   const isLoginPage = request.nextUrl.pathname === "/admin/login";
-  const authorized = Boolean(user && isActiveAdmin(user));
+  let hasUser = false;
+  let authorized = false;
+
+  if (url && anonKey) {
+    try {
+      const supabase = createServerClient(url, anonKey, {
+        cookies: {
+          getAll() {
+            return request.cookies.getAll();
+          },
+          setAll(cookiesToSet) {
+            for (const cookie of cookiesToSet) {
+              request.cookies.set(cookie.name, cookie.value);
+            }
+
+            response = NextResponse.next({ request });
+
+            for (const cookie of cookiesToSet) {
+              response.cookies.set(cookie.name, cookie.value, cookie.options);
+            }
+          },
+        },
+      });
+
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      hasUser = Boolean(user);
+      authorized = Boolean(user && isActiveAdmin(user));
+    } catch {
+      authorized = false;
+    }
+  }
 
   if (isLoginPage) {
     if (authorized) {
@@ -60,7 +65,7 @@ const anonKey =
       `${request.nextUrl.pathname}${request.nextUrl.search}`,
     );
 
-    if (user) {
+    if (hasUser) {
       loginUrl.searchParams.set("error", "unauthorized");
     }
 

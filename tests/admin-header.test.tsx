@@ -1,5 +1,12 @@
 import { renderToStaticMarkup } from "react-dom/server";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
+
+vi.mock("next/navigation", () => ({
+  useRouter: () => ({
+    replace: vi.fn(),
+    refresh: vi.fn(),
+  }),
+}));
 
 import AdminHeader from "@/components/admin/AdminHeader";
 
@@ -13,14 +20,14 @@ describe("AdminHeader", () => {
       "Tournament Administration &amp; Website Management",
     );
     expect(markup).toContain("Mike");
-    expect(markup).toContain("Logout");
+    expect(markup).toContain("Log Out");
     expect(markup).not.toContain("Tournament Administrator");
     expect(markup).not.toContain("Welcome");
   });
 
   it("preserves Admin Center branding and public website navigation", () => {
     expect(markup).toContain('href="/admin"');
-    expect(markup).toContain("Logout");
+    expect(markup).toContain("Log Out");
     expect(markup).toContain('href="/"');
     expect(markup).toContain("focus-visible:outline-2");
     expect(markup).not.toContain('href="/admin/members"');
