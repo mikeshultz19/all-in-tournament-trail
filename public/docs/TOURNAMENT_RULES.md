@@ -1,9 +1,9 @@
 # Official Tournament Rules
 
-**Version:** 1.6
+**Version:** 1.7
 **Status:** Official
 **Effective Date:** July 26, 2026
-**Last Updated:** August 5, 2026
+**Last Updated:** August 9, 2026
 
 These rules govern All-In Tournament Trail (AITT) events. They are intended to
 provide a fair, safe, and professionally administered tournament experience.
@@ -71,6 +71,12 @@ these rules do not state a specific penalty. Decisions of the Tournament
 Director are final unless AITT establishes a separate written review process.
 The AITT website is the official source for current tournament status and
 participant instructions.
+
+**Disqualification:** A team or individual disqualified from a tournament will
+receive no AOY points for that event, including participation or minimum
+points. A disqualification will not count as a tournament appearance toward
+Championship eligibility. Disqualified entries are ineligible for all
+tournament payouts.
 
 <a id="tournament-eligibility"></a>
 ## 2. Tournament Eligibility
@@ -734,6 +740,7 @@ administrative notes, and internal identifiers must not be displayed publicly.
 
 | Version | Date | Summary |
 | --- | --- | --- |
+| 1.7 | August 9, 2026 | Clarified that disqualified entries receive no AOY points, Championship appearance credit, or tournament payouts. |
 | 1.6 | August 5, 2026 | Added approved participant age, parental-consent, adult-supervision, and applicable-law requirements. |
 | 1.5 | August 5, 2026 | Restored AOY and Championship Qualification sections. Confirmed best five of eight for AOY and five-of-eight participation for Championship qualification. |
 | 1.4 | July 31, 2026 | Added Bass Stack Challenge rules for the designated Squaw Creek #5 and Lewisville #8 events. |

@@ -45,7 +45,7 @@ describe("compact Tournament Manager workflow", () => {
 
   it("uses six lifecycle stages without the old card stack", () => {
     const resolver = readFileSync("lib/tournament-workflow-state.ts", "utf8");
-    for (const stage of ["Prepare Tournament", "Import Results", "Insurance Pot", "Calculate Payouts", "Publish Results", "Calculate AOY"]) expect(resolver).toContain(stage);
+    for (const stage of ["Prepare Tournament", "Import Results", "Insurance Pot", "Generate Checks", "Publish Results", "Calculate AOY"]) expect(resolver).toContain(stage);
     expect(source).not.toContain("TournamentOperationCard");
     expect(source).not.toContain("TournamentProgress");
     expect(source).not.toContain("CurrentTournamentCard");
@@ -70,6 +70,14 @@ describe("compact Tournament Manager workflow", () => {
       "app/admin/tournament-manager/photos/page.tsx",
       "app/admin/tournament-manager/publish/page.tsx",
     ]) expect(readFileSync(route, "utf8")).toContain("/admin/tournament-manager?tournament=");
+  });
+
+  it("persists the exact selected tournament ID for reset reloads", () => {
+    const dashboard = readFileSync("components/admin/AdminTournamentDashboard.tsx", "utf8");
+    const page = readFileSync("app/admin/tournament-manager/page.tsx", "utf8");
+    expect(dashboard).toContain('url.searchParams.set("tournament", tournament.id)');
+    expect(dashboard).toContain('window.history.replaceState(window.history.state, "", url)');
+    expect(page).toContain("key={currentTournament?.id}");
   });
 
   it("loads current AOY evidence through service-readable tables", () => {

@@ -93,6 +93,7 @@ export default async function TournamentManagerPage({ searchParams }: Tournament
     <>
     {workflowWarning ? <p className="mb-4 border border-[#D4A017]/30 bg-[#D4A017]/5 px-4 py-3 text-sm text-neutral-300" role="status">{workflowWarning}</p> : null}
     <AdminTournamentDashboard
+      key={currentTournament?.id}
       tournaments={tournaments}
       initialTournamentId={currentTournament?.id}
       comparisonDate={now.toISOString()}

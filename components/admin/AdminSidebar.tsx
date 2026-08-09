@@ -80,7 +80,7 @@ export default function AdminSidebar() {
             return (
               <li key={item.href}>
                 {showWebsiteHeading ? (
-                  <p className="mb-2 mt-5 px-4 text-[10px] font-black uppercase tracking-[0.18em] text-neutral-600">
+                  <p className="mb-2 mt-5 border-t border-white/20 px-4 pt-4 text-[10px] font-black uppercase tracking-[0.22em] text-neutral-200">
                     Website
                   </p>
                 ) : null}
@@ -88,10 +88,10 @@ export default function AdminSidebar() {
                 <Link
                   href={item.href}
                   aria-current={active ? "page" : undefined}
-                  className={`flex min-h-11 items-center border-l-2 px-4 py-2 text-xs font-bold uppercase tracking-[0.1em] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#D4A017] ${
+                  className={`flex min-h-11 items-center rounded-r-sm border-l-2 px-4 py-2 text-xs font-bold uppercase tracking-[0.1em] transition focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#D4A017] ${
                     active
-                      ? "border-[#D4A017] bg-white/5 text-white"
-                      : "border-transparent text-neutral-400 hover:text-[#D4A017]"
+                      ? "border-[#D4A017] bg-gradient-to-r from-[#D4A017]/10 to-white/[0.03] text-white shadow-[inset_0_0_0_1px_rgba(255,255,255,0.025)]"
+                      : "border-transparent text-neutral-400 hover:bg-white/[0.025] hover:text-[#D4A017]"
                   }`}
                 >
                   {item.label}

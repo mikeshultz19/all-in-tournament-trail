@@ -152,9 +152,9 @@ export default function MembersList({
           </p>
         </div>
       ) : (
-        <div className="mt-5 overflow-x-auto border border-white/10 bg-[#111111]">
+        <div className="mt-5 overflow-x-auto rounded-md border border-white/10 bg-[#111111]">
           <table className="min-w-[1180px] w-full border-collapse text-left">
-            <thead className="border-b border-white/10 bg-black">
+            <thead className="border-b border-white/15 bg-[#090909]">
               <tr>
                 {[
                   "Member",

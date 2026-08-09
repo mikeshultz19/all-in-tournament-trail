@@ -254,6 +254,36 @@ export function renderImportedDashboardFixture(verified: boolean): string {
   );
 }
 
+export function renderLockedImportedDashboardFixture(): string {
+  const importedTournament: Tournament = {
+    ...tournaments[0],
+    weighfish_imported: true,
+    weighfish_imported_at: "2026-08-02T12:00:00Z",
+    results_verified_at: "2026-08-02T12:05:00Z",
+    results_verified_by: "admin-1",
+    result_status: "imported",
+    prepare_registration_review_complete: false,
+    paper_membership_reminder_checked: false,
+  };
+  return renderToStaticMarkup(
+    <AdminTournamentDashboard
+      tournaments={[importedTournament]}
+      initialTournamentId={importedTournament.id}
+      comparisonDate="2026-07-23T12:00:00-05:00"
+      showTournamentTools
+      initialExpandedStage={2}
+      importedRows={{
+        [importedTournament.id]: [
+          { id: "result-1", place: 1, team_name: "Smith / Jones", total_weight: 18.42, big_fish_weight: 5.1, bronze_payout: 100, silver_payout: 0, gold_payout: 250 },
+        ],
+      }}
+      importEvidence={{
+        [importedTournament.id]: { tournamentId: importedTournament.id, persistedRowCount: 1 },
+      }}
+    />,
+  );
+}
+
 export function renderPayoutReadyDashboardFixture(): string {
   const readyTournament: Tournament = {
     ...tournaments[0],

@@ -490,8 +490,7 @@ export default function HowItWorksPage() {
   </p>
 
   <p className="mt-3 text-base leading-8 text-neutral-300">
-  Every team or solo angler enters the <strong className="text-white">$60 Tournament Entry</strong> and
-  competes against the full field. Then, if you&apos;re an eligible member,
+  Every team or solo angler enters the <strong className="text-white">$60 Tournament Entry</strong>{" "}and competes against the full field. Then, if you&apos;re an eligible member,
   choose <strong className="text-white">Bronze</strong>,
   <strong className="text-white"> Silver</strong>, or
   <strong className="text-white"> Gold</strong> to match your confidence,

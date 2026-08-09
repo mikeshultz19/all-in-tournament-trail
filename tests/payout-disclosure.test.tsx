@@ -6,11 +6,11 @@ import {
   renderStaleFinalChecksDashboardFixture,
 } from "@/tests/admin-dashboard-fixture";
 
-describe("Calculate Payouts disclosures", () => {
+describe("Generate Checks disclosures", () => {
   it("renders one ordered payout report with collapsible categories", () => {
     const markup = renderPayoutReadyDashboardFixture();
     for (const label of [
-      "Final Checks",
+      "Checks to Write",
       "Base Tournament",
       "Bronze Pot",
       "Silver Pot",
@@ -22,7 +22,6 @@ describe("Calculate Payouts disclosures", () => {
       expect(markup).toContain(label);
     }
     expect(markup).not.toContain("Reconciliation");
-    expect(markup).not.toContain("Checks to Write");
   });
 
   it("uses an accessible reusable disclosure control", () => {
@@ -35,15 +34,22 @@ describe("Calculate Payouts disclosures", () => {
     expect(source).toContain('Expand');
   });
 
-  it("uses accessible category disclosure buttons", () => {
+  it("uses matching top and bottom parent disclosure buttons without category toggles", () => {
     const source = readFileSync("components/admin/OnSiteCloseoutCalculator.tsx", "utf8");
     const toggleSource = readFileSync("components/admin/AdminDisclosureToggle.tsx", "utf8");
     expect(toggleSource).toContain("aria-expanded={expanded}");
     expect(toggleSource).toContain("aria-controls={controls}");
-    expect(source).toContain("setReviewExpanded");
+    expect(source.match(/controls="weighfish-payout-review"/g)).toHaveLength(2);
+    expect(source.match(/controls="final-checks"/g)).toHaveLength(2);
+    expect(source.match(/setReviewExpanded\(\(current\) => !current\)/g)).toHaveLength(2);
+    expect(source.match(/setFinalExpanded\(\(current\) => !current\)/g)).toHaveLength(2);
+    expect(source.match(/<AdminDisclosureToggle/g)).toHaveLength(4);
+    expect(source).not.toContain("controlsId");
     expect(source).toContain("money(total)");
-    expect(source).toContain("Generate Final Checks");
-    expect(source).toContain("Insurance Pot changes were saved. Regenerate final checks to include the latest Insurance Pot payouts.");
+    expect(source).toContain("Generate Checks");
+    expect(source).toContain("Tournament Payout Total:");
+    expect(source).toContain("I have reviewed these payouts against WeighFish and confirm they are correct.");
+    expect(source).toContain("Insurance Pot changes were saved. Regenerate checks to include the latest Insurance Pot payouts.");
     expect(source).not.toContain('title="AITT Insurance Pot"');
   });
 
@@ -60,11 +66,11 @@ describe("Calculate Payouts disclosures", () => {
     for (let index = 1; index < order.length; index += 1) {
       expect(source.indexOf(`\"${order[index - 1]}\"`)).toBeLessThan(source.indexOf(`\"${order[index]}\"`));
     }
-    expect(source).toContain("Save Payout Summary");
-    expect(source).toContain("Generate Final Checks");
+    expect(source).toContain("Confirm Payout Review");
+    expect(source).toContain("Generate Checks");
     expect(source).toContain("Payout Summary");
-    expect(source).toContain("Final Checks");
-    expect(source).toContain("Final Checks Up to Date");
+    expect(source).toContain("Checks Generated");
+    expect(source).toContain("Checks to Write");
   });
 
   it("requires payout review and Insurance Pot completion before final checks", () => {
@@ -80,8 +86,8 @@ describe("Calculate Payouts disclosures", () => {
 
   it("enables regeneration when final checks are stale", () => {
     const markup = renderStaleFinalChecksDashboardFixture();
-    expect(markup).toContain("Insurance Pot changes were saved. Regenerate final checks to include the latest Insurance Pot payouts.");
-    expect(markup).toContain("Regenerate Final Checks");
-    expect(markup).not.toContain("Final checks are current.");
+    expect(markup).toContain("Insurance Pot changes were saved. Regenerate checks to include the latest Insurance Pot payouts.");
+    expect(markup).toContain("Regenerate Checks");
+    expect(markup).not.toContain("Checks are ready to write.");
   });
 });

@@ -1,5 +1,9 @@
 "use client";
 
+import { ChevronDown, ChevronUp } from "lucide-react";
+
+import { adminButtonStyles } from "@/components/admin/admin-button-styles";
+
 export default function AdminDisclosureToggle({
   expanded,
   controls,
@@ -15,9 +19,9 @@ export default function AdminDisclosureToggle({
       aria-expanded={expanded}
       aria-controls={controls}
       onClick={onToggle}
-      className="inline-flex min-h-10 items-center justify-center px-3 text-xs font-black uppercase text-neutral-300 transition hover:text-white"
+      className={adminButtonStyles("disclosure")}
     >
-      {expanded ? "▲ Collapse" : "▼ Expand"}
+      {expanded ? <><ChevronUp aria-hidden="true" className="size-4" /> Collapse</> : <><ChevronDown aria-hidden="true" className="size-4" /> Expand</>}
     </button>
   );
 }

@@ -19,6 +19,17 @@ export async function saveInsuranceWinnerDraftAction(tournamentId: string, _stat
     ...(record.winners[index]?.note ? { note: record.winners[index].note } : {}),
   }));
   if (winners.some((winner) => !Number.isInteger(winner.finishingPosition) || (winner.finishingPosition ?? 0) <= 0)) return { status: "error", message: "Enter a valid final finishing position for every recipient." };
+  const { data: disqualifiedRows, error: disqualifiedError } = await createSupabaseServerClient()
+    .from("tournament_result_entries")
+    .select("place,team_name")
+    .eq("tournament_id", tournamentId)
+    .eq("participation_status", "disqualified");
+  if (disqualifiedError) return { status: "error", message: "Disqualification eligibility could not be verified." };
+  const disqualifiedPlaces = new Set((disqualifiedRows ?? []).map((row) => Number(row.place)));
+  const disqualifiedNames = new Set((disqualifiedRows ?? []).map((row) => String(row.team_name).trim().toLocaleLowerCase()));
+  if (winners.some((winner) => disqualifiedPlaces.has(winner.finishingPosition ?? 0) || disqualifiedNames.has(winner.entryName.trim().toLocaleLowerCase()))) {
+    return { status: "error", message: "A Disqualified entry cannot receive an Insurance Pot payout." };
+  }
   if (record.entry_count > 0) {
     const { data: basePayoutRows, error: cutoffError } = await createSupabaseServerClient().from("tournament_result_entries").select("place").eq("tournament_id", tournamentId).gt("base_payout", 0);
     if (cutoffError) return { status: "error", message: "The Base Tournament payout cutoff could not be verified." };

@@ -7,6 +7,7 @@ import {
   type RegistrationReviewActionState,
 } from "@/app/admin/registration-review/actions";
 import type { Angler } from "@/types/aoy";
+import { adminButtonStyles } from "@/components/admin/admin-button-styles";
 
 const initialState: RegistrationReviewActionState = {
   status: "idle",
@@ -66,7 +67,7 @@ export default function RegistrationReviewResolutionForm({
           name="resolution"
           value="existing"
           disabled={pending}
-          className="min-h-10 bg-[#D4A017] px-4 text-xs font-black uppercase text-black disabled:opacity-50"
+          className={adminButtonStyles("primary")}
         >
           Confirm Existing
         </button>
@@ -74,7 +75,7 @@ export default function RegistrationReviewResolutionForm({
           name="resolution"
           value="new"
           disabled={pending}
-          className="min-h-10 border border-white/20 px-4 text-xs font-black uppercase text-white disabled:opacity-50"
+          className={adminButtonStyles("secondary")}
         >
           Approve New Angler
         </button>

@@ -296,7 +296,7 @@ export default function WeighfishCsvUploader({
             </p>
             <div className="mt-4 max-h-[32rem] overflow-auto border border-white/10">
               <table className="w-full min-w-[1080px] text-left text-sm">
-                <thead className="sticky top-0 z-10 border-b border-white/15 bg-[#111111] text-xs font-black uppercase text-neutral-500">
+                <thead className="sticky top-0 z-10 border-b border-white/15 bg-[#090909] text-xs font-black uppercase tracking-[0.06em] text-neutral-400">
                   <tr>
                     <th className="px-3 py-3">Final Place</th>
                     <th className="px-3 py-3">Team or Solo Entry</th>
@@ -315,7 +315,7 @@ export default function WeighfishCsvUploader({
                 <tbody className="divide-y divide-white/10">
                   {result.rows.map((row, index) => {
                     const rowWarning = getWeighfishTieWarning(row, result.rows);
-                    return <tr key={`${row.entryName}-${row.sourcePlacement}-${index}`}>
+                    return <tr key={`${row.entryName}-${row.sourcePlacement}-${index}`} className="transition-colors hover:bg-white/[0.025]">
                       <td className="px-3 py-3 font-bold text-white">{row.sourcePlacement}</td>
                       <td className="px-3 py-3 text-white">{row.entryName}</td>
                       <td className="px-3 py-3 text-neutral-300">{row.totalWeight}</td>

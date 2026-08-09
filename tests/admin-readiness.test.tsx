@@ -12,6 +12,7 @@ import {
   renderAdminDashboardFixture,
   renderImportDashboardFixture,
   renderLockedImportDashboardFixture,
+  renderLockedImportedDashboardFixture,
   renderImportedDashboardFixture,
   renderPayoutReadyDashboardFixture,
   renderPublishReadyDashboardFixture,
@@ -35,7 +36,7 @@ describe("Tournament Operations Dashboard", () => {
     expect(markup).toContain("Prepare Tournament");
     expect(markup).toContain("Import Results");
     expect(markup).toContain("Insurance Pot");
-    expect(markup).toContain("Calculate Payouts");
+    expect(markup).toContain("Generate Checks");
     expect(markup).toContain("Publish Results");
     expect(markup).toContain("Calculate AOY");
     expect(markup.match(/aria-expanded="true"/g) ?? []).toHaveLength(1);
@@ -82,6 +83,14 @@ describe("Tournament Operations Dashboard", () => {
     expect(lockedMarkup).not.toContain("Choose WeighFish CSV");
   });
 
+  it("shows an existing imported result set even when preparation later becomes incomplete", () => {
+    const importedMarkup = renderLockedImportedDashboardFixture();
+    expect(importedMarkup).toContain("Results Verified");
+    expect(importedMarkup).toContain("Reset Import");
+    expect(importedMarkup).not.toContain("Complete Tournament Preparation before importing results.");
+    expect(importedMarkup).not.toContain("Choose WeighFish CSV");
+  });
+
   it("does not render an empty review from stale import metadata", () => {
     const staleMarkup = renderStaleImportMetadataDashboardFixture();
     expect(staleMarkup).toContain("Choose WeighFish CSV");
@@ -115,7 +124,7 @@ describe("Tournament Operations Dashboard", () => {
   it("shows the generated ordered payout list after verification", () => {
     const payoutMarkup = renderPayoutReadyDashboardFixture();
     for (const label of [
-      "Final Checks",
+      "Checks to Write",
       "Base Tournament",
       "Bronze Pot",
       "Silver Pot",
@@ -128,7 +137,7 @@ describe("Tournament Operations Dashboard", () => {
       expect(payoutMarkup).toContain(label);
     }
     expect(payoutMarkup).not.toContain("Reconciliation");
-    expect(payoutMarkup).not.toContain("Checks to Write");
+    expect(payoutMarkup).toContain("Checks Generated");
   });
 
   it("keeps unrelated modules off the operations dashboard", () => {

@@ -34,3 +34,23 @@ export async function resetImportedResultsAction(tournamentId: string, overrideP
   }
   refreshImportWorkflow();
 }
+
+export async function setImportedResultDisqualificationAction(
+  tournamentId: string,
+  resultEntryId: string,
+  disqualified: boolean,
+) {
+  const admin = await requireAdminUser();
+  const { error } = await createSupabaseServerClient().rpc(
+    "set_working_result_disqualification",
+    { p_tournament_id: tournamentId, p_result_entry_id: resultEntryId, p_disqualified: disqualified, p_admin_user_id: admin.id },
+  );
+  if (error) {
+    if (error.message.includes("set_working_result_disqualification") || error.message.includes("schema cache")) {
+      throw new Error("DQ database support is not available. Apply migration 202608090001 before using DQ management.");
+    }
+    if (error.message.includes("AITT_DQ_EDIT_LOCKED")) throw new Error("Disqualification can only be changed after verification and before financial closeout or publication.");
+    throw new Error("The disqualification status could not be changed.", { cause: error });
+  }
+  refreshImportWorkflow();
+}

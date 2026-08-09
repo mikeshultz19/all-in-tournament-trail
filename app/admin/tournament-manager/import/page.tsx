@@ -45,7 +45,7 @@ export default async function WeighFishImportPage({
   const { data: importedRows } = await createSupabaseServerClient()
     .from("tournament_result_entries")
     .select(
-      "id,place,team_name,total_weight,big_fish_weight,bronze_payout,silver_payout,gold_payout,original_import_data",
+      "id,place,team_name,total_weight,big_fish_weight,bronze_payout,silver_payout,gold_payout,participation_status,original_import_data",
     )
     .eq("tournament_id", tournament.id)
     .order("place");
@@ -101,9 +101,11 @@ export default async function WeighFishImportPage({
           Tournament Preparation
         </p>
 
-        {preparationComplete ? (
+        {preparationComplete || hasImportedRows ? (
           <p className="mt-2 text-sm leading-6 text-emerald-300">
-            Tournament preparation is complete. Import Results is unlocked.
+            {preparationComplete
+              ? "Tournament preparation is complete. Import Results is unlocked."
+              : "Existing imported results remain available for review or reset."}
           </p>
         ) : (
           <div className="mt-2 space-y-3">
@@ -139,7 +141,7 @@ export default async function WeighFishImportPage({
         )}
       </section>
 
-      {preparationComplete ? (
+      {preparationComplete || hasImportedRows ? (
         <div className="mt-8">
           {!hasImportedRows ? (
             <WeighfishCsvUploader key={tournament.id} tournamentId={tournament.id} />

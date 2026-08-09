@@ -28,11 +28,13 @@ describe("website analytics and registration interest", () => {
     expect(source.match(/<RegistrationInterest/g)).toHaveLength(1);
   });
 
-  it("defines the ten requested analytics categories", async () => {
+  it("defines the requested analytics categories", async () => {
     const { TRACKED_PAGE_NAMES } = await import("@/lib/website-analytics");
     expect(TRACKED_PAGE_NAMES).toEqual([
       "Homepage", "Schedule", "Registration", "Rules", "FAQ", "Sponsors",
       "Winner Circle", "AOY Standings", "Tournament Results", "Contact",
+      "How It Works", "Insurance Pot", "Bass Stack", "Watch",
+      "No Forward-Facing Sonar", "AOY Points",
     ]);
   });
 });

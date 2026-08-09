@@ -15,7 +15,8 @@ export default function WebsiteAnalyticsTracker() {
       let sessionId = sessionStorage.getItem(SESSION_KEY);
       if (!visitorId) { visitorId = crypto.randomUUID(); localStorage.setItem(VISITOR_KEY, visitorId); }
       if (!sessionId) { sessionId = crypto.randomUUID(); sessionStorage.setItem(SESSION_KEY, sessionId); }
-      const body = JSON.stringify({ visitorId, sessionId, path: pathname, referrer: document.referrer });
+      const utmSource = new URLSearchParams(window.location.search).get("utm_source");
+      const body = JSON.stringify({ visitorId, sessionId, path: pathname, referrer: document.referrer, utmSource });
       if (!navigator.sendBeacon("/api/analytics/page-view", new Blob([body], { type: "application/json" }))) {
         void fetch("/api/analytics/page-view", { method: "POST", headers: { "content-type": "application/json" }, body, keepalive: true });
       }

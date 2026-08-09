@@ -6,6 +6,7 @@ import {
 import Link from "next/link";
 
 import PublishTournamentForm from "@/components/admin/PublishTournamentForm";
+import { excludeDisqualified } from "@/lib/disqualification";
 import {
   calculateResultPayouts,
   payoutAmount,
@@ -32,6 +33,7 @@ type ImportedEntry = {
   silver_payout: number | null;
   gold_payout: number | null;
   big_bass_payout: number | null;
+  participation_status: string;
 };
 
 function currency(value: number): string {
@@ -84,7 +86,7 @@ export default async function PublishPage({
   const { data, error } = await supabase
     .from("tournament_result_entries")
     .select(
-      "place, team_name, fish_count, total_weight, big_fish_weight, base_payout, bronze_payout, silver_payout, gold_payout, big_bass_payout",
+      "place, team_name, fish_count, total_weight, big_fish_weight, base_payout, bronze_payout, silver_payout, gold_payout, big_bass_payout, participation_status",
     )
     .eq("tournament_id", tournament.id)
     .order("place", {
@@ -96,7 +98,7 @@ export default async function PublishPage({
     console.error("Publish review load failed.", error);
   }
 
-  const entries = (data ?? []) as ImportedEntry[];
+  const entries = excludeDisqualified((data ?? []) as ImportedEntry[]);
 
   const champion =
     entries.find((entry) => entry.place === 1) ??
@@ -327,9 +329,9 @@ export default async function PublishPage({
               imported team.
             </p>
 
-            <div className="mt-5 max-h-[36rem] overflow-auto border border-white/10">
+            <div className="mt-5 max-h-[36rem] overflow-auto rounded-sm border border-white/10">
               <table className="min-w-[1200px] text-left text-sm">
-                <thead className="sticky top-0 z-10 bg-black text-xs font-black uppercase tracking-[0.1em] text-neutral-500">
+                <thead className="sticky top-0 z-10 border-b border-white/15 bg-[#090909] text-xs font-black uppercase tracking-[0.1em] text-neutral-400">
                   <tr>
                     <th className="px-4 py-3">Place</th>
                     <th className="px-4 py-3">Team</th>
@@ -365,7 +367,7 @@ export default async function PublishPage({
                     return (
                       <tr
                         key={`${entry.place ?? "none"}-${entry.team_name}-${index}`}
-                        className="border-t border-white/10"
+                        className="border-t border-white/10 transition-colors hover:bg-white/[0.025]"
                       >
                         <td className="whitespace-nowrap px-4 py-3 font-bold text-white">
                           {entry.place ?? "—"}

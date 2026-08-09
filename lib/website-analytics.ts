@@ -7,7 +7,13 @@ export const TRACKED_PAGES: Record<string, string> = {
   "/schedule": "Schedule",
   "/register": "Registration",
   "/rules": "Rules",
-  "/how-it-works": "FAQ",
+  "/faq": "FAQ",
+  "/how-it-works": "How It Works",
+  "/insurance-pot": "Insurance Pot",
+  "/bass-stack": "Bass Stack",
+  "/watch": "Watch",
+  "/no-forward-facing-sonar": "No Forward-Facing Sonar",
+  "/aoy-points": "AOY Points",
   "/sponsors": "Sponsors",
   "/winner-circle": "Winner Circle",
   "/standings": "AOY Standings",
@@ -17,6 +23,8 @@ export const TRACKED_PAGES: Record<string, string> = {
 export const TRACKED_PAGE_NAMES = [
   "Homepage", "Schedule", "Registration", "Rules", "FAQ", "Sponsors",
   "Winner Circle", "AOY Standings", "Tournament Results", "Contact",
+  "How It Works", "Insurance Pot", "Bass Stack", "Watch",
+  "No Forward-Facing Sonar", "AOY Points",
 ] as const;
 
 export function pageNameForPath(path: string): string | null {
@@ -24,18 +32,77 @@ export function pageNameForPath(path: string): string | null {
   return TRACKED_PAGES[path] ?? null;
 }
 
+export const AITT_ANALYTICS_TIME_ZONE = "America/Chicago";
+
+function zonedParts(value: Date, timeZone: string) {
+  const parts = new Intl.DateTimeFormat("en-US", {
+    timeZone,
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    hourCycle: "h23",
+  }).formatToParts(value);
+  return Object.fromEntries(
+    parts
+      .filter((part) => part.type !== "literal")
+      .map((part) => [part.type, Number(part.value)]),
+  );
+}
+
+export function startOfAnalyticsDay(
+  value: Date,
+  timeZone = AITT_ANALYTICS_TIME_ZONE,
+) {
+  const localDate = zonedParts(value, timeZone);
+  const targetWallTime = Date.UTC(
+    localDate.year,
+    localDate.month - 1,
+    localDate.day,
+  );
+  let candidate = targetWallTime;
+
+  for (let attempt = 0; attempt < 4; attempt += 1) {
+    const observed = zonedParts(new Date(candidate), timeZone);
+    const observedWallTime = Date.UTC(
+      observed.year,
+      observed.month - 1,
+      observed.day,
+      observed.hour,
+      observed.minute,
+      observed.second,
+    );
+    candidate += targetWallTime - observedWallTime;
+  }
+
+  return new Date(candidate);
+}
+
+export function countUniqueVisitorsSince(
+  rows: readonly { visitor_id: string; viewed_at: string }[],
+  boundary: Date,
+) {
+  return new Set(
+    rows
+      .filter((row) => new Date(row.viewed_at) >= boundary)
+      .map((row) => row.visitor_id),
+  ).size;
+}
+
 export async function getAnalyticsDashboard() {
   const supabase = createSupabaseServerClient();
   const now = new Date();
-  const startToday = new Date(now);
-  startToday.setHours(0, 0, 0, 0);
-  const startWeek = new Date(startToday);
-  startWeek.setDate(startToday.getDate() - startToday.getDay());
+  const startToday = startOfAnalyticsDay(now);
+  const startWeek = new Date(now);
+  startWeek.setHours(0, 0, 0, 0);
+  startWeek.setDate(startWeek.getDate() - startWeek.getDay());
   const startMonth = new Date(now.getFullYear(), now.getMonth(), 1);
 
   const [sessions, views, interest] = await Promise.all([
     supabase.from("website_analytics_sessions").select("*"),
-    supabase.from("website_page_views").select("page_name,viewed_at"),
+    supabase.from("website_page_views").select("visitor_id,page_name,viewed_at"),
     supabase.from("registration_interest").select("id,first_name,email,created_at").order("created_at", { ascending: false }),
   ]);
   if (sessions.error || views.error || interest.error) {
@@ -52,7 +119,7 @@ export async function getAnalyticsDashboard() {
 
   return {
     totalVisitors: visitorIds.size,
-    visitorsToday: since(startToday),
+    visitorsToday: countUniqueVisitorsSince(viewRows, startToday),
     visitorsThisWeek: since(startWeek),
     visitorsThisMonth: since(startMonth),
     totalPageViews: viewRows.length,

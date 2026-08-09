@@ -51,7 +51,7 @@ export default async function OnSiteCloseoutPage({
         className="inline-flex min-h-11 items-center gap-2 text-xs font-black uppercase tracking-[0.14em] text-neutral-400 hover:text-[#D4A017]"
       >
         <ArrowLeft className="size-4" />
-        Back to Calculate Payouts
+        Back to Generate Checks
       </Link>
 
       <header className="mt-6 border-b border-white/10 pb-6">

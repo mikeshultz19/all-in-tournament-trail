@@ -42,7 +42,7 @@ export async function listTournamentImportedRows(
   if (!tournamentIds.length) return {};
   const { data, error } = await createSupabaseServerClient()
     .from("tournament_result_entries")
-    .select("id,tournament_id,place,team_name,total_weight,big_fish_weight,bronze_payout,silver_payout,gold_payout,original_import_data")
+    .select("id,tournament_id,place,team_name,total_weight,big_fish_weight,bronze_payout,silver_payout,gold_payout,participation_status,original_import_data")
     .in("tournament_id", tournamentIds)
     .order("place", { ascending: true });
   if (error) throw new Error("Tournament imported results could not be loaded.", { cause: error });
@@ -57,6 +57,7 @@ export async function listTournamentImportedRows(
       bronze_payout: row.bronze_payout,
       silver_payout: row.silver_payout,
       gold_payout: row.gold_payout,
+      participation_status: row.participation_status,
       original_import_data: row.original_import_data as ImportedRow["original_import_data"],
     });
   }

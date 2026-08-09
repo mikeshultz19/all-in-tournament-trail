@@ -15,9 +15,9 @@ describe("verified import payout source", () => {
     expect(markup).toContain("Smith / Jones");
     expect(markup).not.toContain("Choose WeighFish CSV");
     expect(markup).not.toContain('type="file"');
-    expect(markup).not.toContain("Checks to Write");
+    expect(markup).toContain("Checks to Write");
     expect(markup).not.toContain("Reconciliation");
-    expect(markup).toContain("Final Checks Up to Date");
+    expect(markup).toContain("Checks Generated");
   });
 
   it("shows prerequisite guidance instead of an uploader without a verified import", () => {
@@ -48,7 +48,7 @@ describe("verified import payout source", () => {
     expect(source).toContain('category: "AITT Insurance Pot"');
     expect(source).toContain("Complete Tournament");
     expect(source).not.toContain("Enter the Insurance Pot winners in Calculate Payouts");
-    expect(source).toContain("Final Checks Up to Date");
+    expect(source).toContain("Checks Generated");
   });
 
   it("keeps reset responsible for invalidating both imported rows and derived payouts", () => {
