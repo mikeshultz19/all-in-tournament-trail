@@ -6,8 +6,9 @@ Last Updated: July 27, 2026
 ## Purpose
 
 This guide keeps public wording consistent, clear, and familiar to tournament
-anglers. It complements `docs/UI-Standards.md`; it does not replace the visual
-standards or create a broader design system.
+anglers. It incorporates the durable principles from the archived compact UI
+standards and remains the current visual guidance without creating a broader
+design system.
 
 ## Terminology
 

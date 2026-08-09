@@ -1,7 +1,12 @@
 # How Dynamic Content Works
 
+> **Historical / Superseded:** This abbreviated data-flow summary is retained
+> for reference. Use
+> [technical/DYNAMIC-DATA-MAP.md](../technical/DYNAMIC-DATA-MAP.md) for current
+> implementation truth.
+
 > Current-state note (2026-07-29): Exact implemented and missing paths are in
-> [technical/DYNAMIC-DATA-MAP.md](technical/DYNAMIC-DATA-MAP.md).
+> [technical/DYNAMIC-DATA-MAP.md](../technical/DYNAMIC-DATA-MAP.md).
 
 Version: 1.0
 Last Updated: July 27, 2026

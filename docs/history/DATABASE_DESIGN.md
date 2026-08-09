@@ -3,11 +3,15 @@ Last Updated: July 27, 2026
 
 # All In Tournament Trail Database Design
 
+> **Historical / Superseded:** This is the original database blueprint. Use the
+> canonical [Documentation Index](../DOCUMENTATION-INDEX.md), current technical
+> milestone documents, and checked-in migrations for implementation truth.
+
 > **Current-state note (2026-07-29):** The detail below is the original
 > blueprint, not the deployed-schema inventory. Migrations now define
 > tournaments, news, registrations, Results, AOY rows, seasons, anglers,
 > memberships, teams, imported result entries, and reset logs. Use
-> [CURRENT_STATE_AUDIT_2026-07-29.md](CURRENT_STATE_AUDIT_2026-07-29.md) and
+> the archived [CURRENT_STATE_AUDIT_2026-07-29.md](CURRENT_STATE_AUDIT_2026-07-29.md) and
 > the checked-in migrations for implementation evidence.
 
 *Phase 4.1 – Registration Persistence Blueprint*

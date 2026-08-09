@@ -490,5 +490,37 @@ Use this document to record approved project decisions that affect architecture,
 - **Constraint:** AITT is not claiming affiliation with or endorsement by Major League Fishing.
 - **Impact:** Public schedule presentation, tournament detail copy, FAQ, Official Rules, Tournament Operations documentation, style guidance, and focused Bass Stack tests.
 
+### 2026-08-08 — Use Cloudflare Workers and OpenNext for production
+
+- **Status:** Approved and operational; supersedes the 2026-07-23 planned
+  Vercel-hosting decision.
+- **Decision:** Deploy the Next.js application to Cloudflare Workers through
+  OpenNext and Wrangler. Keep `wrangler.jsonc` as the source-controlled Worker
+  configuration and declare the `allintrail.com` Custom Domain locally.
+- **Security:** Keep `SUPABASE_SERVICE_ROLE_KEY` as a Cloudflare Secret. Local
+  credentials belong in `.env.local`; elevated credentials never use a
+  `NEXT_PUBLIC_*` name and are never committed.
+- **Maintenance:** A remote/local Wrangler warning involving Cloudflare-generated
+  metadata remains under review. Do not blindly copy route metadata, preview
+  metadata, or dashboard/runtime fields into local configuration.
+- **Impact:** Vercel instructions are historical. Deployments use
+  `npm run deploy`, followed by public and Admin production smoke checks.
+
+### 2026-08-08 — Adopt the implemented tournament closeout architecture
+
+- **Status:** Approved and implemented.
+- **Decision:** Use protected Registration Review, transactional WeighFish
+  Working Results import, identity reconciliation, payout/check preparation,
+  tournament financial closeout, immutable Official Results, and separate AOY
+  and Championship projections.
+- **Operational priority:** Immediately after weigh-in, verified import,
+  reconciliation, payouts, checks, and financial closeout come before website
+  photos, public publication, AOY, or Championship updates.
+- **Payment boundary:** Durable registration infrastructure exists, but live
+  Square checkout and verified public payment completion remain pending.
+- **Email boundary:** Resend supports registration-interest confirmation when
+  configured. It is not the Contact delivery system or paid-registration
+  confirmation.
+
 ---
 For an overview of the project, begin with **00_START_HERE.md**.

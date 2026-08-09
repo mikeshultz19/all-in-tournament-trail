@@ -3,9 +3,14 @@ Last Updated: July 27, 2026
 
 # Tournament Data Model
 
+> **Historical / Superseded:** This file preserves the original tournament
+> model and demo seed context. Use
+> [technical/DYNAMIC-DATA-MAP.md](../technical/DYNAMIC-DATA-MAP.md) and the
+> checked-in migrations for current implementation truth.
+
 > Current-state note (2026-07-29): This documents the original tournament
 > foundation, not the complete schema. Use the migrations and
-> [technical/DYNAMIC-DATA-MAP.md](technical/DYNAMIC-DATA-MAP.md) for current
+> [technical/DYNAMIC-DATA-MAP.md](../technical/DYNAMIC-DATA-MAP.md) for current
 > tables and flows.
 
 Updated: 2026-07-23

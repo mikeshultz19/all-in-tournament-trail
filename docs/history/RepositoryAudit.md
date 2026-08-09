@@ -3,11 +3,11 @@ Last Updated: July 27, 2026
 
 # Repository Audit
 
-> **Historical document:** This audit records the 2026-07-20 cleanup baseline.
-> It does not describe the current Supabase or AITT Admin Center state. For the
-> current repository, use [ProjectStatus.md](ProjectStatus.md) and
-> [RepositoryMap.md](RepositoryMap.md). Placeholder observations below are
-> preserved as dated audit findings, not current claims.
+> **Historical / Superseded:** This audit records the 2026-07-20 cleanup
+> baseline and is retained for reference only. Use
+> [DOCUMENTATION-INDEX.md](../DOCUMENTATION-INDEX.md) for current documentation.
+> Placeholder observations below are preserved as dated findings, not current
+> claims.
 
 ## Cleanup Batch 4 — Complete (2026-07-20)
 

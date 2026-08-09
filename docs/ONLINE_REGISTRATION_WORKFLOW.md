@@ -1,9 +1,9 @@
 # Online Registration Workflow
 
-> Implementation note (2026-07-29): This remains the approved target workflow.
-> The current application validates and quotes requests but does not prove
-> completed Square finalization and durable public registration/membership
-> creation. Those steps are launch blockers.
+> Implementation note (2026-08-08): Durable registration infrastructure,
+> registration identity classification, and protected Registration Review are
+> implemented. Live Square checkout and verified public payment completion are
+> still pending and are not operational.
 
 **Document Version:** 1.1
 
@@ -41,14 +41,13 @@ not part of the current Phase 1 implementation.
 - [Participant Liability Waiver](LIABILITY_WAIVER.md)
 - [Payment Operations Manual](PAYMENT_OPERATIONS.md)
 - [Tournament Operations and Registration Process](TOURNAMENT_OPERATIONS_AND_REGISTRATION_PROCESS.md)
-- [Database Design](DATABASE_DESIGN.md)
+- [Durable Registration](technical/DURABLE_REGISTRATION.md)
 - [Project Deployment Checklist](PROJECT_DEPLOYMENT_CHECKLIST.md)
 - [Decision Log](DecisionLog.md)
-- [Project Status](ProjectStatus.md)
-- [How the Website Works](HOW_THE_WEBSITE_WORKS.md)
-- [AI Relearn](AI_RELEARN.md)
+- [Documentation Index](DOCUMENTATION-INDEX.md)
+- [System Architecture](SYSTEM_ARCHITECTURE.md)
 
-**Last Updated:** 2026-07-22
+**Last Updated:** 2026-08-08
 
 > **Authority:** This document is the source of truth for Early Online
 > Registration. Financial controls remain authoritative in the Payment
@@ -113,21 +112,22 @@ tournament-morning check-in.
 
 ## 3. Current Implementation Boundary
 
-Phase 1 provides the domain model, configured options, registration form,
-client validation, server validation, server-authoritative quote, fee
-calculation, review experience, payment-gateway interface, confirmation-page
-structure, lifecycle helpers, capacity-hold rules, and focused tests.
+The application provides the domain model, configured options, registration
+form, client/server validation, server-authoritative quote, fee calculation,
+durable completion boundary, identity classification and review queue,
+confirmation-page structure, lifecycle helpers, capacity rules, and focused
+tests.
 
 The public `/rules` and `/liability-waiver` routes load their content directly
 from the corresponding Markdown documents in `docs/`. Registration receives
 the current document versions from the same server-side loader, so the public
 policy content is not manually duplicated in page components.
 
-Production payment is disabled. The repository currently has no durable
-registration database or authenticated Admin access, membership
-lookup service, Square SDK payment creation, verified Square webhook handler,
-or registration confirmation email service. The application must not imply
-that a disabled checkout created a registration or attempted payment.
+Production payment is disabled. Supabase Admin Auth, durable registration, and
+Registration Review exist. The repository does not provide live Square SDK
+payment creation, a verified production Square callback/webhook flow, or a
+public payment-completion path. The application must not imply that a quote or
+disabled checkout created a paid registration or attempted payment.
 
 ## 4. Registration Entry Points and CTA States
 
@@ -417,18 +417,23 @@ number, tournament, date, venue, anglers, selected options, Total Paid, Card
 Processing Fee, registration status, tournament-morning instructions, current
 policy link, and correction contact.
 
-No transactional registration email service is currently implemented.
-Cloudflare Email Routing only forwards inbound contact email and is not an
-application email-sending API. Phase 2 must add an explicitly approved
-server-only email adapter, approved sender configuration, delivery-status
-metadata, retry behavior, and an authorized redelivery action. Email failure
-never reverses payment or confirmation.
+No paid-registration confirmation email is currently implemented. The existing
+Resend integration is limited to registration-interest confirmation when
+`RESEND_API_KEY` is configured; it is not proof of a Square payment or paid
+registration. Cloudflare Email Routing only forwards inbound contact email and
+is not an application transactional-email API. A future paid-registration
+email path still requires approved sender configuration, delivery metadata,
+retry/redelivery controls, and must never reverse payment or registration when
+email delivery fails.
 
 ## 12. Administrative Experience
 
-AITT Admin Center exists for tournament administration, but authentication and
-registration administration are not implemented. Phase 2 must add a protected,
-server-authorized registration view containing:
+AITT Admin Center authentication and the protected Registration Review queue
+are implemented. Current review records preserve submitted identity evidence,
+candidate matches, resolution history, and stable Competitive Record ownership.
+Payment-related fields must remain server-authorized and private. A completed
+live Square integration must additionally expose only the approved operational
+registration/payment view containing:
 
 - Confirmation number, tournament, type, anglers, and date registered.
 - Selected options and price snapshot.
@@ -489,7 +494,8 @@ Before Square sandbox or production checkout is enabled:
 9. Implement payment-status retrieval for browser-interruption recovery.
 10. Implement confirmation lookup without exposing private records.
 11. Add the registration confirmation email adapter, delivery state, retry, and authorized redelivery.
-12. Build Admin authentication, authorization, registration review, and reconciliation views.
+12. Verify the implemented Admin authentication, authorization, registration
+    review, and reconciliation paths against Square-backed records.
 13. Add rate limiting, operational monitoring, alerting, and recovery runbooks.
 14. Complete Square sandbox, Apple Pay domain, failure, refresh, concurrency, accessibility, and end-to-end testing.
 15. Complete the applicable launch gates in the Project Deployment Checklist.
@@ -527,7 +533,12 @@ mandatory.
 - Completed: focused eligibility, pricing, acknowledgment, idempotency, capacity, security-shape, and confirmation tests.
 - Completed: document-backed Official Rules and Participant Liability Waiver routes.
 - Completed: combined acknowledgment contract with rules and waiver version capture.
-- Pending: durable registration persistence and all Phase 2 items.
+- Completed: durable server-only registration transaction and policy-version
+  snapshots.
+- Completed: conservative identity classification and protected Registration
+  Review workflow.
+- Pending: live Square checkout, verified callback/payment finalization,
+  Square-backed public completion/recovery, and payment confirmation email.
 
 
 ---

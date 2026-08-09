@@ -1,8 +1,10 @@
 # Project Deployment Checklist
 
-> Current-state note (2026-07-29): Auth and protected Admin application actions
-> are implemented. The remaining security gate is removal and hosted
-> verification of legacy anonymous writes plus Storage policies.
+> Current-state note (2026-08-08): Production is healthy on Cloudflare Workers
+> through OpenNext and Wrangler. Admin Auth and protected operational workflows
+> are implemented. Live Square checkout remains disabled. A Wrangler
+> remote/local configuration-drift warning involving dashboard-generated
+> metadata remains a known maintenance item, not a production outage.
 
 **Document Version:** 1.0
 
@@ -24,8 +26,8 @@ operations.
 
 **Related Documents:**
 
-- [AI Relearn](AI_RELEARN.md)
-- [Project Status](ProjectStatus.md)
+- [Documentation Index](DOCUMENTATION-INDEX.md)
+- [Development Roadmap](DevelopmentRoadmap.md)
 - [Decision Log](DecisionLog.md)
 - [Payment Operations Manual](PAYMENT_OPERATIONS.md)
 - [Online Registration Workflow](ONLINE_REGISTRATION_WORKFLOW.md)
@@ -33,27 +35,88 @@ operations.
 - [Master Site Map](MasterSiteMap.md)
 - [README](../README.md)
 
-**Last Updated:** 2026-07-23
+**Last Updated:** 2026-08-08
 
 ## Verified Platform Status
 
 - [x] Registered `allintrail.com`.
 - [x] Selected `https://allintrail.com` as the canonical domain.
 - [x] Connected source control to GitHub.
-- [x] Selected Vercel for planned production hosting.
-- [x] Selected Cloudflare for domain registration/DNS where applicable.
+- [x] Deployed production to Cloudflare Workers through OpenNext and Wrangler.
+- [x] Selected Cloudflare for Worker hosting, domain registration, and DNS.
 - [x] Enabled Cloudflare Email Routing for `allintrail.com`.
 - [x] Created and tested inbound forwarding for `info@allintrail.com`.
 - [x] Connected the CLI and repository to hosted Supabase.
-- [x] Applied the tournaments migration and seeded Lake Fork Open.
-- [ ] Deploy to Vercel and configure production environment variables.
-- [ ] Complete Cloudflare production DNS and HTTPS configuration.
-- [ ] Redirect `www.allintrail.com` to `https://allintrail.com`.
-- [ ] Implement Supabase Auth and remove anonymous update access.
+- [x] Applied the current Supabase migration chain.
+- [x] Declared the `allintrail.com` Custom Domain in `wrangler.jsonc`.
+- [x] Configured production DNS and HTTPS for `allintrail.com`.
+- [ ] Continue verifying that the separate `www.allintrail.com` redirect remains
+  healthy without adding it as a Worker Custom Domain.
+- [x] Implemented Supabase Admin Auth and fail-closed Admin middleware.
 
-Initial launch uses free service tiers. Provider selection and domain
-registration do not imply deployment is complete. See
-[Supabase Setup](SUPABASE_SETUP.md) for database commands.
+`wrangler.jsonc` is the source-controlled Worker configuration. It contains
+non-secret settings only. `SUPABASE_SERVICE_ROLE_KEY` remains a Cloudflare
+Secret and must never be committed or added to Wrangler configuration.
+
+## Production deployment procedure
+
+Before deployment:
+
+1. Review the intended Git diff and confirm no secret or generated output is
+   being committed.
+2. Run `npm run lint`.
+3. Run `npm test`.
+4. Run `npm run build`.
+5. Confirm `wrangler.jsonc` still declares the correct Worker name, OpenNext
+   worker entry, assets/service bindings, compatibility settings, and the
+   `allintrail.com` Custom Domain.
+
+Deploy with:
+
+```bash
+npm run deploy
+```
+
+The deploy script builds with OpenNext and deploys through Wrangler. Do not
+manually upload `.next` output and do not use a Vercel deployment procedure.
+
+Production environment values and secrets are managed in Cloudflare. Keep
+local credentials in `.env.local`, keep elevated credentials out of
+`NEXT_PUBLIC_*`, and never copy secret values into this document or Git.
+
+After deployment, smoke-check at minimum:
+
+- `https://allintrail.com`, primary public navigation, Rules, Schedule,
+  Results, Standings, registration closed/open messaging, and responsive pages;
+- `/robots.txt` and `/sitemap.xml`;
+- Admin login, authenticated Admin navigation, logout, and logged-out denial;
+- Tournament Manager load and the current selected tournament without making
+  destructive changes;
+- registration-interest save behavior without sending unnecessary live test
+  email; and
+- Cloudflare Worker logs for new runtime errors without printing secrets.
+
+### Wrangler configuration drift
+
+Wrangler may still report remote/local differences for Cloudflare-generated
+Custom Domain metadata, preview/`workers_dev` metadata, or a service-binding
+environment field. Production is currently healthy. Do not blindly copy
+dashboard-generated fields such as route `zone_name`, `enabled`, or preview
+metadata into `wrangler.jsonc`. Compare the warning with the current Wrangler
+schema and intended production behavior before changing source-controlled
+configuration or dashboard settings.
+
+### Recovery and rollback
+
+If smoke checks fail, stop further changes, preserve the deploy output and
+error evidence, and determine whether the failure is application code,
+configuration, secret availability, binding state, or data migration. Prefer a
+known-good Worker version rollback through the approved Cloudflare workflow
+when safe. Never “repair” a deployment by exposing a secret, copying unknown
+remote metadata, or running destructive database commands. Re-run smoke checks
+after recovery and record the incident and resolution.
+
+See [Supabase Setup](SUPABASE_SETUP.md) for database commands.
 
 Cloudflare Email Routing handles inbound forwarding to the verified Gmail
 destination. It is not an application transactional-email service. The Contact
@@ -191,7 +254,8 @@ server-side contact submission endpoint.
 - [ ] Complete a sample official CSV export.
 - [ ] Confirm the CSV includes the fields needed for the approved AITT workflow.
 - [ ] Preserve a clean sample CSV for future import validation.
-- [ ] Validate a WeighFish CSV through the protected AITT preview and import workflow when that workflow becomes available.
+- [ ] Validate a representative WeighFish CSV through the protected AITT import,
+  review, identity-reconciliation, payout, closeout, and publication workflow.
 - [ ] Confirm import exceptions, duplicates, possible typos, and unknown values can be reviewed without guessing.
 - [ ] Establish a secure storage and retention location for official WeighFish exports.
 - [ ] Document the support and fallback process for a WeighFish outage.

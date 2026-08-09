@@ -6,7 +6,8 @@
 
 This is the operating source of truth for the inaugural All In Tournament Trail
 team. It explains how to prepare a tournament, manage members and entries,
-publish results, and verify the public website without requiring software
+import and validate WeighFish results, prepare payouts, close out an event,
+publish results, and update season standings without requiring software
 knowledge.
 
 It is written for the founder/product owner, tournament-operating partner, the
@@ -17,6 +18,11 @@ assistant.
 
 **Operational principle:** “Technology should quietly make the tournament
 better.”
+
+**Tournament-day priority:** After weigh-in, import and verify the WeighFish
+CSV, resolve required identity reviews, calculate payouts, prepare checks, and
+complete financial closeout first. Anglers are waiting to be paid. Website
+publication, photos, AOY, and Championship updates come afterward.
 
 ## Recommended reading order
 
@@ -40,6 +46,11 @@ better.”
 Read the applicable procedure before changing live tournament data. Verify the
 result in both Admin and the public website. Stop when a listed stop condition
 occurs; do not work around missing or inconsistent data by inventing values.
+
+The protected Admin Center, WeighFish import/review, identity reconciliation,
+payout closeout, Official Results workflow, and AOY and Championship engines
+are implemented. Live Square checkout is not operational; do not represent an
+online quote or registration attempt as a completed paid entry.
 
 Technical implementation and repository maintenance belong in the separate
 developer documentation path listed in

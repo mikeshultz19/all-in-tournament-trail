@@ -2,9 +2,9 @@
 
 ## Purpose
 
-Official Results preserve the immutable historical facts required by future
-competition engines. AOY and Championship calculations are intentionally not
-implemented by this foundation.
+At this milestone, Official Results preserved the immutable historical facts
+required by future competition engines. AOY and Championship calculations were
+intentionally outside this foundation and were implemented in later milestones.
 
 ## Historical model
 

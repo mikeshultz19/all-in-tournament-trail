@@ -1,10 +1,13 @@
 # Project Status
 
+> **Historical / Superseded:** This document reflects an earlier implementation
+> state and is retained for reference only. Use
+> [DOCUMENTATION-INDEX.md](../DOCUMENTATION-INDEX.md) for current documentation.
+
 Version: 1.1
 Last verified: 2026-07-29
 
-This is the current implementation summary. Historical reports are snapshots,
-not current-state evidence.
+This is a dated implementation and session summary, not current-state evidence.
 
 ## Implemented
 

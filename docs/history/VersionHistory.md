@@ -3,8 +3,9 @@ Last Updated: July 27, 2026
 
 # All In Tournament Trail Version History
 
-Use [Project Status](ProjectStatus.md) for current work and
-[Changelog](CHANGELOG.md) for dated changes.
+> **Historical / Superseded:** This document reflects an earlier implementation
+> plan and is retained for reference only. Use
+> [DOCUMENTATION-INDEX.md](../DOCUMENTATION-INDEX.md) for current documentation.
 
 ## v0.1 — Architecture and documentation baseline
 

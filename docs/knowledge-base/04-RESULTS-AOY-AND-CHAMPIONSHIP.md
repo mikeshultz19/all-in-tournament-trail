@@ -7,16 +7,31 @@ must verify finishing order, team names, fish count, total weight, Big Bass,
 standard payout, Bronze, Silver, Gold, and prize information before publishing.
 Imported rows are not Official Results until publication.
 
+Import immediately after weigh-in, while the official source and Tournament
+Director are available. Resolve registration and identity reviews, then mark
+the imported results verified before calculating any payout.
+
+## Live-event payout and closeout priority
+
+Verified results feed the Insurance Pot and Calculate Payouts stages. Complete
+the place-by-place payout assignments, generate checks, reconcile collections,
+track delivery, and finish tournament financial closeout before spending time
+on website photos or public publication. Anglers waiting to be paid are the
+first priority.
+
+The Insurance Pot uses a true 1-in-5 payout, with a minimum of one paid place
+whenever there are Insurance Pot entries. Payouts begin with the first eligible
+team outside the Tournament Entry payout. Use Tournament Manager to save the
+calculation and winners; consult the Official Tournament Rules for governing
+eligibility language.
+
 ## Official Results and publication
 
 Official Results preserve the complete finishing order, weights, names, Big
-Bass, and payouts. Membership never filters or reorders them. Once published,
-they must be immutable.
-
-The current software can upsert published Results and also retains a second
-legacy Results editor. Therefore immutability is a required business rule that
-the current implementation does not yet enforce. Do not use the system for a
-live launch until this is corrected and tested.
+Bass, and payouts. Membership never filters or reorders them. Tournament
+Manager publishes the verified working results as the official historical
+record. After publication, use only the authorized audited correction/reset
+workflow; never directly rewrite the public record to fix a display.
 
 ## Winner's Circle and Results pages
 
@@ -79,13 +94,14 @@ AOY Results:
 If Lake / Stone later has seven scores of 200, 197, 194, 190, 186, 180, and
 175, its AOY total is the five highest: **967**. All seven remain visible.
 
-## Current implementation gap
+## AOY processing
 
-The existing `tournament_aoy_points` public reader groups individual display
-names, keeps each name's best five stored point values, sorts by total points,
-and uses alphabetical order for equal totals. It does not implement the stable
-team, eligibility, reranking, participation, or approved tie-breaker algorithm.
-No code currently proves how authoritative AOY rows are generated.
+The AOY engine builds a persisted, rebuildable projection from published
+Official Results and stable Competitive Records. After publishing a Regular
+Season event, run the approved AOY recalculation, review the changed points and
+standings, and confirm the current projection before relying on public displays.
+The Regular Season has eight tournaments, and each eligible entry's five
+highest point totals determine its final AOY score. Membership is required.
 
 ## Homepage and Standings
 
@@ -95,17 +111,22 @@ Standings page uses the same data reader and ranking. Both must agree.
 
 ## Championship qualification
 
-Qualification is separate from AOY rank. A stable eligible team needs five
-qualifying participations. The registered pair or either registered partner
-fishing alone counts. No-show, disqualification, different partner, or failed
-membership eligibility does not count. Championship does not award AOY points.
+Qualification is separate from AOY rank. A stable eligible member team must
+compete in five of the eight Regular Season tournaments. The registered pair
+or either registered partner fishing alone counts for the original team.
+No-show, disqualification, different partner, or failed membership eligibility
+does not count. Championship does not award AOY points.
 
-Championship calculation and persistence are not implemented. This is a launch
-stop condition.
+The Championship qualification engine stores a separate rebuildable
+projection. Recalculate it after the appropriate Official Results publication
+or authorized correction, then verify participation counts independently from
+AOY points and rank.
 
 ## What to Verify
 
 - Admin draft equals the WeighFish export.
+- All required imported-result identity reviews are resolved.
+- Payout checks and financial closeout are complete before website work.
 - Published Results preserve every official entry and finish.
 - Winner's Circle, Results index/detail, and photos agree.
 - Public payout total follows the locked formula.

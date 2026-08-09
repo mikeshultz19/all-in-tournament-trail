@@ -11,8 +11,9 @@ Official Results or creating duplicate people.
 - **Checks:** Compare Admin tournament ID, dates, status, and registration page.
 - **Safe corrective action:** Correct the selected tournament configuration
   before entries exist; refresh and retry.
-- **Stop:** If the public flow quotes but cannot persist/finalize payment, seek
-  technical help. This is a known launch blocker.
+- **Stop:** Live Square checkout is not operational. Do not use a quote or
+  browser step as proof of completed payment; use only supported confirmed
+  records.
 
 ## Featured Tournament is wrong
 
@@ -40,7 +41,8 @@ Official Results or creating duplicate people.
   Eligible Tournament.
 - **Safe corrective action:** Use the stable existing person; correct only
   confirmed administrative data.
-- **Stop:** Uncertain identity or automatic matching not available.
+- **Stop:** If identity remains uncertain, leave it in Registration Review or
+  imported-result reconciliation and obtain supporting information.
 
 ## Duplicate member or registration
 
@@ -91,6 +93,19 @@ Official Results or creating duplicate people.
   Insurance before publication.
 - **Stop:** Unexplained difference.
 
+## Payout checks or closeout do not balance
+
+- **Symptom:** A place has no payee, a check is duplicated, or the closeout
+  difference is not zero.
+- **Likely causes:** Missing payout assignment, incorrect collection amount,
+  Insurance Pot not completed, or source payout category mismatch.
+- **Checks:** Compare verified WeighFish rows, Insurance winners, every
+  place/category, payee, check amount, and delivery status.
+- **Safe corrective action:** Correct the verified source or pre-publication
+  payout assignment, then recalculate and save closeout.
+- **Stop:** Do not publish or leave the payout station with an unexplained
+  difference or unpaid angler.
+
 ## Winner or Big Bass image is wrong
 
 - **Symptom:** Preview/public photo shows wrong person/event.
@@ -102,12 +117,13 @@ Official Results or creating duplicate people.
 ## Publication fails
 
 - **Symptom:** Error, partial public state, or status/result disagreement.
-- **Likely causes:** missing import/photos/review, network/database failure, or
-  current non-atomic write behavior.
+- **Likely causes:** missing verification, incomplete payout closeout,
+  incomplete Insurance winners/photos, or network/database failure.
 - **Checks:** Do not retry blindly. Check tournament status, result record, and
   public pages.
 - **Safe corrective action:** Stop traffic/workflow and obtain technical review.
-- **Stop:** Any partial publication is a launch blocker.
+- **Stop:** Any partial or contradictory public state requires technical review
+  before retrying.
 
 ## Winner's Circle is wrong
 
@@ -133,19 +149,25 @@ Official Results or creating duplicate people.
 
 ## AOY calculation looks wrong
 
-- **Likely cause:** Current code is name-based and lacks the authoritative
-  stable-team engine.
-- **Checks:** Recalculate manually from published Official Results using the AOY
-  Specification.
-- **Safe corrective action:** Record a defect and stop publication.
-- **Stop:** Current authoritative AOY implementation is a launch blocker.
+- **Likely causes:** Unresolved identity/membership eligibility, wrong Official
+  Results set, stale current projection, or incorrect expected worksheet.
+- **Checks:** Confirm eight Regular Season events, published inputs, stable
+  Competitive Records, eligibility, each event score, and the five highest
+  totals using the AOY Specification.
+- **Safe corrective action:** Correct only the authorized source/reconciliation
+  issue, then rebuild and verify the AOY projection.
+- **Stop:** Do not hand-edit public standings or publish an unexplained total.
 
 ## Championship qualification looks wrong
 
-- **Likely cause:** Calculation is not implemented.
-- **Checks:** Manually list stable eligible participations separately from AOY.
-- **Safe corrective action:** Record the expected result and defect.
-- **Stop:** Do not publish qualification until implemented and simulated.
+- **Likely causes:** Unresolved identity/membership eligibility, missing
+  Official Result participation, stale projection, or confusion with AOY rank.
+- **Checks:** List eligible member-team participations from the eight Regular
+  Season events; five are required. Exclude no-show, disqualification, and
+  ineligible appearances according to the Official Rules.
+- **Safe corrective action:** Correct the authorized source issue, rebuild the
+  separate qualification projection, and verify it again.
+- **Stop:** Never infer Championship eligibility from AOY points or rank.
 
 ## Stale VS Code TypeScript diagnostic
 

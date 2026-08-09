@@ -1,7 +1,36 @@
-Version: 1.0
-Last Updated: July 27, 2026
+Version: 1.1
+Last Updated: August 8, 2026
 
 # Changelog
+
+## 2026-08-08
+
+### Production architecture and security
+
+- Production runs on Cloudflare Workers through OpenNext and Wrangler.
+- `wrangler.jsonc` is the source-controlled Worker configuration and declares
+  the `allintrail.com` Custom Domain.
+- Supabase Admin Auth, fail-closed middleware, protected server actions, and
+  browser sign-out are implemented.
+- `SUPABASE_SERVICE_ROLE_KEY` remains a production Cloudflare Secret.
+- A Wrangler remote/local metadata-drift warning remains under review; it is
+  not a production outage.
+
+### Tournament operations
+
+- Added durable registration infrastructure and protected Registration Review.
+- Added transactional WeighFish Working Results import, validation, identity
+  reconciliation, and immutable Official Results publication/correction.
+- Added Insurance, payout/check preparation, tournament financial closeout,
+  AOY, and Championship qualification processing.
+- Live Square checkout/payment remains pending and is not operational.
+
+### Email
+
+- Resend is currently used for registration-interest confirmation when
+  `RESEND_API_KEY` is configured.
+- Contact remains visitor-initiated `mailto:` with inbound Cloudflare Email
+  Routing.
 
 ## 2026-07-23
 
@@ -9,7 +38,8 @@ Last Updated: July 27, 2026
 
 - Registered `allintrail.com`.
 - Confirmed GitHub connection.
-- Selected Vercel, Cloudflare, and Supabase architecture.
+- Selected the original Vercel, Cloudflare, and Supabase architecture. The
+  Vercel hosting decision was later superseded by Cloudflare Workers/OpenNext.
 - Chose free tiers for initial launch.
 
 ### Tournament Information
@@ -24,9 +54,10 @@ Last Updated: July 27, 2026
 
 - Enabled Cloudflare Email Routing for `allintrail.com`.
 - Created and tested `info@allintrail.com` forwarding.
-- Removed the Resend dependency.
+- Removed the original Resend package dependency and feedback-email endpoint.
 - Removed the feedback email API route.
-- Removed Resend environment-variable requirements.
+- Removed Resend requirements from the Contact workflow. A later
+  registration-interest flow uses `RESEND_API_KEY` directly when configured.
 - Updated the Contact page to `info@allintrail.com`.
 - Converted the floating Contact widget to use the visitor's email application.
 - Verified the new contact workflow.
@@ -35,8 +66,8 @@ Last Updated: July 27, 2026
 
 - Replace anonymous database writes with authenticated Supabase Admin policies
   before production.
-- Revoke any obsolete Resend credential.
-- Do not deploy until Admin authentication and production RLS are verified.
+- Historical follow-up only; current security and deployment status is recorded
+  in the 2026-08-08 entry above.
 
 
 ---

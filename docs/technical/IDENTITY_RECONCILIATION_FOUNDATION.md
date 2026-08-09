@@ -99,11 +99,12 @@ Competitive Records. Confirmed aliases are reusable on later imports.
 ## Historical integrity
 
 Original participant values live in the imported entry payload and cannot be
-rewritten. Source aliases, candidate references, resolver UUIDs, timestamps, and
-resolution histories remain separate from future result publication.
+rewritten. Source aliases, candidate references, resolver UUIDs, timestamps,
+and resolution histories remain separate from Official Results publication.
 
-Nullable reconciliation columns on draft `tournament_result_entries` prepare
-those rows for later linking. This milestone does not mark them Official.
+Working Result reconciliation links imported evidence to canonical Competitive
+Records. Publication remains a separate transactional step and refuses
+unresolved required identities.
 
 ## Remaining limitations
 
@@ -114,6 +115,6 @@ those rows for later linking. This milestone does not mark them Official.
 - Reversed names are not guessed.
 - A name-only derived source key can represent ambiguous people; it must remain
   under review until an Admin confirms the correct Angler.
-- Candidate generation is implemented as a deterministic domain primitive.
-  A reconciliation review UI is outside this foundation.
+- Candidate generation is deterministic. The protected Tournament Manager
+  import/reconciliation workspace exposes the administrative review flow.
 - The new migration must be applied before these server mechanisms are used.

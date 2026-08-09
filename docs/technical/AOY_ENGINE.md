@@ -88,7 +88,8 @@ requires an active Admin.
 
 ## Limitations
 
-- Championship qualification is intentionally not implemented.
+- Championship qualification is not calculated by the AOY engine itself; a
+  separate implemented Championship qualification engine handles it.
 - No automatic rebuild is attached to publication or corrections in this
   milestone.
 - Legacy published results without the historical snapshot must be reconciled

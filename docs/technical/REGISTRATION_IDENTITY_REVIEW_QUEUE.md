@@ -7,6 +7,10 @@ Registration and payment complete first. Canonical identity review happens
 afterward and before the registration is trusted for future official
 competition records.
 
+This describes the server-side durable completion boundary. Live Square
+checkout and verified public payment completion are not operational yet; a
+browser quote cannot invoke or substitute for trusted payment verification.
+
 This milestone does not publish Official Results or calculate AOY or
 Championship qualification.
 
@@ -97,9 +101,9 @@ The Admin dashboard displays:
 - resolved reviews.
 
 `areAllRegistrationIdentitiesVerified(tournamentId)` returns whether the pending
-count is zero. A future Official Results milestone may use this check before
-publication. It does not currently block registration, close registration, or
-publish anything.
+count is zero. Tournament preparation and Official Results readiness use this
+evidence; publication refuses unresolved pending Registration Review records.
+The queue does not itself open or close registration.
 
 ## Email notifications
 
@@ -113,6 +117,6 @@ uses the Admin dashboard pending count and Registration Review queue.
   email-based Durable Registration workflow.
 - Nickname and spelling suggestions are deliberately conservative.
 - Admin approval of a new Angler does not automatically create a membership.
-- A previously resolved review can be reopened, but future Official Results
-  rules must define whether reopening is permitted after publication.
+- Reopening after Official Results requires the authorized correction/reset
+  workflow so historical identity and derived projections remain auditable.
 - The migration must be applied before the queue is used.

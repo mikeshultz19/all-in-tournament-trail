@@ -5,9 +5,15 @@ website with an authenticated staff application named **AITT Admin Center**.
 Supabase PostgreSQL, Auth, and Storage provide the backend.
 
 - Canonical domain: <https://allintrail.com>
-- Planned production hosting: Vercel
+- Production hosting: Cloudflare Workers through OpenNext and Wrangler
 - DNS and inbound email routing: Cloudflare
+- Registration-interest confirmation email: Resend when `RESEND_API_KEY` is configured
+- Online payment: Square checkout is pending and is not live
 - Public contact: `info@allintrail.com` through visitor-initiated `mailto:`
+
+Start with the canonical [AITT Documentation Index](docs/DOCUMENTATION-INDEX.md)
+for current technical, staff, operational, and public documentation. Dated
+audits and status reports are retained only as historical references.
 
 ## Current state
 
@@ -17,12 +23,11 @@ membership administration, Tournament Reset, WeighFish import/review, payout
 review, winner photos, and results publication. Seasons, anglers, memberships,
 stable teams, and team-member tables are present.
 
-The repository is not production-ready. Legacy migrations still grant broad
-anonymous writes, results publication is not fully atomic or immutable, the
-AOY implementation is name-based rather than stable-team based, and
-Championship qualification generation is not implemented. See
-[Project Status](docs/ProjectStatus.md) and the
-[2026-07-29 audit](docs/CURRENT_STATE_AUDIT_2026-07-29.md).
+The production application runs on Cloudflare Workers through OpenNext and
+Wrangler. Supabase provides the database, Admin authentication, and storage.
+The Admin Center includes WeighFish import and review, Official Results,
+payout closeout, and AOY and Championship processing. Square checkout remains
+pending and must not be described as live.
 
 ## Local setup
 
@@ -75,12 +80,6 @@ git diff --check
 
 ## Documentation
 
-- [Current-state audit](docs/CURRENT_STATE_AUDIT_2026-07-29.md)
-- [Project status](docs/ProjectStatus.md)
-- [Repository map](docs/RepositoryMap.md)
-- [AOY specification](docs/AOY_SPECIFICATION.md)
-- [Security notes](docs/SECURITY_NOTES.md)
-- [Admin Auth setup](docs/ADMIN_AUTH_SETUP.md)
-- [Supabase setup](docs/SUPABASE_SETUP.md)
-- [Master sitemap](docs/MasterSiteMap.md)
-- [Tournament operations](docs/TOURNAMENT_OPERATIONS_AND_REGISTRATION_PROCESS.md)
+Use the [AITT Documentation Index](docs/DOCUMENTATION-INDEX.md) as the single
+entry point. It separates current documentation from historical and
+superseded snapshots.

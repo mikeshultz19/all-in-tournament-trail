@@ -23,6 +23,11 @@ season standings must describe the same event and competitors.
   after publication.
 - AOY is calculated separately and only from published Official Results.
 - Championship qualification is separate from AOY rank.
+- The Regular Season contains eight tournaments. The five highest point totals
+  determine the final AOY score.
+- A team must compete in five of the eight Regular Season tournaments for
+  Championship eligibility.
+- Membership is required for AOY and Championship eligibility.
 - Membership eligibility begins with First Eligible Tournament. Membership
   Effective Date is administrative recordkeeping.
 - Active Membership Season is selected only in Admin Settings.
@@ -38,6 +43,12 @@ explain every public result and standing consistently.
 AITT operations should be fair, transparent, repeatable, and understandable.
 Rules should be applied the same way to every team. Official finishing order,
 weights, and payouts are not altered because a team is ineligible for AOY.
+
+During weigh-in, WeighFish is the source for tournament results. Immediately
+after weigh-in, staff import its official CSV into Tournament Manager, validate
+the import, resolve identities, calculate payouts, prepare checks, and complete
+financial closeout. Paying anglers is the first priority. Public website
+publication and season calculations follow only after that work is complete.
 
 ## What Should Not Be Casually Changed
 

@@ -16,11 +16,10 @@
 
 **Related Documents:**
 
-- [Project Status](ProjectStatus.md)
+- [Documentation Index](DOCUMENTATION-INDEX.md)
 - [Tournament Operations and Registration Process](TOURNAMENT_OPERATIONS_AND_REGISTRATION_PROCESS.md)
-- [Database Design](DATABASE_DESIGN.md)
-- [How the Website Works](HOW_THE_WEBSITE_WORKS.md)
-- [AI Relearn](AI_RELEARN.md)
+- [Durable Registration](technical/DURABLE_REGISTRATION.md)
+- [System Architecture](SYSTEM_ARCHITECTURE.md)
 - [Online Registration Workflow](ONLINE_REGISTRATION_WORKFLOW.md)
 
 > **Authority:** This manual defines AITT financial operations. Approved software must conform to these rules. Sections marked **Open Business Decision** describe unresolved policy and must not be treated as approval.
@@ -232,7 +231,7 @@ AITT reconciles its Early Online Registrations independently for each tournament
 - Approved payout obligations and completed payouts.
 - Any difference between expected, received, returned, and distributed funds.
 
-The Tournament Director separately uses WeighFish as the official tournament-day roster and payment-method record and Square as the card-transaction record. AITT must not recreate a live morning ledger. After the event, the protected AITT import workflow will ingest the official WeighFish CSV for tournament history; it does not yet exist.
+The Tournament Director separately uses WeighFish as the official tournament-day roster and payment-method record and Square as the card-transaction record. AITT must not recreate a live morning ledger. After the event, the protected AITT import/review workflow ingests the official WeighFish CSV for validation, reconciliation, payout closeout, and tournament history.
 
 ## 14. Tournament Closeout
 
@@ -282,7 +281,7 @@ The portal must not allow convenience features to bypass evidence, authorization
 
 The future data design should keep registration records separate from payment records so one registration can retain payment attempts, corrections, refunds, or provider changes without losing history. Payment records should retain provider identity, amounts, status changes, references, evidence metadata, responsible administrators, and timestamps at an operationally appropriate level.
 
-Provider-specific details should remain behind a provider-independent business model. Registration, payment, payout, refund, and reconciliation states should remain distinct. Historical financial events should be append-only or otherwise preserved through a complete audit trail. This section defines concepts only; the authoritative technical blueprint remains [Database Design](DATABASE_DESIGN.md).
+Provider-specific details should remain behind a provider-independent business model. Registration, payment, payout, refund, and reconciliation states should remain distinct. Historical financial events should be append-only or otherwise preserved through a complete audit trail. This section defines concepts only; current registration persistence is documented in [Durable Registration](technical/DURABLE_REGISTRATION.md).
 
 ## 18. Reporting
 
@@ -356,13 +355,12 @@ The Product Owner must approve the following before software or routine operatio
 
 ## 22. Related Documentation
 
-- [ProjectStatus.md](ProjectStatus.md) — current project phase and planned work.
+- [DevelopmentRoadmap.md](DevelopmentRoadmap.md) — current remaining work.
 - [TOURNAMENT_OPERATIONS_AND_REGISTRATION_PROCESS.md](TOURNAMENT_OPERATIONS_AND_REGISTRATION_PROCESS.md) — authoritative registration, eligibility, tournament, and payout-pot rules.
-- [DATABASE_DESIGN.md](DATABASE_DESIGN.md) — technical persistence blueprint and current implementation decision boundaries.
-- [HOW_THE_WEBSITE_WORKS.md](HOW_THE_WEBSITE_WORKS.md) — plain-language platform and future registration workflow.
-- [AI_RELEARN.md](AI_RELEARN.md) — AI collaboration, decision boundaries, and validation standards.
+- [technical/DURABLE_REGISTRATION.md](technical/DURABLE_REGISTRATION.md) — current registration persistence boundary.
+- [SYSTEM_ARCHITECTURE.md](SYSTEM_ARCHITECTURE.md) — current platform architecture.
 - [DecisionLog.md](DecisionLog.md) — approved business and architecture decisions.
-- [WeighFishIntegration.md](WeighFishIntegration.md) — planned official-results import boundary.
+- [technical/OFFICIAL_RESULTS_WORKFLOW.md](technical/OFFICIAL_RESULTS_WORKFLOW.md) — implemented WeighFish-to-Official-Results boundary.
 
 ## 23. Change Log
 

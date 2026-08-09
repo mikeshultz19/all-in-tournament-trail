@@ -21,7 +21,8 @@ types:
 
 The table name remains `teams` for compatibility with existing code and
 foreign-key relationships. Application types expose Competitive Record aliases
-so future code can use constitutional terminology without duplicating storage.
+so registration review, Official Results, AOY, and Championship code can use
+constitutional terminology without duplicating storage.
 
 ## Integrity and creation
 
@@ -70,12 +71,15 @@ outside this foundation task.
 - Existing `createTeam()` remains available and delegates to transactional
   Competitive Record creation.
 
-## Deferred work
+## Integrated workflows
 
-This foundation does not implement:
+Later milestones build on this foundation without changing ownership:
 
-- legacy registration identity reconciliation
-- registration-close ownership locking
-- AOY calculations
-- Championship qualification
-- standings or reporting
+- durable registrations reference a Competitive Record when identity is clear;
+- Registration Review resolves ambiguous submitted identities;
+- WeighFish reconciliation links Working Results to canonical records;
+- Official Results snapshot the historical record identity;
+- AOY and Championship engines calculate separate persisted projections.
+
+Registration-close ownership locking remains a distinct control and must not
+be inferred solely from this foundation.

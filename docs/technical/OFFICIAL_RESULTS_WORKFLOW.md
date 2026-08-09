@@ -2,9 +2,10 @@
 
 ## Constitutional ownership
 
-Official Results are the permanent historical source for future AOY,
-Championship qualification, Competitive Record statistics, and tournament
-history. This milestone does not implement those calculations.
+Official Results are the permanent historical source for AOY, Championship
+qualification, Competitive Record statistics, and tournament history. The AOY
+and Championship engines consume this workflow's published snapshots through
+separate rebuildable projections.
 
 Tournament sequence uses `season_id` and immutable
 `regular_season_number`. Calendar dates are display and scheduling data only.
@@ -101,12 +102,12 @@ Anonymous result writes are revoked.
 ## Remaining limitations
 
 - Imported entries must be linked to canonical Competitive Records before
-  publication. The existing Identity Reconciliation foundation supplies the
-  controlled mechanisms, but its full review UI is separate.
+  publication. The protected import/reconciliation workspace and Registration
+  Review supply the controlled resolution mechanisms.
 - `ready_to_publish` is available as a workflow state but is not automatically
   assigned; publication performs the authoritative readiness validation.
-- The administrative correction server action exists, but no new correction UI
-  was added in this milestone.
+- Administrative correction/reset must use the protected audited workflow and
+  rebuild affected public, AOY, and Championship projections.
 - Official publication currently preserves the established public
   `tournament_results` JSON for compatibility while the normalized
   `official_result_entries` table is authoritative.

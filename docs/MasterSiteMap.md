@@ -1,5 +1,5 @@
-Version: 1.0
-Last Updated: July 27, 2026
+Version: 1.1
+Last Updated: August 8, 2026
 
 # Master Site Map
 
@@ -8,27 +8,30 @@ This is the approved site structure for the All-In Tournament Trail.
 ```text
 Home
 
+How AITT Works
+Bass Stack
 Schedule
-  └── Event Information
-        └── Registration
-              └── Confirmation
+Registration
+  ├── Early Entries
+  └── Confirmation
 
 Results
-  ├── Current Tournament Manager
-  └── Past Tournament Manager
+  └── Tournament Results Detail
         └── Big Bass stored within each tournament result
 
 AOY Standings
+AOY Points
 
-FAQ & Rules
-  ├── How It Works
-  ├── Official Rules
-  │     └── Safety requirements included here
-  └── FAQ
+Official Rules
+FAQ
+Insurance Pot
+No Forward-Facing Sonar
 
 Sponsors
-
 Contact
+Watch
+Privacy
+Terms
 ```
 
 ## AITT Admin Center
@@ -38,10 +41,20 @@ The staff application is separate from public navigation:
 ```text
 Admin Center
   ├── Home
-  ├── Tournament
+  ├── Tournament Manager
+  │     ├── Prepare Tournament
+  │     ├── Import and Reconcile WeighFish Results
+  │     ├── Insurance Pot
+  │     ├── Calculate Payouts / Closeout
+  │     ├── Publish Results
+  │     └── Calculate AOY
+  ├── Tournament Information
   ├── Members
   ├── Registration Review
-  ├── Website
+  ├── Results
+  ├── Announcements
+  ├── Rules
+  ├── FAQ
   ├── Settings
   └── Website Analytics
         └── Registration Interest

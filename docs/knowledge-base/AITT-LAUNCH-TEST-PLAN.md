@@ -62,8 +62,7 @@ case prevents launch.
 - **Expected Admin result:** Existing UUID is reused; no new angler.
 - **Expected public result:** Member status is recognized correctly.
 - **Database or record verification:** No additional angler/membership.
-- **Pass/Fail:** **Expected Blocked in current build** — no implemented public
-  stable-member lookup. **Notes:** ___ **Defect ID:** ___
+- **Pass/Fail:** ___ **Notes:** ___ **Defect ID:** ___
 
 ### A-04 — New online membership
 
@@ -78,8 +77,8 @@ case prevents launch.
 - **Expected public result:** Confirmation appears once; retry does not duplicate.
 - **Database or record verification:** Atomic payment/reference, membership,
   and registration records.
-- **Pass/Fail:** **Expected Blocked** — payment finalization and membership write
-  are not implemented. **Notes:** ___ **Defect ID:** ___
+- **Pass/Fail:** **Expected Blocked** — live Square checkout and verified public
+  payment finalization are not operational. **Notes:** ___ **Defect ID:** ___
 
 ### A-05 — Renewal/expired behavior
 
@@ -124,8 +123,9 @@ case prevents launch.
 - **Expected public result:** Counts/list update once without private fields.
 - **Database or record verification:** Unique registration references and
   correct tournament UUID.
-- **Pass/Fail:** **Expected Blocked** — quote exists, confirmed persistence/
-  payment does not. **Notes:** ___ **Defect ID:** ___
+- **Pass/Fail:** **Expected Blocked** — the quote and durable server boundary
+  exist, but live Square checkout and its public verified completion path are
+  not operational. **Notes:** ___ **Defect ID:** ___
 
 ### B-02 — Admin-created registration
 
@@ -155,7 +155,8 @@ case prevents launch.
 ### B-04 — Registration reconciliation
 
 - **Purpose:** Reconcile Entries, Admin records, membership status, and field.
-- **Preconditions:** B-01/B-02 successful in a future complete build.
+- **Preconditions:** Supported confirmed registration records exist. Live
+  Square checkout remains out of scope until it is operational.
 - **Test data:** All Simulation B teams plus one duplicate attempt.
 - **Steps:** Compare counts/names/UUIDs; close registration; attempt late entry.
 - **Expected Admin result:** No unintended duplicates; official-field
@@ -195,42 +196,57 @@ case prevents launch.
   imported flag/time set.
 - **Pass/Fail:** ___ **Notes:** ___ **Defect ID:** ___
 
-### C-03 — Images and publication
+### C-03 — Identity, payouts, checks, and closeout
 
-- **Purpose:** Prove one atomic immutable publication.
-- **Preconditions:** C-02 reconciled; insurance and correct images ready.
-- **Test data:** Winner/Big Bass images; manual Insurance amount.
-- **Steps:** Save insurance; upload/replace images; confirm publish once; refresh.
-- **Expected Admin result:** One success, status Results Published; subsequent
-  mutation rejected.
+- **Purpose:** Prove the live payout workflow can pay anglers promptly from
+  verified source results.
+- **Preconditions:** C-02 imported; registration and identity reviews resolved.
+- **Test data:** Verified payout categories, Insurance entries/winners,
+  collection totals, and place-by-place payees.
+- **Steps:** Verify import; resolve identities; calculate/save Insurance Pot;
+  calculate payouts; assign checks; reconcile collections; track delivery;
+  complete closeout.
+- **Expected Admin result:** Every payout has one explainable payee/check,
+  closeout difference is zero, and payout workflow is complete.
+- **Expected public result:** Nothing is published yet.
+- **Database or record verification:** Verified import evidence, Insurance
+  calculation/winners, check assignments, and one tournament-scoped closeout.
+- **Pass/Fail:** ___ **Notes:** ___ **Defect ID:** ___
+
+### C-04 — Images and Official Results publication
+
+- **Purpose:** Prove verified results publish only after payout closeout.
+- **Preconditions:** C-03 complete; correct winner/Big Bass images ready.
+- **Test data:** Winner/Big Bass images and completed closeout.
+- **Steps:** Upload/replace images; review public preview; publish once; refresh.
+- **Expected Admin result:** One Official Results publication and completed
+  readiness state; unauthorized direct mutation is unavailable.
 - **Expected public result:** Winner's Circle, homepage, Results index/detail
   show matching values.
-- **Database or record verification:** One durable Official Result; no partial
-  state; draft/temp files not authoritative.
-- **Pass/Fail:** **Expected Fail/Blocked** until atomic immutability is
-  implemented. **Notes:** ___ **Defect ID:** ___
+- **Database or record verification:** One durable Official Results snapshot;
+  working rows remain nonpublic.
+- **Pass/Fail:** ___ **Notes:** ___ **Defect ID:** ___
 
-### C-04 — AOY and Championship
+### C-05 — AOY and Championship
 
 - **Purpose:** Prove separate season calculations.
-- **Preconditions:** C-03 succeeds; identities/memberships reconciled.
+- **Preconditions:** C-04 succeeds; identities/memberships reconciled.
 - **Test data:** C-02 field.
-- **Steps:** Generate AOY; manually verify eligible reranking/points; verify
-  qualification participation.
+- **Steps:** Recalculate AOY and Championship qualification; manually verify
+  eligible reranking/points, best-five selection, and participation counts.
 - **Expected Admin result:** Explainable stable-team awards and participation.
 - **Expected public result:** Homepage top five equals Standings; Official
   Results remain unchanged.
 - **Database or record verification:** Versioned tournament AOY evidence and
   separate qualification contribution.
-- **Pass/Fail:** **Expected Blocked** — authoritative engines absent.
-  **Notes:** ___ **Defect ID:** ___
+- **Pass/Fail:** ___ **Notes:** ___ **Defect ID:** ___
 
 ## Simulation D — Tournament Two
 
 ### D-01 — Second event and history
 
 - **Purpose:** Prove new publication does not damage Tournament One.
-- **Preconditions:** All Simulation C cases pass in a corrected build.
+- **Preconditions:** All Simulation C cases pass.
 - **Test data:** Overlapping teams, one new pairing, one original partner solo,
   seven-event-capable scoring fixture where practical.
 - **Steps:** Repeat reset/setup/registration/import/reconcile/images/publish.
@@ -255,8 +271,7 @@ case prevents launch.
   in center display position without changing rank.
 - **Database or record verification:** Separate immutable event contributions;
   qualification independent of AOY.
-- **Pass/Fail:** **Expected Blocked** in current build. **Notes:** ___
-  **Defect ID:** ___
+- **Pass/Fail:** ___ **Notes:** ___ **Defect ID:** ___
 
 ## Simulation E — Failure and Recovery
 
@@ -294,8 +309,7 @@ case prevents launch.
 - **Expected public result:** Unchanged before publication.
 - **Database or record verification:** Failed import must not erase prior valid
   draft.
-- **Pass/Fail:** Likely fail risk because replacement is not transactional.
-  **Notes:** ___ **Defect ID:** ___
+- **Pass/Fail:** ___ **Notes:** ___ **Defect ID:** ___
 
 ### E-04 — Partial publication
 
@@ -308,8 +322,7 @@ case prevents launch.
 - **Expected Admin result:** Entire operation rolls back; one later success.
 - **Expected public result:** No partial Results/Winner's Circle/AOY.
 - **Database or record verification:** Zero-or-one complete publication.
-- **Pass/Fail:** **Expected Fail** — current path is not transactional.
-  **Notes:** ___ **Defect ID:** ___
+- **Pass/Fail:** ___ **Notes:** ___ **Defect ID:** ___
 
 ### E-05 — Image correction and stale cache
 
@@ -333,8 +346,7 @@ case prevents launch.
   approved audited process.
 - **Expected public result:** Unchanged.
 - **Database or record verification:** Original row unchanged.
-- **Pass/Fail:** **Expected Fail** — legacy/upsert paths permit mutation.
-  **Notes:** ___ **Defect ID:** ___
+- **Pass/Fail:** ___ **Notes:** ___ **Defect ID:** ___
 
 ### E-07 — Missing public data
 
@@ -369,7 +381,8 @@ Record the actual expected value and compare every applicable surface.
 
 ## Launch decision
 
-Launch requires every required case to pass. Any `Blocked` result in public
-registration persistence, stable identity reconciliation, immutable atomic
-publication, authoritative AOY, or Championship qualification is a no-launch
-decision.
+Launch requires every required case for the enabled production scope to pass.
+Live Square checkout remains disabled until its payment, persistence, recovery,
+and confirmation cases pass. Any unexplained identity, payout, closeout,
+Official Results, AOY, or Championship discrepancy is a no-launch decision for
+that affected workflow.

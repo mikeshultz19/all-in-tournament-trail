@@ -3,6 +3,10 @@ Last Updated: July 27, 2026
 
 # UI Standards
 
+> **Historical / Superseded:** This compact visual checklist is preserved as an
+> early baseline. Use [UI_STYLE_GUIDE.md](../UI_STYLE_GUIDE.md) for current UI
+> guidance.
+
 - Use black and charcoal backgrounds.
 - Use red headings.
 - Use gold accents sparingly.

@@ -14,15 +14,15 @@
 - Follow the approved master sitemap in `docs/MasterSiteMap.md`.
 
 ==================================================
-CURRENT ARCHITECTURE — VERIFIED 2026-07-23
+CURRENT ARCHITECTURE — VERIFIED 2026-08-08
 ==================================================
 
 - Public domain: `allintrail.com`
-- Canonical future production URL: `https://allintrail.com`
+- Canonical production URL: `https://allintrail.com`
 - Admin application: AITT Admin Center
-- Backend: Supabase PostgreSQL
+- Backend: Supabase PostgreSQL, Auth, and Storage
 - Prisma is not used.
-- Planned production hosting: Vercel; production deployment is not verified.
+- Production hosting: Cloudflare Workers through OpenNext and Wrangler.
 - DNS and inbound email routing: Cloudflare
 - Public contact address: `info@allintrail.com`
 
@@ -31,32 +31,30 @@ visitor's configured email application. Cloudflare Email Routing forwards
 inbound mail to the verified Gmail destination; it is not an application
 email-sending API. There is no server-side contact submission endpoint.
 
-Resend has been removed. Do not recreate `app/api/feedback`, add Resend, or add
-contact-email environment variables without explicit approval.
+Resend is used only for registration-interest confirmation email when
+`RESEND_API_KEY` is configured. Do not treat Resend as the Contact page's
+delivery system, recreate `app/api/feedback`, or add contact-email environment
+variables without explicit approval.
 
 AITT Admin Center reads live Tournament Information from Supabase, updates it
 successfully, and preserves saved values after refresh. Describe this as the
 verified Tournament Information read/update workflow, not full CRUD. Tournament
 creation and deletion are not verified.
 
-Anonymous `SELECT` and `UPDATE` table privileges currently support development.
-Anonymous `UPDATE` is temporary and must be replaced with authenticated Admin
-policies before production. Supabase Auth, Storage, News & Announcements,
-Tournament Conditions, Tournament Results, WeighFish import, and winner-photo
-uploads are not complete.
+Supabase Admin Auth exists. Protected Admin routes fail closed when required
+Auth configuration is unavailable, and protected server actions recheck Admin
+access. WeighFish import/review, Official Results publication and closeout, and
+AOY and Championship engines exist. Square checkout remains pending and is not
+live.
 
 ==================================================
-NEXT IMPLEMENTATION ORDER
+CURRENT DOCUMENTATION
 ==================================================
 
-2. News & Announcements
-3. Tournament Conditions
-4. Tournament Results
-5. Authentication and Production Security
-
-See `docs/ProjectStatus.md` and `docs/DevelopmentRoadmap.md` for the full,
-ordered work plan. Do not add Sponsors to the four tournament management areas
-or Website Readiness workflow.
+Use `docs/DOCUMENTATION-INDEX.md` as the canonical documentation entry point.
+Dated audits, status reports, roadmaps, and version plans are historical unless
+the index explicitly identifies them as current. Do not add Sponsors to the
+tournament management areas or Website Readiness workflow.
 
 ==================================================
 HOMEPAGE SPONSOR PANEL

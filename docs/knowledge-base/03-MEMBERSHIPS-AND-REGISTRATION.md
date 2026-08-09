@@ -5,6 +5,22 @@
 This guide explains how AITT identifies members, determines eligibility, accepts
 entries, and prepares the official tournament field.
 
+## Current fees and options
+
+- Tournament Entry is required and costs **$60**.
+- Annual membership costs **$40 per angler**.
+- Big Bass is optional.
+- Bronze is an optional **+$40** member pot.
+- Silver is an optional **+$100** member pot.
+- Gold is an optional **+$500** member pot.
+- Choose no more than one of Bronze, Silver, or Gold.
+- The Insurance Pot is optional and members-only.
+
+The Insurance Pot uses a true 1-in-5 payout, with a minimum of one paid place
+whenever there are Insurance Pot entries. Payouts begin with the first eligible
+team outside the Tournament Entry payout. The Official Tournament Rules govern
+eligibility and payout details.
+
 ## Membership seasons
 
 Each membership belongs to one Membership Season. Admin Settings controls the
@@ -53,8 +69,9 @@ person to correct spelling. Partner order does not create a new team. A
 different two-person pairing is a different team. A solo appearance by one
 registered partner should remain attached to the original two-person team.
 
-The database foundation supports stable people and teams, but tournament-result
-name reconciliation is not operational yet. This is a launch stop condition.
+Tournament Manager supports registration review and imported-result identity
+reconciliation. Resolve every required review against the source information;
+never guess or create a duplicate person merely to clear the queue.
 
 ## Registration paths currently present
 
@@ -65,10 +82,11 @@ name reconciliation is not operational yet. This is a launch stop condition.
 - Tournament-morning/walk-in teams may exist only in WeighFish and later enter
   the official field through the complete WeighFish export.
 
-The repository does **not** currently prove completed Square payment,
-server-finalized public registration persistence, Admin-created registration,
-waitlist, or a separate external-registration import. Those test cases must be
-marked blocked rather than simulated as successful.
+Live Square checkout is still pending and is not operational. The durable
+registration foundation and Admin registration-review workflow exist, but
+staff must not describe a quote, browser step, or unverified payment as a
+completed paid registration. No unsupported waitlist or external-registration
+path should be advertised.
 
 ## What the Tournament Director Does
 
@@ -79,8 +97,8 @@ marked blocked rather than simulated as successful.
 5. Close registration at the intended time.
 6. Add tournament-morning teams in WeighFish.
 7. Treat the final WeighFish export as the complete official tournament field.
-8. Reconcile every imported participant to stable AITT identities before AOY
-   publication once that workflow exists.
+8. Use Registration Review and the WeighFish import workspace to resolve every
+   required identity review before results, AOY, or Championship publication.
 
 ## What to Verify
 
@@ -105,9 +123,9 @@ marked blocked rather than simulated as successful.
 ## BUSINESS RULE CONFIRMATION REQUIRED
 
 - Exact operational renewal procedure is not implemented.
-- The repository does not prove whether a public registration option that says
-  “purchase membership” should automatically create membership records.
-- The repository does not define a supported Admin-created registration path.
+- Live Square checkout and its public payment finalization remain unavailable.
+- Do not infer paid membership or registration from a public selection without
+  a supported confirmed record.
 
 ## What Can Go Wrong
 

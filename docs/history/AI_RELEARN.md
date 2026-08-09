@@ -3,6 +3,11 @@ Last Updated: July 27, 2026
 
 # AI Relearn
 
+> **Historical / Superseded:** This former AI handoff reflects an earlier
+> implementation state. Use the canonical
+> [Documentation Index](../DOCUMENTATION-INDEX.md) and root `AGENTS.md` for
+> current guidance.
+
 > **Read this document first whenever conversational context has been lost.** Then read the current project status and documentation related to the active task before making recommendations or generating implementation work. This guide restores the AI's working context; it does not replace the rest of the project documentation. It explains how to work, what to read, and how to resume the established role.
 
 ## Purpose

@@ -1,7 +1,7 @@
 # AITT Admin Auth Setup
 
 AITT uses Supabase Auth email/password accounts and the standard persistent
-Supabase browser session. There are exactly three Version 1 administrators:
+Supabase browser session. Current named Version 1 administrator aliases are:
 
 - Mike: `mike@aitt.local`
 - Sarah: `sarah@aitt.local`
@@ -38,6 +38,11 @@ For each administrator:
 The `role` and `active` values are both required. An authenticated user without
 both values is denied access to AITT Administration.
 
+`middleware.ts` protects Admin routes and fails closed if the required public
+Supabase Auth configuration is unavailable or invalid. Protected server
+actions independently call `requireAdminUser()`, so route middleware is not the
+only authorization boundary.
+
 ## Login and Session Behavior
 
 Administrators sign in at `/admin/login` using either their short username
@@ -49,3 +54,12 @@ password-management screens, custom short session limits, MFA, invitations, or
 public registration.
 
 Logout clears the current browser session and redirects to `/admin/login`.
+
+## Credential handling
+
+- Store local Auth configuration only in `.env.local`; never commit values.
+- Store production Supabase credentials in Cloudflare environment settings or
+  Secrets as appropriate.
+- `SUPABASE_SERVICE_ROLE_KEY` is elevated and must remain a Cloudflare Secret.
+- Never place an elevated credential in a `NEXT_PUBLIC_*` variable.
+- Do not copy credentials into documentation, screenshots, issues, or logs.

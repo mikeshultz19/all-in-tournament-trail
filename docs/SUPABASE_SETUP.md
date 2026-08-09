@@ -1,27 +1,35 @@
-Version: 1.0
-Last Updated: July 27, 2026
+Version: 1.1
+Last Updated: August 8, 2026
 
 # Supabase Setup
 
-Updated: 2026-07-23
-
-Supabase provides PostgreSQL, Auth, and winner-photo Storage. Auth-protected
-Admin application paths exist, but hosted grants/RLS and Storage policies must
-be verified and anonymous development writes must be removed before production.
+Supabase provides PostgreSQL, Auth, and Storage. The application uses protected
+Admin routes, server-authorized actions, durable registration/review
+infrastructure, Working and Official Results, payout closeout, AOY, and
+Championship projections. Hosted grants, RLS, RPC permissions, and Storage
+policies still require periodic verification.
 
 ## Environment variables
 
-The server client reads:
+The trusted elevated server client reads:
 
 ```text
 SUPABASE_URL
-SUPABASE_ANON_KEY
 SUPABASE_SERVICE_ROLE_KEY
 ```
 
-Use the current publishable key as the anonymous/public key. Never document or
-commit real values. Never expose a secret or service-role key to browser code.
-Restart Next.js after changing environment variables.
+Browser/Auth clients read:
+
+```text
+NEXT_PUBLIC_SUPABASE_URL
+NEXT_PUBLIC_SUPABASE_ANON_KEY
+```
+
+Local values belong in `.env.local`, which must never be committed. In
+production, `SUPABASE_SERVICE_ROLE_KEY` remains a Cloudflare Secret and must not
+appear in `wrangler.jsonc`. Never place an elevated credential in a
+`NEXT_PUBLIC_*` variable, documentation, logs, or browser code. Restart the
+local Next.js process after changing environment variables.
 
 ## Link and migrate
 
@@ -37,22 +45,9 @@ npx supabase db push
 The dry run previews pending migrations. The final command applies them to the
 linked hosted project. Do not recreate migration columns manually.
 
-The initial applied migration is:
-
-```text
-supabase/migrations/202607230001_create_tournaments.sql
-```
-
-## Seed
-
-If the current CLI setup does not expose a working seed command:
-
-1. Open the hosted Supabase project's SQL Editor.
-2. Run `supabase/seed.sql`.
-3. Verify `public.tournaments` contains the `lake-fork-open-2026` row.
-
-The seed is idempotent by slug. It was manually run for the current hosted
-project.
+Apply all checked-in migrations in order. Do not run old demo/Lake Fork seed
+instructions against production. Use only an explicitly approved, current
+season data procedure and verify the target project before any write.
 
 ## Verify access
 
@@ -61,41 +56,33 @@ Verify:
 - `public.tournaments` exists.
 - Row Level Security is enabled.
 - The public read policy exists.
-- Lake Fork Open can be read by the application's anonymous server client.
-
-The initial missing table-level permission was corrected with:
-
-```sql
-grant usage on schema public to anon;
-grant select on table public.tournaments to anon;
-grant update on table public.tournaments to anon;
-```
+- Public pages can read only the intended public projections.
+- Logged-out callers cannot perform protected Admin mutations.
+- Service-role-only RPCs are unavailable to anonymous and normal browser
+  clients.
+- Admin Auth, import/reconciliation, publication, correction, reset, AOY, and
+  Championship actions succeed only through their protected server boundaries.
 
 Grants make an operation available to a role; RLS determines which rows that
 operation may affect. Both layers must permit a request.
 
-## Development-only write policy
+Historical migrations may show earlier permissive development grants. Do not
+copy those grants into a current environment. Evaluate effective hosted grants
+and policies after the complete migration chain, and revoke any unintended
+anonymous INSERT/UPDATE/DELETE access.
 
-The migration includes `Temporary admin tournament updates`, and the `anon`
-role has table-level `UPDATE` used only while Auth is absent. The privilege
-permits the role to attempt an update; the RLS policy separately controls the
-rows/requests that may update. Both are required for the current workflow and
-neither makes anonymous writes production-safe.
-
-AITT Admin Center Tournament Information reads and updates have been tested
-successfully against the hosted project. Saved changes persisted after refresh.
-This verifies read/update only; tournament creation and deletion are not
-verified.
-
-When Supabase Auth is implemented, revoke anonymous `UPDATE` and replace the
-temporary policy with authenticated Admin policies.
+AITT Admin Center Auth and protected operational workflows exist. Tournament
+Information read/update is verified; this does not imply that tournament
+creation or deletion is approved.
 
 ## Troubleshooting
 
-- Missing environment variables: set both names above and restart Next.js.
+- Missing environment variables: set the appropriate server and public/Auth
+  names above and restart Next.js.
 - Table permission error: verify schema usage, table privileges, and RLS
   policies separately.
-- Missing seed row: run the repository seed in the SQL Editor.
+- Missing production schedule/data: stop and use the approved current data
+  restoration procedure; do not run a demo seed.
 - Migration drift: preview with `npx supabase db push --dry-run`; do not patch
   hosted columns manually.
 

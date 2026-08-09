@@ -3,6 +3,10 @@ Last Updated: July 27, 2026
 
 # How the All-In Tournament Trail Website Works
 
+> **Historical / Superseded:** This owner primer preserves earlier platform and
+> future-state assumptions. Use the canonical
+> [Documentation Index](../DOCUMENTATION-INDEX.md) for current guidance.
+
 > Current-state note (2026-07-29): This primer contains historical future-state
 > statements. Auth, membership administration, WeighFish import, Results
 > publication screens, and public standings now exist in part. See

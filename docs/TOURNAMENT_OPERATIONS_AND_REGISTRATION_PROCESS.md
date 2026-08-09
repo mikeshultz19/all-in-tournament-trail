@@ -3,10 +3,9 @@ Last Updated: July 27, 2026
 
 # Tournament Operations and Registration Process
 
-> Implementation note (2026-07-29): Protected import/publication screens exist,
-> but stable identity reconciliation, atomic immutable publication,
-> authoritative AOY, and Championship qualification are incomplete. Use the
-> Knowledge Base for executable current operations.
+> Implementation note (2026-07-29): Protected import/publication, identity
+> reconciliation, Official Results, AOY, and Championship qualification are
+> implemented. Use the Knowledge Base for executable current operations.
 
 > Early Online Registration screen flow, lifecycle, pricing snapshot, Square
 > handoff, and recovery behavior are defined in
@@ -113,11 +112,12 @@ the Main payout. There is no participation-only tournament entry.
 **Big Bass** is optional and is not a standalone tournament entry.
 
 **Bronze, Silver, and Gold** are members-only, mutually exclusive selections.
-Each pays 1 in 5.
+Bronze pays 1-in-5. Silver pays 1-in-5. Gold pays 1-in-7.
 
-**Insurance Pot** costs **$20**, requires Tournament Entry, and is members-only. It
-pays the first entry out of the money from the Tournament Entry Pot and continues in
-finishing order until available Insurance Pot money is exhausted.
+**Insurance Pot** costs **$20**, requires Tournament Entry, and is members-only.
+It uses a true 1-in-5 payout, with a minimum of one paid place whenever there
+are Insurance Pot entries. Payouts begin with the first eligible team outside
+the Tournament Entry payout.
 
 The official results and payout workflow must support:
 
@@ -197,7 +197,7 @@ remains authoritative for the associated card-reader transaction.
 
 ## 8. AITT Admin Center
 
-When Supabase Auth is implemented, the Tournament Director must log in to the
+Supabase Auth is implemented, and the Tournament Director must log in to the
 protected AITT Admin Center. Public users
 must not have access to administrative controls or private registration
 details.
@@ -245,7 +245,7 @@ scoring, official results, and official CSV export.
 ### After Tournament
 
 - Export the official WeighFish CSV
-- Upload the CSV through AITT's future protected import workflow
+- Upload the CSV through AITT's protected import workflow
 - Validate and preview before final import
 - The website updates:
   - Results
@@ -257,11 +257,11 @@ scoring, official results, and official CSV export.
 The import must preserve the source filename, import timestamp, tournament
 association, and validation outcome. It may import payment method when the CSV
 provides that field. Unknown values remain available for review rather than
-being guessed. This protected import is planned and is not currently
-implemented.
+being guessed. This protected import/review workflow is implemented.
 
-Post-tournament membership reconciliation is a later implementation phase and
-is not part of the current CSV-import workflow.
+Post-tournament membership and identity reconciliation are implemented as part
+of the current import/review workflow and must be resolved before publishing
+Official Results and updating AOY or Championship standings.
 
 ### Bass Stack Challenge Events
 

@@ -1,5 +1,9 @@
 # Current-State Audit — 2026-07-29
 
+> **Historical / Superseded:** This document reflects an earlier implementation
+> state and is retained for reference only. Use
+> [DOCUMENTATION-INDEX.md](../DOCUMENTATION-INDEX.md) for current documentation.
+
 ## Executive summary
 
 AITT is a Next.js 16 App Router application using React 19, TypeScript,
