@@ -108,6 +108,7 @@ export function toPublicTournament(
     stopFishingTime: "15:00",
     hours: optionalDisplayText(tournament.hours ?? null),
     stopFishing: optionalDisplayText(tournament.stop_fishing ?? null),
+    scalesCloseText: optionalDisplayText(tournament.scales_close ?? null),
     launchType:
       tournament.launch_type?.toLowerCase().includes("number")
         ? "NUMBERED_START"

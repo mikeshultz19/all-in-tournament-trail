@@ -13,6 +13,7 @@ export interface TournamentFormErrors {
   tournamentDate?: string;
   hours?: string;
   stopFishing?: string;
+  scalesClose?: string;
   registrationCloses?: string;
   registrationInformation?: string;
   practiceInformation?: string;
@@ -72,6 +73,7 @@ export function tournamentToFormValues(
     ramp: tournament.ramp ?? "",
     hours: tournament.hours ?? "",
     stopFishing: tournament.stop_fishing ?? "",
+    scalesClose: tournament.scales_close ?? "",
     launchType: tournament.launch_type ?? "",
     morningRegistration: tournament.morning_registration ?? "",
     registrationOpens: timestampToInputValue(tournament.registration_opens),
@@ -94,6 +96,7 @@ export function tournamentFormData(formData: FormData): TournamentFormValues {
     ramp: String(formData.get("ramp") ?? "").trim(),
     hours: String(formData.get("hours") ?? "").trim(),
     stopFishing: String(formData.get("stopFishing") ?? "").trim(),
+    scalesClose: String(formData.get("scalesClose") ?? "").trim(),
     launchType: String(formData.get("launchType") ?? "").trim(),
     morningRegistration: String(
       formData.get("morningRegistration") ?? "",
@@ -175,6 +178,10 @@ export function validateTournamentForm(
     errors.stopFishing = "Keep stop-fishing information to 200 characters or fewer.";
   }
 
+  if (values.scalesClose.length > 200) {
+    errors.scalesClose = "Keep scales-close information to 200 characters or fewer.";
+  }
+
   if (values.registrationInformation.length > 1000) {
     errors.registrationInformation =
       "Keep registration information to 1,000 characters or fewer.";
@@ -194,6 +201,7 @@ export function tournamentFormToUpdate(
     ramp: values.ramp || null,
     hours: values.hours || null,
     stop_fishing: values.stopFishing || null,
+    scales_close: values.scalesClose || null,
     launch_type: values.launchType || null,
     morning_registration: values.morningRegistration || null,
     registration_opens: inputValueToTimestamp(values.registrationOpens),

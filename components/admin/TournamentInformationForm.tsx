@@ -193,6 +193,20 @@ export default function TournamentInformationForm({
               className={inputClassName}
             />
           </label>
+          <label className={labelClassName}>
+            Scales Close
+            <input
+              name="scalesClose"
+              maxLength={200}
+              defaultValue={values.scalesClose}
+              aria-invalid={Boolean(state.errors.scalesClose)}
+              aria-describedby={
+                state.errors.scalesClose ? "scalesClose-error" : undefined
+              }
+              className={inputClassName}
+            />
+            <FieldError errors={state.errors} field="scalesClose" />
+          </label>
         </div>
       </fieldset>
 

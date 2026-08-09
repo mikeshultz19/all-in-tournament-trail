@@ -92,9 +92,6 @@ export default function MobileFeaturedTournament({
           {tournament.name}
         </h2>
 
-        <p className="mt-0.5 text-xs font-bold text-[#D4A017]">
-          {tournament.lake}
-        </p>
       </div>
 
       <div className="space-y-3 px-4 py-4">
@@ -130,6 +127,24 @@ export default function MobileFeaturedTournament({
             {tournament.city ? (
               <p className="mt-0.5 text-[0.68rem] leading-4 text-neutral-400">
                 {tournament.city}, Texas
+              </p>
+            ) : null}
+          </div>
+        </div>
+
+        <div className="flex items-start gap-2.5">
+          <MapPin
+            aria-hidden="true"
+            className="mt-0.5 size-3.5 shrink-0 text-[#D4A017]"
+          />
+
+          <div className="min-w-0">
+            <p className="text-xs font-bold text-white">
+              Scales Close            </p>
+
+            {tournament.scalesCloseText ? (
+              <p className="mt-0.5 text-[0.68rem] leading-4 text-neutral-400">
+                {tournament.scalesCloseText}
               </p>
             ) : null}
           </div>

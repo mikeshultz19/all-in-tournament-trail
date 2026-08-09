@@ -35,6 +35,7 @@ export interface Tournament {
   ramp: string | null;
   hours?: string | null;
   stop_fishing?: string | null;
+  scales_close?: string | null;
   launch_type: string | null;
   morning_registration: string | null;
   registration_opens: string | null;
@@ -89,6 +90,7 @@ export type TournamentUpdate = Partial<
     | "ramp"
     | "hours"
     | "stop_fishing"
+    | "scales_close"
     | "launch_type"
     | "morning_registration"
     | "registration_opens"
@@ -131,6 +133,7 @@ export interface TournamentFormValues {
   ramp: string;
   hours: string;
   stopFishing: string;
+  scalesClose: string;
   launchType: string;
   morningRegistration: string;
   registrationOpens: string;

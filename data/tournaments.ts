@@ -37,6 +37,7 @@ export interface Tournament {
   launchType: TournamentLaunchType;
   hours?: string | null;
   stopFishing?: string | null;
+  scalesCloseText?: string | null;
   launchTypeText?: string | null;
   morningRegistrationText?: string | null;
   description: string;

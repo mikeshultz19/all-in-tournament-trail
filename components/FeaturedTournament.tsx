@@ -157,8 +157,8 @@ export default function FeaturedTournament({
           <h4 id="tournament-information-heading" className="border-b border-[#4A3A12] px-4 py-3 text-center text-[10px] font-black uppercase tracking-[0.16em] text-[#D4A017]">
             Tournament Details
           </h4>
-          <dl className="grid grid-cols-1 text-center sm:grid-cols-2 md:grid-cols-6 min-[1280px]:grid-cols-5">
-  <div className="border-b border-white/10 p-3 sm:border-r md:col-span-2 min-[1280px]:col-span-1 min-[1280px]:border-b-0">
+          <dl className="grid grid-cols-1 text-center sm:grid-cols-2 md:grid-cols-6 min-[1280px]:grid-cols-6">
+  <div className="border-b border-white/10 p-3 sm:border-r md:col-span-2">
     <dt className="text-[9px] font-black uppercase tracking-[0.14em] text-[#D4A017]">
       Date
     </dt>
@@ -174,7 +174,7 @@ export default function FeaturedTournament({
     </dd>
   </div>
 
-  <div className="border-b border-white/10 p-3 md:col-span-2 md:border-r min-[1280px]:col-span-1 min-[1280px]:border-b-0">
+  <div className="border-b border-white/10 p-3 md:col-span-2 md:border-r">
     <dt className="text-[9px] font-black uppercase tracking-[0.14em] text-[#D4A017]">
       Ramp
     </dt>
@@ -186,7 +186,7 @@ export default function FeaturedTournament({
     )}
   </div>
 
-  <div className="border-b border-white/10 p-3 md:col-span-2 min-[1280px]:col-span-1 min-[1280px]:border-b-0 min-[1280px]:border-r">
+  <div className="border-b border-white/10 p-3 sm:border-r md:col-span-2 md:border-r-0">
     <dt className="text-[9px] font-black uppercase tracking-[0.14em] text-[#D4A017]">
       Hours
     </dt>
@@ -204,7 +204,7 @@ export default function FeaturedTournament({
     )}
   </div>
 
-  <div className="border-b border-white/10 p-3 sm:border-r md:col-span-3 md:border-b-0 min-[1280px]:col-span-1">
+  <div className="border-b border-white/10 p-3 md:col-span-2 md:border-b-0 md:border-r">
     <dt className="text-[9px] font-black uppercase tracking-[0.14em] text-[#D4A017]">
       Launch Type
     </dt>
@@ -216,7 +216,7 @@ export default function FeaturedTournament({
     )}
   </div>
 
-  <div className="p-3 sm:col-span-2 md:col-span-3 min-[1280px]:col-span-1 min-[1280px]:border-l">
+  <div className="border-b border-white/10 p-3 sm:border-r md:col-span-2 md:border-b-0">
     <dt className="text-[9px] font-black uppercase tracking-[0.14em] text-[#D4A017]">
       Morning Registration
     </dt>
@@ -224,6 +224,18 @@ export default function FeaturedTournament({
     {tournament.morningRegistrationText && (
       <dd className="mt-1.5 whitespace-pre-line text-sm font-bold text-white">
         {tournament.morningRegistrationText}
+      </dd>
+    )}
+  </div>
+
+  <div className="p-3 sm:col-span-2 md:col-span-2">
+    <dt className="text-[9px] font-black uppercase tracking-[0.14em] text-[#D4A017]">
+      Scales Close
+    </dt>
+
+    {tournament.scalesCloseText && (
+      <dd className="mt-1.5 whitespace-pre-line text-sm font-bold text-white">
+        {tournament.scalesCloseText}
       </dd>
     )}
   </div>
