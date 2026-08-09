@@ -52,16 +52,13 @@ function zonedParts(value: Date, timeZone: string) {
   );
 }
 
-export function startOfAnalyticsDay(
-  value: Date,
-  timeZone = AITT_ANALYTICS_TIME_ZONE,
+function zonedMidnight(
+  year: number,
+  month: number,
+  day: number,
+  timeZone: string,
 ) {
-  const localDate = zonedParts(value, timeZone);
-  const targetWallTime = Date.UTC(
-    localDate.year,
-    localDate.month - 1,
-    localDate.day,
-  );
+  const targetWallTime = Date.UTC(year, month - 1, day);
   let candidate = targetWallTime;
 
   for (let attempt = 0; attempt < 4; attempt += 1) {
@@ -80,6 +77,46 @@ export function startOfAnalyticsDay(
   return new Date(candidate);
 }
 
+export function startOfAnalyticsDay(
+  value: Date,
+  timeZone = AITT_ANALYTICS_TIME_ZONE,
+) {
+  const localDate = zonedParts(value, timeZone);
+  return zonedMidnight(
+    localDate.year,
+    localDate.month,
+    localDate.day,
+    timeZone,
+  );
+}
+
+export function startOfAnalyticsWeek(
+  value: Date,
+  timeZone = AITT_ANALYTICS_TIME_ZONE,
+) {
+  const localDate = zonedParts(value, timeZone);
+  const localCalendarDate = new Date(
+    Date.UTC(localDate.year, localDate.month - 1, localDate.day),
+  );
+  localCalendarDate.setUTCDate(
+    localCalendarDate.getUTCDate() - localCalendarDate.getUTCDay(),
+  );
+  return zonedMidnight(
+    localCalendarDate.getUTCFullYear(),
+    localCalendarDate.getUTCMonth() + 1,
+    localCalendarDate.getUTCDate(),
+    timeZone,
+  );
+}
+
+export function startOfAnalyticsMonth(
+  value: Date,
+  timeZone = AITT_ANALYTICS_TIME_ZONE,
+) {
+  const localDate = zonedParts(value, timeZone);
+  return zonedMidnight(localDate.year, localDate.month, 1, timeZone);
+}
+
 export function countUniqueVisitorsSince(
   rows: readonly { visitor_id: string; viewed_at: string }[],
   boundary: Date,
@@ -91,42 +128,123 @@ export function countUniqueVisitorsSince(
   ).size;
 }
 
+const ANALYTICS_PAGE_SIZE = 1000;
+
+export async function fetchAllAnalyticsRows<T>(
+  fetchPage: (from: number, to: number) => PromiseLike<{
+    data: T[] | null;
+    error: unknown;
+  }>,
+  pageSize = ANALYTICS_PAGE_SIZE,
+) {
+  const rows: T[] = [];
+
+  for (let from = 0; ; from += pageSize) {
+    const response = await fetchPage(from, from + pageSize - 1);
+    if (response.error) throw response.error;
+    const page = response.data ?? [];
+    rows.push(...page);
+    if (page.length < pageSize) return rows;
+  }
+}
+
+export function exactAnalyticsCount(response: {
+  count: number | null;
+  error: unknown;
+}) {
+  if (response.error || typeof response.count !== "number") {
+    throw response.error ?? new Error("Analytics count was unavailable.");
+  }
+  return response.count;
+}
+
 export async function getAnalyticsDashboard() {
   const supabase = createSupabaseServerClient();
   const now = new Date();
   const startToday = startOfAnalyticsDay(now);
-  const startWeek = new Date(now);
-  startWeek.setHours(0, 0, 0, 0);
-  startWeek.setDate(startWeek.getDate() - startWeek.getDay());
-  const startMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+  const startWeek = startOfAnalyticsWeek(now);
+  const startMonth = startOfAnalyticsMonth(now);
 
-  const [sessions, views, interest] = await Promise.all([
-    supabase.from("website_analytics_sessions").select("*"),
-    supabase.from("website_page_views").select("visitor_id,page_name,viewed_at"),
-    supabase.from("registration_interest").select("id,first_name,email,created_at").order("created_at", { ascending: false }),
-  ]);
-  if (sessions.error || views.error || interest.error) {
+  try {
+    const [
+      monthViewRows,
+      sessionVisitorRows,
+      sessionCountResponse,
+      pageViewCountResponse,
+      interestCountResponse,
+      recentSessionsResponse,
+      recentInterestResponse,
+      topPageResponses,
+    ] = await Promise.all([
+      fetchAllAnalyticsRows<{ visitor_id: string; viewed_at: string }>((from, to) =>
+        supabase
+          .from("website_page_views")
+          .select("visitor_id,viewed_at")
+          .gte("viewed_at", startMonth.toISOString())
+          .order("viewed_at", { ascending: true })
+          .range(from, to),
+      ),
+      fetchAllAnalyticsRows<{ visitor_id: string }>((from, to) =>
+        supabase
+          .from("website_analytics_sessions")
+          .select("visitor_id")
+          .order("visitor_id", { ascending: true })
+          .range(from, to),
+      ),
+      supabase
+        .from("website_analytics_sessions")
+        .select("session_id", { count: "exact", head: true }),
+      supabase
+        .from("website_page_views")
+        .select("id", { count: "exact", head: true }),
+      supabase
+        .from("registration_interest")
+        .select("id", { count: "exact", head: true }),
+      supabase
+        .from("website_analytics_sessions")
+        .select("session_id,first_path,referrer_domain,utm_source,first_seen_at")
+        .order("first_seen_at", { ascending: false })
+        .limit(8),
+      supabase
+        .from("registration_interest")
+        .select("id,first_name,email,created_at")
+        .order("created_at", { ascending: false })
+        .limit(5),
+      Promise.all(
+        TRACKED_PAGE_NAMES.map(async (pageName) => ({
+          pageName,
+          response: await supabase
+            .from("website_page_views")
+            .select("id", { count: "exact", head: true })
+            .eq("page_name", pageName),
+        })),
+      ),
+    ]);
+
+    if (recentSessionsResponse.error || recentInterestResponse.error) {
+      throw recentSessionsResponse.error ?? recentInterestResponse.error;
+    }
+
+    const topPages = topPageResponses
+      .map(({ pageName, response }) => ({
+        name: pageName,
+        totalViews: exactAnalyticsCount(response),
+      }))
+      .sort((a, b) => b.totalViews - a.totalViews);
+
+    return {
+      totalVisitors: new Set(sessionVisitorRows.map((row) => row.visitor_id)).size,
+      visitorsToday: countUniqueVisitorsSince(monthViewRows, startToday),
+      visitorsThisWeek: countUniqueVisitorsSince(monthViewRows, startWeek),
+      visitorsThisMonth: countUniqueVisitorsSince(monthViewRows, startMonth),
+      totalPageViews: exactAnalyticsCount(pageViewCountResponse),
+      totalSessions: exactAnalyticsCount(sessionCountResponse),
+      interestCount: exactAnalyticsCount(interestCountResponse),
+      topPages,
+      recentInterest: recentInterestResponse.data ?? [],
+      recentSessions: recentSessionsResponse.data ?? [],
+    };
+  } catch {
     throw new Error("Website analytics could not be loaded.");
   }
-  const sessionRows = sessions.data ?? [];
-  const viewRows = views.data ?? [];
-  const interestRows = interest.data ?? [];
-  const visitorIds = new Set(sessionRows.map((row) => row.visitor_id));
-  const since = (date: Date) =>
-    new Set(sessionRows.filter((row) => new Date(row.first_seen_at) >= date).map((row) => row.visitor_id)).size;
-  const totals = new Map<string, number>(TRACKED_PAGE_NAMES.map((name) => [name, 0]));
-  for (const view of viewRows) totals.set(view.page_name, (totals.get(view.page_name) ?? 0) + 1);
-
-  return {
-    totalVisitors: visitorIds.size,
-    visitorsToday: countUniqueVisitorsSince(viewRows, startToday),
-    visitorsThisWeek: since(startWeek),
-    visitorsThisMonth: since(startMonth),
-    totalPageViews: viewRows.length,
-    totalSessions: sessionRows.length,
-    interestCount: interestRows.length,
-    topPages: [...totals].map(([name, totalViews]) => ({ name, totalViews })).sort((a, b) => b.totalViews - a.totalViews),
-    recentInterest: interestRows.slice(0, 5),
-    recentSessions: sessionRows.sort((a, b) => b.first_seen_at.localeCompare(a.first_seen_at)).slice(0, 8),
-  };
 }

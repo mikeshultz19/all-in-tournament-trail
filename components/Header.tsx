@@ -31,6 +31,9 @@ const mobileNavItems = [
   ...navItems.slice(1),
 ];
 
+const howAittWorksButtonClasses =
+  "rounded-md border border-[#c9aa4a]/35 bg-black/70 text-yellow-400 hover:border-[#c9aa4a]/75 hover:text-yellow-300 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-yellow-400";
+
 function NavLink({
   label,
   href,
@@ -46,7 +49,7 @@ function NavLink({
 }) {
   const baseClasses =
     tone === "gold"
-      ? "whitespace-nowrap text-sm font-black uppercase tracking-[0.08em] text-yellow-400 transition duration-200 hover:text-yellow-300 hover:drop-shadow-[0_0_8px_rgba(250,204,21,0.45)]"
+      ? `whitespace-nowrap px-2.5 py-1 text-sm font-black uppercase tracking-[0.08em] transition duration-200 ${howAittWorksButtonClasses}`
       : `whitespace-nowrap text-sm font-black uppercase tracking-[0.08em] transition duration-200 hover:text-red-500 ${
           activeItem === label ? "text-red-500" : "text-zinc-100"
         }`;
@@ -205,7 +208,7 @@ export default function Header({ activeItem }: { activeItem?: string }) {
     aria-current={
       activeItem === "How AITT Works" ? "page" : undefined
     }
-    className={`flex h-9 shrink-0 cursor-pointer items-center justify-center whitespace-nowrap px-0.5 text-center text-[0.53rem] font-black uppercase leading-[0.95] tracking-[0.02em] text-yellow-400 transition duration-200 active:scale-[0.96] hover:text-yellow-300 hover:drop-shadow-[0_0_8px_rgba(250,204,21,0.45)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-yellow-400 min-[375px]:mx-0.5 min-[375px]:text-[0.58rem] sm:h-10 sm:px-1 sm:text-[0.68rem] ${
+    className={`flex h-9 shrink-0 cursor-pointer items-center justify-center whitespace-nowrap px-0.5 text-center text-[0.53rem] font-black uppercase leading-[0.95] tracking-[0.02em] transition duration-200 active:scale-[0.96] min-[375px]:mx-0.5 min-[375px]:text-[0.58rem] sm:h-10 sm:px-1 sm:text-[0.68rem] ${howAittWorksButtonClasses} ${
       activeItem === "How AITT Works"
         ? "drop-shadow-[0_0_8px_rgba(250,204,21,0.5)]"
         : ""
@@ -275,7 +278,8 @@ export default function Header({ activeItem }: { activeItem?: string }) {
                         label={item.label}
                         href={item.href}
                         activeItem={activeItem}
-                        className="rounded-lg px-3 py-2 text-sm text-zinc-100 hover:bg-white/5"
+                        tone={item.label === "How AITT Works" ? "gold" : "default"}
+                        className={item.label === "How AITT Works" ? "px-3 py-2 text-sm hover:bg-white/5" : "rounded-lg px-3 py-2 text-sm text-zinc-100 hover:bg-white/5"}
                       />
                     ),
                   )}

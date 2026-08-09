@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useEffect, useRef, useState } from "react";
 
 import SiteCraftBadge from "@/components/SiteCraftBadge";
 import { SOCIAL_LINKS } from "@/config/social-links";
@@ -30,6 +31,84 @@ function scrollToTop() {
 
 function openContactModal() {
   window.dispatchEvent(new Event("open-contact"));
+}
+
+function AittTeamPopover() {
+  const [open, setOpen] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function closeOnOutsidePress(event: PointerEvent) {
+      if (!containerRef.current?.contains(event.target as Node)) setOpen(false);
+    }
+    function closeOnEscape(event: KeyboardEvent) {
+      if (event.key === "Escape") setOpen(false);
+    }
+    document.addEventListener("pointerdown", closeOnOutsidePress);
+    document.addEventListener("keydown", closeOnEscape);
+    return () => {
+      document.removeEventListener("pointerdown", closeOnOutsidePress);
+      document.removeEventListener("keydown", closeOnEscape);
+    };
+  }, []);
+
+  return (
+    <div
+      ref={containerRef}
+      className="relative"
+      onPointerEnter={(event) => {
+        if (event.pointerType === "mouse") setOpen(true);
+      }}
+      onPointerLeave={(event) => {
+        if (
+          event.pointerType === "mouse" &&
+          !containerRef.current?.contains(document.activeElement)
+        ) setOpen(false);
+      }}
+      onBlur={(event) => {
+        if (!event.currentTarget.contains(event.relatedTarget)) setOpen(false);
+      }}
+    >
+      <button
+        type="button"
+        aria-expanded={open}
+        aria-controls="aitt-team-popover"
+        aria-haspopup="dialog"
+        onFocus={() => setOpen(true)}
+        onPointerUp={(event) => {
+          if (event.pointerType !== "mouse") setOpen((current) => !current);
+        }}
+        onClick={(event) => {
+          if (event.detail === 0) setOpen(true);
+        }}
+        className="cursor-pointer whitespace-nowrap text-zinc-500 transition-colors hover:text-[#d0ae4c] focus-visible:text-[#d0ae4c] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-yellow-400"
+      >
+        Who’s Behind AITT?
+      </button>
+
+      {open ? (
+        <div
+          id="aitt-team-popover"
+          role="dialog"
+          aria-label="Who’s Behind AITT?"
+          className="absolute bottom-full left-1/2 z-20 mb-2 w-64 -translate-x-1/2 rounded-md border border-[#c9aa4a]/35 bg-[#101010] p-4 text-left shadow-[0_12px_30px_rgba(0,0,0,0.45)]"
+        >
+          <div>
+            <p className="font-semibold text-white">Mike Shultz</p>
+            <p className="mt-1 text-[#d0ae4c]">
+              Founder · Tournament Director · Web Design
+            </p>
+          </div>
+          <div className="mt-3 border-t border-white/10 pt-3">
+            <p className="font-semibold text-white">Brandon Ferrell</p>
+            <p className="mt-1 text-[#d0ae4c]">
+              Founder · Tournament Director
+            </p>
+          </div>
+        </div>
+      ) : null}
+    </div>
+  );
 }
 
 export default function Footer() {
@@ -88,8 +167,8 @@ export default function Footer() {
       </nav>
 
       <div className="border-t border-zinc-900 px-3 py-2 sm:px-8">
-        <div className="mx-auto grid max-w-[1400px] grid-cols-[minmax(0,1fr)_auto] items-center gap-x-3 gap-y-2 text-[9px] leading-tight text-zinc-500 sm:grid-cols-[1fr_auto_1fr] sm:text-xs">
-          <div className="text-left">
+        <div className="mx-auto grid max-w-[1400px] grid-cols-1 items-center gap-x-6 gap-y-3 text-center text-[9px] leading-tight text-zinc-500 sm:grid-cols-[1fr_auto_1fr] sm:text-xs">
+          <div className="sm:text-left">
             <p className="text-[10px] font-black uppercase tracking-[0.12em] text-[#d0ae4c] sm:text-xs">
               Fish Your Way. Bet Your Way. Win Your Way.
             </p>
@@ -101,19 +180,23 @@ export default function Footer() {
             <p className="mt-0.5">All Rights Reserved.</p>
           </div>
 
-          <div className="col-span-2 row-start-2 flex flex-col items-center justify-center text-center text-[8px] text-zinc-600 sm:col-span-1 sm:col-start-2 sm:row-start-1 sm:text-[10px]">
+          <div className="flex flex-col items-center text-[8px] text-zinc-600 sm:text-[10px]">
             <p>Website Designed by SiteCraft Web Design</p>
             <SiteCraftBadge />
           </div>
 
-          <button
-            type="button"
-            onClick={scrollToTop}
-            className="inline-flex cursor-pointer items-center justify-self-end gap-1 text-right uppercase tracking-[0.08em] transition-colors hover:text-yellow-400 focus-visible:text-yellow-400 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-yellow-400 sm:tracking-[0.12em]"
-          >
-            <span aria-hidden="true">↑</span>
-            Back to Top
-          </button>
+          <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1 sm:justify-end">
+            <button
+              type="button"
+              onClick={scrollToTop}
+              className="inline-flex cursor-pointer items-center gap-1 uppercase tracking-[0.08em] transition-colors hover:text-yellow-400 focus-visible:text-yellow-400 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-yellow-400 sm:tracking-[0.12em]"
+            >
+              <span aria-hidden="true">↑</span>
+              Back to Top
+            </button>
+
+            <AittTeamPopover />
+          </div>
         </div>
       </div>
     </footer>
