@@ -2,7 +2,10 @@
 
 > **Historical / Superseded:** This document reflects an earlier implementation
 > state and is retained for reference only. Use
-> [DOCUMENTATION-INDEX.md](../DOCUMENTATION-INDEX.md) for current documentation.
+> [AITT Current State](../CURRENT_STATE.md) for the current readiness assessment
+> and [DOCUMENTATION-INDEX.md](../DOCUMENTATION-INDEX.md) for current
+> documentation. The findings below are dated history and must not be read as
+> claims about the August 2026 implementation.
 
 ## Executive summary
 

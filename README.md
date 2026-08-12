@@ -14,6 +14,8 @@ Supabase PostgreSQL, Auth, and Storage provide the backend.
 Start with the canonical [AITT Documentation Index](docs/DOCUMENTATION-INDEX.md)
 for current technical, staff, operational, and public documentation. Dated
 audits and status reports are retained only as historical references.
+The concise repository-backed readiness summary is
+[AITT Current State](docs/CURRENT_STATE.md).
 
 ## Current state
 

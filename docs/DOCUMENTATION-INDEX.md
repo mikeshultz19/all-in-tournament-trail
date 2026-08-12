@@ -1,6 +1,6 @@
 # AITT Documentation Index
 
-Last reconciled: 2026-08-08
+Last reconciled: 2026-08-10
 
 This is the canonical entry point for AITT documentation. Use the sections
 below to distinguish current technical guidance, staff operating instructions,
@@ -15,6 +15,9 @@ official public documents, and retained historical records.
 ## Current Technical / Developer
 
 ### Architecture
+
+- [Current State](CURRENT_STATE.md) — current readiness, resolved former
+  blockers, and remaining launch work.
 
 - [Repository README](../README.md) — current platform and local setup.
 - [Repository Map](RepositoryMap.md) — current code, route, and data ownership map.

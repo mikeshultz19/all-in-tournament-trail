@@ -1,6 +1,6 @@
 # Security Notes
 
-Last updated: 2026-08-08
+Last updated: 2026-08-10
 
 ## Implemented application controls
 
@@ -19,10 +19,13 @@ Last updated: 2026-08-08
 
 ## Database and secret controls
 
-Legacy migrations still grant anonymous writes and permissive RLS policies for
-one or more operations on `tournaments`, `news`, `tournament_registrations`,
-`tournament_results`, and `tournament_aoy_points`. Authenticated UI protection
-does not prevent direct use of those anonymous database privileges.
+Later migrations revoke the former anonymous write grants and policies for
+`news`, `tournament_registrations`, `tournament_results`, and
+`tournament_aoy_points`. The checked-in chain does not revoke the permissive
+`Temporary admin tournament updates` policy created for `tournaments` in
+`202607230001_create_tournaments.sql`. Authenticated UI protection does not
+prevent direct use of that remaining anonymous database privilege. Effective
+hosted grants and policies still require direct verification.
 
 Maintain and periodically verify:
 

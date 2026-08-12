@@ -5,6 +5,9 @@ it. Use the canonical [AITT Documentation Index](DOCUMENTATION-INDEX.md) to
 choose current Technical / Developer, Staff / Operations, or Official Public
 documentation.
 
+For the current readiness summary and remaining launch gates, see
+[AITT Current State](CURRENT_STATE.md).
+
 Tournament staff should begin with the
 [Staff Knowledge Base](knowledge-base/START-HERE.md). Historical and superseded
 documents are listed separately in the canonical index and must not be treated

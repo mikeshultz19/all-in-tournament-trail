@@ -1,6 +1,9 @@
 # Development Roadmap
 
-Last updated: 2026-08-08
+Last updated: 2026-08-10
+
+Current readiness and blocker classifications are maintained in
+[AITT Current State](CURRENT_STATE.md).
 
 ## Completed application foundations
 
@@ -17,7 +20,8 @@ Last updated: 2026-08-08
 
 ## Next implementation order
 
-1. Verify effective production RLS, grants, RPC permissions, Storage policies,
+1. Remove the remaining permissive anonymous tournament-update policy, then
+   verify effective production RLS, grants, RPC permissions, Storage policies,
    and secret boundaries against the complete migration chain.
 2. Run the complete implemented workflow against disposable nonproduction data:
    preparation, registration review, import, reconciliation, Insurance,
