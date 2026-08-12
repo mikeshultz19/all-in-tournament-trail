@@ -3,6 +3,7 @@ import { existsSync, readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 
 import SponsorsPage from "@/app/sponsors/page";
+import SponsorshipOpportunitiesPage from "@/app/sponsorship-opportunities/page";
 import Header from "@/components/Header";
 import Hero from "@/components/Hero";
 import SponsorHome from "@/components/SponsorHome";
@@ -148,17 +149,41 @@ describe("homepage sponsors", () => {
 });
 
 describe("public sponsorship paths", () => {
-  it("renders the completed Sponsors page with benefits and the approved contact route", () => {
+  it("preserves the Sponsors introduction and renders its partner rows in order", () => {
     const html = renderToStaticMarkup(<SponsorsPage />);
 
-    expect(html).toContain("Partner With All-In Tournament Trail");
-    expect(html).toContain("Sponsorship benefits may include");
-    expect(html).toContain("Website exposure");
-    expect(html).toContain("Tournament recognition");
-    expect(html).toContain("Contact Us");
-    expect(html).toContain('href="/contact"');
+    expect(html).toContain("Support competitive bass fishing and connect your business with the AITT community.");
+    expect(html).toContain("Interested in partnering with AITT?");
+    expect(html).toContain('href="/sponsorship-opportunities"');
+    expect(html).toContain("Our Partners");
+    expect(html).toContain("Texas Boat Works");
+    expect(html).toContain("texas-boat-works.png");
+    expect(html).toContain('href="https://www.texasboatworks.com"');
+    expect(html).toContain("Yukon Outfitters");
+    expect(html).toContain("Yukon-Outfitters.png");
+    expect(html).toContain('href="https://yukon-outfitters.com"');
+    expect(html).toContain('target="_blank"');
+    expect(html).toContain('rel="noopener noreferrer"');
+    expect(html.indexOf("Texas Boat Works")).toBeLessThan(
+      html.indexOf("Yukon Outfitters"),
+    );
+    expect(html).toContain("sm:grid-cols-[180px_minmax(0,1fr)]");
+    expect(html).toContain("lg:grid-cols-[210px_minmax(0,1fr)_auto]");
     expect(html).toContain("overflow-x-hidden");
-    expect(html).toContain("break-words");
+  });
+
+  it("moves the existing opportunity content to its dedicated route", () => {
+    const sponsorsHtml = renderToStaticMarkup(<SponsorsPage />);
+    const opportunityHtml = renderToStaticMarkup(<SponsorshipOpportunitiesPage />);
+
+    expect(sponsorsHtml).not.toContain("Sponsorship benefits may include");
+    expect(opportunityHtml).toContain("Partner With All-In Tournament Trail");
+    expect(opportunityHtml).toContain("Sponsorship benefits may include");
+    expect(opportunityHtml).toContain("Website exposure");
+    expect(opportunityHtml).toContain("Tournament recognition");
+    expect(opportunityHtml).toContain("Contact Us");
+    expect(opportunityHtml).toContain('href="/contact"');
+    expect(opportunityHtml).toContain("break-words");
   });
 
   it("keeps the hero uncluttered and links How AITT Works from global navigation", () => {
@@ -175,6 +200,7 @@ describe("public sponsorship paths", () => {
 
   it("uses only the approved existing public routes", () => {
     expect(existsSync("app/sponsors/page.tsx")).toBe(true);
+    expect(existsSync("app/sponsorship-opportunities/page.tsx")).toBe(true);
     expect(existsSync("app/how-it-works/page.tsx")).toBe(true);
     expect(existsSync("app/contact/page.tsx")).toBe(true);
     expect(
