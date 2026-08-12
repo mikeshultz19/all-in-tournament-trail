@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useEffect, useMemo, useState } from "react";
+import { useActionState, useMemo, useState } from "react";
 
 import {
   savePrepareMembershipReminderAction,
@@ -28,6 +28,10 @@ type PrepareMembershipReminderProps = {
 };
 
 export default function PrepareMembershipReminder(props: PrepareMembershipReminderProps) {
+  return <PrepareMembershipReminderState key={props.tournamentId} {...props} />;
+}
+
+function PrepareMembershipReminderState(props: PrepareMembershipReminderProps) {
   const {
     tournamentId,
     needReviewCount,
@@ -47,7 +51,24 @@ export default function PrepareMembershipReminder(props: PrepareMembershipRemind
   );
   const [confirmingUndo, setConfirmingUndo] = useState(false);
   const [state, formAction, pending] = useActionState(
-    savePrepareMembershipReminderAction.bind(null, tournamentId),
+    async (previousState: PrepareReminderState, formData: FormData) => {
+      const nextState = await savePrepareMembershipReminderAction(
+        tournamentId,
+        previousState,
+        formData,
+      );
+
+      if (nextState.status === "success" && nextState.savedComplete !== undefined) {
+        setSavedComplete(nextState.savedComplete);
+        setConfirmingUndo(false);
+        if (!nextState.savedComplete) {
+          setRegistrationReviewComplete(false);
+          setPaperMembershipsConfirmed(false);
+        }
+      }
+
+      return nextState;
+    },
     initialState,
   );
 
@@ -63,16 +84,6 @@ export default function PrepareMembershipReminder(props: PrepareMembershipRemind
     hasExistingImport && !readyToConfirm
       ? "An import already exists for this tournament. Keep these confirmations complete so Import Results stays unlocked."
       : null;
-
-  useEffect(() => {
-    if (state.status !== "success" || state.savedComplete === undefined) return;
-    setSavedComplete(state.savedComplete);
-    setConfirmingUndo(false);
-    if (!state.savedComplete) {
-      setRegistrationReviewComplete(false);
-      setPaperMembershipsConfirmed(false);
-    }
-  }, [state.savedComplete, state.status]);
 
   return (
     <AdminPanel variant="nested" className="p-4">

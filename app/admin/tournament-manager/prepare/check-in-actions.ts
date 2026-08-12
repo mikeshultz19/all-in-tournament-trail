@@ -16,6 +16,8 @@ export async function setRegistrationCheckInAction(
   checkedIn: boolean,
   _previousState: RegistrationCheckInState,
 ): Promise<RegistrationCheckInState> {
+  void _previousState;
+
   const admin = await requireAdminUser();
 
   try {

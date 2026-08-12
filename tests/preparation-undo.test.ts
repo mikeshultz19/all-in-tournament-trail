@@ -37,6 +37,15 @@ describe("Tournament preparation undo", () => {
     expect(component).toContain('name="intent" value="undo"');
   });
 
+  it("applies successful action state directly and resets state between tournaments", () => {
+    const component = readFileSync("components/admin/PrepareMembershipReminder.tsx", "utf8");
+    expect(component).toContain("await savePrepareMembershipReminderAction(");
+    expect(component).toContain('nextState.status === "success"');
+    expect(component).toContain("setSavedComplete(nextState.savedComplete)");
+    expect(component).toContain("key={props.tournamentId}");
+    expect(component).not.toContain("useEffect");
+  });
+
   it("lists all actual downstream blockers", () => {
     const protection = readFileSync("lib/tournament-preparation-protection.ts", "utf8");
     expect(protection).toContain("const blockers = labels.filter");
