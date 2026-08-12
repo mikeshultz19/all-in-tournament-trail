@@ -2,7 +2,9 @@ import Image from "next/image";
 import Link from "next/link";
 import { ChevronDown, Menu } from "lucide-react";
 
+import AittTeamPopover from "@/components/AittTeamPopover";
 import HeaderSocialLinks from "@/components/HeaderSocialLinks";
+import MobileMenuHomeLink from "@/components/MobileMenuHomeLink";
 
 const navItems = [
   { label: "Home", href: "/" },
@@ -95,16 +97,19 @@ export default function Header({ activeItem }: { activeItem?: string }) {
       <header className="fixed inset-x-0 top-0 z-[100] w-full border-b border-zinc-800 bg-black/95 backdrop-blur">
         <div className="mx-auto flex w-full max-w-[1800px] items-center gap-2 px-2.5 py-3 min-[375px]:px-3 sm:gap-4 sm:px-4 lg:px-5">
           {/* Logo remains unchanged on desktop and scales down on mobile. */}
-          <Link href="/" className="flex min-w-0 shrink cursor-pointer items-center focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-yellow-400">
-            <Image
-              src="/images/logo-new.png"
-              alt="All In Tournament Trail"
-              width={1774}
-              height={887}
-              priority
-              className="h-auto w-[88px] min-[360px]:w-[96px] min-[375px]:w-[104px] sm:w-[160px] min-[1440px]:w-[192px]"
-            />
-          </Link>
+          <div className="relative flex min-w-0 shrink items-center">
+            <Link href="/" className="flex min-w-0 shrink cursor-pointer items-center focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-yellow-400">
+              <Image
+                src="/images/logo-new.png"
+                alt="All In Tournament Trail"
+                width={1774}
+                height={887}
+                priority
+                className="h-auto w-[88px] min-[360px]:w-[96px] min-[375px]:w-[104px] sm:w-[160px] min-[1440px]:w-[192px]"
+              />
+            </Link>
+            <AittTeamPopover placement="desktop" />
+          </div>
 
           {/*
            * DESKTOP NAVIGATION
@@ -266,7 +271,12 @@ export default function Header({ activeItem }: { activeItem?: string }) {
 
                 <div className="grid gap-1 p-3">
                   {mobileNavItems.map((item) =>
-                    item.bassStack ? (
+                    item.label === "Home" ? (
+                      <MobileMenuHomeLink
+                        key={item.label}
+                        active={activeItem === item.label}
+                      />
+                    ) : item.bassStack ? (
                       <BassStackNavLink
                         key={item.label}
                         activeItem={activeItem}
@@ -285,14 +295,9 @@ export default function Header({ activeItem }: { activeItem?: string }) {
                   )}
                 </div>
 
-                <div className="border-t border-zinc-800 px-4 py-4">
-                  <p className="text-[0.65rem] font-black uppercase tracking-[0.18em] text-zinc-500">
-                    Follow
-                  </p>
-
-                  <div className="mt-3">
-                    <HeaderSocialLinks className="gap-4" />
-                  </div>
+                <div className="flex items-center justify-between gap-4 border-t border-zinc-800 px-4 py-3">
+                  <AittTeamPopover placement="menu" />
+                  <HeaderSocialLinks className="shrink-0 gap-4" />
                 </div>
               </div>
             </details>

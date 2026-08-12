@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
 
 import SiteCraftBadge from "@/components/SiteCraftBadge";
 import { SOCIAL_LINKS } from "@/config/social-links";
@@ -31,84 +30,6 @@ function scrollToTop() {
 
 function openContactModal() {
   window.dispatchEvent(new Event("open-contact"));
-}
-
-function AittTeamPopover() {
-  const [open, setOpen] = useState(false);
-  const containerRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    function closeOnOutsidePress(event: PointerEvent) {
-      if (!containerRef.current?.contains(event.target as Node)) setOpen(false);
-    }
-    function closeOnEscape(event: KeyboardEvent) {
-      if (event.key === "Escape") setOpen(false);
-    }
-    document.addEventListener("pointerdown", closeOnOutsidePress);
-    document.addEventListener("keydown", closeOnEscape);
-    return () => {
-      document.removeEventListener("pointerdown", closeOnOutsidePress);
-      document.removeEventListener("keydown", closeOnEscape);
-    };
-  }, []);
-
-  return (
-    <div
-      ref={containerRef}
-      className="relative"
-      onPointerEnter={(event) => {
-        if (event.pointerType === "mouse") setOpen(true);
-      }}
-      onPointerLeave={(event) => {
-        if (
-          event.pointerType === "mouse" &&
-          !containerRef.current?.contains(document.activeElement)
-        ) setOpen(false);
-      }}
-      onBlur={(event) => {
-        if (!event.currentTarget.contains(event.relatedTarget)) setOpen(false);
-      }}
-    >
-      <button
-        type="button"
-        aria-expanded={open}
-        aria-controls="aitt-team-popover"
-        aria-haspopup="dialog"
-        onFocus={() => setOpen(true)}
-        onPointerUp={(event) => {
-          if (event.pointerType !== "mouse") setOpen((current) => !current);
-        }}
-        onClick={(event) => {
-          if (event.detail === 0) setOpen(true);
-        }}
-        className="cursor-pointer whitespace-nowrap text-zinc-500 transition-colors hover:text-[#d0ae4c] focus-visible:text-[#d0ae4c] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-yellow-400"
-      >
-        Who’s Behind AITT?
-      </button>
-
-      {open ? (
-        <div
-          id="aitt-team-popover"
-          role="dialog"
-          aria-label="Who’s Behind AITT?"
-          className="absolute bottom-full left-1/2 z-20 mb-2 w-64 -translate-x-1/2 rounded-md border border-[#c9aa4a]/35 bg-[#101010] p-4 text-left shadow-[0_12px_30px_rgba(0,0,0,0.45)]"
-        >
-          <div>
-            <p className="font-semibold text-white">Mike Shultz</p>
-            <p className="mt-1 text-[#d0ae4c]">
-              Founder · Tournament Director · Web Design
-            </p>
-          </div>
-          <div className="mt-3 border-t border-white/10 pt-3">
-            <p className="font-semibold text-white">Brandon Ferrell</p>
-            <p className="mt-1 text-[#d0ae4c]">
-              Founder · Tournament Director
-            </p>
-          </div>
-        </div>
-      ) : null}
-    </div>
-  );
 }
 
 export default function Footer() {
@@ -194,8 +115,6 @@ export default function Footer() {
               <span aria-hidden="true">↑</span>
               Back to Top
             </button>
-
-            <AittTeamPopover />
           </div>
         </div>
       </div>
