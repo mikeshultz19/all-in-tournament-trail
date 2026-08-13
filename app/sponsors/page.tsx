@@ -18,9 +18,11 @@ interface PublicSponsor {
   name: string;
   logo: string;
   logoFit: "contain" | "cover";
+  borderedLogo?: boolean;
   softenWhiteBackground?: boolean;
   partnershipIntro: string;
   description: string;
+  details?: string[];
   website: string;
   ctaLabel: string;
 }
@@ -59,6 +61,24 @@ const publicSponsors: PublicSponsor[] = [
       "Banners • Signs • Coro/Metal • Sublimation • Wraps • Embroidery • Screen Printing • and more",
     website: "https://facebook.com/BillyandGarry",
     ctaLabel: "Visit Mad Dawg Graphics & Design →",
+  },
+  {
+    name: "Badger Lures",
+    logo: "/sponsors/Badger.jpg",
+    logoFit: "contain",
+    borderedLogo: true,
+    partnershipIntro:
+      "AITT is proud to partner with Badger Lures, creating custom-painted fishing lures since 2020.",
+    description: "Badger Them to Bite.",
+    details: [
+      "Custom-painted fishing lures",
+      "Patterns designed to catch fish, not anglers",
+      "Quality blanks — not cheap manufactured bodies",
+      "Mustad hooks and stainless heavy-duty hardware",
+      "Stock patterns, custom color matching, and special orders",
+    ],
+    website: "https://facebook.com/Badger.them.to.Bite",
+    ctaLabel: "Visit Badger Lures →",
   },
   {
     name: "Yukon Outfitters",
@@ -119,7 +139,15 @@ export default function SponsorsPage() {
                   className="grid min-w-0 gap-5 py-7 sm:grid-cols-[180px_minmax(0,1fr)] sm:items-center lg:grid-cols-[210px_minmax(0,1fr)_auto] lg:gap-8"
                 >
                   <div className="relative flex min-h-24 items-center justify-center sm:min-h-28">
-                    {sponsor.softenWhiteBackground ? (
+                    {sponsor.borderedLogo ? (
+                      <Image
+                        src={sponsor.logo}
+                        alt={`${sponsor.name} logo`}
+                        width={1056}
+                        height={816}
+                        className="max-h-24 w-auto border border-[#D4A017]/60 object-contain sm:max-h-28"
+                      />
+                    ) : sponsor.softenWhiteBackground ? (
                       <Image
                         src={sponsor.logo}
                         alt={`${sponsor.name} logo`}
@@ -148,6 +176,13 @@ export default function SponsorsPage() {
                     <p className="mt-3 text-sm italic leading-6 text-neutral-400">
                       {sponsor.description}
                     </p>
+                    {sponsor.details ? (
+                      <ul className="mt-3 list-disc space-y-1 pl-5 text-sm leading-5 text-neutral-400">
+                        {sponsor.details.map((detail) => (
+                          <li key={detail}>{detail}</li>
+                        ))}
+                      </ul>
+                    ) : null}
                   </div>
 
                   <a

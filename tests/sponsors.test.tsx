@@ -159,12 +159,20 @@ describe("public sponsorship paths", () => {
     expect(html).toContain("Texas Boat Works");
     expect(html).toContain("texas-boat-works.png");
     expect(html).toContain('href="https://www.texasboatworks.com"');
+    expect(html).toContain("Badger Lures");
+    expect(html).toContain("Badger.jpg");
+    expect(html).toContain('href="https://facebook.com/Badger.them.to.Bite"');
+    expect(html).toContain("Badger Them to Bite.");
+    expect(html).toContain("Patterns designed to catch fish, not anglers");
     expect(html).toContain("Yukon Outfitters");
     expect(html).toContain("Yukon-Outfitters.png");
     expect(html).toContain('href="https://yukon-outfitters.com"');
     expect(html).toContain('target="_blank"');
     expect(html).toContain('rel="noopener noreferrer"');
     expect(html.indexOf("Texas Boat Works")).toBeLessThan(
+      html.indexOf("Yukon Outfitters"),
+    );
+    expect(html.indexOf("Badger Lures")).toBeLessThan(
       html.indexOf("Yukon Outfitters"),
     );
     expect(html).toContain("sm:grid-cols-[180px_minmax(0,1fr)]");
@@ -177,7 +185,7 @@ describe("public sponsorship paths", () => {
     const opportunityHtml = renderToStaticMarkup(<SponsorshipOpportunitiesPage />);
 
     expect(sponsorsHtml).not.toContain("Sponsorship benefits may include");
-    expect(opportunityHtml).toContain("Partner With All-In Tournament Trail");
+    expect(opportunityHtml).toContain("Partner With All In Tournament Trail");
     expect(opportunityHtml).toContain("Sponsorship benefits may include");
     expect(opportunityHtml).toContain("Website exposure");
     expect(opportunityHtml).toContain("Tournament recognition");
