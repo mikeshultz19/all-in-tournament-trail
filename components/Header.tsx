@@ -289,7 +289,7 @@ export default function Header({ activeItem }: { activeItem?: string }) {
                         href={item.href}
                         activeItem={activeItem}
                         tone={item.label === "How AITT Works" ? "gold" : "default"}
-                        className={item.label === "How AITT Works" ? "px-3 py-2 text-sm hover:bg-white/5" : "rounded-lg px-3 py-2 text-sm text-zinc-100 hover:bg-white/5"}
+                        className={item.label === "How AITT Works" ? "justify-self-start px-3 py-2 text-sm hover:bg-white/5" : "rounded-lg px-3 py-2 text-sm text-zinc-100 hover:bg-white/5"}
                       />
                     ),
                   )}
