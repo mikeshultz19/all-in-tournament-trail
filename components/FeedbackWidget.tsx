@@ -4,6 +4,8 @@ import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 
 const contactEmail = "info@allintrail.com";
+const tournamentPhoneDisplay = "817-841-9120";
+const tournamentPhoneLink = "tel:+18178419120";
 
 const emailSubject = encodeURIComponent(
   "All-In Tournament Trail Website Inquiry",
@@ -102,10 +104,11 @@ function FeedbackWidgetContent({ initiallyOpen }: { initiallyOpen: boolean }) {
             }
           }}
         >
-          <div className="relative w-full max-w-xl overflow-hidden rounded-xl border border-zinc-700 bg-zinc-950 shadow-2xl">
+          <div className="relative max-h-[calc(100dvh-2rem)] w-full max-w-xl overflow-y-auto rounded-xl border border-zinc-700 bg-zinc-950 shadow-2xl">
             <div className="border-b border-zinc-800 bg-black px-6 py-5">
               <p className="mb-1 text-xs font-black uppercase tracking-[0.22em] text-yellow-400">
-                All-In Tournament Trail
+                <span className="md:hidden">All In Tournament Trail</span>
+                <span className="hidden md:inline">All-In Tournament Trail</span>
               </p>
 
               <h2
@@ -134,7 +137,23 @@ function FeedbackWidgetContent({ initiallyOpen }: { initiallyOpen: boolean }) {
             </button>
 
             <div className="p-6">
-              <div className="rounded-lg border border-zinc-800 bg-black/50 p-5">
+              <div className="rounded-lg border border-yellow-400/45 bg-yellow-400/10 p-5 text-center sm:text-left">
+                <p className="text-xs font-black uppercase tracking-[0.14em] text-yellow-400">
+                  Tournament Questions or On-the-Water Assistance
+                </p>
+                <p className="mt-2 text-sm font-bold text-white">
+                  Call AITT Tournament Director
+                </p>
+                <a
+                  href={tournamentPhoneLink}
+                  className="mt-2 inline-flex min-h-11 items-center text-2xl font-black tracking-wide text-yellow-400 transition hover:text-yellow-300 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-yellow-400"
+                  aria-label={`Call AITT Tournament Director at ${tournamentPhoneDisplay}`}
+                >
+                  {tournamentPhoneDisplay}
+                </a>
+              </div>
+
+              <div className="mt-5 rounded-lg border border-zinc-800 bg-black/50 p-5">
                 <p className="text-sm leading-6 text-zinc-300">
                   Send the AITT team an email and we will respond as soon as
                   possible.

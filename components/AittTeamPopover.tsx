@@ -84,24 +84,12 @@ export default function AittTeamPopover({
             <p className="mt-1 text-[#d0ae4c]">
               Founder · Tournament Director · Web Design
             </p>
-            <a
-              href="tel:+14698586203"
-              className="mt-1 inline-block text-zinc-300 transition-colors hover:text-white focus-visible:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-yellow-400"
-            >
-              469-858-6203
-            </a>
           </div>
           <div className="mt-3 border-t border-white/10 pt-3">
             <p className="font-semibold text-white">Brandon Ferrell</p>
             <p className="mt-1 text-[#d0ae4c]">
               Founder · Tournament Director
             </p>
-            <a
-              href="tel:+18176925771"
-              className="mt-1 inline-block text-zinc-300 transition-colors hover:text-white focus-visible:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-yellow-400"
-            >
-              817-692-5771
-            </a>
           </div>
         </div>
       ) : null}
