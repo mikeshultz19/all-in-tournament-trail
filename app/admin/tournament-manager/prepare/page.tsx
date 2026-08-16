@@ -1,7 +1,6 @@
 import Link from "next/link";
 
 import PrepareMembershipReminder from "@/components/admin/PrepareMembershipReminder";
-import PrintCheckInButton from "@/components/admin/PrintCheckInButton";
 import RegistrationCheckInControl from "@/components/admin/RegistrationCheckInControl";
 import AdminPanel from "@/components/admin/AdminPanel";
 import { adminButtonStyles } from "@/components/admin/admin-button-styles";
@@ -97,7 +96,6 @@ export default async function PrepareTournamentPage({
       </div>
 
       <div className="flex flex-wrap gap-3 print:hidden">
-        <PrintCheckInButton />
         <Link
           href={`/admin/registration-review?tournament=${encodeURIComponent(
             tournament.id,
@@ -105,6 +103,19 @@ export default async function PrepareTournamentPage({
           className={adminButtonStyles("secondary", "min-h-11")}
         >
           Review Registrations
+        </Link>
+        <Link
+          href={`/admin/registration-review/print?tournament=${encodeURIComponent(tournament.id)}`}
+          className={adminButtonStyles("secondary", "min-h-11")}
+          target="_blank"
+        >
+          Print Check-In List
+        </Link>
+        <Link
+          href={`/admin/registration-review/export?tournament=${encodeURIComponent(tournament.id)}`}
+          className={adminButtonStyles("secondary", "min-h-11")}
+        >
+          Download CSV
         </Link>
       </div>
 

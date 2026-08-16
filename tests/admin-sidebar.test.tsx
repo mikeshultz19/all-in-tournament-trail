@@ -28,6 +28,7 @@ describe("AdminSidebar", () => {
     expect(markup).toContain('href="/admin/tournament-manager"');
     expect(markup).toContain('href="/admin/registration-review"');
     expect(markup).toContain('href="/admin/announcements"');
+    expect(markup).toContain('href="/admin/forms"');
     expect(markup).toContain('href="/admin/settings"');
     expect(markup).not.toContain("<svg");
   });
@@ -37,5 +38,15 @@ describe("AdminSidebar", () => {
 
     expect(markup).toContain('aria-current="page"');
     expect(markup).toContain("Website");
+  });
+
+  it("marks Forms active on the Forms page", () => {
+    usePathname.mockReturnValue("/admin/forms");
+
+    const markup = renderToStaticMarkup(<AdminSidebar />);
+
+    expect(markup).toMatch(
+      /<a[^>]*aria-current="page"[^>]*href="\/admin\/forms"[^>]*>Forms<\/a>/,
+    );
   });
 });

@@ -42,6 +42,11 @@ const navigationItems: NavigationItem[] = [
     label: "FAQ",
     activePaths: ["/admin/faq"],
   },
+  {
+    href: "/admin/forms",
+    label: "Forms",
+    activePaths: ["/admin/forms"],
+  },
   { href: "/admin/settings", label: "Settings" },
   {
     href: "/admin/analytics",

@@ -2,21 +2,49 @@ import "server-only";
 
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
+export type RegistrationMembershipLabel = "Current Member" | "Purchased Membership / Joining" | "Non-Member";
+
+export interface RegistrationRosterAngler {
+  firstName: string | null;
+  lastName: string | null;
+  displayName: string;
+  membership: RegistrationMembershipLabel;
+  eligibleForTournament: boolean;
+}
+
 export interface TournamentRegistrationRosterRow {
   id: string;
   registrationKey: string;
   registeredAt: string;
+  registrationPeriod: "Early Online";
   registrationType: "team" | "solo";
+  angler1: RegistrationRosterAngler;
+  angler2: RegistrationRosterAngler | null;
+  memberBenefitsEligible: boolean;
+  entryType: "Free Entry" | "Base Entry";
+  bigBass: boolean;
+  memberPot: "bronze" | "silver" | "gold" | null;
+  insurance: boolean;
+  entryAmountCents: number | null;
+  membershipAmountCents: number | null;
+  bigBassAmountCents: number | null;
+  memberPotAmountCents: number | null;
+  insuranceAmountCents: number | null;
+  processingFeeCents: number | null;
+  totalPaidCents: number | null;
+  paymentStatus: "Paid" | "Needs Review";
+  needsReview: boolean;
+  identityReviewStatus: string;
+  checkedInAt: string | null;
+  checkedInByAdminId: string | null;
+  // Compatibility fields used by existing tournament preparation summaries/views.
   boater: string;
   partner: string | null;
   membershipStatus: string;
   membershipDetails: string[];
   entryStatus: string;
-  paymentStatus: string;
   sidePots: string[];
   registrationTotalCents: number | null;
-  checkedInAt: string | null;
-  checkedInByAdminId: string | null;
 }
 
 export interface TournamentRegistrationRosterSummary {
@@ -25,124 +53,135 @@ export interface TournamentRegistrationRosterSummary {
   needReview: number;
 }
 
-type RegistrationMembershipPurchaseRow = {
-  tournament_id: string;
-  payment_reference: string | null;
-  price_snapshot: {
-    lineItems?: Array<{ code?: string }>;
-  } | null;
+type PriceLineItem = { code?: string; name?: string; priceCents?: number };
+type PriceSnapshot = {
+  lineItems?: PriceLineItem[];
+  cardProcessingFeeCents?: number;
+  totalCents?: number;
 };
-
-export function countPurchasedRegistrationMemberships(
-  rows: readonly Pick<RegistrationMembershipPurchaseRow, "payment_reference" | "price_snapshot">[],
-): number {
-  return rows.reduce((total, row) => {
-    if (!row.payment_reference) return total;
-    return total + (row.price_snapshot?.lineItems ?? []).filter((item) => item.code === "annual_membership").length;
-  }, 0);
-}
-
+type MembershipSnapshot = {
+  submittedClassification?: string;
+  resolvedClassification?: string;
+  status?: string;
+  eligibleForTournament?: boolean;
+};
 type RegistrationRow = {
-  id: string;
-  registration_key: string;
-  registered_at: string;
-  registration_type: "team" | "solo";
-  angler1_name: string;
-  angler2_name: string | null;
-  big_bass: boolean;
-  member_pot: "bronze" | "silver" | "gold" | null;
-  insurance: boolean;
-  payment_reference: string | null;
-  membership_snapshot: Array<{
-    status?: string;
-    eligibleForTournament?: boolean;
-    resolvedClassification?: string;
-  }> | null;
-  price_snapshot: { totalCents?: number } | null;
-  identity_review_status: string;
-  checked_in_at: string | null;
-  checked_in_by_admin_id: string | null;
+  id: string; registration_key: string; registered_at: string;
+  registration_type: "team" | "solo"; angler1_id: string | null; angler2_id: string | null;
+  angler1_name: string; angler2_name: string | null; big_bass: boolean;
+  member_pot: "bronze" | "silver" | "gold" | null; insurance: boolean;
+  payment_reference: string | null; membership_snapshot: MembershipSnapshot[] | null;
+  price_snapshot: PriceSnapshot | null; identity_review_status: string;
+  checked_in_at: string | null; checked_in_by_admin_id: string | null;
 };
+type AnglerNameRow = { id: string; first_name: string; last_name: string; display_name: string };
 
-function toRosterRow(row: RegistrationRow): TournamentRegistrationRosterRow {
-  const memberships = row.membership_snapshot ?? [];
-  const membershipStatus = memberships.length > 0 && memberships.every((item) => item.status === "active" && item.eligibleForTournament === true)
-    ? "Member"
-    : memberships.some((item) => item.status === "active") ? "Mixed" : "Non-Member";
-  const sidePots = [row.big_bass ? "Big Bass" : null, row.member_pot ? `${row.member_pot[0].toUpperCase()}${row.member_pot.slice(1)}` : null, row.insurance ? "Insurance" : null].filter((value): value is string => Boolean(value));
+function validCents(value: unknown): number | null {
+  return Number.isInteger(value) && Number(value) >= 0 ? Number(value) : null;
+}
+
+function lineAmount(snapshot: PriceSnapshot | null, predicate: (item: PriceLineItem) => boolean): number | null {
+  if (!Array.isArray(snapshot?.lineItems)) return null;
+  const matches = snapshot.lineItems.filter(predicate);
+  if (matches.length === 0) return 0;
+  const amounts = matches.map((item) => validCents(item.priceCents));
+  return amounts.some((amount) => amount === null) ? null : amounts.reduce<number>((sum, amount) => sum + (amount ?? 0), 0);
+}
+
+function membershipLabel(snapshot: MembershipSnapshot | undefined): RegistrationMembershipLabel {
+  if (snapshot?.submittedClassification === "joining") return "Purchased Membership / Joining";
+  if (snapshot?.resolvedClassification === "current" || snapshot?.submittedClassification === "current") return "Current Member";
+  return "Non-Member";
+}
+
+function makeAngler(name: string, id: string | null, snapshot: MembershipSnapshot | undefined, names: Map<string, AnglerNameRow>): RegistrationRosterAngler {
+  const canonical = id ? names.get(id) : undefined;
   return {
-    id: row.id,
-    registrationKey: row.registration_key,
-    registeredAt: row.registered_at,
-    registrationType: row.registration_type,
-    boater: row.angler1_name,
-    partner: row.angler2_name,
-    membershipStatus,
-    membershipDetails: memberships.map((membership, index) => {
-      const classification = membership.resolvedClassification === "current" ? "Member" : "Non-Member";
-      return `Angler ${index + 1}: ${classification}`;
-    }),
-    entryStatus: row.identity_review_status === "review_required" ? "Needs Review" : "Confirmed",
-    paymentStatus: row.payment_reference ? "Paid" : "Needs Review",
-    sidePots,
-    registrationTotalCents: Number.isInteger(row.price_snapshot?.totalCents)
-      ? row.price_snapshot!.totalCents!
-      : null,
-    checkedInAt: row.checked_in_at,
-    checkedInByAdminId: row.checked_in_by_admin_id,
+    firstName: canonical?.first_name ?? null,
+    lastName: canonical?.last_name ?? null,
+    displayName: canonical?.display_name || name,
+    membership: membershipLabel(snapshot),
+    eligibleForTournament: snapshot?.eligibleForTournament === true,
   };
 }
 
-export function summarizeTournamentRegistrationRoster(rows: readonly TournamentRegistrationRosterRow[]): TournamentRegistrationRosterSummary {
+export function areRegistrationMemberBenefitsEligible(registrationType: "team" | "solo", memberships: readonly { eligibleForTournament: boolean }[]): boolean {
+  const requiredCount = registrationType === "team" ? 2 : 1;
+  return memberships.length === requiredCount && memberships.every((membership) => membership.eligibleForTournament);
+}
+
+function toRosterRow(row: RegistrationRow, names: Map<string, AnglerNameRow>): TournamentRegistrationRosterRow {
+  const memberships = row.membership_snapshot ?? [];
+  const angler1 = makeAngler(row.angler1_name, row.angler1_id, memberships[0], names);
+  const angler2 = row.registration_type === "team" && row.angler2_name
+    ? makeAngler(row.angler2_name, row.angler2_id, memberships[1], names) : null;
+  const memberBenefitsEligible = areRegistrationMemberBenefitsEligible(row.registration_type, [angler1, angler2].filter((angler): angler is RegistrationRosterAngler => Boolean(angler)));
+  const entryAmountCents = lineAmount(row.price_snapshot, (item) => item.code === "base_entry" || item.name === "Tournament Entry");
+  const membershipAmountCents = lineAmount(row.price_snapshot, (item) => item.code === "annual_membership" || Boolean(item.name?.endsWith(" Membership")));
+  const bigBassAmountCents = lineAmount(row.price_snapshot, (item) => item.code === "big_bass" || item.name === "Big Bass");
+  const memberPotAmountCents = lineAmount(row.price_snapshot, (item) => item.code === row.member_pot || item.name === `${row.member_pot?.[0]?.toUpperCase() ?? ""}${row.member_pot?.slice(1) ?? ""} Pot`);
+  const insuranceAmountCents = lineAmount(row.price_snapshot, (item) => item.code === "insurance" || item.name === "Insurance Pot");
+  const paymentStatus = row.payment_reference ? "Paid" : "Needs Review";
+  const needsReview = row.identity_review_status === "review_required" || paymentStatus !== "Paid";
+  const sidePots = [row.big_bass ? "Big Bass" : null, row.member_pot ? `${row.member_pot[0].toUpperCase()}${row.member_pot.slice(1)}` : null, row.insurance ? "Insurance" : null].filter((value): value is string => Boolean(value));
+  const membershipDetails = [angler1, angler2].filter((angler): angler is RegistrationRosterAngler => Boolean(angler)).map((angler, index) => `Angler ${index + 1}: ${angler.membership}`);
   return {
-    total: rows.length,
-    paid: rows.filter((row) => row.paymentStatus === "Paid").length,
-    needReview: rows.filter((row) => row.entryStatus === "Needs Review" || row.paymentStatus !== "Paid").length,
+    id: row.id, registrationKey: row.registration_key, registeredAt: row.registered_at,
+    registrationPeriod: "Early Online", registrationType: row.registration_type,
+    angler1, angler2, memberBenefitsEligible,
+    entryType: entryAmountCents === 0 ? "Free Entry" : "Base Entry",
+    bigBass: row.big_bass, memberPot: row.member_pot, insurance: row.insurance,
+    entryAmountCents, membershipAmountCents, bigBassAmountCents, memberPotAmountCents,
+    insuranceAmountCents, processingFeeCents: validCents(row.price_snapshot?.cardProcessingFeeCents),
+    totalPaidCents: validCents(row.price_snapshot?.totalCents), paymentStatus, needsReview,
+    identityReviewStatus: row.identity_review_status, checkedInAt: row.checked_in_at,
+    checkedInByAdminId: row.checked_in_by_admin_id,
+    boater: angler1.displayName, partner: angler2?.displayName ?? null,
+    membershipStatus: memberBenefitsEligible ? "Member" : angler1.eligibleForTournament || angler2?.eligibleForTournament ? "Mixed" : "Non-Member",
+    membershipDetails, entryStatus: needsReview ? "Needs Review" : "Confirmed", sidePots,
+    registrationTotalCents: validCents(row.price_snapshot?.totalCents),
   };
+}
+
+export function summarizeTournamentRegistrationRoster<T extends Pick<TournamentRegistrationRosterRow, "paymentStatus" | "entryStatus"> & { needsReview?: boolean }>(rows: readonly T[]): TournamentRegistrationRosterSummary {
+  return { total: rows.length, paid: rows.filter((row) => row.paymentStatus === "Paid").length, needReview: rows.filter((row) => row.needsReview ?? (row.entryStatus === "Needs Review" || row.paymentStatus !== "Paid")).length };
 }
 
 export async function getTournamentRegistrationRoster(tournamentId: string): Promise<TournamentRegistrationRosterRow[]> {
   const supabase = createSupabaseServerClient();
   const { data, error } = await supabase.from("tournament_registrations")
-    .select("id,registration_key,registered_at,registration_type,angler1_name,angler2_name,big_bass,member_pot,insurance,payment_reference,membership_snapshot,price_snapshot,identity_review_status,checked_in_at,checked_in_by_admin_id")
-    .eq("tournament_id", tournamentId)
-    .order("registered_at", { ascending: true });
+    .select("id,registration_key,registered_at,registration_type,angler1_id,angler2_id,angler1_name,angler2_name,big_bass,member_pot,insurance,payment_reference,membership_snapshot,price_snapshot,identity_review_status,checked_in_at,checked_in_by_admin_id")
+    .eq("tournament_id", tournamentId).order("registered_at", { ascending: true });
   if (error) throw new Error("Tournament registration roster could not be loaded.", { cause: error });
-  return ((data ?? []) as RegistrationRow[]).map(toRosterRow);
+  const rows = (data ?? []) as RegistrationRow[];
+  const ids = [...new Set(rows.flatMap((row) => [row.angler1_id, row.angler2_id]).filter((id): id is string => Boolean(id)))];
+  let names = new Map<string, AnglerNameRow>();
+  if (ids.length) {
+    const result = await supabase.from("anglers").select("id,first_name,last_name,display_name").in("id", ids);
+    if (result.error) throw new Error("Registration angler names could not be loaded.", { cause: result.error });
+    names = new Map(((result.data ?? []) as AnglerNameRow[]).map((angler) => [angler.id, angler]));
+  }
+  return rows.map((row) => toRosterRow(row, names));
 }
 
 export async function listTournamentRegistrationRosterSummaries(tournamentIds: readonly string[]): Promise<Record<string, TournamentRegistrationRosterSummary>> {
-  if (tournamentIds.length === 0) return {};
+  if (!tournamentIds.length) return {};
   const supabase = createSupabaseServerClient();
-  const { data, error } = await supabase.from("tournament_registrations")
-    .select("tournament_id,payment_reference,identity_review_status")
-    .in("tournament_id", [...tournamentIds]);
+  const { data, error } = await supabase.from("tournament_registrations").select("tournament_id,payment_reference,identity_review_status").in("tournament_id", [...tournamentIds]);
   if (error) throw new Error("Tournament registration summaries could not be loaded.", { cause: error });
   const result = Object.fromEntries(tournamentIds.map((id) => [id, { total: 0, paid: 0, needReview: 0 }]));
-  for (const row of data ?? []) {
-    const summary = result[row.tournament_id];
-    if (!summary) continue;
-    summary.total += 1;
-    if (row.payment_reference) summary.paid += 1;
-    if (!row.payment_reference || row.identity_review_status === "review_required") summary.needReview += 1;
-  }
+  for (const row of data ?? []) { const summary = result[row.tournament_id]; if (!summary) continue; summary.total += 1; if (row.payment_reference) summary.paid += 1; if (!row.payment_reference || row.identity_review_status === "review_required") summary.needReview += 1; }
   return result;
 }
 
-export async function listTournamentPurchasedMembershipCounts(
-  tournamentIds: readonly string[],
-): Promise<Record<string, number>> {
-  if (tournamentIds.length === 0) return {};
+type RegistrationMembershipPurchaseRow = { payment_reference: string | null; price_snapshot: { lineItems?: Array<{ code?: string }> } | null };
+export function countPurchasedRegistrationMemberships(rows: readonly RegistrationMembershipPurchaseRow[]): number {
+  return rows.reduce((total, row) => !row.payment_reference ? total : total + (row.price_snapshot?.lineItems ?? []).filter((item) => item.code === "annual_membership").length, 0);
+}
+export async function listTournamentPurchasedMembershipCounts(tournamentIds: readonly string[]): Promise<Record<string, number>> {
+  if (!tournamentIds.length) return {};
   const supabase = createSupabaseServerClient();
-  const { data, error } = await supabase
-    .from("tournament_registrations")
-    .select("tournament_id,payment_reference,price_snapshot")
-    .in("tournament_id", [...tournamentIds]);
+  const { data, error } = await supabase.from("tournament_registrations").select("tournament_id,payment_reference,price_snapshot").in("tournament_id", [...tournamentIds]);
   if (error) throw new Error("Tournament registration membership purchases could not be loaded.", { cause: error });
-
-  const rows = (data ?? []) as RegistrationMembershipPurchaseRow[];
-  return Object.fromEntries(tournamentIds.map((tournamentId) => [
-    tournamentId,
-    countPurchasedRegistrationMemberships(rows.filter((row) => row.tournament_id === tournamentId)),
-  ]));
+  return Object.fromEntries(tournamentIds.map((tournamentId) => [tournamentId, countPurchasedRegistrationMemberships((data ?? []).filter((row) => row.tournament_id === tournamentId) as RegistrationMembershipPurchaseRow[])]));
 }

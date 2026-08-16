@@ -45,7 +45,7 @@ describe("Tournament Operations Dashboard", () => {
   it("opens the first incomplete stage with tournament preparation actions", () => {
     expect(markup).toContain("Online Registration Roster");
     expect(markup).toContain("View Registration Roster");
-    expect(markup).toContain('href="/admin/tournament-manager/prepare?tournament=lake-fork-open-2026"');
+    expect(markup).toContain('href="/admin/registration-review?tournament=11111111-1111-4111-8111-111111111111"');
   });
 
   it("keeps the existing results editor in the publishing workflow", () => {

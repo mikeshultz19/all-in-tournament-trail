@@ -33,12 +33,13 @@ describe("Early Entries check-in", () => {
     expect(page).toContain("Check-In");
   });
 
-  it("keeps print check-in while removing roster export actions", () => {
+  it("points print and CSV actions at the authoritative Registration Review exports", () => {
     const page = readFileSync("app/admin/tournament-manager/prepare/page.tsx", "utf8");
     const dashboard = readFileSync("components/admin/AdminTournamentDashboard.tsx", "utf8");
-    expect(page).toContain("<PrintCheckInButton />");
+    expect(page).toContain("/admin/registration-review/print?tournament=");
+    expect(page).toContain("/admin/registration-review/export?tournament=");
     expect(page).toContain('row.checkedInAt ? "☒" : "☐"');
-    expect(page).not.toContain("Export CSV");
+    expect(page).toContain("Download CSV");
     expect(page).not.toContain("Export for WeighFish");
     expect(dashboard).not.toContain("Export for WeighFish");
   });
