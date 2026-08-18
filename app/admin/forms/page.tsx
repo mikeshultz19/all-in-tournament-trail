@@ -7,6 +7,29 @@ const forms = [
       "Printable one-page registration form for anglers registering at the ramp.",
     href: "/forms/AITT-Tournament-Morning-Registration-Form.pdf",
     downloadName: "AITT-Tournament-Morning-Registration-Form.pdf",
+    type: "pdf",
+    viewLabel: "View / Print PDF",
+    viewHref: "/forms/AITT-Tournament-Morning-Registration-Form.pdf",
+  },
+  {
+    name: "Bass Stack Weigh-In Log",
+    description:
+      "125-team paper backup scoring sheet with 25 weigh-in cycles, Total Weight, and Total Fish.",
+    href: "/forms/AITT-Bass-Stack-Weigh-In-Log.xlsx",
+    downloadName: "AITT-Bass-Stack-Weigh-In-Log.xlsx",
+    type: "spreadsheet",
+    viewLabel: "Print View",
+    viewHref: "/admin/forms/bass-stack-weigh-log/print",
+  },
+  {
+    name: "Bass Stack DR Weigh-In Log",
+    description:
+      "Simple paper disaster-recovery weigh-in log for recording each weigh-in event by Boat #, Team Name, Fish Count, Weight, and Recorder Initials.",
+    href: "/forms/AITT-Bass-Stack-DR-Weigh-In-Log.xlsx",
+    downloadName: "AITT-Bass-Stack-DR-Weigh-In-Log.xlsx",
+    type: "spreadsheet",
+    viewLabel: "Print View",
+    viewHref: "/admin/forms/bass-stack-dr-log/print",
   },
 ] as const;
 
@@ -25,13 +48,13 @@ export default function AdminFormsPage() {
         </p>
       </div>
 
-      <div className="space-y-4">
+      <div className="grid gap-4 lg:grid-cols-2">
         {forms.map((form) => (
           <article
             key={form.href}
-            className="flex flex-col gap-5 border border-white/10 bg-[#111111] p-5 sm:p-7 lg:flex-row lg:items-center lg:justify-between"
+            className="flex min-w-0 flex-col gap-5 border border-white/10 bg-[#111111] p-5 sm:p-7"
           >
-            <div className="min-w-0">
+            <div className="min-w-0 flex-1">
               <h2 className="text-lg font-black uppercase tracking-tight text-white">
                 {form.name}
               </h2>
@@ -41,20 +64,22 @@ export default function AdminFormsPage() {
             </div>
 
             <div className="flex shrink-0 flex-col gap-3 sm:flex-row">
-              <a
-                href={form.href}
-                target="_blank"
-                rel="noopener noreferrer"
-                className={adminButtonStyles("primary")}
-              >
-                View / Print PDF
-              </a>
+              {form.viewLabel && (
+                <a
+                  href={form.viewHref}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={adminButtonStyles("primary")}
+                >
+                  {form.viewLabel}
+                </a>
+              )}
               <a
                 href={form.href}
                 download={form.downloadName}
                 className={adminButtonStyles("secondary")}
               >
-                Download PDF
+                {form.type === "pdf" ? "Download PDF" : "Download Spreadsheet"}
               </a>
             </div>
           </article>
