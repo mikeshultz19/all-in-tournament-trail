@@ -120,7 +120,7 @@ export default function SponsorsPage() {
                 href="/sponsorship-opportunities"
                 className="font-bold text-[#D4A017] transition-colors hover:text-yellow-300 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#D4A017]"
               >
-                Learn about sponsorship opportunities →
+                Learn more →
               </Link>
             </p>
           </div>
