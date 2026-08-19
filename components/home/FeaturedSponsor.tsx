@@ -38,7 +38,7 @@ function SponsorLogo({
       height={220}
       className={`h-auto w-auto object-contain ${
         isMadDawg
-          ? "bg-[#0b0b0b] max-h-[72px] max-w-[96%]"
+          ? "bg-[#0b0b0b] max-h-[80px] max-w-full sm:max-h-[92px]"
           : sponsor.scale === "small"
             ? "max-h-[48px] max-w-[90%]"
             : sponsor.scale === "compact"

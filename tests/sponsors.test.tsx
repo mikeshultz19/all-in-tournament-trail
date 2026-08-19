@@ -156,6 +156,8 @@ describe("public sponsorship paths", () => {
     expect(html).toContain("Interested in partnering with AITT?");
     expect(html).toContain('href="/sponsorship-opportunities"');
     expect(html).toContain("Our Partners");
+    expect(html).toContain("Premier Sponsor");
+    expect(html).toContain("%2Fimages%2Fsponsors%2Fmad-dawg-sponsor.jpeg");
     expect(html).toContain("Texas Boat Works");
     expect(html).toContain("texas-boat-works.png");
     expect(html).toContain('href="https://www.texasboatworks.com"');
@@ -171,6 +173,9 @@ describe("public sponsorship paths", () => {
     expect(html).toContain('rel="noopener noreferrer"');
     expect(html.indexOf("Texas Boat Works")).toBeLessThan(
       html.indexOf("Yukon Outfitters"),
+    );
+    expect(html.indexOf("Mad Dawg Graphics &amp; Design")).toBeLessThan(
+      html.indexOf("Texas Boat Works"),
     );
     expect(html.indexOf("Badger Lures")).toBeLessThan(
       html.indexOf("Yukon Outfitters"),

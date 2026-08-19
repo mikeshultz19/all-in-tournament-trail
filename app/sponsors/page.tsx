@@ -20,6 +20,7 @@ interface PublicSponsor {
   logoFit: "contain" | "cover";
   borderedLogo?: boolean;
   softenWhiteBackground?: boolean;
+  premier?: boolean;
   partnershipIntro: string;
   description: string;
   details?: string[];
@@ -28,6 +29,18 @@ interface PublicSponsor {
 }
 
 const publicSponsors: PublicSponsor[] = [
+  {
+    name: "Mad Dawg Graphics & Design",
+    logo: "/images/sponsors/mad-dawg-sponsor.jpeg",
+    logoFit: "contain",
+    premier: true,
+    partnershipIntro:
+      "AITT is proud to partner with Mad Dawg Graphics & Design for custom graphics, signage, apparel, and branding.",
+    description:
+      "Mad Dawg Graphics & Design is a North Texas custom graphics and printing company specializing in graphic design, screen printing, custom apparel, decals, signs, and vehicle, boat, and trailer graphics. From business branding and tournament gear to full custom graphics that make trucks and boats stand out, Mad Dawg helps bring ideas to life with bold, professional designs.",
+    website: "https://facebook.com/BillyandGarry",
+    ctaLabel: "Visit Mad Dawg Graphics & Design →",
+  },
   {
     name: "Texas Boat Works",
     logo: "/images/sponsors/texas-boat-works.png",
@@ -49,18 +62,6 @@ const publicSponsors: PublicSponsor[] = [
       "With more than 30 locations nationwide and over 1 million parts in stock, Fenix Parts helps customers find reliable engines, transmissions, body panels, interior components, and more—backed by knowledgeable service and strong warranty options.",
     website: "https://fenixparts.com",
     ctaLabel: "Visit Fenix Parts →",
-  },
-  {
-    name: "Mad Dawg Graphics & Design",
-    logo: "/sponsors/maddawg.png",
-    logoFit: "contain",
-    softenWhiteBackground: true,
-    partnershipIntro:
-      "AITT is proud to partner with Mad Dawg Graphics & Design for custom graphics, signage, apparel, and branding.",
-    description:
-      "Banners • Signs • Coro/Metal • Sublimation • Wraps • Embroidery • Screen Printing • and more",
-    website: "https://facebook.com/BillyandGarry",
-    ctaLabel: "Visit Mad Dawg Graphics & Design →",
   },
   {
     name: "Badger Lures",
@@ -161,15 +162,22 @@ export default function SponsorsPage() {
                         alt={`${sponsor.name} logo`}
                         fill
                         sizes="(min-width: 1024px) 210px, (min-width: 640px) 180px, 100vw"
-                        className={`${sponsor.logoFit === "contain" ? "object-contain" : "object-cover"} object-center`}
+                        className={`${sponsor.logoFit === "contain" ? "object-contain" : "object-cover"} object-center ${sponsor.premier ? "scale-125" : ""}`}
                       />
                     )}
                   </div>
 
                   <div className="min-w-0">
-                    <h3 className="text-xl font-black uppercase tracking-tight text-white">
-                      {sponsor.name}
-                    </h3>
+                    <div className="flex flex-wrap items-center gap-2">
+                      <h3 className="text-xl font-black uppercase tracking-tight text-white">
+                        {sponsor.name}
+                      </h3>
+                      {sponsor.premier ? (
+                        <span className="inline-flex border border-[#D4A017]/60 bg-[#D4A017]/10 px-2 py-1 text-[10px] font-black uppercase tracking-[0.14em] text-[#D4A017]">
+                          Premier Sponsor
+                        </span>
+                      ) : null}
+                    </div>
                     <p className="mt-2 text-sm leading-6 text-neutral-300 sm:text-base">
                       {sponsor.partnershipIntro}
                     </p>
