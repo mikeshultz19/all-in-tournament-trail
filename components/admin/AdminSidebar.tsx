@@ -21,7 +21,7 @@ const navigationItems: NavigationItem[] = [
     ],
   },
   { href: "/admin/members", label: "Members" },
-  { href: "/admin/registration-review", label: "Registration Review" },
+  { href: "/admin/registration-review", label: "Registration & Check-In" },
   {
     href: "/admin/tournament",
     label: "Tournament Info",

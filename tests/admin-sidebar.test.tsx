@@ -23,7 +23,7 @@ describe("AdminSidebar", () => {
     expect(markup).toContain("Tournament Manager");
     expect(markup).toContain("Members");
     expect(markup).toContain("Website");
-    expect(markup).toContain("Registration Review");
+    expect(markup).toContain("Registration &amp; Check-In");
     expect(markup).toContain("Settings");
     expect(markup).toContain('href="/admin/tournament-manager"');
     expect(markup).toContain('href="/admin/registration-review"');

@@ -18,27 +18,31 @@ describe("Early Entries check-in", () => {
     expect(action).toContain('.eq("id", registrationId)');
     expect(action).toContain('.eq("tournament_id", tournamentId)');
     expect(action).not.toContain("payment_reference");
-    expect(action).not.toContain("identity_review_status");
+    expect(action).toContain('.neq("identity_review_status", "review_required")');
+    expect(action).not.toMatch(/identity_review_status:\s*/);
   });
 
-  it("shows persisted check-in and undo controls on the operational roster", () => {
+  it("shows persisted check-in and undo controls on the unified operational roster", () => {
     const control = readFileSync("components/admin/RegistrationCheckInControl.tsx", "utf8");
-    const page = readFileSync("app/admin/tournament-manager/prepare/page.tsx", "utf8");
+    const page = readFileSync("app/admin/registration-review/page.tsx", "utf8");
+    const legacyRoute = readFileSync("app/admin/tournament-manager/prepare/page.tsx", "utf8");
     expect(control).toContain("✓ Checked In");
-    expect(control).toContain("Undo Check-In");
+    expect(control).toContain("Edit / Reopen");
     expect(control).toContain("Check In");
     expect(control).toContain("router.refresh()");
-    expect(page).toContain("Early Entries &amp; Check-In");
-    expect(page).toContain("Tournament Entry");
-    expect(page).toContain("Check-In");
+    expect(control).toContain("window.confirm");
+    expect(page).toContain("Registration &amp; Check-In");
+    expect(page).toContain("Entry Options");
+    expect(page).toContain("Review / Check-In");
+    expect(page).toContain('data-testid="mobile-registration-roster"');
+    expect(legacyRoute).toContain("redirect(`/admin/registration-review${query}`)");
   });
 
   it("points print and CSV actions at the authoritative Registration Review exports", () => {
-    const page = readFileSync("app/admin/tournament-manager/prepare/page.tsx", "utf8");
+    const page = readFileSync("app/admin/registration-review/page.tsx", "utf8");
     const dashboard = readFileSync("components/admin/AdminTournamentDashboard.tsx", "utf8");
-    expect(page).toContain("/admin/registration-review/print?tournament=");
-    expect(page).toContain("/admin/registration-review/export?tournament=");
-    expect(page).toContain('row.checkedInAt ? "☒" : "☐"');
+    expect(page).toContain("/admin/registration-review/print?${queryBase}");
+    expect(page).toContain("/admin/registration-review/export?${queryBase}");
     expect(page).toContain("Download CSV");
     expect(page).not.toContain("Export for WeighFish");
     expect(dashboard).not.toContain("Export for WeighFish");

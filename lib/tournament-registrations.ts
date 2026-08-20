@@ -69,6 +69,7 @@ export async function getTournamentRegistrationRows(
       "registration_key,tournament_id,registered_at,registration_type,angler1_name,angler2_name,big_bass,member_pot,insurance,payment_reference,admin_notes",
     )
     .eq("tournament_id", tournamentId)
+    .eq("registration_status", "active")
     .order("registered_at", { ascending: true });
 
   if (error) {

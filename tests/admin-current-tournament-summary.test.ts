@@ -4,8 +4,7 @@ import { describe, expect, it } from "vitest";
 describe("Admin Home current tournament summary", () => {
   it("shows the operational summary cards and removes payout workflow cards", () => {
     const source = readFileSync("app/admin/page.tsx", "utf8");
-    expect(source).toContain('label="Early Entries & Check-In"');
-    expect(source).toContain('label="Registration Review"');
+    expect(source.match(/label="Registration & Check-In"/g) ?? []).toHaveLength(1);
     expect(source).toContain('label="New Memberships"');
     expect(source).toContain('label="Website Status"');
     expect(source).not.toContain('label="Results Import"');
@@ -13,10 +12,9 @@ describe("Admin Home current tournament summary", () => {
     expect(source).not.toContain('label="Payouts"');
   });
 
-  it("keeps Early Entries and existing destinations intact", () => {
+  it("uses the unified registration destination", () => {
     const source = readFileSync("app/admin/page.tsx", "utf8");
-    expect(source).toContain('actionLabel="View Entries"');
-    expect(source).toContain("/admin/tournament-manager/prepare?tournament=");
+    expect(source).toContain('actionLabel="Open Roster"');
     expect(source).toContain("/admin/registration-review?tournament=");
     expect(source).toContain("Open Tournament Manager");
   });

@@ -242,7 +242,7 @@ describe("durable review persistence and Admin workflow", () => {
   });
 
   it("protects all review actions with Admin authorization", () => {
-    expect(actions.match(/requireAdminUser\(\)/g)?.length).toBe(2);
+    expect(actions.match(/requireAdminUser\(\)/g)?.length).toBe(7);
     expect(migration).toContain("to service_role");
     expect(migration).toContain("from public, anon, authenticated");
   });

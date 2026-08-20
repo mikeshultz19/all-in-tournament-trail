@@ -4,19 +4,31 @@ import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 export type RegistrationMembershipLabel = "Current Member" | "Purchased Membership / Joining" | "Non-Member";
 
+export interface RegistrationParticipantContactSnapshot {
+  firstName: string; lastName: string; streetAddress: string; city: string;
+  state: string; zipCode: string; email: string; phone: string;
+  membership: "current" | "joining" | "non-member";
+}
+
 export interface RegistrationRosterAngler {
   firstName: string | null;
   lastName: string | null;
   displayName: string;
   membership: RegistrationMembershipLabel;
   eligibleForTournament: boolean;
+  email: string | null;
+  phone: string | null;
 }
 
 export interface TournamentRegistrationRosterRow {
   id: string;
   registrationKey: string;
   registeredAt: string;
-  registrationPeriod: "Early Online";
+  registrationPeriod: "Early Online" | "Walk-Up";
+  registrationSource: "online" | "walk_up";
+  boatNumber: number | null;
+  paymentMethod: "online" | "cash" | "card" | "other" | null;
+  participantContactSnapshot: RegistrationParticipantContactSnapshot[];
   registrationType: "team" | "solo";
   angler1: RegistrationRosterAngler;
   angler2: RegistrationRosterAngler | null;
@@ -73,8 +85,12 @@ type RegistrationRow = {
   payment_reference: string | null; membership_snapshot: MembershipSnapshot[] | null;
   price_snapshot: PriceSnapshot | null; identity_review_status: string;
   checked_in_at: string | null; checked_in_by_admin_id: string | null;
+  boat_number: number | null; registration_source: "online" | "walk_up";
+  payment_method: "online" | "cash" | "card" | "other" | null;
+  participant_contact_snapshot: RegistrationParticipantContactSnapshot[] | null;
+  registration_status: "active" | "cancelled";
 };
-type AnglerNameRow = { id: string; first_name: string; last_name: string; display_name: string };
+type AnglerNameRow = { id: string; first_name: string; last_name: string; display_name: string; email: string | null; phone: string | null };
 
 function validCents(value: unknown): number | null {
   return Number.isInteger(value) && Number(value) >= 0 ? Number(value) : null;
@@ -102,6 +118,8 @@ function makeAngler(name: string, id: string | null, snapshot: MembershipSnapsho
     displayName: canonical?.display_name || name,
     membership: membershipLabel(snapshot),
     eligibleForTournament: snapshot?.eligibleForTournament === true,
+    email: canonical?.email ?? null,
+    phone: canonical?.phone ?? null,
   };
 }
 
@@ -127,7 +145,10 @@ function toRosterRow(row: RegistrationRow, names: Map<string, AnglerNameRow>): T
   const membershipDetails = [angler1, angler2].filter((angler): angler is RegistrationRosterAngler => Boolean(angler)).map((angler, index) => `Angler ${index + 1}: ${angler.membership}`);
   return {
     id: row.id, registrationKey: row.registration_key, registeredAt: row.registered_at,
-    registrationPeriod: "Early Online", registrationType: row.registration_type,
+    registrationPeriod: row.registration_source === "walk_up" ? "Walk-Up" : "Early Online",
+    registrationSource: row.registration_source, boatNumber: row.boat_number,
+    paymentMethod: row.payment_method, registrationType: row.registration_type,
+    participantContactSnapshot: row.participant_contact_snapshot ?? [],
     angler1, angler2, memberBenefitsEligible,
     entryType: entryAmountCents === 0 ? "Free Entry" : "Base Entry",
     bigBass: row.big_bass, memberPot: row.member_pot, insurance: row.insurance,
@@ -150,14 +171,14 @@ export function summarizeTournamentRegistrationRoster<T extends Pick<TournamentR
 export async function getTournamentRegistrationRoster(tournamentId: string): Promise<TournamentRegistrationRosterRow[]> {
   const supabase = createSupabaseServerClient();
   const { data, error } = await supabase.from("tournament_registrations")
-    .select("id,registration_key,registered_at,registration_type,angler1_id,angler2_id,angler1_name,angler2_name,big_bass,member_pot,insurance,payment_reference,membership_snapshot,price_snapshot,identity_review_status,checked_in_at,checked_in_by_admin_id")
-    .eq("tournament_id", tournamentId).order("registered_at", { ascending: true });
+    .select("id,registration_key,registered_at,registration_type,angler1_id,angler2_id,angler1_name,angler2_name,big_bass,member_pot,insurance,payment_reference,membership_snapshot,participant_contact_snapshot,price_snapshot,identity_review_status,checked_in_at,checked_in_by_admin_id,boat_number,registration_source,payment_method,registration_status")
+    .eq("tournament_id", tournamentId).eq("registration_status", "active").order("registered_at", { ascending: true });
   if (error) throw new Error("Tournament registration roster could not be loaded.", { cause: error });
   const rows = (data ?? []) as RegistrationRow[];
   const ids = [...new Set(rows.flatMap((row) => [row.angler1_id, row.angler2_id]).filter((id): id is string => Boolean(id)))];
   let names = new Map<string, AnglerNameRow>();
   if (ids.length) {
-    const result = await supabase.from("anglers").select("id,first_name,last_name,display_name").in("id", ids);
+    const result = await supabase.from("anglers").select("id,first_name,last_name,display_name,email,phone").in("id", ids);
     if (result.error) throw new Error("Registration angler names could not be loaded.", { cause: result.error });
     names = new Map(((result.data ?? []) as AnglerNameRow[]).map((angler) => [angler.id, angler]));
   }
@@ -167,7 +188,7 @@ export async function getTournamentRegistrationRoster(tournamentId: string): Pro
 export async function listTournamentRegistrationRosterSummaries(tournamentIds: readonly string[]): Promise<Record<string, TournamentRegistrationRosterSummary>> {
   if (!tournamentIds.length) return {};
   const supabase = createSupabaseServerClient();
-  const { data, error } = await supabase.from("tournament_registrations").select("tournament_id,payment_reference,identity_review_status").in("tournament_id", [...tournamentIds]);
+  const { data, error } = await supabase.from("tournament_registrations").select("tournament_id,payment_reference,identity_review_status").in("tournament_id", [...tournamentIds]).eq("registration_status", "active");
   if (error) throw new Error("Tournament registration summaries could not be loaded.", { cause: error });
   const result = Object.fromEntries(tournamentIds.map((id) => [id, { total: 0, paid: 0, needReview: 0 }]));
   for (const row of data ?? []) { const summary = result[row.tournament_id]; if (!summary) continue; summary.total += 1; if (row.payment_reference) summary.paid += 1; if (!row.payment_reference || row.identity_review_status === "review_required") summary.needReview += 1; }

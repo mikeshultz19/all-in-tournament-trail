@@ -25,6 +25,17 @@ export interface RegistrationReviewItem {
   status: RegistrationIdentityReviewStatus;
   canonicalAnglerId: string | null;
   reviewNote: string | null;
+  reviewKind: "identity" | "contact" | "membership";
+  submittedMembership: "current" | "joining" | "non-member" | null;
+  submittedContact: RegistrationContact | null;
+  existingContact: RegistrationContact | null;
+  differingFields: string[];
+}
+
+export interface RegistrationContact {
+  firstName: string; lastName: string; streetAddress: string; city: string;
+  state: string; zipCode: string; email: string; phone: string;
+  membership?: "current" | "joining" | "non-member";
 }
 
 export interface TournamentRegistrationReviewSummary {
@@ -57,6 +68,11 @@ type ReviewQueryRow = {
   review_status: RegistrationIdentityReviewStatus;
   canonical_angler_id: string | null;
   review_note: string | null;
+  review_kind: "identity" | "contact" | "membership";
+  submitted_membership: "current" | "joining" | "non-member" | null;
+  submitted_contact: RegistrationContact | null;
+  existing_contact: RegistrationContact | null;
+  differing_fields: string[] | null;
   registration: {
     id: string;
     tournament_id: string;
@@ -74,8 +90,9 @@ export async function listRegistrationReviewItems(
   let query = supabase
     .from("registration_identity_reviews")
     .select(
-      "id,participant_position,original_display_name,original_email,original_phone,review_reason,review_status,canonical_angler_id,review_note,registration:tournament_registrations!inner(id,tournament_id,registered_at,registration_type,tournament:tournaments!inner(name)),candidates:registration_identity_review_candidates(angler:anglers(*))",
+      "id,participant_position,original_display_name,original_email,original_phone,review_reason,review_status,canonical_angler_id,review_note,review_kind,submitted_membership,submitted_contact,existing_contact,differing_fields,registration:tournament_registrations!inner(id,tournament_id,registered_at,registration_type,tournament:tournaments!inner(name)),candidates:registration_identity_review_candidates(angler:anglers(*))",
     )
+    .eq("registration.registration_status", "active")
     .order("created_at", { ascending: true });
 
   if (tournamentId) {
@@ -106,6 +123,11 @@ export async function listRegistrationReviewItems(
     status: row.review_status,
     canonicalAnglerId: row.canonical_angler_id,
     reviewNote: row.review_note,
+    reviewKind: row.review_kind,
+    submittedMembership: row.submitted_membership,
+    submittedContact: row.submitted_contact,
+    existingContact: row.existing_contact,
+    differingFields: row.differing_fields ?? [],
   }));
 }
 
@@ -131,6 +153,7 @@ export async function getRegistrationReviewPendingCount(): Promise<number> {
   const { count, error } = await supabase
     .from("tournament_registrations")
     .select("id", { count: "exact", head: true })
+    .eq("registration_status", "active")
     .eq("identity_review_status", "review_required");
   if (error) {
     throw new RegistrationIdentityReviewError(
@@ -172,7 +195,8 @@ export async function getTournamentRegistrationReviewSummary(
   const { data, error } = await supabase
     .from("tournament_registrations")
     .select("identity_review_status")
-    .eq("tournament_id", tournamentId);
+    .eq("tournament_id", tournamentId)
+    .eq("registration_status", "active");
   if (error) {
     throw new RegistrationIdentityReviewError(
       "Tournament review status could not be loaded.",
@@ -221,6 +245,24 @@ export async function resolveRegistrationIdentityReview(input: {
     );
   }
   return data;
+}
+
+export async function resolveRegistrationContactReview(input: {
+  reviewId: string;
+  approve: boolean;
+  adminUserId: string;
+  reviewNote?: string | null;
+}): Promise<void> {
+  const { error } = await createSupabaseServerClient().rpc(
+    "admin_resolve_registration_contact_review",
+    { p_review_id: input.reviewId, p_approve_update: input.approve, p_admin_user_id: input.adminUserId, p_review_note: input.reviewNote ?? null },
+  );
+  if (error) throw new RegistrationIdentityReviewError("The member contact review could not be saved.", { cause: error });
+}
+
+export async function resolveHistoricalMembershipReview(input: { reviewId: string; membership: "current" | "joining" | "non-member"; adminUserId: string; reviewNote?: string | null }): Promise<void> {
+  const { error } = await createSupabaseServerClient().rpc("admin_resolve_historical_membership_review", { p_review_id: input.reviewId, p_submitted_membership: input.membership, p_admin_user_id: input.adminUserId, p_review_note: input.reviewNote ?? null });
+  if (error) throw new RegistrationIdentityReviewError("The historical membership review could not be saved.", { cause: error });
 }
 
 export async function reopenRegistrationIdentityReview(input: {

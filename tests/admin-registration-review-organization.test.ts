@@ -29,4 +29,19 @@ describe("Admin Registration Review organization", () => {
     expect(review).toContain("summarizeTournamentRegistrationRoster(allRows)");
     expect(review).toContain("listRegistrationReviewItems(selectedTournament.id)");
   });
+
+  it("uses one authoritative Registration & Check-In workspace", () => {
+    const review = readFileSync("app/admin/registration-review/page.tsx", "utf8");
+    const legacyRoute = readFileSync("app/admin/tournament-manager/prepare/page.tsx", "utf8");
+    const home = readFileSync("app/admin/page.tsx", "utf8");
+
+    expect(review).toContain("Registration &amp; Check-In");
+    expect(review).toContain("getTournamentRegistrationRoster(selectedTournament.id)");
+    expect(review).toContain("RegistrationCheckInControl");
+    expect(review).toContain("PrepareMembershipReminder");
+    expect(legacyRoute).toContain("await requireAdminUser()");
+    expect(legacyRoute).toContain("redirect(`/admin/registration-review${query}`)");
+    expect(home.match(/label="Registration & Check-In"/g) ?? []).toHaveLength(1);
+    expect(home).not.toContain('label="Early Entries & Check-In"');
+  });
 });

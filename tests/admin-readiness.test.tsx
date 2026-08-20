@@ -43,8 +43,8 @@ describe("Tournament Operations Dashboard", () => {
   });
 
   it("opens the first incomplete stage with tournament preparation actions", () => {
-    expect(markup).toContain("Online Registration Roster");
-    expect(markup).toContain("View Registration Roster");
+    expect(markup).toContain("Registration &amp; Check-In");
+    expect(markup).toContain("Open Registration &amp; Check-In");
     expect(markup).toContain('href="/admin/registration-review?tournament=11111111-1111-4111-8111-111111111111"');
   });
 
@@ -78,7 +78,7 @@ describe("Tournament Operations Dashboard", () => {
   it("locks Import Results until tournament preparation is complete", () => {
     const lockedMarkup = renderLockedImportDashboardFixture();
     expect(lockedMarkup).toContain("Complete Tournament Preparation before importing results.");
-    expect(lockedMarkup).toContain("Registration Review");
+    expect(lockedMarkup).toContain("Registration &amp; Check-In");
     expect(lockedMarkup).toContain("Members List");
     expect(lockedMarkup).not.toContain("Choose WeighFish CSV");
   });

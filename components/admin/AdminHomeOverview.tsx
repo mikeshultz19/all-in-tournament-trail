@@ -14,7 +14,6 @@ export default function AdminHomeOverview({
   registrationReviewSummary,
   resultsPublished,
   membershipSummary,
-  onlineRegistrationSummary,
 }: {
   tournament: Tournament;
   comparisonDate: string;
@@ -74,31 +73,19 @@ export default function AdminHomeOverview({
         <div className="mt-4 border-t border-white/10 pt-4">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <h2 className="text-sm font-black uppercase text-white">
-              Registration Review
+              Registration &amp; Check-In
             </h2>
             <Link
               href="/admin/registration-review"
               className="text-xs font-black uppercase text-[#D4A017] hover:text-white"
             >
-              View Registration Review →
+              View Registration &amp; Check-In →
             </Link>
           </div>
           <dl className="mt-3 grid grid-cols-3 gap-3 text-sm">
             <CompactMetric label="Registered" value={total} />
             <CompactMetric label="Verified" value={verified} />
             <CompactMetric label="Need Review" value={pending} attention={pending > 0} />
-          </dl>
-        </div>
-
-        <div className="mt-4 border-t border-white/10 pt-4">
-          <div className="flex flex-wrap items-center justify-between gap-3">
-            <h2 className="text-sm font-black uppercase text-white">Online Registrations</h2>
-            <Link href={`/admin/tournament-manager/prepare?tournament=${tournamentContext}`} className="text-xs font-black uppercase text-[#D4A017] hover:text-white">View Registration Roster →</Link>
-          </div>
-          <dl className="mt-3 grid grid-cols-3 gap-3 text-sm">
-            <CompactMetric label="Teams" value={onlineRegistrationSummary.total} />
-            <CompactMetric label="Paid" value={onlineRegistrationSummary.paid} />
-            <CompactMetric label="Need Review" value={onlineRegistrationSummary.needReview} attention={onlineRegistrationSummary.needReview > 0} />
           </dl>
         </div>
 

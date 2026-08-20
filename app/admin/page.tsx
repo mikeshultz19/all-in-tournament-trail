@@ -94,17 +94,11 @@ export default async function AdminHomePage() {
 
             <dl className="mt-6 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
               <StatusCard
-                label="Early Entries & Check-In"
+                label="Registration & Check-In"
                 value={String(registrationSummary?.total ?? 0)}
                 detail={`${registrationSummary?.needReview ?? 0} need review`}
-                actionHref={`/admin/tournament-manager/prepare?tournament=${selectedIdentifier}`}
-                actionLabel="View Entries"
-              />
-              <StatusCard
-                label="Registration Review"
-                value={(registrationSummary?.needReview ?? 0) > 0 ? "Needs Review" : "Ready"}
                 actionHref={`/admin/registration-review?tournament=${encodeURIComponent(selectedTournament.id)}`}
-                actionLabel="Open Review"
+                actionLabel="Open Roster"
               />
               <StatusCard
                 label="New Memberships"
@@ -145,7 +139,7 @@ export default async function AdminHomePage() {
             />
             <QuickLink
               href="/admin/registration-review"
-              title="Registration Review"
+              title="Registration & Check-In"
               icon={ListChecks}
             />
             <QuickLink

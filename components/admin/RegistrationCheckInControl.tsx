@@ -33,7 +33,15 @@ export default function RegistrationCheckInControl({
   }, [router, state.status]);
 
   return (
-    <form action={action} className="min-w-32 print:hidden">
+    <form
+      action={action}
+      className="min-w-32 print:hidden"
+      onSubmit={(event) => {
+        if (checkedIn && !window.confirm("Reopen this checked-in registration for corrections?")) {
+          event.preventDefault();
+        }
+      }}
+    >
       {checkedIn ? (
         <div>
           <p><AdminStatusBadge tone="positive">✓ Checked In</AdminStatusBadge></p>
@@ -42,7 +50,7 @@ export default function RegistrationCheckInControl({
             disabled={pending}
             className={adminButtonStyles("ghost", "mt-1 min-h-0 px-0 py-1 text-[10px] hover:bg-transparent hover:text-amber-300")}
           >
-            {pending ? "Saving…" : "Undo Check-In"}
+            {pending ? "Saving…" : "Edit / Reopen"}
           </button>
         </div>
       ) : (

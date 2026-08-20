@@ -17,7 +17,7 @@ describe("AdminHomeOverview", () => {
     expect(markup).toContain("Registration");
     expect(markup).toContain("Results");
     expect(markup).toContain("Not Published");
-    expect(markup).toContain("Registration Review");
+    expect(markup).toContain("Registration &amp; Check-In");
     expect(markup).toContain("Registered");
     expect(markup).toContain(">84<");
     expect(markup).toContain("Verified");
@@ -28,8 +28,7 @@ describe("AdminHomeOverview", () => {
     expect(markup).toContain("Event Memberships");
     expect(markup).toContain("Total Memberships");
     expect(markup).toContain('href="/admin/members"');
-    expect(markup).toContain("Online Registrations");
-    expect(markup).toContain("/admin/tournament-manager/prepare?tournament=");
+    expect(markup).not.toContain("Online Registrations");
     expect(markup).not.toContain("Next Step");
     expect(markup).not.toContain("Review Registration Roster");
     expect(markup).not.toContain("Possible Duplicates");
@@ -43,7 +42,7 @@ describe("AdminHomeOverview", () => {
     expect(markup).not.toContain("Official");
   });
 
-  it("keeps compact quick actions without duplicating Registration Review", () => {
+  it("keeps compact quick actions without duplicating Registration & Check-In", () => {
     const markup = renderToStaticMarkup(<AdminHomeOverview tournament={databaseTournament} comparisonDate="2026-07-29T12:00:00-05:00" registrationReviewSummary={{ total: 0, verified: 0, pending: 0, resolved: 0 }} resultsPublished={false} membershipSummary={{ online: 0, event: 0, total: 0 }} onlineRegistrationSummary={{ total: 0, paid: 0, needReview: 0 }} />);
     expect(markup).toContain("Quick Actions");
     expect(markup).toContain("Open Tournament");
