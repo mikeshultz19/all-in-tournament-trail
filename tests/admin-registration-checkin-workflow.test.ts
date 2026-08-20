@@ -25,6 +25,40 @@ describe("unified Registration & Check-In workflow", () => {
     expect(page).toContain("getTournamentRegistrationRoster(selectedTournament.id)");
   });
 
+  it("offers All Registrations, Needs Review, and Walk-Ups as independent native filters", () => {
+    const allPosition = page.indexOf(">All Registrations</FilterLink>");
+    const reviewPosition = page.indexOf(">Needs Review</FilterLink>");
+    const walkUpPosition = page.indexOf(">Walk-Ups</FilterLink>");
+    expect(allPosition).toBeGreaterThan(-1);
+    expect(reviewPosition).toBeGreaterThan(allPosition);
+    expect(walkUpPosition).toBeGreaterThan(reviewPosition);
+    expect(page).toContain('className="mt-5 flex flex-wrap gap-2"');
+    expect(page).toContain('requestedFilter === "needs_review" || requestedFilter === "walk_ups"');
+  });
+
+  it("filters the shared active roster to walk-ups and sorts them by boat number", () => {
+    expect(page).toContain('.filter((row) => row.registrationSource === "walk_up")');
+    expect(page).toContain("left.boatNumber ?? Number.MAX_SAFE_INTEGER");
+    expect(page).toContain(': allRows;');
+    expect(page).not.toMatch(/getTournamentRegistrationRoster[\s\S]{0,200}registrationSource/);
+    expect(roster).toContain('.eq("registration_status", "active")');
+  });
+
+  it("adds an active Walk-Ups count without changing the existing summary calculations", () => {
+    expect(page).toContain('walkUps: allRows.filter((row) => row.registrationSource === "walk_up").length');
+    expect(page).toContain('Metric label="Walk-Ups" value={summary.walkUps}');
+    expect(page).toContain("const baseSummary = summarizeTournamentRegistrationRoster(allRows)");
+    expect(page).toContain("needReview: allRows.filter((row) => row.needsReview || pendingReviewIds.has(row.id)).length");
+    expect(roster).toContain('.eq("registration_status", "active")');
+    expect(page).toContain('className="mt-3 flex flex-wrap gap-x-8 gap-y-3 text-sm"');
+  });
+
+  it("keeps Needs Review independent and preserves check-in actions in every filtered row", () => {
+    expect(page).toContain("allRows.filter((row) => row.needsReview || pendingReviewIds.has(row.id))");
+    expect(page).toContain("<RosterActions row={row}");
+    expect(page).toContain("<RegistrationCheckInControl");
+  });
+
   it("uses mobile cards so Check In is not trapped in the desktop table", () => {
     expect(page).toContain('data-testid="mobile-registration-roster"');
     expect(page).toContain('className="mt-4 grid gap-3 md:hidden"');

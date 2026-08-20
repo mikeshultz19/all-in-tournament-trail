@@ -18,12 +18,12 @@ import { getActiveSeasonSchedule, getNextUpcomingTournament } from "@/lib/tourna
 import { getPreparationUndoProtection } from "@/lib/tournament-preparation-protection";
 
 export const dynamic = "force-dynamic";
-type RosterFilter = "all" | "needs_review";
+type RosterFilter = "all" | "needs_review" | "walk_ups";
 
 export default async function RegistrationReviewPage({ searchParams }: { searchParams: Promise<{ tournament?: string; filter?: string }> }) {
   await requireAdminUser();
   const { tournament, filter: requestedFilter } = await searchParams;
-  const filter: RosterFilter = requestedFilter === "needs_review" ? "needs_review" : "all";
+  const filter: RosterFilter = requestedFilter === "needs_review" || requestedFilter === "walk_ups" ? requestedFilter : "all";
   const [tournaments, currentTournament] = await Promise.all([getActiveSeasonSchedule(), getNextUpcomingTournament()]);
   const selectedTournament = tournaments.find((item) => item.id === tournament || item.slug === tournament)
     ?? currentTournament
@@ -35,9 +35,19 @@ export default async function RegistrationReviewPage({ searchParams }: { searchP
   const reviewsByRegistration = new Map<string, typeof reviewItems>();
   for (const item of reviewItems) reviewsByRegistration.set(item.registrationId, [...(reviewsByRegistration.get(item.registrationId) ?? []), item]);
   const pendingReviewIds = new Set(reviewItems.filter((item) => item.status === "review_required").map((item) => item.registrationId));
-  const rows = filter === "needs_review" ? allRows.filter((row) => row.needsReview || pendingReviewIds.has(row.id)) : allRows;
+  const rows = filter === "needs_review"
+    ? allRows.filter((row) => row.needsReview || pendingReviewIds.has(row.id))
+    : filter === "walk_ups"
+      ? allRows
+          .filter((row) => row.registrationSource === "walk_up")
+          .toSorted((left, right) => (left.boatNumber ?? Number.MAX_SAFE_INTEGER) - (right.boatNumber ?? Number.MAX_SAFE_INTEGER) || left.registeredAt.localeCompare(right.registeredAt))
+      : allRows;
   const baseSummary = summarizeTournamentRegistrationRoster(allRows);
-  const summary = { ...baseSummary, needReview: allRows.filter((row) => row.needsReview || pendingReviewIds.has(row.id)).length };
+  const summary = {
+    ...baseSummary,
+    needReview: allRows.filter((row) => row.needsReview || pendingReviewIds.has(row.id)).length,
+    walkUps: allRows.filter((row) => row.registrationSource === "walk_up").length,
+  };
   const tournamentValue = selectedTournament?.id ?? "";
   const queryBase = tournamentValue ? `tournament=${encodeURIComponent(tournamentValue)}` : "";
 
@@ -72,7 +82,7 @@ export default async function RegistrationReviewPage({ searchParams }: { searchP
         <div className="flex flex-wrap items-end justify-between gap-5">
           <div>
             <h2 className="text-sm font-bold uppercase text-white">{selectedTournament.name}</h2>
-            <dl className="mt-3 flex gap-8 text-sm"><Metric label="Registrations" value={summary.total} /><Metric label="Paid" value={summary.paid} /><Metric label="Needs Review" value={summary.needReview} /></dl>
+            <dl className="mt-3 flex flex-wrap gap-x-8 gap-y-3 text-sm"><Metric label="Registrations" value={summary.total} /><Metric label="Paid" value={summary.paid} /><Metric label="Needs Review" value={summary.needReview} /><Metric label="Walk-Ups" value={summary.walkUps} /></dl>
           </div>
           <div>
             <p className="mb-2 text-[10px] font-black uppercase tracking-[0.14em] text-neutral-500">Export / Share</p>
@@ -105,11 +115,12 @@ export default async function RegistrationReviewPage({ searchParams }: { searchP
       <nav aria-label="Registration filters" className="mt-5 flex flex-wrap gap-2">
         <FilterLink href={`/admin/registration-review?${queryBase}&filter=all`} active={filter === "all"}>All Registrations</FilterLink>
         <FilterLink href={`/admin/registration-review?${queryBase}&filter=needs_review`} active={filter === "needs_review"}>Needs Review</FilterLink>
+        <FilterLink href={`/admin/registration-review?${queryBase}&filter=walk_ups`} active={filter === "walk_ups"}>Walk-Ups</FilterLink>
       </nav>
 
       <div className="mt-4 grid gap-3 md:hidden" data-testid="mobile-registration-roster">
         {rows.map((row) => <MobileRosterCard key={row.id} row={row} tournamentId={selectedTournament.id} reviews={reviewsByRegistration.get(row.id) ?? []} anglers={anglers} />)}
-        {!rows.length ? <p className="border border-white/10 bg-[#111] px-4 py-10 text-center text-sm text-neutral-500">{filter === "needs_review" ? "No registrations need review." : "No registrations are available for this tournament."}</p> : null}
+        {!rows.length ? <p className="border border-white/10 bg-[#111] px-4 py-10 text-center text-sm text-neutral-500">{emptyRosterMessage(filter)}</p> : null}
       </div>
 
       <div className="mt-4 hidden overflow-x-auto rounded-md border border-white/10 bg-[#0f0f0f] md:block">
@@ -119,7 +130,7 @@ export default async function RegistrationReviewPage({ searchParams }: { searchP
           </tr></thead>
           <tbody className="divide-y divide-white/10">
             {rows.map((row) => <RosterRow key={row.id} row={row} tournamentId={selectedTournament.id} reviews={reviewsByRegistration.get(row.id) ?? []} anglers={anglers} />)}
-            {!rows.length ? <tr><td colSpan={9} className="px-4 py-10 text-center text-neutral-500">{filter === "needs_review" ? "No registrations need review." : "No registrations are available for this tournament."}</td></tr> : null}
+            {!rows.length ? <tr><td colSpan={9} className="px-4 py-10 text-center text-neutral-500">{emptyRosterMessage(filter)}</td></tr> : null}
           </tbody>
         </table>
       </div>
@@ -166,6 +177,7 @@ function AnglerLine({ label, name, membership }: { label: string; name: string; 
 function MoneyLine({ label, value }: { label: string; value: number | null }) { return <p className="flex justify-between gap-3"><span>{label}</span><span className="tabular-nums">{money(value)}</span></p>; }
 function Metric({ label, value }: { label: string; value: number }) { return <div><dt className="text-[10px] uppercase text-neutral-500">{label}</dt><dd className="mt-1 font-black tabular-nums text-white">{value}</dd></div>; }
 function FilterLink({ href, active, children }: { href: string; active: boolean; children: ReactNode }) { return <Link href={href} aria-current={active ? "page" : undefined} className={adminButtonStyles(active ? "primary" : "secondary", "min-h-9 px-3")}>{children}</Link>; }
+function emptyRosterMessage(filter: RosterFilter) { return filter === "needs_review" ? "No registrations need review." : filter === "walk_ups" ? "No active walk-ups are available for this tournament." : "No registrations are available for this tournament."; }
 function money(value: number | null) { return value === null ? "Not stored" : new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(value / 100); }
 function dateTime(value: string) { return new Intl.DateTimeFormat("en-US", { timeZone: "America/Chicago", dateStyle: "short", timeStyle: "short" }).format(new Date(value)); }
 function dateOnly(value: string) { return new Intl.DateTimeFormat("en-US", { timeZone: "America/Chicago", dateStyle: "medium" }).format(new Date(`${value.slice(0, 10)}T12:00:00-05:00`)); }
