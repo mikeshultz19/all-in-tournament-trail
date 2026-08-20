@@ -32,7 +32,7 @@ describe("unified Registration & Check-In workflow", () => {
     expect(allPosition).toBeGreaterThan(-1);
     expect(reviewPosition).toBeGreaterThan(allPosition);
     expect(walkUpPosition).toBeGreaterThan(reviewPosition);
-    expect(page).toContain('className="mt-5 flex flex-wrap gap-2"');
+    expect(page).toContain('className="mt-5 flex flex-wrap items-center gap-2"');
     expect(page).toContain('requestedFilter === "needs_review" || requestedFilter === "walk_ups"');
   });
 
@@ -57,6 +57,32 @@ describe("unified Registration & Check-In workflow", () => {
     expect(page).toContain("allRows.filter((row) => row.needsReview || pendingReviewIds.has(row.id))");
     expect(page).toContain("<RosterActions row={row}");
     expect(page).toContain("<RegistrationCheckInControl");
+  });
+
+  it("searches the current filtered roster by team, either angler, or exact boat number", () => {
+    expect(page).toContain('placeholder="Search name or boat #"');
+    expect(page).toContain("const rows = search ? filteredRows.filter((row) => registrationMatchesSearch(row, search)) : filteredRows");
+    expect(page).toContain('`${row.angler1.displayName} / ${row.angler2?.displayName ?? ""}`');
+    expect(page).toContain('row.angler1.displayName.toLocaleLowerCase("en-US").includes(normalizedSearch)');
+    expect(page).toContain('row.angler2?.displayName.toLocaleLowerCase("en-US").includes(normalizedSearch)');
+    expect(page).toContain('String(row.boatNumber) === search');
+  });
+
+  it("keeps search case-insensitive, composable with every filter, and clearable", () => {
+    expect(page).toContain('search.toLocaleLowerCase("en-US")');
+    expect(page).toContain('name="filter" value={filter}');
+    expect(page).toContain('const searchQuery = search ? `&search=${encodeURIComponent(search)}` : ""');
+    expect(page.match(/\$\{searchQuery\}/g) ?? []).toHaveLength(3);
+    expect(page).toContain('defaultValue={search}');
+    expect(page).toContain(': filteredRows;');
+    expect(page).toContain('.filter((row) => row.registrationSource === "walk_up")');
+    expect(page).toContain('allRows.filter((row) => row.needsReview || pendingReviewIds.has(row.id))');
+    expect(roster).toContain('.eq("registration_status", "active")');
+  });
+
+  it("wraps the compact search below filters without horizontal scrolling on mobile", () => {
+    expect(page).toContain('className="flex min-w-0 flex-1 gap-2 sm:max-w-sm"');
+    expect(page).toContain('className="min-h-9 min-w-0 flex-1');
   });
 
   it("uses mobile cards so Check In is not trapped in the desktop table", () => {

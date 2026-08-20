@@ -20,10 +20,11 @@ import { getPreparationUndoProtection } from "@/lib/tournament-preparation-prote
 export const dynamic = "force-dynamic";
 type RosterFilter = "all" | "needs_review" | "walk_ups";
 
-export default async function RegistrationReviewPage({ searchParams }: { searchParams: Promise<{ tournament?: string; filter?: string }> }) {
+export default async function RegistrationReviewPage({ searchParams }: { searchParams: Promise<{ tournament?: string; filter?: string; search?: string }> }) {
   await requireAdminUser();
-  const { tournament, filter: requestedFilter } = await searchParams;
+  const { tournament, filter: requestedFilter, search: requestedSearch } = await searchParams;
   const filter: RosterFilter = requestedFilter === "needs_review" || requestedFilter === "walk_ups" ? requestedFilter : "all";
+  const search = requestedSearch?.trim() ?? "";
   const [tournaments, currentTournament] = await Promise.all([getActiveSeasonSchedule(), getNextUpcomingTournament()]);
   const selectedTournament = tournaments.find((item) => item.id === tournament || item.slug === tournament)
     ?? currentTournament
@@ -35,13 +36,14 @@ export default async function RegistrationReviewPage({ searchParams }: { searchP
   const reviewsByRegistration = new Map<string, typeof reviewItems>();
   for (const item of reviewItems) reviewsByRegistration.set(item.registrationId, [...(reviewsByRegistration.get(item.registrationId) ?? []), item]);
   const pendingReviewIds = new Set(reviewItems.filter((item) => item.status === "review_required").map((item) => item.registrationId));
-  const rows = filter === "needs_review"
+  const filteredRows = filter === "needs_review"
     ? allRows.filter((row) => row.needsReview || pendingReviewIds.has(row.id))
     : filter === "walk_ups"
       ? allRows
           .filter((row) => row.registrationSource === "walk_up")
           .toSorted((left, right) => (left.boatNumber ?? Number.MAX_SAFE_INTEGER) - (right.boatNumber ?? Number.MAX_SAFE_INTEGER) || left.registeredAt.localeCompare(right.registeredAt))
       : allRows;
+  const rows = search ? filteredRows.filter((row) => registrationMatchesSearch(row, search)) : filteredRows;
   const baseSummary = summarizeTournamentRegistrationRoster(allRows);
   const summary = {
     ...baseSummary,
@@ -50,6 +52,7 @@ export default async function RegistrationReviewPage({ searchParams }: { searchP
   };
   const tournamentValue = selectedTournament?.id ?? "";
   const queryBase = tournamentValue ? `tournament=${encodeURIComponent(tournamentValue)}` : "";
+  const searchQuery = search ? `&search=${encodeURIComponent(search)}` : "";
 
   return <>
     <header>
@@ -112,10 +115,19 @@ export default async function RegistrationReviewPage({ searchParams }: { searchP
         />
       </div>
 
-      <nav aria-label="Registration filters" className="mt-5 flex flex-wrap gap-2">
-        <FilterLink href={`/admin/registration-review?${queryBase}&filter=all`} active={filter === "all"}>All Registrations</FilterLink>
-        <FilterLink href={`/admin/registration-review?${queryBase}&filter=needs_review`} active={filter === "needs_review"}>Needs Review</FilterLink>
-        <FilterLink href={`/admin/registration-review?${queryBase}&filter=walk_ups`} active={filter === "walk_ups"}>Walk-Ups</FilterLink>
+      <nav aria-label="Registration filters and search" className="mt-5 flex flex-wrap items-center gap-2">
+        <div className="flex flex-wrap gap-2">
+          <FilterLink href={`/admin/registration-review?${queryBase}&filter=all${searchQuery}`} active={filter === "all"}>All Registrations</FilterLink>
+          <FilterLink href={`/admin/registration-review?${queryBase}&filter=needs_review${searchQuery}`} active={filter === "needs_review"}>Needs Review</FilterLink>
+          <FilterLink href={`/admin/registration-review?${queryBase}&filter=walk_ups${searchQuery}`} active={filter === "walk_ups"}>Walk-Ups</FilterLink>
+        </div>
+        <form className="flex min-w-0 flex-1 gap-2 sm:max-w-sm">
+          <input type="hidden" name="tournament" value={tournamentValue} />
+          <input type="hidden" name="filter" value={filter} />
+          <label htmlFor="registration-search" className="sr-only">Search name or boat number</label>
+          <input id="registration-search" name="search" type="search" defaultValue={search} placeholder="Search name or boat #" className="min-h-9 min-w-0 flex-1 border border-white/15 bg-[#111] px-3 text-sm text-white outline-none placeholder:text-neutral-600 focus:border-[#D4A017]" />
+          <button className={adminButtonStyles("secondary", "min-h-9 px-3")}>Search</button>
+        </form>
       </nav>
 
       <div className="mt-4 grid gap-3 md:hidden" data-testid="mobile-registration-roster">
@@ -177,6 +189,15 @@ function AnglerLine({ label, name, membership }: { label: string; name: string; 
 function MoneyLine({ label, value }: { label: string; value: number | null }) { return <p className="flex justify-between gap-3"><span>{label}</span><span className="tabular-nums">{money(value)}</span></p>; }
 function Metric({ label, value }: { label: string; value: number }) { return <div><dt className="text-[10px] uppercase text-neutral-500">{label}</dt><dd className="mt-1 font-black tabular-nums text-white">{value}</dd></div>; }
 function FilterLink({ href, active, children }: { href: string; active: boolean; children: ReactNode }) { return <Link href={href} aria-current={active ? "page" : undefined} className={adminButtonStyles(active ? "primary" : "secondary", "min-h-9 px-3")}>{children}</Link>; }
+function registrationMatchesSearch(row: TournamentRegistrationRosterRow, search: string) {
+  const normalizedSearch = search.toLocaleLowerCase("en-US");
+  const teamName = `${row.angler1.displayName} / ${row.angler2?.displayName ?? ""}`.toLocaleLowerCase("en-US");
+  const nameMatches = teamName.includes(normalizedSearch)
+    || row.angler1.displayName.toLocaleLowerCase("en-US").includes(normalizedSearch)
+    || row.angler2?.displayName.toLocaleLowerCase("en-US").includes(normalizedSearch) === true;
+  const boatMatches = /^\d+$/.test(search) && String(row.boatNumber) === search;
+  return nameMatches || boatMatches;
+}
 function emptyRosterMessage(filter: RosterFilter) { return filter === "needs_review" ? "No registrations need review." : filter === "walk_ups" ? "No active walk-ups are available for this tournament." : "No registrations are available for this tournament."; }
 function money(value: number | null) { return value === null ? "Not stored" : new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(value / 100); }
 function dateTime(value: string) { return new Intl.DateTimeFormat("en-US", { timeZone: "America/Chicago", dateStyle: "short", timeStyle: "short" }).format(new Date(value)); }
