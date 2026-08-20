@@ -93,10 +93,10 @@ describe("homepage sponsors", () => {
     );
     expect(html).not.toContain("Phoenix Boats");
     expect(html).not.toContain("phoenix-boats.png");
-    expect(html).toContain("mad-dawg-graphics-design-wide1.png");
+    expect(html).toContain("mad-dawg-graphics-design-wide3.png");
     expect(
       existsSync(
-        "public/images/sponsors/mad-dawg-graphics-design-wide1.png",
+        "public/images/sponsors/mad-dawg-graphics-design-wide3.png",
       ),
     ).toBe(true);
     expect(html).toContain('alt="Mad Dawg Graphics &amp; Design"');

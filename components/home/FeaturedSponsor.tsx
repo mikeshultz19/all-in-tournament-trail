@@ -38,7 +38,7 @@ function SponsorLogo({
       height={220}
       className={`h-auto w-auto object-contain ${
         isMadDawg
-          ? "bg-[#0b0b0b] max-h-[80px] max-w-full sm:max-h-[92px]"
+          ? "scale-[1.4] bg-[#0b0b0b] max-h-[80px] max-w-full sm:scale-100 sm:max-h-[92px]"
           : sponsor.scale === "small"
             ? "max-h-[48px] max-w-[90%]"
             : sponsor.scale === "compact"
@@ -62,7 +62,7 @@ function SponsorLogo({
       target="_blank"
       rel="noopener noreferrer"
       aria-label={`Visit ${sponsor.name} website (opens in a new tab)`}
-      className="flex size-full cursor-pointer items-center justify-center opacity-85 grayscale transition-[opacity,filter] hover:opacity-100 hover:grayscale-0 focus-visible:opacity-100 focus-visible:grayscale-0 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#D4A017]"
+      className="flex size-full cursor-pointer items-center justify-center opacity-85 grayscale-0 transition-[opacity,filter] hover:opacity-100 hover:grayscale-0 focus-visible:opacity-100 focus-visible:grayscale-0 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#D4A017] sm:grayscale"
     >
       {logo}
     </a>
@@ -101,7 +101,11 @@ export default function FeaturedSponsor({
           {activeSponsors.map((sponsor) => (
             <div
               key={sponsor.id}
-              className="flex h-20 min-w-0 items-center justify-center px-3 py-2 sm:h-24"
+              className={`flex min-w-0 items-center justify-center sm:h-24 sm:px-3 sm:py-2 ${
+                sponsor.name === "Mad Dawg Graphics & Design"
+                  ? "h-16 overflow-hidden px-1 pb-1 sm:overflow-visible"
+                  : "h-20 px-3 py-2"
+              }`}
             >
               <SponsorLogo
                 sponsor={sponsor}

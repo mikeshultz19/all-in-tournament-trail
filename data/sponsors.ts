@@ -28,7 +28,7 @@ export const sponsors: Sponsor[] = [
   {
     id: "mad-dawg-graphics-design",
     name: "Mad Dawg Graphics & Design",
-    logo: "/images/sponsors/mad-dawg-graphics-design-wide1.png",
+    logo: "/images/sponsors/mad-dawg-graphics-design-wide3.png",
     tier: "featured",
     logoScale: "standard",
     active: true,
