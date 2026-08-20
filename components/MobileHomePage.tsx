@@ -4,6 +4,7 @@ import { Mail } from "lucide-react";
 import MobileLatestNews from "@/components/MobileLatestNews";
 import MobileFeaturedTournament from "@/components/MobileFeaturedTournament";
 import SponsorHome from "@/components/SponsorHome";
+import BassStackScoreTracker from "@/components/home/BassStackScoreTracker";
 import MobileWinnerCircle from "@/components/MobileWinnerCircle";
 import RegistrationInterest from "@/components/RegistrationInterest";
 import type { Announcement } from "@/types/announcement";
@@ -70,6 +71,8 @@ export default function MobileHomePage({
         />
 
         <SponsorHome sponsors={homepageSponsors} />
+
+        <BassStackScoreTracker />
 
         <MobileWinnerCircle latestResults={latestResults} />
       </div>

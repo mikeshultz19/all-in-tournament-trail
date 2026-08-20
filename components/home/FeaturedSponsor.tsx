@@ -62,7 +62,7 @@ function SponsorLogo({
       target="_blank"
       rel="noopener noreferrer"
       aria-label={`Visit ${sponsor.name} website (opens in a new tab)`}
-      className="flex size-full cursor-pointer items-center justify-center opacity-85 grayscale-0 transition-[opacity,filter] hover:opacity-100 hover:grayscale-0 focus-visible:opacity-100 focus-visible:grayscale-0 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#D4A017] sm:grayscale"
+      className="flex size-full cursor-pointer items-center justify-center opacity-85 transition-[opacity,filter] hover:opacity-100 focus-visible:opacity-100 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#D4A017]"
     >
       {logo}
     </a>

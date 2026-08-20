@@ -7,6 +7,7 @@ import FeaturedTournament from "@/components/FeaturedTournament";
 import LatestTournamentNews from "@/components/LatestTournamentNews";
 import RegistrationInterest from "@/components/RegistrationInterest";
 import SponsorHome from "@/components/SponsorHome";
+import BassStackScoreTracker from "@/components/home/BassStackScoreTracker";
 import TournamentConditions from "@/components/TournamentConditions";
 import WinnersCircle from "@/components/WinnersCircle";
 
@@ -129,6 +130,8 @@ export default function DesktopHomePage({
                 <AnalyticsSectionView name="Sponsors" />
                 <SponsorHome sponsors={homepageSponsors} />
               </div>
+
+              <BassStackScoreTracker />
 
               <div className="min-w-0">
                 {featuredTournament && operations && weather ? (

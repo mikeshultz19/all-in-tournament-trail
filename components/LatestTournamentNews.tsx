@@ -52,7 +52,7 @@ export default function LatestTournamentNews({
           </div>
         ) : (
           <div className="grid gap-4">
-            {announcements.map((announcement) => (
+            {announcements.slice(0, 1).map((announcement) => (
               <article
                 key={announcement.id}
                 className="overflow-hidden border border-white/10 border-l-4 border-l-[#D4A017] bg-[#111111] px-5 py-5 sm:px-6"

@@ -29,8 +29,9 @@ const navItems = [
 const mobileNavItems = [
   navItems[0],
   { label: "How AITT Works", href: "/how-it-works" },
+  navItems.at(-1)!,
+  ...navItems.slice(1, -1),
   { label: "Watch Live", href: "/watch" },
-  ...navItems.slice(1),
 ];
 
 const howAittWorksButtonClasses =
