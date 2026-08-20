@@ -85,7 +85,7 @@ export default async function RegistrationReviewPage({ searchParams }: { searchP
         <div className="flex flex-wrap items-end justify-between gap-5">
           <div>
             <h2 className="text-sm font-bold uppercase text-white">{selectedTournament.name}</h2>
-            <dl className="mt-3 flex flex-wrap gap-x-8 gap-y-3 text-sm"><Metric label="Registrations" value={summary.total} /><Metric label="Paid" value={summary.paid} /><Metric label="Needs Review" value={summary.needReview} /><Metric label="Walk-Ups" value={summary.walkUps} /></dl>
+            <dl className="mt-3 flex flex-wrap gap-x-8 gap-y-3 text-sm"><Metric label="Registrations" value={summary.total} /><Metric label="Payment Recorded" value={summary.paid} /><Metric label="Needs Review" value={summary.needReview} /><Metric label="Walk-Ups" value={summary.walkUps} /></dl>
           </div>
           <div>
             <p className="mb-2 text-[10px] font-black uppercase tracking-[0.14em] text-neutral-500">Export / Share</p>

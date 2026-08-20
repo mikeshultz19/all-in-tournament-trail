@@ -1,6 +1,5 @@
 import "server-only";
 
-import { SOFT_LAUNCH_REGISTRATION_CLOSED } from "@/config/launch-mode";
 import {
   createAuthoritativeRegistrationQuote,
   validateOnlineRegistrationRequest,
@@ -31,12 +30,6 @@ export async function completeDurableRegistration(
   input: OnlineRegistrationRequest,
   payment: VerifiedRegistrationPayment,
 ): Promise<TournamentRegistration> {
-  if (SOFT_LAUNCH_REGISTRATION_CLOSED) {
-    throw new DurableRegistrationError(
-      "Registration is currently closed.",
-    );
-  }
-
   if (
     payment.status !== "authorized" ||
     !payment.paymentReference.trim() ||

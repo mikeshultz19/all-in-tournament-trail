@@ -80,10 +80,13 @@ describe("Soft Launch registration", () => {
     });
   });
 
-  it("guards the durable persistence boundary", () => {
+  it("keeps payment creation closed while allowing an already successful payment to reconcile", () => {
     const source = readFileSync("lib/durable-registration.ts", "utf8");
+    const quoteRoute = readFileSync("app/api/registrations/quote/route.ts", "utf8");
 
-    expect(source).toContain("SOFT_LAUNCH_REGISTRATION_CLOSED");
-    expect(source).toContain("Registration is currently closed.");
+    expect(quoteRoute).toContain("SOFT_LAUNCH_REGISTRATION_CLOSED");
+    expect(quoteRoute).toContain("Registration is currently closed.");
+    expect(source).toContain("verifiedPaymentCompletion: true");
+    expect(source).not.toContain("SOFT_LAUNCH_REGISTRATION_CLOSED");
   });
 });

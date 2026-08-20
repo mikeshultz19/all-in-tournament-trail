@@ -9,6 +9,8 @@ import {
 import { validateRegistrationMembershipClaims } from "@/lib/registration-membership-validation";
 import { getTournamentBySlug } from "@/lib/tournaments";
 import type { Tournament } from "@/types/tournament";
+import { createOnlinePaymentAttempt } from "@/lib/online-payment-attempts";
+import { getSquareConfigurationStatus } from "@/lib/square";
 
 export async function POST(request: Request) {
   if (SOFT_LAUNCH_REGISTRATION_CLOSED) {
@@ -72,7 +74,22 @@ export async function POST(request: Request) {
     );
   }
 
-  return NextResponse.json({
-    quote: createAuthoritativeRegistrationQuote(input, now, tournament),
-  });
+  const quote = createAuthoritativeRegistrationQuote(input, now, tournament);
+  const square = getSquareConfigurationStatus();
+  if (square.status !== "configured") return NextResponse.json({ error: "Online payment is not configured." }, { status: 503 });
+  try {
+    const paymentAttemptId = await createOnlinePaymentAttempt({ tournamentId: tournamentRecord.id, request: input, quote });
+    return NextResponse.json({
+      quote,
+      paymentAttemptId,
+      square: {
+        applicationId: process.env.NEXT_PUBLIC_SQUARE_APPLICATION_ID,
+        locationId: process.env.NEXT_PUBLIC_SQUARE_LOCATION_ID,
+        environment: square.environment,
+      },
+    });
+  } catch (error) {
+    console.error("Registration payment preparation failed.", error);
+    return NextResponse.json({ error: "Payment could not be prepared. No charge was attempted." }, { status: 503 });
+  }
 }

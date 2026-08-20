@@ -89,6 +89,7 @@ type RegistrationRow = {
   payment_method: "online" | "cash" | "card" | "other" | null;
   participant_contact_snapshot: RegistrationParticipantContactSnapshot[] | null;
   registration_status: "active" | "cancelled";
+  online_payment_state: "completed" | null; square_payment_id: string | null;
 };
 type AnglerNameRow = { id: string; first_name: string; last_name: string; display_name: string; email: string | null; phone: string | null };
 
@@ -139,7 +140,9 @@ function toRosterRow(row: RegistrationRow, names: Map<string, AnglerNameRow>): T
   const bigBassAmountCents = lineAmount(row.price_snapshot, (item) => item.code === "big_bass" || item.name === "Big Bass");
   const memberPotAmountCents = lineAmount(row.price_snapshot, (item) => item.code === row.member_pot || item.name === `${row.member_pot?.[0]?.toUpperCase() ?? ""}${row.member_pot?.slice(1) ?? ""} Pot`);
   const insuranceAmountCents = lineAmount(row.price_snapshot, (item) => item.code === "insurance" || item.name === "Insurance Pot");
-  const paymentStatus = row.payment_reference ? "Paid" : "Needs Review";
+  const paymentStatus = row.registration_source === "walk_up"
+    ? row.payment_reference ? "Paid" : "Needs Review"
+    : row.online_payment_state === "completed" && row.square_payment_id ? "Paid" : "Needs Review";
   const needsReview = row.identity_review_status === "review_required" || paymentStatus !== "Paid";
   const sidePots = [row.big_bass ? "Big Bass" : null, row.member_pot ? `${row.member_pot[0].toUpperCase()}${row.member_pot.slice(1)}` : null, row.insurance ? "Insurance" : null].filter((value): value is string => Boolean(value));
   const membershipDetails = [angler1, angler2].filter((angler): angler is RegistrationRosterAngler => Boolean(angler)).map((angler, index) => `Angler ${index + 1}: ${angler.membership}`);
@@ -171,7 +174,7 @@ export function summarizeTournamentRegistrationRoster<T extends Pick<TournamentR
 export async function getTournamentRegistrationRoster(tournamentId: string): Promise<TournamentRegistrationRosterRow[]> {
   const supabase = createSupabaseServerClient();
   const { data, error } = await supabase.from("tournament_registrations")
-    .select("id,registration_key,registered_at,registration_type,angler1_id,angler2_id,angler1_name,angler2_name,big_bass,member_pot,insurance,payment_reference,membership_snapshot,participant_contact_snapshot,price_snapshot,identity_review_status,checked_in_at,checked_in_by_admin_id,boat_number,registration_source,payment_method,registration_status")
+    .select("id,registration_key,registered_at,registration_type,angler1_id,angler2_id,angler1_name,angler2_name,big_bass,member_pot,insurance,payment_reference,membership_snapshot,participant_contact_snapshot,price_snapshot,identity_review_status,checked_in_at,checked_in_by_admin_id,boat_number,registration_source,payment_method,registration_status,online_payment_state,square_payment_id")
     .eq("tournament_id", tournamentId).eq("registration_status", "active").order("registered_at", { ascending: true });
   if (error) throw new Error("Tournament registration roster could not be loaded.", { cause: error });
   const rows = (data ?? []) as RegistrationRow[];
@@ -188,10 +191,10 @@ export async function getTournamentRegistrationRoster(tournamentId: string): Pro
 export async function listTournamentRegistrationRosterSummaries(tournamentIds: readonly string[]): Promise<Record<string, TournamentRegistrationRosterSummary>> {
   if (!tournamentIds.length) return {};
   const supabase = createSupabaseServerClient();
-  const { data, error } = await supabase.from("tournament_registrations").select("tournament_id,payment_reference,identity_review_status").in("tournament_id", [...tournamentIds]).eq("registration_status", "active");
+  const { data, error } = await supabase.from("tournament_registrations").select("tournament_id,payment_reference,identity_review_status,registration_source,online_payment_state,square_payment_id").in("tournament_id", [...tournamentIds]).eq("registration_status", "active");
   if (error) throw new Error("Tournament registration summaries could not be loaded.", { cause: error });
   const result = Object.fromEntries(tournamentIds.map((id) => [id, { total: 0, paid: 0, needReview: 0 }]));
-  for (const row of data ?? []) { const summary = result[row.tournament_id]; if (!summary) continue; summary.total += 1; if (row.payment_reference) summary.paid += 1; if (!row.payment_reference || row.identity_review_status === "review_required") summary.needReview += 1; }
+  for (const row of data ?? []) { const summary = result[row.tournament_id]; if (!summary) continue; const paid = row.registration_source === "walk_up" ? Boolean(row.payment_reference) : row.online_payment_state === "completed" && Boolean(row.square_payment_id); summary.total += 1; if (paid) summary.paid += 1; if (!paid || row.identity_review_status === "review_required") summary.needReview += 1; }
   return result;
 }
 

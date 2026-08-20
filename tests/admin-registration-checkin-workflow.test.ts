@@ -53,6 +53,11 @@ describe("unified Registration & Check-In workflow", () => {
     expect(page).toContain('className="mt-3 flex flex-wrap gap-x-8 gap-y-3 text-sm"');
   });
 
+  it("labels the existing paid-reference summary as Payment Recorded", () => {
+    expect(page).toContain('Metric label="Payment Recorded" value={summary.paid}');
+    expect(page).not.toContain('Metric label="Paid" value={summary.paid}');
+  });
+
   it("keeps Needs Review independent and preserves check-in actions in every filtered row", () => {
     expect(page).toContain("allRows.filter((row) => row.needsReview || pendingReviewIds.has(row.id))");
     expect(page).toContain("<RosterActions row={row}");

@@ -1,6 +1,7 @@
 import Link from "next/link";
 
 import { formatCurrencyFromCents } from "@/config/payment-policy";
+import PaymentRecovery from "@/components/PaymentRecovery";
 
 export type RegistrationConfirmationView = {
   confirmationNumber: string;
@@ -15,9 +16,9 @@ export type RegistrationConfirmationView = {
   paymentStatus: "paid";
 };
 
-export default function RegistrationConfirmation({ confirmation }: { confirmation: RegistrationConfirmationView | null }) {
+export default function RegistrationConfirmation({ confirmation, recoveryMessage, recoveryAttemptId }: { confirmation: RegistrationConfirmationView | null; recoveryMessage?: string | null; recoveryAttemptId?: string | null }) {
   if (!confirmation) {
-    return <section className="mx-auto max-w-3xl px-5 py-16 sm:px-6"><h1 className="text-3xl font-black uppercase text-[#D4A017]">Confirmation Unavailable</h1><p className="mt-4 leading-7 text-neutral-300">No verified registration confirmation was supplied. If Square shows a successful payment, do not pay again. Contact AITT so the payment can be reconciled using its stable Square reference.</p><Link href="/register" className="mt-8 inline-flex min-h-12 items-center border border-[#D4A017] px-5 text-sm font-black uppercase tracking-wide text-[#D4A017]">Return to Registration</Link></section>;
+    return <section className="mx-auto max-w-3xl px-5 py-16 sm:px-6"><h1 className="text-3xl font-black uppercase text-[#D4A017]">Confirmation Pending</h1><p className="mt-4 leading-7 text-neutral-300">{recoveryMessage ?? "No verified registration confirmation was supplied. If Square shows a successful payment, do not pay again. Contact AITT so the payment can be reconciled using its stable Square reference."}</p>{recoveryAttemptId ? <PaymentRecovery attemptId={recoveryAttemptId} /> : null}<Link href="/register" className="mt-8 inline-flex min-h-12 items-center border border-[#D4A017] px-5 text-sm font-black uppercase tracking-wide text-[#D4A017]">Return to Registration</Link></section>;
   }
 
   return <section className="mx-auto max-w-3xl px-5 py-16 sm:px-6">
