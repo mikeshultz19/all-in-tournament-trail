@@ -106,10 +106,11 @@ declare
   v_record_type text;
   v_member_count integer;
 begin
-  v_record_id := case
-    when tg_table_name = 'teams' then coalesce(new.id, old.id)
-    else coalesce(new.team_id, old.team_id)
-  end;
+  if tg_table_name = 'teams' then
+    v_record_id := coalesce(new.id, old.id);
+  else
+    v_record_id := coalesce(new.team_id, old.team_id);
+  end if;
 
   select record.record_type, count(member.angler_id)::integer
   into v_record_type, v_member_count
