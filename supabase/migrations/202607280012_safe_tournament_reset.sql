@@ -23,6 +23,20 @@ create table if not exists public.tournament_result_entries (
 create index if not exists tournament_result_entries_tournament_id_idx
   on public.tournament_result_entries (tournament_id);
 
+alter table public.tournaments
+  add column if not exists insurance_payout numeric(10, 2),
+  add column if not exists insurance_notes text,
+  add column if not exists insurance_reviewed boolean not null default false,
+  add column if not exists insurance_reviewed_at timestamptz,
+  add column if not exists champion_photo_url text,
+  add column if not exists champion_photo_path text,
+  add column if not exists big_bass_photo_url text,
+  add column if not exists big_bass_photo_path text,
+  add column if not exists photos_reviewed boolean not null default false,
+  add column if not exists photos_reviewed_at timestamptz,
+  add column if not exists weighfish_imported boolean not null default false,
+  add column if not exists weighfish_imported_at timestamptz;
+
 alter table public.tournaments drop constraint if exists tournaments_status_check;
 alter table public.tournaments add constraint tournaments_status_check check (
   status in (

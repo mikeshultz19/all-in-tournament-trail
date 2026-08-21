@@ -20,6 +20,15 @@ begin
   select count(*) into aoy_point_count
   from public.tournament_aoy_points;
 
+  -- A zero-row state is valid only to make a clean database replay
+  -- deterministically without attempting the historical destructive cleanup.
+  if registration_count = 0
+    and result_entry_count = 0
+    and result_summary_count = 0
+    and aoy_point_count = 0 then
+    return;
+  end if;
+
   if registration_count <> 6
     or result_entry_count <> 60
     or result_summary_count <> 2
@@ -53,5 +62,32 @@ begin
 
   delete from public.tournament_results;
   delete from public.tournament_registrations;
+
+  select count(*) into registration_count
+  from public.tournament_registrations;
+
+  select count(*) into result_entry_count
+  from public.tournament_result_entries;
+
+  select count(*) into result_summary_count
+  from public.tournament_results;
+
+  select count(*) into aoy_point_count
+  from public.tournament_aoy_points;
+
+  if registration_count <> 0
+    or result_entry_count <> 0
+    or result_summary_count <> 0
+    or aoy_point_count <> 0 then
+    raise exception using
+      message = 'AITT_PRELAUNCH_CLEANUP_DATA_CHANGED',
+      detail = format(
+        'Cleanup incomplete; found registrations=%s, result_entries=%s, results=%s, aoy_points=%s.',
+        registration_count,
+        result_entry_count,
+        result_summary_count,
+        aoy_point_count
+      );
+  end if;
 end
 $$;
