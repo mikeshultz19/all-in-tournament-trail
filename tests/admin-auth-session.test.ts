@@ -24,6 +24,13 @@ describe("Admin authentication session behavior", () => {
     expect(middlewareSource).toContain("setAll(cookiesToSet)");
   });
 
+  it("accepts a full email while preserving the existing short-username alias", () => {
+    expect(loginSource).toContain("Email or Username");
+    expect(loginSource).toContain("name@example.com or username");
+    expect(loginSource).toContain('normalizedUsername.includes("@")');
+    expect(loginSource).toContain('`${normalizedUsername}@aitt.local`');
+  });
+
   it("requires an active Admin role at login and at the Admin boundary", () => {
     for (const source of [loginSource, middlewareSource]) {
       expect(source).toMatch(/role\s*[!=]==?\s*"admin"/);

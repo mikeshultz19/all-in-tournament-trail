@@ -72,27 +72,6 @@ export default function MembersList({
   const first = total === 0 ? 0 : (page - 1) * pageSize + 1;
   const last = Math.min(page * pageSize, total);
 
-  if (members.length === 0 && !initialSearch && statusFilter === "all") {
-    return (
-      <section className="mt-8 border border-white/10 bg-[#111111] px-6 py-14 text-center sm:px-10">
-        <UserPlus
-          aria-hidden="true"
-          className="mx-auto size-8 text-[#D4A017]"
-          strokeWidth={1.75}
-        />
-        <h2 className="mt-5 text-xl font-black uppercase text-white">
-          No members have been added.
-        </h2>
-        <Link
-          href="/admin/members/new"
-          className="mt-6 inline-flex min-h-11 items-center justify-center bg-[#D4A017] px-5 text-xs font-black uppercase tracking-[0.12em] text-black transition-colors hover:bg-[#e2b22a] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#D4A017]"
-        >
-          Add First Member
-        </Link>
-      </section>
-    );
-  }
-
   return (
     <section className="mt-8" aria-labelledby="members-list-heading">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
@@ -115,8 +94,17 @@ export default function MembersList({
               onChange={(event) => setQuery(event.target.value)}
               placeholder="Search name, email, or phone"
               autoComplete="off"
-              className="min-h-12 w-full border border-white/15 bg-[#111111] pl-11 pr-4 text-sm text-white outline-none transition-colors placeholder:text-neutral-600 focus:border-[#D4A017]"
+              className="min-h-12 w-full border border-white/15 bg-[#111111] pl-11 pr-20 text-sm text-white outline-none transition-colors placeholder:text-neutral-600 focus:border-[#D4A017]"
             />
+            {query ? (
+              <button
+                type="button"
+                onClick={() => setQuery("")}
+                className="absolute right-2 top-1/2 min-h-9 -translate-y-1/2 px-3 text-[10px] font-black uppercase text-neutral-400 hover:text-[#D4A017]"
+              >
+                Clear
+              </button>
+            ) : null}
           </div>
         </div>
 
@@ -142,7 +130,24 @@ export default function MembersList({
         </a>
       </div>
 
-      {members.length === 0 ? (
+      {members.length === 0 && !initialSearch && statusFilter === "all" ? (
+        <div className="mt-5 border border-white/10 bg-[#111111] px-6 py-12 text-center sm:px-10">
+          <UserPlus
+            aria-hidden="true"
+            className="mx-auto size-8 text-[#D4A017]"
+            strokeWidth={1.75}
+          />
+          <h2 className="mt-5 text-xl font-black uppercase text-white">
+            No members have been added.
+          </h2>
+          <Link
+            href="/admin/members/new"
+            className="mt-6 inline-flex min-h-11 items-center justify-center bg-[#D4A017] px-5 text-xs font-black uppercase tracking-[0.12em] text-black transition-colors hover:bg-[#e2b22a] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#D4A017]"
+          >
+            Add First Member
+          </Link>
+        </div>
+      ) : members.length === 0 ? (
         <div className="mt-5 border border-white/10 bg-[#111111] px-6 py-12 text-center">
           <h2 className="text-lg font-black uppercase text-white">
             No members match your search.

@@ -23,10 +23,11 @@ describe("AdminSidebar", () => {
     expect(markup).toContain("Tournament Manager");
     expect(markup).toContain("Members");
     expect(markup).toContain("Website");
-    expect(markup).toContain("Registration &amp; Check-In");
+    expect(markup).toContain("All Registrations");
     expect(markup).toContain("Settings");
     expect(markup).toContain('href="/admin/tournament-manager"');
-    expect(markup).toContain('href="/admin/registration-review"');
+    expect(markup).not.toContain("Registration &amp; Check-In");
+    expect(markup).not.toContain('href="/admin/registration-review"');
     expect(markup).toContain('href="/admin/announcements"');
     expect(markup).toContain('href="/admin/forms"');
     expect(markup).toContain('href="/admin/settings"');

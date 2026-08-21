@@ -21,7 +21,7 @@ const navigationItems: NavigationItem[] = [
     ],
   },
   { href: "/admin/members", label: "Members" },
-  { href: "/admin/registration-review", label: "Registration & Check-In" },
+  { href: "/admin/registrations", label: "All Registrations" },
   {
     href: "/admin/tournament",
     label: "Tournament Info",
@@ -78,9 +78,9 @@ export default function AdminSidebar() {
     >
       <nav className="px-4 py-5 md:py-6">
         <ul className="space-y-1">
-          {navigationItems.map((item, index) => {
+          {navigationItems.map((item) => {
             const active = isNavigationItemActive(pathname, item);
-            const showWebsiteHeading = index === 4;
+            const showWebsiteHeading = item.href === "/admin/tournament";
 
             return (
               <li key={item.href}>

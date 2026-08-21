@@ -84,6 +84,8 @@ describe("Admin Members list", () => {
   it("renders the required empty state", () => {
     const html = renderToStaticMarkup(<MembersList members={[]} />);
 
+    expect(html).toContain("Search Members");
+    expect(html).toContain('placeholder="Search name, email, or phone"');
     expect(html).toContain("No members have been added.");
     expect(html).toContain("Add First Member");
     expect(html).toContain('href="/admin/members/new"');
@@ -98,6 +100,14 @@ describe("Admin Members list", () => {
     expect(filterMemberRows(members, "john@example.com")).toHaveLength(1);
     expect(filterMemberRows(members, "214-555")).toHaveLength(1);
     expect(filterMemberRows(members, "missing")).toEqual([]);
+  });
+
+  it("supports partial case-insensitive member searches and clearing", () => {
+    expect(filterMemberRows(members, "SMI")).toEqual([members[0]]);
+    expect(filterMemberRows(members, "EXAMPLE.COM")).toHaveLength(2);
+    expect(filterMemberRows(members, "555-01")).toHaveLength(2);
+    expect(filterMemberRows(members, "")).toEqual(members);
+    expect(renderToStaticMarkup(<MembersList members={members} initialSearch="smith" />)).toContain("Clear");
   });
 });
 

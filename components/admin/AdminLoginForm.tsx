@@ -75,17 +75,21 @@ export default function AdminLoginForm({
       className="mt-8 space-y-6 border border-white/10 bg-[#111111] p-6 sm:p-8"
     >
       <label className="block text-xs font-black uppercase tracking-[0.12em] text-neutral-300">
-        Username
+        Email or Username
         <input
           type="text"
           required
           autoComplete="username"
           autoCapitalize="none"
           spellCheck={false}
+          placeholder="name@example.com or username"
           value={username}
           onChange={(event) => setUsername(event.target.value)}
           className="mt-2 min-h-12 w-full border border-white/15 bg-[#0B0B0B] px-4 text-base text-white outline-none transition focus:border-[#D4A017] focus-visible:ring-2 focus-visible:ring-[#D4A017]/40"
         />
+        <span className="mt-2 block text-[11px] font-medium normal-case tracking-normal text-neutral-500">
+          Enter your full email address or existing AITT Admin username.
+        </span>
       </label>
       <label className="block text-xs font-black uppercase tracking-[0.12em] text-neutral-300">
         Password
