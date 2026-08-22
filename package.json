@@ -10,7 +10,9 @@
     "test": "vitest run",
     "seed:demo": "node scripts/seed-demo.mjs",
     "preview": "opennextjs-cloudflare build && opennextjs-cloudflare preview",
-    "deploy": "opennextjs-cloudflare build && opennextjs-cloudflare deploy",
+    "deploy": "node scripts/deploy-production.mjs",
+    "deploy:check": "node scripts/deploy-production.mjs --check",
+    "env:check": "node scripts/deploy-production.mjs --status",
     "upload": "opennextjs-cloudflare build && opennextjs-cloudflare upload",
     "cf-typegen": "wrangler types --env-interface CloudflareEnv cloudflare-env.d.ts"
   },
