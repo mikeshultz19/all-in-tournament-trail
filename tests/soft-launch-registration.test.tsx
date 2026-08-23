@@ -1,92 +1,24 @@
-import { readFileSync } from "node:fs";
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
-
-import { POST } from "@/app/api/registrations/quote/route";
-import Header from "@/components/Header";
 import FeaturedTournament from "@/components/FeaturedTournament";
 import RegistrationForm from "@/components/RegistrationForm";
 import { tournaments } from "@/data/tournaments";
 import { getTournamentOperationsViewModel } from "@/lib/tournament-view-model";
 
-describe("Soft Launch registration", () => {
-  it("keeps the public Register navigation active", () => {
-    const markup = renderToStaticMarkup(<Header />);
-
-    expect(markup).toContain('href="/register"');
-    expect(markup).toContain(">Register</");
+describe("manual registration availability", () => {
+  it("keeps registration open after the former cutoff", () => {
+    const open = { ...tournaments[0], registrationStatus: "open" as const };
+    const operations = getTournamentOperationsViewModel(open, new Date("2030-01-01T12:00:00Z"));
+    const markup = renderToStaticMarkup(<FeaturedTournament tournament={open} operations={operations} />);
+    expect(markup).toContain("Register");
+    expect(markup).not.toContain("Registration Closed");
   });
 
-  it("keeps the Featured Tournament registration action inactive while closed", () => {
-    const markup = renderToStaticMarkup(
-      <FeaturedTournament tournament={tournaments[0]} />,
-    );
-
-    expect(markup).not.toContain(
-      'href="/register?tournament=eagle-mountain-2026"',
-    );
-    expect(markup).toContain("Registration Closed");
-    expect(markup).toContain('aria-disabled="true"');
-    expect(markup).not.toContain("Register Now");
-  });
-
-  it("keeps the complete form visible with a disabled closed action", () => {
-    const operationsBySlug = Object.fromEntries(
-      tournaments.map((tournament) => [
-        tournament.slug,
-        getTournamentOperationsViewModel(
-          tournament,
-          new Date("2026-07-30T12:00:00Z"),
-        ),
-      ]),
-    );
-    const markup = renderToStaticMarkup(
-      <RegistrationForm
-        tournaments={tournaments}
-        operationsBySlug={operationsBySlug}
-        policyVersions={{ rulesVersion: "1.0", waiverVersion: "1.0" }}
-      />,
-    );
-
-    expect(markup).toContain("Angler Information");
-    expect(markup).toContain("Tournament Entry");
-    expect(markup).toContain("Optional Side Pots");
-    expect(markup).toContain("Member Bonus Pots");
-    expect(markup).toContain("Registration Closed");
+  it("shows the manual suspension message and disables payment review", () => {
+    const closed = { ...tournaments[0], registrationStatus: "closed" as const };
+    const operationsBySlug = { [closed.slug]: getTournamentOperationsViewModel(closed) };
+    const markup = renderToStaticMarkup(<RegistrationForm tournaments={[closed]} operationsBySlug={operationsBySlug} policyVersions={{ rulesVersion: "1.0", waiverVersion: "1.0" }} />);
+    expect(markup).toContain("Registration is temporarily unavailable.");
     expect(markup).toContain('disabled=""');
-  });
-
-  it("renders the required Registration page banner copy", () => {
-    const source = readFileSync("components/RegistrationForm.tsx", "utf8");
-    const normalizedSource = source.replace(/\s+/g, " ");
-
-    expect(normalizedSource).toContain("Registration is Currently Closed");
-    expect(normalizedSource).toContain(
-      "Official registration dates for our inaugural season will be announced soon.",
-    );
-  });
-
-  it("rejects direct quote requests before processing input", async () => {
-    const response = await POST(
-      new Request("http://localhost/api/registrations/quote", {
-        method: "POST",
-        body: "{}",
-      }),
-    );
-
-    expect(response.status).toBe(403);
-    await expect(response.json()).resolves.toEqual({
-      error: "Registration is currently closed.",
-    });
-  });
-
-  it("keeps payment creation closed while allowing an already successful payment to reconcile", () => {
-    const source = readFileSync("lib/durable-registration.ts", "utf8");
-    const quoteRoute = readFileSync("app/api/registrations/quote/route.ts", "utf8");
-
-    expect(quoteRoute).toContain("SOFT_LAUNCH_REGISTRATION_CLOSED");
-    expect(quoteRoute).toContain("Registration is currently closed.");
-    expect(source).toContain("verifiedPaymentCompletion: true");
-    expect(source).not.toContain("SOFT_LAUNCH_REGISTRATION_CLOSED");
   });
 });

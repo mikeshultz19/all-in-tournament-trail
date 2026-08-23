@@ -217,6 +217,13 @@ describe("AITT Competitive Record foundation migration", () => {
     expect(migration).toContain("to service_role");
   });
 
+  it("reuses one Solo Competitive Record for repeated registrations in the same season", () => {
+    expect(migration).toContain("where season_id = p_season_id");
+    expect(migration).toContain("and canonical_member_key = v_canonical_key");
+    expect(migration).toContain("if found then");
+    expect(migration).toContain("return v_record");
+  });
+
   it("makes Competitive Record identity and membership immutable", () => {
     expect(migration).toContain(
       "AITT_COMPETITIVE_RECORD_IDENTITY_IMMUTABLE",

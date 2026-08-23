@@ -1,25 +1,16 @@
 import { NextResponse } from "next/server";
 
-import { SOFT_LAUNCH_REGISTRATION_CLOSED } from "@/config/launch-mode";
 import { createAuthoritativeRegistrationQuote, validateOnlineRegistrationRequest, type OnlineRegistrationRequest } from "@/lib/online-registration";
 import {
   toPublicTournament,
   type PublicTournamentRecord,
 } from "@/lib/tournament-record-adapter";
-import { validateRegistrationMembershipClaims } from "@/lib/registration-membership-validation";
 import { getTournamentBySlug } from "@/lib/tournaments";
 import type { Tournament } from "@/types/tournament";
 import { createOnlinePaymentAttempt } from "@/lib/online-payment-attempts";
 import { getSquareConfigurationStatus } from "@/lib/square";
 
 export async function POST(request: Request) {
-  if (SOFT_LAUNCH_REGISTRATION_CLOSED) {
-    return NextResponse.json(
-      { error: "Registration is currently closed." },
-      { status: 403 },
-    );
-  }
-
   let input: OnlineRegistrationRequest;
   try {
     input = (await request.json()) as OnlineRegistrationRequest;
@@ -51,30 +42,20 @@ export async function POST(request: Request) {
     );
   }
 
-  const errors = validateOnlineRegistrationRequest(input, now, {}, tournament);
+  const errors = validateOnlineRegistrationRequest(
+    input,
+    now,
+    {},
+    tournament,
+  );
   if (errors.length) return NextResponse.json({ error: "Registration needs attention.", errors }, { status: 400 });
 
-  try {
-    const membershipErrors =
-      await validateRegistrationMembershipClaims(
-        input.anglers,
-        tournamentRecord,
-      );
-    if (membershipErrors.length) {
-      return NextResponse.json(
-        { error: "Registration needs attention.", errors: membershipErrors },
-        { status: 400 },
-      );
-    }
-  } catch (error) {
-    console.error("Registration membership validation failed.", error);
-    return NextResponse.json(
-      { error: "We could not verify membership information. Please try again." },
-      { status: 503 },
-    );
-  }
-
-  const quote = createAuthoritativeRegistrationQuote(input, now, tournament);
+  const quote = createAuthoritativeRegistrationQuote(
+    input,
+    now,
+    tournament,
+    {},
+  );
   const square = getSquareConfigurationStatus();
   if (square.status !== "configured") return NextResponse.json({ error: "Online payment is not configured." }, { status: 503 });
   try {

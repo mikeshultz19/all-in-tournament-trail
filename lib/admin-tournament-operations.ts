@@ -25,27 +25,22 @@ export interface TournamentOperationStep {
 
 const CLOSED_STATUSES = new Set([
   "Registration Closed",
+  "Postponed",
+  "Cancelled",
   "Tournament Day",
   "Results Published",
 ]);
 
 export function getTournamentRegistrationStatus(
   tournament: Tournament,
-  now: Date,
+  _now: Date,
 ): "Open" | "Closed" | "Scheduled" {
-  if (
-    CLOSED_STATUSES.has(tournament.status) ||
-    (tournament.registration_closes &&
-      new Date(tournament.registration_closes).getTime() <= now.getTime())
-  ) {
+  void _now;
+  if (CLOSED_STATUSES.has(tournament.status)) {
     return "Closed";
   }
 
-  if (
-    tournament.status === "Registration Open" &&
-    (!tournament.registration_opens ||
-      new Date(tournament.registration_opens).getTime() <= now.getTime())
-  ) {
+  if (tournament.status === "Registration Open") {
     return "Open";
   }
 
@@ -84,9 +79,7 @@ export function getTournamentOperationSteps(
     complete(
       "Registration Information Complete",
       Boolean(
-        tournament.registration_opens &&
-          tournament.registration_closes &&
-          tournament.morning_registration,
+        tournament.morning_registration,
       ),
     ),
     complete("Launch Ramp Complete", Boolean(tournament.ramp?.trim())),

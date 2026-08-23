@@ -73,19 +73,18 @@ describe("tournament status and registration", () => {
 
   it.each(["scheduled", "weather_watch"] as const)("preserves normal registration windows for %s tournaments", (tournamentStatus) => {
     const availability = getRegistrationAvailability(tournament({ tournamentStatus }), new Date("2026-07-21T12:00:00Z"));
-    expect(availability.period).toBe("early_online");
+    expect(availability.period).toBe("online");
     expect(availability.canSubmit).toBe(true);
   });
 
-  it("closes website registration after the early deadline and directs morning registration to WeighFish", () => {
+  it("keeps website registration open on tournament morning", () => {
     const availability = getRegistrationAvailability(
       tournament(),
       new Date("2026-11-01T11:30:00Z"),
     );
-    expect(availability.period).toBe("fully_closed");
-    expect(availability.canSubmit).toBe(false);
-    expect(availability.reason).toContain("completed in person");
-    expect(availability.reason).toContain("WeighFish");
+    expect(availability.period).toBe("online");
+    expect(availability.canSubmit).toBe(true);
+    expect(availability.reason).toBe("Online registration is open.");
   });
 
   it("uses the rescheduled date for safe light and registration timing", () => {

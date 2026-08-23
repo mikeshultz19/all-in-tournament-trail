@@ -81,7 +81,7 @@ export default function FeaturedTournament({
   }
 
   const display = getTournamentDisplay(tournament);
-  const registrationOpen = operations?.registrationCanSubmit === true;
+  const registrationOpen = operations?.registrationCanSubmit ?? false;
 
   return (
     <article className="w-full min-w-0 max-w-full overflow-hidden rounded-md border border-yellow-700/50 bg-[#080808]">
@@ -282,7 +282,7 @@ export default function FeaturedTournament({
               href={`/register?tournament=${tournament.slug}`}
               className="block w-full cursor-pointer bg-red-700 px-4 py-3 text-center text-[10px] font-black uppercase tracking-[0.08em] text-white transition hover:bg-red-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#D4A017]"
             >
-              Register Now
+              Register
             </Link>
           ) : (
             <span
@@ -290,7 +290,7 @@ export default function FeaturedTournament({
               title={operations?.registrationReason ?? "Registration is not currently available."}
               className="block w-full cursor-not-allowed bg-zinc-800 px-4 py-3 text-center text-[10px] font-black uppercase tracking-[0.08em] text-zinc-500"
             >
-              Registration Closed
+              {operations?.registrationReason ?? "Registration Unavailable"}
             </span>
           )}
           <Link

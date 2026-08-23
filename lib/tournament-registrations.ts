@@ -31,6 +31,33 @@ type TournamentRegistrationRow = {
   admin_notes: string | null;
 };
 
+export type RegistrationConfirmationIdentifiers = {
+  registrationKey: string;
+  boatNumber: number | null;
+};
+
+export async function getRegistrationConfirmationIdentifiers(
+  registrationId: string,
+): Promise<RegistrationConfirmationIdentifiers> {
+  const { data, error } = await createSupabaseServerClient()
+    .from("tournament_registrations")
+    .select("registration_key,boat_number")
+    .eq("id", registrationId)
+    .single();
+
+  if (error) {
+    throw new TournamentRegistrationDataError(
+      "We could not load the registration confirmation identifiers.",
+      { cause: error },
+    );
+  }
+
+  return {
+    registrationKey: data.registration_key,
+    boatNumber: data.boat_number,
+  };
+}
+
 function mapRowToPublicEntry(row: TournamentRegistrationRow): PublicEarlyEntry {
   const record: EarlyRegistrationRecord = {
     id: row.registration_key,

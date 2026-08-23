@@ -15,18 +15,18 @@ import {
   type PublicTournamentRecord,
 } from "@/lib/tournament-record-adapter";
 import { getTournamentDisplay } from "@/lib/tournament-display";
-import { getOnlineRegistrationEligibility } from "@/lib/online-registration";
+import { getRegistrationAvailability } from "@/lib/tournament-operations";
 
 function RegistrationControl({
   tournament,
-  registration,
   className,
 }: {
   tournament: PublicTournamentRecord;
-  registration: ReturnType<typeof getOnlineRegistrationEligibility>;
   className: string;
 }) {
-  return tournament.eventType === "regular_season" || registration.canRegister ? (
+  const availability = getRegistrationAvailability(tournament);
+
+  return availability.canSubmit ? (
     <Link
       href={`/register?tournament=${tournament.slug}`}
       className={`${className} bg-red-700 text-white transition hover:bg-red-600`}
@@ -36,10 +36,10 @@ function RegistrationControl({
   ) : (
     <span
       aria-disabled="true"
-      title={registration.reason}
+      title={availability.reason}
       className={`${className} cursor-not-allowed border border-neutral-700 text-neutral-500`}
     >
-      {registration.label}
+      {availability.reason}
     </span>
   );
 }
@@ -49,7 +49,6 @@ function TournamentRow({ tournament }: { tournament: PublicTournamentRecord }) {
     tournament.thumbnailImage ?? getTournamentImage(tournament);
   const display = getTournamentDisplay(tournament);
   const isBassStackChallenge = tournament.tournamentFormat === "bass-stack";
-  const registration = getOnlineRegistrationEligibility(tournament);
 
   return (
     <article className="grid gap-4 border-b border-[#4A3A12] px-4 py-5 lg:grid-cols-[180px_minmax(0,1fr)_140px] lg:items-center lg:gap-6 lg:px-5 lg:py-5">
@@ -92,7 +91,6 @@ function TournamentRow({ tournament }: { tournament: PublicTournamentRecord }) {
         </div>
         <RegistrationControl
           tournament={tournament}
-          registration={registration}
           className="mt-3 inline-flex h-9 w-full items-center justify-center rounded-md px-4 text-[0.68rem] font-black uppercase tracking-[0.08em] lg:hidden"
         />
         <dl className="mt-4 grid grid-cols-1 gap-x-5 gap-y-3 border-t border-white/10 pt-4 sm:grid-cols-2 xl:grid-cols-5">
@@ -123,7 +121,6 @@ function TournamentRow({ tournament }: { tournament: PublicTournamentRecord }) {
 
       <RegistrationControl
         tournament={tournament}
-        registration={registration}
         className="hidden min-h-11 w-full items-center justify-center rounded-sm px-3 py-3 text-center text-xs font-black uppercase tracking-[0.08em] lg:inline-flex"
       />
     </article>

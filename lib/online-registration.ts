@@ -140,7 +140,6 @@ export type RegistrationEligibility = {
 type EligibilityOptions = {
   confirmedCount?: number;
   capacity?: number | null;
-  registrationOpensAt?: Date | null;
   onlineRegistrationEnabled?: boolean;
   verifiedPaymentCompletion?: boolean;
 };
@@ -151,16 +150,13 @@ export function getOnlineRegistrationEligibility(
   options: EligibilityOptions = {},
 ): RegistrationEligibility {
   if (tournament.status === "official" || tournament.status === "unofficial") {
-    return { state: "completed", canRegister: false, label: "Tournament Completed", reason: "Online registration is unavailable because this tournament is completed." };
+    return { state: "completed", canRegister: false, label: "Tournament Completed", reason: "Registration is no longer available for this tournament." };
   }
   if (tournament.tournamentStatus === "cancelled") {
     return { state: "closed", canRegister: false, label: "Registration Closed", reason: "Online registration is unavailable because this tournament is cancelled." };
   }
   if (options.onlineRegistrationEnabled === false) {
     return { state: "unavailable", canRegister: false, label: "Registration Unavailable", reason: "Online registration is disabled for this tournament." };
-  }
-  if (options.registrationOpensAt && now < options.registrationOpensAt) {
-    return { state: "opens_soon", canRegister: false, label: "Registration Opens Soon", reason: `Online registration opens ${options.registrationOpensAt.toISOString()}.` };
   }
   const capacity = options.capacity;
   if (capacity !== null && capacity !== undefined && (options.confirmedCount ?? 0) >= capacity) {

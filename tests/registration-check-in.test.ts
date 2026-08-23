@@ -32,8 +32,12 @@ describe("Early Entries check-in", () => {
     expect(control).toContain("router.refresh()");
     expect(control).toContain("window.confirm");
     expect(page).toContain("Registration &amp; Check-In");
-    expect(page).toContain("Entry Options");
-    expect(page).toContain("Review / Check-In");
+    expect(page).toContain("Member Status");
+    expect(page).toContain("Member Pots");
+    expect(page).toContain("Insurance");
+    expect(page).toContain("Big Bass");
+    expect(page).toContain("Check-In / Review");
+    expect(page).not.toContain("Entry Options");
     expect(page).toContain('data-testid="mobile-registration-roster"');
     expect(legacyRoute).toContain("redirect(`/admin/registration-review${query}`)");
   });

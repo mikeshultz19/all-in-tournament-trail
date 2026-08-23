@@ -114,6 +114,18 @@ export function formatPublicRegistrationTimestamp(timestamp: string): string {
   }).format(new Date(timestamp));
 }
 
+export function formatRosterGeneratedAt(timestamp: string | Date): string {
+  return new Intl.DateTimeFormat("en-US", {
+    timeZone: TOURNAMENT_TIME_ZONE,
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+    hour: "numeric",
+    minute: "2-digit",
+    hour12: true,
+  }).format(typeof timestamp === "string" ? new Date(timestamp) : timestamp).replace(", ", ", ").replace(/, (\d{1,2}:)/, " at $1");
+}
+
 export function isValidTournamentTime(time: string | null): time is string {
   return time !== null && TIME_PATTERN.test(time);
 }

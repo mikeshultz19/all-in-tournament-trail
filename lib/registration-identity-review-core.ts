@@ -20,6 +20,10 @@ export interface RegistrationIdentityClassification {
   participants: ParticipantIdentityClassification[];
 }
 
+export interface RegistrationIdentityClassificationOptions {
+  activeTournamentAnglerIds?: ReadonlySet<string>;
+}
+
 export function summarizeRegistrationReviewStatuses(
   statuses: readonly RegistrationIdentityReviewStatus[],
 ): { total: number; verified: number; pending: number; resolved: number } {
@@ -49,13 +53,19 @@ function normalizeEmail(
   return normalized || null;
 }
 
+function normalizeContactText(value: string | null | undefined): string {
+  return value?.trim().toLocaleLowerCase("en-US").replace(/\s+/g, " ") ?? "";
+}
+
 export function classifyRegistrationIdentity(
   submittedAnglers: readonly OnlineRegistrationAngler[],
   canonicalAnglers: readonly Angler[],
+  options: RegistrationIdentityClassificationOptions = {},
 ): RegistrationIdentityClassification {
   const active = canonicalAnglers.filter(
     (angler) => angler.is_active && !angler.merged_into_angler_id,
   );
+  const activeTournamentAnglerIds = options.activeTournamentAnglerIds ?? new Set<string>();
 
   const participants = submittedAnglers.map(
     (submitted, index): ParticipantIdentityClassification => {
@@ -64,7 +74,6 @@ export function classifyRegistrationIdentity(
       const fullName = normalizeAnglerName(
         `${submitted.firstName} ${submitted.lastName}`,
       );
-      const lastName = normalizeAnglerName(submitted.lastName);
       const emailMatches = email
         ? active.filter(
             (angler) => normalizeEmail(angler.email) === email,
@@ -75,62 +84,99 @@ export function classifyRegistrationIdentity(
             (angler) => normalizeIdentityPhone(angler.phone) === phone,
           )
         : [];
-      const nameMatches = active.filter(
-        (angler) => angler.normalized_name === fullName,
+      const strongContactCandidates = new Map(
+        [...emailMatches, ...phoneMatches].map((angler) => [angler.id, angler]),
       );
-
-      if (
-        emailMatches.length === 1 &&
-        (phoneMatches.length === 0 ||
-          phoneMatches.every((angler) => angler.id === emailMatches[0].id))
-      ) {
-        return {
-          participantPosition: (index + 1) as 1 | 2,
-          status: "verified",
-          reason: null,
-          suggestedAnglerIds: [emailMatches[0].id],
-        };
-      }
+      const emailAndPhoneConflict =
+        emailMatches.length > 0 &&
+        phoneMatches.length > 0 &&
+        emailMatches.every(
+          (emailAngler) =>
+            phoneMatches.every((phoneAngler) => phoneAngler.id !== emailAngler.id),
+        );
+      const soleContactCandidate =
+        strongContactCandidates.size === 1
+          ? [...strongContactCandidates.values()][0]
+          : null;
+      const materiallyDifferentContact = soleContactCandidate
+        ? (
+          Boolean(soleContactCandidate.phone) &&
+          normalizeIdentityPhone(submitted.mobilePhone) !==
+            normalizeIdentityPhone(soleContactCandidate.phone)
+        ) || [
+            [submitted.streetAddress, soleContactCandidate.street_address],
+            [submitted.city, soleContactCandidate.city],
+            [submitted.state, soleContactCandidate.state],
+            [submitted.zipCode, soleContactCandidate.zip_code],
+          ].some(
+            ([submittedValue, canonicalValue]) =>
+              normalizeContactText(canonicalValue) !== "" &&
+              normalizeContactText(submittedValue) !==
+                normalizeContactText(canonicalValue),
+          )
+        : false;
 
       const exactCandidates = new Set(
-        [...emailMatches, ...phoneMatches, ...nameMatches].map(
-          (angler) => angler.id,
-        ),
+        [...emailMatches, ...phoneMatches].map((angler) => angler.id),
       );
       if (exactCandidates.size > 0) {
-        return {
-          participantPosition: (index + 1) as 1 | 2,
-          status: "review_required",
-          reason:
-            exactCandidates.size > 1
-              ? "Multiple canonical Anglers match the submitted identity."
-              : "Submitted contact or name information differs from an existing Angler.",
-          suggestedAnglerIds: [...exactCandidates],
-        };
-      }
-
-      const possibleNameCandidates = active.filter((angler) => {
-        const canonicalLastName = normalizeAnglerName(angler.last_name);
-        const submittedFirst = normalizeAnglerName(submitted.firstName);
-        const canonicalFirst = normalizeAnglerName(angler.first_name);
-
-        return (
-          canonicalLastName === lastName &&
-          (submittedFirst.startsWith(canonicalFirst) ||
-            canonicalFirst.startsWith(submittedFirst) ||
-            submittedFirst[0] === canonicalFirst[0])
+        const matchingCandidates = active.filter((angler) =>
+          exactCandidates.has(angler.id),
         );
-      });
+        const candidateNames = matchingCandidates
+          .map((angler) => angler.display_name)
+          .join(" and ");
+        const duplicateTournamentCandidates = matchingCandidates.filter(
+          (angler) => activeTournamentAnglerIds.has(angler.id),
+        );
+        const duplicateTournamentNames = duplicateTournamentCandidates
+          .map((angler) => angler.display_name)
+          .join(" and ");
+        if (duplicateTournamentCandidates.length > 0) {
+          return {
+            participantPosition: (index + 1) as 1 | 2,
+            status: "review_required",
+            reason: `Possible duplicate tournament participation: ${duplicateTournamentNames} is already entered in this tournament.`,
+            suggestedAnglerIds: [...exactCandidates],
+          };
+        }
 
-      if (possibleNameCandidates.length > 0) {
+        if (
+          soleContactCandidate &&
+          !emailAndPhoneConflict &&
+          !materiallyDifferentContact &&
+          soleContactCandidate.normalized_name === fullName
+        ) {
+          return {
+            participantPosition: (index + 1) as 1 | 2,
+            status: "verified",
+            reason: null,
+            suggestedAnglerIds: [soleContactCandidate.id],
+          };
+        }
+
+        const candidateNameDiffers = Boolean(
+          soleContactCandidate &&
+            soleContactCandidate.normalized_name !== fullName,
+        );
+        const reason = emailAndPhoneConflict
+          ? "Submitted email and phone are associated with different existing anglers."
+          : candidateNameDiffers && emailMatches.length > 0
+            ? `Submitted email is already associated with ${candidateNames}.`
+            : candidateNameDiffers && phoneMatches.length > 0
+              ? `Submitted phone is already associated with ${candidateNames}.`
+              : materiallyDifferentContact
+                ? `Submitted contact information differs from ${candidateNames}.`
+                : emailMatches.length > 0
+                  ? `Submitted email is already associated with ${candidateNames}.`
+                  : phoneMatches.length > 0
+                    ? `Submitted phone is already associated with ${candidateNames}.`
+                    : "Submitted identity may correspond to an existing angler.";
         return {
           participantPosition: (index + 1) as 1 | 2,
           status: "review_required",
-          reason:
-            "A possible spelling or nickname difference requires review.",
-          suggestedAnglerIds: possibleNameCandidates.map(
-            (angler) => angler.id,
-          ),
+          reason,
+          suggestedAnglerIds: [...exactCandidates],
         };
       }
 

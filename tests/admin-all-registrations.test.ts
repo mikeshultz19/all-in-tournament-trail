@@ -68,8 +68,29 @@ describe("Admin All Registrations", () => {
     expect(page).toContain("Submitted Participants");
     expect(page).toContain("contact.streetAddress");
     expect(page).toContain("Needs Attention / Review History");
+    expect(page).toContain("review.resolvedAt");
+    expect(page).toContain("dateTime(item.createdAt)");
+    expect(page).toContain("Payment &amp; Pricing");
+    expect(page).toContain('Metric label="Amount Paid"');
+    expect(page).toContain("row.paymentReference");
+    expect(page).toContain("row.squarePaymentId");
     expect(page).toContain('className="mt-4 grid gap-5 lg:grid-cols-2"');
+    expect(page).toContain("RegistrationEditControl");
+    expect(page).toContain('row.status === "active"');
     expect(page).not.toContain("overflow-x-auto");
+  });
+
+  it("retains resolved review history outside the operational roster", () => {
+    const history = readFileSync("lib/admin-registration-history.ts", "utf8");
+    const roster = readFileSync("app/admin/registration-review/page.tsx", "utf8");
+    expect(history).toContain("review_reason");
+    expect(history).toContain("review_note");
+    expect(history).toContain("resolved_at");
+    expect(history).toContain("registration_identity_review_history");
+    expect(history).toContain("resolution_method");
+    expect(history).not.toMatch(/delete\(|\.delete\(|delete from/i);
+    expect(roster).toContain('review.status === "review_required"');
+    expect(roster).not.toContain("Review complete.");
   });
 
   it("keeps Registration & Check-In tournament-specific and orders the sidebar correctly", () => {
@@ -101,6 +122,7 @@ function registration(overrides: Partial<AdminRegistrationHistoryRow>): AdminReg
     boatNumber: null,
     contacts: [],
     membershipSnapshot: [],
+    priceSnapshot: { lineItems: [{ name: "Tournament Entry", priceCents: 6000 }], cardProcessingFeeCents: 180, totalCents: 6180 },
     bigBass: false,
     memberPot: null,
     insurance: false,

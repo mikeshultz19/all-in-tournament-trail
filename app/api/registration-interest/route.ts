@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 
 import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { EmailProviderError, sendResendEmail } from "@/lib/resend-email";
 
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -46,25 +47,16 @@ export async function POST(request: Request) {
     );
   }
 
-  const resendApiKey = process.env.RESEND_API_KEY;
-
-  if (resendApiKey) {
+  if (process.env.RESEND_API_KEY) {
     try {
       const greeting = firstName
         ? `Hi ${firstName},`
         : "Welcome to All In Tournament Trail,";
 
-      const resendResponse = await fetch("https://api.resend.com/emails", {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${resendApiKey}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          from: "All In Tournament Trail <info@allintrail.com>",
-          to: [email],
-          subject: "Welcome to All In Tournament Trail",
-          html: `
+      await sendResendEmail({
+        to: email,
+        subject: "Welcome to All In Tournament Trail",
+        html: `
             <div style="background:#ffffff;padding:32px;font-family:Arial,Helvetica,sans-serif;color:#111111;">
               <div style="max-width:600px;margin:0 auto;">
                 <h1 style="margin:0 0 24px;color:#111111;font-size:26px;">
@@ -116,17 +108,13 @@ export async function POST(request: Request) {
               </div>
             </div>
           `,
-        }),
       });
-
-      if (!resendResponse.ok) {
-        console.error(
-          "Resend confirmation email failed:",
-          await resendResponse.text(),
-        );
-      }
     } catch (emailError) {
-      console.error("Resend confirmation email error:", emailError);
+      console.error("Registration-interest email delivery failed.", {
+        code: emailError instanceof EmailProviderError
+          ? emailError.code
+          : "REGISTRATION_INTEREST_EMAIL_ERROR",
+      });
     }
   } else {
     console.warn(

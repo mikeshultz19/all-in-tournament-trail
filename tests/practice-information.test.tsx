@@ -4,6 +4,7 @@ import { describe, expect, it } from "vitest";
 import FeaturedTournament from "@/components/FeaturedTournament";
 import { getTournamentOperationSteps } from "@/lib/admin-tournament-operations";
 import { toPublicTournament } from "@/lib/tournament-record-adapter";
+import { getTournamentOperationsViewModel } from "@/lib/tournament-view-model";
 import { databaseTournament } from "@/tests/tournament-db-fixture";
 
 describe("Tournament practice information", () => {
@@ -100,12 +101,13 @@ describe("Featured Tournament registration information", () => {
       ...toPublicTournament(databaseTournament),
       registrationStatus: "closed" as const,
     };
+    const operations = getTournamentOperationsViewModel(tournament);
     const html = renderToStaticMarkup(
-      <FeaturedTournament tournament={tournament} />,
+      <FeaturedTournament tournament={tournament} operations={operations} />,
     );
 
     expect(html).not.toContain("Register Now");
-    expect(html).toContain("Registration Closed");
+    expect(html).toContain("Registration is temporarily unavailable.");
     expect(html).not.toContain("Tournament Status:");
     expect(html).not.toContain(
       "Registration is closed for this tournament.",

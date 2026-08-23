@@ -122,9 +122,9 @@ describe("AITT Durable Registration server boundary", () => {
     );
   });
 
-  it("validates membership claims before completion and does not trust browser classifications", () => {
+  it("turns uncertain membership claims into post-payment review without trusting browser classifications", () => {
     expect(service).toContain(
-      "validateRegistrationMembershipClaims",
+      "getRegistrationMembershipReviewIssues",
     );
     expect(membershipValidation).toContain(
       "isMembershipEligibleForTournament",

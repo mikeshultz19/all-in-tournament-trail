@@ -3,7 +3,11 @@ import type { Metadata } from "next";
 import Header from "@/components/Header";
 import RegistrationConfirmation from "@/components/RegistrationConfirmation";
 import { getOnlinePaymentAttempt } from "@/lib/online-payment-attempts";
+import { getTournamentDisplay } from "@/lib/tournament-display";
+import { toPublicTournament } from "@/lib/tournament-record-adapter";
 import { getTournamentBySlug } from "@/lib/tournaments";
+import { getTournamentOperationsViewModel } from "@/lib/tournament-view-model";
+import { getRegistrationConfirmationIdentifiers } from "@/lib/tournament-registrations";
 
 export const metadata: Metadata = { title: "Registration Confirmation | All-In Tournament Trail" };
 
@@ -15,16 +19,29 @@ export default async function RegistrationConfirmationPage({ searchParams }: { s
     try {
       const attempt = await getOnlinePaymentAttempt(attemptId);
       if (attempt.state === "completed" && attempt.registration_id) {
-        const tournament = await getTournamentBySlug(attempt.registration_request.tournamentSlug);
+        const [tournament, identifiers] = await Promise.all([
+          getTournamentBySlug(attempt.registration_request.tournamentSlug),
+          getRegistrationConfirmationIdentifiers(attempt.registration_id),
+        ]);
+        const publicTournament = tournament ? toPublicTournament(tournament) : null;
+        const display = publicTournament ? getTournamentDisplay(publicTournament) : null;
+        const operations = publicTournament
+          ? getTournamentOperationsViewModel(publicTournament)
+          : null;
         confirmation = {
-          confirmationNumber: attempt.registration_id,
+          boatNumber: identifiers.boatNumber,
           tournamentName: tournament?.name ?? attempt.registration_request.tournamentSlug,
           tournamentDate: tournament?.tournament_date ?? "",
-          venue: [tournament?.lake, tournament?.ramp].filter(Boolean).join(" · "),
+          lake: tournament?.lake ?? null,
+          ramp: tournament?.ramp ?? null,
+          launchType: publicTournament?.launchTypeText ?? display?.launchType ?? null,
+          morningRegistration: publicTournament?.morningRegistrationText ?? display?.morningRegistration ?? null,
+          launchTime: operations?.safeLight.time ?? null,
+          officialSunrise: operations?.safeLight.officialSunrise ?? null,
+          scalesClose: publicTournament?.scalesCloseText ?? null,
           anglers: attempt.registration_request.anglers.map((angler) => `${angler.firstName} ${angler.lastName}`),
           selectedOptions: attempt.quote_snapshot.lineItems.map((item) => item.name),
           subtotalCents: attempt.quote_snapshot.subtotalCents,
-          cardProcessingFeeCents: attempt.quote_snapshot.cardProcessingFeeCents,
           totalCents: attempt.amount_cents,
           paymentStatus: "paid" as const,
         };

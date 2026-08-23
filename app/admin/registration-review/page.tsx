@@ -1,19 +1,19 @@
 import Link from "next/link";
-import type { ReactNode } from "react";
 
 import RegistrationReviewResolutionForm from "@/components/admin/RegistrationReviewResolutionForm";
 import RegistrationContactReviewForm from "@/components/admin/RegistrationContactReviewForm";
 import HistoricalMembershipReviewForm from "@/components/admin/HistoricalMembershipReviewForm";
 import RegistrationCheckInControl from "@/components/admin/RegistrationCheckInControl";
 import PrepareMembershipReminder from "@/components/admin/PrepareMembershipReminder";
-import { AddWalkUpControl, RegistrationEditControl } from "@/components/admin/RegistrationOperationsControls";
+import { AddWalkUpControl } from "@/components/admin/RegistrationOperationsControls";
+import RegistrationRosterToolbar from "@/components/admin/RegistrationRosterToolbar";
 import AdminPanel from "@/components/admin/AdminPanel";
 import AdminStatusBadge from "@/components/admin/AdminStatusBadge";
 import { adminButtonStyles } from "@/components/admin/admin-button-styles";
-import { reopenRegistrationReviewAction } from "@/app/admin/registration-review/actions";
 import { requireAdminUser } from "@/lib/admin-auth";
 import { listRegistrationReviewItems, listReviewAnglerOptions } from "@/lib/registration-identity-review";
 import { getTournamentRegistrationRoster, summarizeTournamentRegistrationRoster, type TournamentRegistrationRosterRow } from "@/lib/tournament-registration-roster";
+import { getRegistrationReviewPresentation } from "@/lib/registration-review-presentation";
 import { getActiveSeasonSchedule, getNextUpcomingTournament } from "@/lib/tournaments";
 import { getPreparationUndoProtection } from "@/lib/tournament-preparation-protection";
 
@@ -31,7 +31,7 @@ export default async function RegistrationReviewPage({ searchParams }: { searchP
     ?? tournaments[0]
     ?? null;
   const [allRows, reviewItems, anglers, undoProtection] = selectedTournament
-    ? await Promise.all([getTournamentRegistrationRoster(selectedTournament.id), listRegistrationReviewItems(selectedTournament.id), listReviewAnglerOptions(), getPreparationUndoProtection(selectedTournament.id)])
+    ? await Promise.all([getTournamentRegistrationRoster(selectedTournament.id), listRegistrationReviewItems(selectedTournament.id), listReviewAnglerOptions(selectedTournament.id), getPreparationUndoProtection(selectedTournament.id)])
     : [[], [], [], { blockers: [] }];
   const reviewsByRegistration = new Map<string, typeof reviewItems>();
   for (const item of reviewItems) reviewsByRegistration.set(item.registrationId, [...(reviewsByRegistration.get(item.registrationId) ?? []), item]);
@@ -52,7 +52,6 @@ export default async function RegistrationReviewPage({ searchParams }: { searchP
   };
   const tournamentValue = selectedTournament?.id ?? "";
   const queryBase = tournamentValue ? `tournament=${encodeURIComponent(tournamentValue)}` : "";
-  const searchQuery = search ? `&search=${encodeURIComponent(search)}` : "";
 
   return <>
     <header>
@@ -85,7 +84,7 @@ export default async function RegistrationReviewPage({ searchParams }: { searchP
         <div className="flex flex-wrap items-end justify-between gap-5">
           <div>
             <h2 className="text-sm font-bold uppercase text-white">{selectedTournament.name}</h2>
-            <dl className="mt-3 flex flex-wrap gap-x-8 gap-y-3 text-sm"><Metric label="Registrations" value={summary.total} /><Metric label="Payment Recorded" value={summary.paid} /><Metric label="Needs Review" value={summary.needReview} /><Metric label="Walk-Ups" value={summary.walkUps} /></dl>
+            <dl className="mt-3 flex flex-wrap gap-x-8 gap-y-3 text-sm"><Metric label="Registrations" value={summary.total} /><Metric label="Needs Review" value={summary.needReview} /><Metric label="Walk-Ups" value={summary.walkUps} /></dl>
           </div>
           <div>
             <p className="mb-2 text-[10px] font-black uppercase tracking-[0.14em] text-neutral-500">Export / Share</p>
@@ -115,80 +114,66 @@ export default async function RegistrationReviewPage({ searchParams }: { searchP
         />
       </div>
 
-      <nav aria-label="Registration filters and search" className="mt-5 flex flex-wrap items-center gap-2">
-        <div className="flex flex-wrap gap-2">
-          <FilterLink href={`/admin/registration-review?${queryBase}&filter=all${searchQuery}`} active={filter === "all"}>All Registrations</FilterLink>
-          <FilterLink href={`/admin/registration-review?${queryBase}&filter=needs_review${searchQuery}`} active={filter === "needs_review"}>Needs Review</FilterLink>
-          <FilterLink href={`/admin/registration-review?${queryBase}&filter=walk_ups${searchQuery}`} active={filter === "walk_ups"}>Walk-Ups</FilterLink>
-        </div>
-        <form className="flex min-w-0 flex-1 gap-2 sm:max-w-sm">
-          <input type="hidden" name="tournament" value={tournamentValue} />
-          <input type="hidden" name="filter" value={filter} />
-          <label htmlFor="registration-search" className="sr-only">Search name or boat number</label>
-          <input id="registration-search" name="search" type="search" defaultValue={search} placeholder="Search name or boat #" className="min-h-9 min-w-0 flex-1 border border-white/15 bg-[#111] px-3 text-sm text-white outline-none placeholder:text-neutral-600 focus:border-[#D4A017]" />
-          <button className={adminButtonStyles("secondary", "min-h-9 px-3")}>Search</button>
-        </form>
-      </nav>
-
-      <div className="mt-4 grid gap-3 md:hidden" data-testid="mobile-registration-roster">
+      <section id="registration-entries" className="mt-5 overflow-hidden rounded-md border border-white/10 bg-[#0f0f0f]">
+       <RegistrationRosterToolbar key={`${filter}:${search}`} tournamentId={tournamentValue} filter={filter} search={search} />
+      <div className="grid gap-3 p-3 md:hidden" data-testid="mobile-registration-roster">
         {rows.map((row) => <MobileRosterCard key={row.id} row={row} tournamentId={selectedTournament.id} reviews={reviewsByRegistration.get(row.id) ?? []} anglers={anglers} />)}
         {!rows.length ? <p className="border border-white/10 bg-[#111] px-4 py-10 text-center text-sm text-neutral-500">{emptyRosterMessage(filter)}</p> : null}
       </div>
 
-      <div className="mt-4 hidden overflow-x-auto rounded-md border border-white/10 bg-[#0f0f0f] md:block">
-        <table className="w-full min-w-[1450px] text-left text-xs">
+      <div className="hidden overflow-x-auto md:block">
+        <table className="w-full min-w-[1080px] text-left text-xs">
           <thead className="border-b border-white/15 bg-black/40 font-black uppercase tracking-[0.06em] text-neutral-400"><tr>
-            {['Team / Solo','Boat #','Anglers & Membership','Benefits','Entry Options','Financial','Payment','Registration','Review / Check-In'].map((label) => <th key={label} className="px-3 py-3 align-top">{label}</th>)}
+             {['Boat #','Type','Participants','Member Status','Member Pots','Insurance','Big Bass','Registered','Check-In / Review'].map((label) => <th key={label} className="px-3 py-3 align-top">{label}</th>)}
           </tr></thead>
           <tbody className="divide-y divide-white/10">
             {rows.map((row) => <RosterRow key={row.id} row={row} tournamentId={selectedTournament.id} reviews={reviewsByRegistration.get(row.id) ?? []} anglers={anglers} />)}
-            {!rows.length ? <tr><td colSpan={9} className="px-4 py-10 text-center text-neutral-500">{emptyRosterMessage(filter)}</td></tr> : null}
+             {!rows.length ? <tr><td colSpan={9} className="px-4 py-10 text-center text-neutral-500">{emptyRosterMessage(filter)}</td></tr> : null}
           </tbody>
         </table>
       </div>
+      </section>
     </> : <p className="mt-6 border border-white/10 bg-[#111] p-5 text-neutral-400">Select a tournament to load its registration roster and export actions.</p>}
   </>;
 }
 
 function RosterRow({ row, tournamentId, reviews, anglers }: { row: TournamentRegistrationRosterRow; tournamentId: string; reviews: Awaited<ReturnType<typeof listRegistrationReviewItems>>; anglers: Awaited<ReturnType<typeof listReviewAnglerOptions>> }) {
   return <tr className="align-top transition-colors hover:bg-white/[0.025]">
-    <td className="px-3 py-4"><AdminStatusBadge>{row.registrationType}</AdminStatusBadge><p className="mt-2 font-mono text-[10px] text-neutral-500">{row.registrationKey}</p></td>
-    <td className="px-3 py-4 text-lg font-black text-white">{row.boatNumber ?? "—"}</td>
-    <td className="px-3 py-4 text-neutral-300"><AnglerLine label="A1" name={row.angler1.displayName} membership={row.angler1.membership} />{row.angler2 ? <AnglerLine label="A2" name={row.angler2.displayName} membership={row.angler2.membership} /> : null}</td>
-    <td className="px-3 py-4"><AdminStatusBadge tone={row.memberBenefitsEligible ? "positive" : "neutral"}>{row.memberBenefitsEligible ? "Eligible" : "Not Eligible"}</AdminStatusBadge></td>
-    <td className="px-3 py-4 leading-5 text-neutral-300"><p>{row.entryType}</p><p>Big Bass: {yesNo(row.bigBass)}</p><p>Member Pot: {row.memberPot ? title(row.memberPot) : "None"}</p><p>Insurance: {yesNo(row.insurance)}</p></td>
-    <td className="px-3 py-4 text-neutral-300"><MoneyLine label="Entry" value={row.entryAmountCents} /><MoneyLine label="Membership" value={row.membershipAmountCents} /><MoneyLine label="Big Bass" value={row.bigBassAmountCents} /><MoneyLine label={row.memberPot ? `${title(row.memberPot)} Pot` : "Member Pot"} value={row.memberPotAmountCents} /><MoneyLine label="Insurance" value={row.insuranceAmountCents} /><MoneyLine label="Card Fee" value={row.processingFeeCents} /><p className="mt-1 border-t border-white/10 pt-1 font-black text-white">Total: {money(row.totalPaidCents)}</p></td>
-    <td className="px-3 py-4"><AdminStatusBadge tone={row.paymentStatus === "Paid" ? "positive" : "attention"}>{row.paymentStatus}</AdminStatusBadge></td>
-    <td className="px-3 py-4 text-neutral-300"><p>{row.registrationPeriod}</p><p className="mt-1 whitespace-nowrap text-[10px] text-neutral-500">{dateTime(row.registeredAt)}</p></td>
-    <td className="max-w-sm px-3 py-4"><RosterActions row={row} tournamentId={tournamentId} reviews={reviews} anglers={anglers} /></td>
+    <td className="px-3 py-3 text-lg font-black text-[#D4A017]">#{row.boatNumber ?? "—"}</td>
+    <td className="whitespace-nowrap px-3 py-3 font-bold text-neutral-300">{title(row.registrationType)}</td>
+    <td className="px-3 py-3 font-bold text-white">{row.angler1.displayName}{row.angler2 ? ` / ${row.angler2.displayName}` : ""}</td>
+    <td className="px-3 py-3 text-neutral-300"><p>{row.angler1.memberStatus}</p>{row.angler2 ? <p>{row.angler2.memberStatus}</p> : null}</td>
+    <td className="px-3 py-3 font-bold text-white">{row.memberPot ? title(row.memberPot) : "None"}</td>
+    <td className="px-3 py-3 text-neutral-300">{yesNo(row.insurance)}</td>
+    <td className="px-3 py-3 text-neutral-300">{yesNo(row.bigBass)}</td>
+    <td className="whitespace-nowrap px-3 py-3 text-neutral-300">{compactDateTime(row.registeredAt)}</td>
+    <td className="max-w-sm px-3 py-3"><RosterActions row={row} tournamentId={tournamentId} reviews={reviews} anglers={anglers} /></td>
   </tr>;
 }
 
 function MobileRosterCard({ row, tournamentId, reviews, anglers }: { row: TournamentRegistrationRosterRow; tournamentId: string; reviews: Awaited<ReturnType<typeof listRegistrationReviewItems>>; anglers: Awaited<ReturnType<typeof listReviewAnglerOptions>> }) {
-  return <article className="border border-white/10 bg-[#111] p-4" data-testid="mobile-registration-card"><div className="flex items-start justify-between gap-4"><div className="min-w-0"><p className="text-base font-black text-white">{row.angler1.displayName}</p>{row.angler2 ? <p className="mt-1 text-sm font-bold text-neutral-300">{row.angler2.displayName}</p> : null}<p className="mt-2 text-[10px] uppercase text-neutral-500">{row.registrationPeriod} · {row.paymentStatus}</p></div><div className="shrink-0 text-right"><p className="text-[10px] font-black uppercase text-neutral-500">Boat #</p><p className="mt-1 text-2xl font-black text-[#D4A017]">{row.boatNumber ?? "—"}</p></div></div><dl className="mt-4 grid grid-cols-2 gap-3 border-y border-white/10 py-3 text-xs"><div><dt className="uppercase text-neutral-500">Membership</dt><dd className="mt-1 font-bold text-white">{row.membershipStatus}</dd></div><div><dt className="uppercase text-neutral-500">Options</dt><dd className="mt-1 font-bold text-white">{row.sidePots.length ? row.sidePots.join(", ") : "None"}</dd></div></dl><div className="mt-4"><RosterActions row={row} tournamentId={tournamentId} reviews={reviews} anglers={anglers} /></div></article>;
+  return <article className="border border-white/10 bg-[#111] p-4" data-testid="mobile-registration-card"><div className="flex items-start justify-between gap-4"><div className="min-w-0"><p className="text-base font-black text-white">{row.angler1.displayName}</p>{row.angler2 ? <p className="mt-1 text-sm font-bold text-neutral-300">{row.angler2.displayName}</p> : null}<p className="mt-2 text-[10px] text-neutral-500">Registered {compactDateTime(row.registeredAt)}</p></div><div className="shrink-0 text-right"><p className="text-[10px] font-black uppercase text-neutral-500">Boat #</p><p className="mt-1 text-2xl font-black text-[#D4A017]">{row.boatNumber ?? "—"}</p></div></div><dl className="mt-4 grid grid-cols-2 gap-3 border-y border-white/10 py-3 text-xs"><div><dt className="uppercase text-neutral-500">Type</dt><dd className="mt-1 font-bold text-white">{title(row.registrationType)}</dd></div><div><dt className="uppercase text-neutral-500">Member Status</dt><dd className="mt-1 font-bold text-white">{row.membershipStatus}</dd></div><div><dt className="uppercase text-neutral-500">Member Pots</dt><dd className="mt-1 font-bold text-white">{row.memberPot ? title(row.memberPot) : "None"}</dd></div><div><dt className="uppercase text-neutral-500">Insurance</dt><dd className="mt-1 font-bold text-white">{yesNo(row.insurance)}</dd></div><div><dt className="uppercase text-neutral-500">Big Bass</dt><dd className="mt-1 font-bold text-white">{yesNo(row.bigBass)}</dd></div></dl><div className="mt-4"><RosterActions row={row} tournamentId={tournamentId} reviews={reviews} anglers={anglers} /></div></article>;
 }
 
 function RosterActions({ row, tournamentId, reviews, anglers }: { row: TournamentRegistrationRosterRow; tournamentId: string; reviews: Awaited<ReturnType<typeof listRegistrationReviewItems>>; anglers: Awaited<ReturnType<typeof listReviewAnglerOptions>> }) {
-  const needsReview = row.needsReview || reviews.some((review) => review.status === "review_required");
+  const pendingReviews = reviews.filter((review) => review.status === "review_required");
+  const needsReview = row.needsReview || pendingReviews.length > 0;
   return <>
-    <div className="flex flex-wrap items-start gap-2"><AdminStatusBadge tone={needsReview ? "attention" : "positive"}>{needsReview ? "Needs Review" : row.checkedInAt ? "Locked / Confirmed" : "Ready"}</AdminStatusBadge><RegistrationCheckInControl tournamentId={tournamentId} registrationId={row.id} checkedInAt={row.checkedInAt} /></div>
-    <RegistrationEditControl tournamentId={tournamentId} registrationId={row.id} boatNumber={row.boatNumber} bigBass={row.bigBass} memberPot={row.memberPot} insurance={row.insurance} checkedIn={Boolean(row.checkedInAt)} walkUp={row.registrationSource === "walk_up"} contactSnapshot={row.participantContactSnapshot} />
-    {reviews.map((review) => <div key={review.id} className="mt-3 border-t border-white/10 pt-3">
-      <p className="text-xs text-neutral-300"><span className="font-bold text-white">{review.participantName}:</span> {review.reason}</p>
-      {review.status === "review_required" ? review.reviewKind === "contact" && review.existingContact && review.submittedContact
-        ? <RegistrationContactReviewForm reviewId={review.id} existing={review.existingContact} submitted={review.submittedContact} differingFields={review.differingFields} />
+    <div className="flex flex-wrap items-start gap-2">{needsReview ? <AdminStatusBadge tone="attention">Needs Review</AdminStatusBadge> : null}<RegistrationCheckInControl tournamentId={tournamentId} registrationId={row.id} checkedInAt={row.checkedInAt} /></div>
+    {pendingReviews.map((review) => {
+      const presentation = getRegistrationReviewPresentation(review);
+      return <details key={review.id} className="mt-3 border-t border-white/10 pt-3">
+      <summary className="cursor-pointer text-xs font-bold text-amber-200">{review.participantName} — {presentation.heading}</summary>
+      {review.reviewKind === "contact" ? null : <div className="mt-2 text-xs text-neutral-300"><p><span className="font-bold text-white">Issue:</span> {presentation.issue}</p>{presentation.identityFollowUp ? <p className="mt-1 text-neutral-400">{presentation.identityFollowUp}</p> : null}</div>}
+      {review.reviewKind === "contact" && review.existingContact && review.submittedContact
+        ? <RegistrationContactReviewForm reviewId={review.id} participantName={review.participantName} existing={review.existingContact} submitted={review.submittedContact} differingFields={review.differingFields} />
         : review.reviewKind === "membership" ? <HistoricalMembershipReviewForm reviewId={review.id} />
-        : <RegistrationReviewResolutionForm reviewId={review.id} anglers={anglers} suggestedAnglerIds={review.suggestedAnglers.map((angler) => angler.id)} />
-        : review.reviewKind === "identity" ? <form action={reopenRegistrationReviewAction} className="mt-2 flex gap-2"><input type="hidden" name="reviewId" value={review.id} /><input name="reviewNote" aria-label={`Reason for reopening ${review.participantName}`} placeholder="Reason for reopening" className="min-h-9 min-w-0 flex-1 border border-white/15 bg-[#0B0B0B] px-2 text-xs text-white" /><button className={adminButtonStyles("destructive", "min-h-9 px-2 text-[10px]")}>Reopen Review</button></form>
-        : <p className="mt-2 text-xs text-emerald-300">Review complete.</p>}
-    </div>)}
+        : <RegistrationReviewResolutionForm reviewId={review.id} anglers={anglers} suggestedAnglerIds={review.suggestedAnglers.map((angler) => angler.id)} submission={{ name: review.participantName, email: review.email, phone: review.phone, membership: review.submittedMembership }} />}
+    </details>})}
   </>;
 }
 
-function AnglerLine({ label, name, membership }: { label: string; name: string; membership: string }) { return <div className="mb-2 last:mb-0"><p className="font-bold text-white">{label}: {name}</p><p className="mt-0.5 text-[10px] text-neutral-500">{membership}</p></div>; }
-function MoneyLine({ label, value }: { label: string; value: number | null }) { return <p className="flex justify-between gap-3"><span>{label}</span><span className="tabular-nums">{money(value)}</span></p>; }
 function Metric({ label, value }: { label: string; value: number }) { return <div><dt className="text-[10px] uppercase text-neutral-500">{label}</dt><dd className="mt-1 font-black tabular-nums text-white">{value}</dd></div>; }
-function FilterLink({ href, active, children }: { href: string; active: boolean; children: ReactNode }) { return <Link href={href} aria-current={active ? "page" : undefined} className={adminButtonStyles(active ? "primary" : "secondary", "min-h-9 px-3")}>{children}</Link>; }
 function registrationMatchesSearch(row: TournamentRegistrationRosterRow, search: string) {
   const normalizedSearch = search.toLocaleLowerCase("en-US");
   const teamName = `${row.angler1.displayName} / ${row.angler2?.displayName ?? ""}`.toLocaleLowerCase("en-US");
@@ -199,8 +184,7 @@ function registrationMatchesSearch(row: TournamentRegistrationRosterRow, search:
   return nameMatches || boatMatches;
 }
 function emptyRosterMessage(filter: RosterFilter) { return filter === "needs_review" ? "No registrations need review." : filter === "walk_ups" ? "No active walk-ups are available for this tournament." : "No registrations are available for this tournament."; }
-function money(value: number | null) { return value === null ? "Not stored" : new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(value / 100); }
-function dateTime(value: string) { return new Intl.DateTimeFormat("en-US", { timeZone: "America/Chicago", dateStyle: "short", timeStyle: "short" }).format(new Date(value)); }
+function compactDateTime(value: string) { return new Intl.DateTimeFormat("en-US", { timeZone: "America/Chicago", month: "short", day: "numeric", hour: "numeric", minute: "2-digit" }).format(new Date(value)); }
 function dateOnly(value: string) { return new Intl.DateTimeFormat("en-US", { timeZone: "America/Chicago", dateStyle: "medium" }).format(new Date(`${value.slice(0, 10)}T12:00:00-05:00`)); }
 function title(value: string) { return value[0].toUpperCase() + value.slice(1); }
 function yesNo(value: boolean) { return value ? "Yes" : "No"; }

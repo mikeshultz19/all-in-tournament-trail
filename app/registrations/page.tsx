@@ -51,8 +51,6 @@ export default async function EarlyRegistrationsPage() {
       <section className="mx-auto max-w-7xl px-5 py-10 sm:px-6 sm:py-12">
         <TournamentEntrySummary
           summary={summary}
-          registrationDeadline={operations.earlyRegistrationDeadline}
-          registrationDeadlineIso={operations.earlyRegistrationDeadlineIso}
         />
         <EarlyEntriesTable
           entries={entries}

@@ -1,9 +1,11 @@
 import "server-only";
 
 import { completeDurableRegistration } from "@/lib/durable-registration";
+import { deliverRegistrationConfirmationEmails } from "@/lib/registration-confirmation-email";
 import type { OnlineRegistrationRequest, RegistrationPriceSnapshot } from "@/lib/online-registration";
 import { createSquarePayment, retrieveSquarePayment, SquarePaymentError, type SquarePayment } from "@/lib/square-payments";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { getTournamentById } from "@/lib/tournaments";
 
 export type OnlinePaymentAttempt = {
   id: string;
@@ -18,6 +20,8 @@ export type OnlinePaymentAttempt = {
   square_status: string | null;
   registration_id: string | null;
 };
+
+export class RegistrationUnavailableError extends Error {}
 
 export async function createOnlinePaymentAttempt(input: { tournamentId: string; request: OnlineRegistrationRequest; quote: RegistrationPriceSnapshot }) {
   const { data, error } = await createSupabaseServerClient().rpc("create_online_registration_payment_attempt", {
@@ -58,6 +62,15 @@ async function createRetryAttempt(attempt: OnlinePaymentAttempt) {
   return data.id as string;
 }
 
+async function deliverCompletedRegistrationEmail(registrationId: string) {
+  try {
+    await deliverRegistrationConfirmationEmails(registrationId);
+  } catch {
+    // Payment and registration remain authoritative; the durable outbox can be retried.
+    console.error("Registration confirmation email processing is awaiting retry.", { registrationId });
+  }
+}
+
 function assertPaymentIdentity(attempt: OnlinePaymentAttempt, payment: SquarePayment) {
   if (payment.reference_id !== attempt.id
     || payment.amount_money?.amount !== attempt.amount_cents || payment.amount_money.currency !== "USD") {
@@ -67,7 +80,10 @@ function assertPaymentIdentity(attempt: OnlinePaymentAttempt, payment: SquarePay
 
 export async function completeAttemptFromVerifiedSquarePayment(attemptId: string, payment: SquarePayment) {
   const attempt = await loadAttempt(attemptId);
-  if (attempt.state === "completed" && attempt.registration_id) return { status: "completed" as const, registrationId: attempt.registration_id };
+  if (attempt.state === "completed" && attempt.registration_id) {
+    await deliverCompletedRegistrationEmail(attempt.registration_id);
+    return { status: "completed" as const, registrationId: attempt.registration_id };
+  }
   assertPaymentIdentity(attempt, payment);
   if (payment.status !== "COMPLETED") throw new Error("Square payment is not complete.");
   await updateAttempt(attempt.id, { state: "processing", square_payment_id: payment.id, square_status: payment.status, failure_code: null, failure_message: null });
@@ -83,6 +99,7 @@ export async function completeAttemptFromVerifiedSquarePayment(attemptId: string
     });
     if (registrationPaymentError) throw new Error("Verified payment could not be attached to the registration.", { cause: registrationPaymentError });
     await updateAttempt(attempt.id, { state: "completed", registration_id: registration.id, processed_at: new Date().toISOString() });
+    await deliverCompletedRegistrationEmail(registration.id);
     return { status: "completed" as const, registrationId: registration.id };
   } catch (error) {
     await updateAttempt(attempt.id, { state: "reconciliation_required", failure_code: "REGISTRATION_PERSISTENCE_FAILED", failure_message: error instanceof Error ? error.message : "Registration persistence failed." });
@@ -105,7 +122,14 @@ export async function recordTerminalSquarePaymentFailure(attemptId: string, paym
 
 export async function processOnlineCardPayment(attemptId: string, sourceId: string) {
   const existing = await loadAttempt(attemptId);
-  if (existing.state === "completed" && existing.registration_id) return { status: "completed" as const, attemptId };
+  if (existing.state === "completed" && existing.registration_id) {
+    await deliverCompletedRegistrationEmail(existing.registration_id);
+    return { status: "completed" as const, attemptId };
+  }
+  const tournament = await getTournamentById(existing.tournament_id);
+  if (!tournament || tournament.status !== "Registration Open") {
+    throw new RegistrationUnavailableError("Registration is temporarily unavailable. No charge was attempted.");
+  }
   const attempt = await claimAttempt(attemptId);
   try {
     const payment = await createSquarePayment({ sourceId, idempotencyKey: attempt.idempotency_key, attemptId: attempt.id, amountCents: attempt.amount_cents });
@@ -146,7 +170,10 @@ export async function processOnlineCardPayment(attemptId: string, sourceId: stri
 
 export async function reconcileOnlinePaymentAttempt(attemptId: string) {
   const attempt = await loadAttempt(attemptId);
-  if (attempt.state === "completed") return { status: "completed" as const, registrationId: attempt.registration_id };
+  if (attempt.state === "completed") {
+    if (attempt.registration_id) await deliverCompletedRegistrationEmail(attempt.registration_id);
+    return { status: "completed" as const, registrationId: attempt.registration_id };
+  }
   if (!attempt.square_payment_id) return { status: attempt.state };
   const payment = await retrieveSquarePayment(attempt.square_payment_id);
   if (payment.status !== "COMPLETED") return { status: attempt.state };

@@ -9,6 +9,8 @@ const contactReview = readFileSync("components/admin/RegistrationContactReviewFo
 const historicalMembershipReview = readFileSync("components/admin/HistoricalMembershipReviewForm.tsx", "utf8");
 
 describe("registration contact snapshots and member change review", () => {
+  const normalizedContactReview = contactReview.replace(/\s+/g, " ");
+
   it("stores a complete immutable-style snapshot for every online and walk-up participant", () => {
     for (const field of ["firstName", "lastName", "streetAddress", "city", "state", "zipCode", "email", "phone", "membership"]) {
       expect(sync).toContain(`'${field}'`);
@@ -26,8 +28,9 @@ describe("registration contact snapshots and member change review", () => {
   });
 
   it("supports approve and keep while preserving the tournament snapshot", () => {
-    expect(contactReview).toContain("Approve Update");
-    expect(contactReview).toContain("Keep Existing");
+    expect(normalizedContactReview).toContain("SAME PERSON — UPDATE INFO");
+    expect(normalizedContactReview).toContain("SAME PERSON — KEEP EXISTING INFO");
+    expect(normalizedContactReview).toContain("DIFFERENT PERSON — APPROVE NEW MEMBER");
     expect(actions).toContain("resolveRegistrationContactReview");
     expect(sync).toContain("if p_approve_update then");
     expect(sync).toContain("contact_update_approved");
@@ -37,12 +40,31 @@ describe("registration contact snapshots and member change review", () => {
     expect(page).toContain("RegistrationContactReviewForm");
   });
 
+  it("keeps contact review compact while preserving expandable old and submitted values", () => {
+    expect(normalizedContactReview).toContain("Contact information mismatch");
+    expect(normalizedContactReview).toContain("Differences:");
+    expect(normalizedContactReview).toContain("View differences");
+    expect(contactReview).toContain("<details");
+    expect(contactReview).not.toContain("<details open");
+    expect(normalizedContactReview).toContain('ContactBlock title="Existing Member"');
+    expect(normalizedContactReview).toContain('ContactBlock title="Registration Submission"');
+    expect(contactReview).toContain("Optional review note");
+    expect(normalizedContactReview).toContain("SAME PERSON — UPDATE INFO");
+    expect(normalizedContactReview).toContain("SAME PERSON — KEEP EXISTING INFO");
+    expect(normalizedContactReview).toContain("DIFFERENT PERSON — APPROVE NEW MEMBER");
+    expect(actions).toContain('decision !== "different"');
+    expect(actions).toContain("resolveRegistrationIdentityReview({");
+    expect(page).toContain("participantName={review.participantName}");
+  });
+
   it("keeps historical unknown membership state for manual review", () => {
     expect(sync).toContain("if v_review.submitted_membership is null then");
     expect(sync).toContain("Historical membership selection is unknown");
     expect(sync).not.toMatch(/coalesce\(new\.submitted_membership[^\n]*'non-member'/);
     expect(page).toContain("HistoricalMembershipReviewForm");
-    expect(historicalMembershipReview).toContain("Historical membership selection is unknown");
+    expect(historicalMembershipReview).toContain("Membership status needs review");
+    expect(historicalMembershipReview).toContain("Confirm Member");
+    expect(historicalMembershipReview).toContain("Confirm Non-Member");
   });
 
   it("is repeatable and deduplicates memberships", () => {

@@ -2,16 +2,28 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { databaseTournament } from "@/tests/tournament-db-fixture";
 
-const { rpc, from, validateMembershipClaims } = vi.hoisted(() => ({
+const { rpc, from, membershipReviewIssues } = vi.hoisted(() => ({
   rpc: vi.fn(),
-  from: vi.fn(() => ({
-    select: vi.fn(() => ({
-      eq: vi.fn(() => ({
-        is: vi.fn(async () => ({ data: [], error: null })),
+  from: vi.fn((table: string) => {
+    if (table === "tournament_registrations") {
+      return {
+        select: vi.fn(() => ({
+          eq: vi.fn(() => ({
+            eq: vi.fn(async () => ({ data: [], error: null })),
+          })),
+        })),
+      };
+    }
+
+    return {
+      select: vi.fn(() => ({
+        eq: vi.fn(() => ({
+          is: vi.fn(async () => ({ data: [], error: null })),
+        })),
       })),
-    })),
-  })),
-  validateMembershipClaims: vi.fn(async () => [] as string[]),
+    };
+  }),
+  membershipReviewIssues: vi.fn(async () => []),
 }));
 
 vi.mock("@/lib/supabase/server", () => ({
@@ -26,7 +38,7 @@ vi.mock("@/lib/tournaments", () => ({
 }));
 
 vi.mock("@/lib/registration-membership-validation", () => ({
-  validateRegistrationMembershipClaims: validateMembershipClaims,
+  getRegistrationMembershipReviewIssues: membershipReviewIssues,
 }));
 
 vi.mock("@/config/launch-mode", () => ({
@@ -77,7 +89,7 @@ describe("completeDurableRegistration", () => {
   beforeEach(() => {
     rpc.mockReset();
     from.mockClear();
-    validateMembershipClaims.mockClear();
+    membershipReviewIssues.mockClear();
   });
 
   it("rejects an unverified or mismatched payment before writing", async () => {
@@ -108,7 +120,13 @@ describe("completeDurableRegistration", () => {
     expect(registration.id).toBe(
       "33333333-3333-4333-8333-333333333333",
     );
-    expect(validateMembershipClaims).toHaveBeenCalledOnce();
+    expect(membershipReviewIssues).toHaveBeenCalledOnce();
+    expect(membershipReviewIssues).toHaveBeenCalledWith(
+      request.anglers,
+      expect.any(Object),
+      false,
+      new Set(),
+    );
     expect(rpc).toHaveBeenCalledOnce();
     expect(rpc).toHaveBeenCalledWith(
       "complete_durable_registration",

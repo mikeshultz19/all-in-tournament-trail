@@ -10,6 +10,7 @@ const quote = readFileSync("app/api/registrations/quote/route.ts", "utf8");
 const migration = readFileSync("supabase/migrations/202608200003_add_online_square_payment_attempts.sql", "utf8");
 const roster = readFileSync("lib/tournament-registration-roster.ts", "utf8");
 const walkup = readFileSync("supabase/migrations/202608200002_add_admin_walkup_registration.sql", "utf8");
+const boatNumbers = readFileSync("supabase/migrations/202608220001_assign_sequential_boat_numbers.sql", "utf8");
 
 describe("verified Square registration payments", () => {
   it("creates a private attempt from the authoritative quote without creating a registration", () => {
@@ -26,6 +27,18 @@ describe("verified Square registration payments", () => {
     expect(attempts).toContain("completeDurableRegistration(attempt.registration_request");
     expect(attempts).toContain('rpc("mark_online_registration_payment_completed"');
     expect(migration).toContain("set online_payment_state = 'completed'");
+    expect(boatNumbers).toContain("create or replace function public.mark_online_registration_payment_completed");
+    expect(boatNumbers).toContain("set boat_number = v_next_boat_number");
+  });
+
+  it("assigns tournament-specific boat numbers only at verified completion", () => {
+    expect(boatNumbers).toContain("'tournament-boat-number:' || v_registration.tournament_id::text");
+    expect(boatNumbers).toContain("coalesce(max(boat_number), 0) + 1");
+    expect(boatNumbers).toContain("where tournament_id = v_registration.tournament_id");
+    expect(boatNumbers).toContain("if v_registration.boat_number is null then");
+    expect(boatNumbers).toContain("v_next_boat_number := v_registration.boat_number");
+    expect(boatNumbers.match(/pg_advisory_xact_lock/g)).toHaveLength(2);
+    expect(migration.slice(0, migration.indexOf("mark_online_registration_payment_completed"))).not.toContain("boat_number");
   });
 
   it("returns a retry attempt after a decline and never calls durable registration from the failure branch", () => {
@@ -33,6 +46,7 @@ describe("verified Square registration payments", () => {
     expect(attempts).toContain('state: "failed"');
     expect(attempts).toContain("retryAttemptId: await createRetryAttempt(attempt)");
     expect(attempts).toContain("Payment was not completed. Try another card or payment method.");
+    expect(attempts.slice(attempts.indexOf("recordTerminalSquarePaymentFailure"), attempts.indexOf("processOnlineCardPayment"))).not.toContain("mark_online_registration_payment_completed");
   });
 
   it("does not invite a retry when an error response still contains a completed or nonterminal payment", () => {
@@ -65,6 +79,7 @@ describe("verified Square registration payments", () => {
   it("does not persist abandoned attempts as active registrations", () => {
     expect(migration).not.toMatch(/online_registration_payment_attempts[\s\S]*references public\.tournament_registrations\(id\) on delete cascade/);
     expect(attempts).not.toMatch(/createOnlinePaymentAttempt[\s\S]{0,500}completeDurableRegistration/);
+    expect(migration.slice(0, migration.indexOf("claim_online_registration_payment_attempt"))).not.toContain("boat_number");
   });
 
   it("requires verified Square completion for online Paid while preserving manual walk-ups", () => {

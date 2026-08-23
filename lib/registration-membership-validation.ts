@@ -2,6 +2,10 @@ import "server-only";
 
 import { isMembershipEligibleForTournament } from "@/lib/membership-eligibility";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
+import {
+  preserveUnresolvedMembershipReviews,
+  type RegistrationMembershipReviewIssue,
+} from "@/lib/registration-membership-review";
 import type { OnlineRegistrationAngler } from "@/lib/online-registration";
 import type { Tournament } from "@/types/tournament";
 import type { Membership } from "@/types/aoy";
@@ -100,4 +104,31 @@ export async function validateRegistrationMembershipClaims(
   }
 
   return errors;
+}
+
+export async function getRegistrationMembershipReviewIssues(
+  anglers: readonly OnlineRegistrationAngler[],
+  tournament: Tournament,
+  hasMemberOnlySelection = false,
+  unresolvedIdentityPositions: ReadonlySet<number> = new Set(),
+): Promise<RegistrationMembershipReviewIssue[]> {
+  const blockingMessages = await validateRegistrationMembershipClaims(
+    anglers,
+    tournament,
+  );
+  const issues = blockingMessages.map((reason) => {
+    const match = /^Angler (\d)/.exec(reason);
+    const participantPosition = (Number(match?.[1] ?? 1) === 2 ? 2 : 1) as 1 | 2;
+    const duplicate = reason.includes("already has a membership");
+    return {
+      participantPosition,
+      reason: `${duplicate ? "Possible Duplicate Membership Purchase" : "Membership Needs Review"}: ${reason}${hasMemberOnlySelection ? " Member-only selection requires eligibility review." : ""}`,
+    };
+  });
+  return preserveUnresolvedMembershipReviews(
+    anglers,
+    issues,
+    unresolvedIdentityPositions,
+    hasMemberOnlySelection,
+  );
 }

@@ -6,7 +6,7 @@ import {
   type OnlineRegistrationRequest,
   type RegistrationPriceSnapshot,
 } from "@/lib/online-registration";
-import { validateRegistrationMembershipClaims } from "@/lib/registration-membership-validation";
+import { getRegistrationMembershipReviewIssues } from "@/lib/registration-membership-validation";
 import { classifyRegistrationIdentity } from "@/lib/registration-identity-review-core";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { toPublicTournament } from "@/lib/tournament-record-adapter";
@@ -61,17 +61,53 @@ export async function completeDurableRegistration(
       { cause: canonicalAnglersResult.error },
     );
   }
+  const sameTournamentAnglersResult = await supabase
+    .from("tournament_registrations")
+    .select("angler1_id,angler2_id")
+    .eq("tournament_id", tournament.id)
+    .eq("registration_status", "active");
+  if (sameTournamentAnglersResult.error) {
+    throw new DurableRegistrationError(
+      "Registration identity could not be evaluated.",
+      { cause: sameTournamentAnglersResult.error },
+    );
+  }
+  const sameTournamentAnglerIds = new Set(
+    (sameTournamentAnglersResult.data ?? []).flatMap((registration) => [
+      registration.angler1_id,
+      registration.angler2_id,
+    ]).filter((anglerId): anglerId is string => Boolean(anglerId)),
+  );
   const identityClassification = classifyRegistrationIdentity(
     input.anglers,
     canonicalAnglersResult.data ?? [],
+    { activeTournamentAnglerIds: sameTournamentAnglerIds },
   );
-  if (identityClassification.status === "verified") {
-    const membershipErrors =
-      await validateRegistrationMembershipClaims(input.anglers, tournament);
-    if (membershipErrors.length) {
-      throw new DurableRegistrationError(membershipErrors.join(" "));
-    }
+  const membershipIssues = await getRegistrationMembershipReviewIssues(
+    input.anglers,
+    tournament,
+    Boolean(input.options.memberPot || input.options.insurance),
+    new Set(
+      identityClassification.participants
+        .filter((participant) => participant.status === "review_required")
+        .map((participant) => participant.participantPosition),
+    ),
+  );
+  for (const issue of membershipIssues) {
+    const participant = identityClassification.participants.find(
+      (item) => item.participantPosition === issue.participantPosition,
+    );
+    if (!participant) continue;
+    participant.status = "review_required";
+    participant.reason = participant.reason
+      ? `${participant.reason} ${issue.reason}`
+      : issue.reason;
   }
+  identityClassification.status = identityClassification.participants.some(
+    (participant) => participant.status === "review_required",
+  )
+    ? "review_required"
+    : "verified";
   const errors = validateOnlineRegistrationRequest(
     input,
     new Date(),

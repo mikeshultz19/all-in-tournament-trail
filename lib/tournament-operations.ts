@@ -21,9 +21,7 @@ export const TOURNAMENT_STATUS_LABELS: Record<
   rescheduled: "Rescheduled",
 };
 
-export type RegistrationPeriod =
-  | "early_online"
-  | "fully_closed";
+export type RegistrationPeriod = "online" | "fully_closed";
 
 export interface RegistrationAvailability {
   period: RegistrationPeriod;
@@ -38,6 +36,7 @@ export function getRegistrationAvailability(
   tournament: Tournament,
   now: Date = new Date(),
 ): RegistrationAvailability {
+  void now;
   const effectiveDate = getEffectiveTournamentDate(tournament);
   const earlyRegistrationDeadline = tournamentDateTimeToUtc(
     previousTournamentDate(effectiveDate),
@@ -57,6 +56,15 @@ export function getRegistrationAvailability(
     : null;
 
   const base = { earlyRegistrationDeadline, morningOpensAt, morningClosesAt };
+
+  if (tournament.status === "official" || tournament.status === "unofficial") {
+    return {
+      ...base,
+      period: "fully_closed",
+      canSubmit: false,
+      reason: "Registration is no longer available for this tournament.",
+    };
+  }
 
   if (tournament.tournamentStatus === "cancelled") {
     return {
@@ -84,25 +92,16 @@ export function getRegistrationAvailability(
       canSubmit: false,
       reason:
         tournament.registrationStatus === "closed"
-          ? "Registration is closed for this tournament."
+          ? "Registration is temporarily unavailable."
           : "Registration is not currently available for this tournament.",
-    };
-  }
-
-  if (now < earlyRegistrationDeadline) {
-    return {
-      ...base,
-      period: "early_online",
-      canSubmit: true,
-      reason: "Early online registration is open.",
     };
   }
 
   return {
     ...base,
-    period: "fully_closed",
-    canSubmit: false,
-    reason: "Early Online Registration is closed. Tournament-morning registration is completed in person with a Tournament Director through WeighFish.",
+    period: "online",
+    canSubmit: true,
+    reason: "Online registration is open.",
   };
 }
 

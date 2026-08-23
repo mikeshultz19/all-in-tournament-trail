@@ -70,7 +70,7 @@ export default function MobileFeaturedTournament({
 
   const statusLabel =
     TOURNAMENT_STATUS_LABELS[tournament.tournamentStatus];
-  const registrationOpen = operations?.registrationCanSubmit === true;
+  const registrationOpen = operations?.registrationCanSubmit ?? false;
 
   const formattedDate = new Date(
     `${tournament.date}T12:00:00`,
@@ -160,20 +160,13 @@ export default function MobileFeaturedTournament({
           </span>
         </div>
 
-        {operations?.earlyRegistrationDeadline ? (
-          <p className="text-center text-[0.68rem] leading-4 text-neutral-400">
-            Online registration deadline:{" "}
-            {operations.earlyRegistrationDeadline}
-          </p>
-        ) : null}
-
         <div className="grid gap-2.5">
           {registrationOpen ? (
             <Link
               href={`/register?tournament=${tournament.slug}`}
               className="inline-flex min-h-10 cursor-pointer items-center justify-center rounded-md bg-red-700 px-4 text-[0.68rem] font-black uppercase tracking-[0.1em] text-white transition hover:bg-red-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#D4A017]"
             >
-              Register Now
+              Register
             </Link>
           ) : (
             <span
@@ -181,7 +174,7 @@ export default function MobileFeaturedTournament({
               title={operations?.registrationReason ?? "Registration is not currently available."}
               className="inline-flex min-h-10 cursor-not-allowed items-center justify-center rounded-md bg-zinc-800 px-4 text-[0.68rem] font-black uppercase tracking-[0.1em] text-zinc-500"
             >
-              Registration Closed
+              {operations?.registrationReason ?? "Registration Unavailable"}
             </span>
           )}
 

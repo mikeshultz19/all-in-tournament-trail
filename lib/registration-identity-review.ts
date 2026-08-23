@@ -32,6 +32,11 @@ export interface RegistrationReviewItem {
   differingFields: string[];
 }
 
+export interface RegistrationReviewAnglerOption extends Angler {
+  membershipStatus: "active" | "inactive" | null;
+  membershipEffectiveDate: string | null;
+}
+
 export interface RegistrationContact {
   firstName: string; lastName: string; streetAddress: string; city: string;
   state: string; zipCode: string; email: string; phone: string;
@@ -131,21 +136,32 @@ export async function listRegistrationReviewItems(
   }));
 }
 
-export async function listReviewAnglerOptions(): Promise<Angler[]> {
+export async function listReviewAnglerOptions(tournamentId: string): Promise<RegistrationReviewAnglerOption[]> {
   const supabase = createSupabaseServerClient();
-  const { data, error } = await supabase
-    .from("anglers")
-    .select("*")
-    .eq("is_active", true)
-    .is("merged_into_angler_id", null)
-    .order("display_name");
-  if (error) {
+  const [{ data, error }, { data: tournament, error: tournamentError }] = await Promise.all([
+    supabase.from("anglers").select("*").eq("is_active", true).is("merged_into_angler_id", null).order("display_name"),
+    supabase.from("tournaments").select("season_id").eq("id", tournamentId).single(),
+  ]);
+  if (error || tournamentError || !tournament?.season_id) {
     throw new RegistrationIdentityReviewError(
       "Angler choices could not be loaded.",
-      { cause: error },
+      { cause: error ?? tournamentError },
     );
   }
-  return data ?? [];
+  const { data: memberships, error: membershipError } = await supabase
+    .from("memberships")
+    .select("angler_id,status,effective_date")
+    .eq("season_id", tournament.season_id);
+  if (membershipError) throw new RegistrationIdentityReviewError("Membership details could not be loaded.", { cause: membershipError });
+  const membershipsByAngler = new Map((memberships ?? []).map((membership) => [membership.angler_id, membership]));
+  return (data ?? []).map((angler) => {
+    const membership = membershipsByAngler.get(angler.id);
+    return {
+      ...angler,
+      membershipStatus: membership?.status === "active" || membership?.status === "inactive" ? membership.status : null,
+      membershipEffectiveDate: membership?.effective_date ?? null,
+    };
+  });
 }
 
 export async function getRegistrationReviewPendingCount(): Promise<number> {
@@ -238,9 +254,7 @@ export async function resolveRegistrationIdentityReview(input: {
   );
   if (error || !data) {
     throw new RegistrationIdentityReviewError(
-      error?.message.includes("AITT_REGISTRATION_REVIEW_DUPLICATE_ANGLER")
-        ? "A matching Angler already exists. Select the existing Angler instead."
-        : "The registration identity review could not be saved.",
+      "The registration identity review could not be saved.",
       { cause: error },
     );
   }

@@ -54,6 +54,10 @@ export interface Angler {
   normalized_name: string;
   email: string | null;
   phone: string | null;
+  street_address?: string | null;
+  city?: string | null;
+  state?: string | null;
+  zip_code?: string | null;
   is_active: boolean;
   merged_into_angler_id: string | null;
   created_at: string;

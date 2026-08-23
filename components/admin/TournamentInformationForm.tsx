@@ -214,32 +214,7 @@ export default function TournamentInformationForm({
         <legend className="px-2 text-lg font-black uppercase tracking-tight text-red-500">
           Registration
         </legend>
-        <div className="grid gap-5 sm:grid-cols-2">
-          <label className={labelClassName}>
-            Registration Opens
-            <input
-              name="registrationOpens"
-              type="datetime-local"
-              defaultValue={values.registrationOpens}
-              className={inputClassName}
-            />
-          </label>
-          <label className={labelClassName}>
-            Registration Closes
-            <input
-              name="registrationCloses"
-              type="datetime-local"
-              defaultValue={values.registrationCloses}
-              aria-invalid={Boolean(state.errors.registrationCloses)}
-              aria-describedby={
-                state.errors.registrationCloses
-                  ? "registrationCloses-error"
-                  : undefined
-              }
-              className={inputClassName}
-            />
-            <FieldError errors={state.errors} field="registrationCloses" />
-          </label>
+        <div className="grid gap-5">
           <label className={`${labelClassName} sm:col-span-2`}>
             Registration Information
             <textarea

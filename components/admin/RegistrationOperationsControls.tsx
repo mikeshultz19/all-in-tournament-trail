@@ -33,9 +33,8 @@ export function AddWalkUpControl({ tournamentId }: { tournamentId: string }) {
       </summary>
       <form action={action} className="mt-5 grid gap-4" data-testid="walk-up-form">
         <input type="hidden" name="tournamentId" value={tournamentId} />
-        <div className="grid gap-4 sm:grid-cols-3">
+        <div className="grid gap-4 sm:grid-cols-2">
           <Field label="Entry Type"><select name="registrationType" className={input} defaultValue="team"><option value="team">Team</option><option value="solo">Solo</option></select></Field>
-          <Field label="Boat #"><input name="boatNumber" type="number" min="1" required className={input} /></Field>
           <Field label="Payment Method"><select name="paymentMethod" className={input} defaultValue="cash"><option value="cash">Cash</option><option value="card">Card</option><option value="other">Other</option></select></Field>
         </div>
         <AnglerFields position={1} required />
@@ -46,7 +45,7 @@ export function AddWalkUpControl({ tournamentId }: { tournamentId: string }) {
           <Check name="bigBass" label="Big Bass" />
           <Check name="insurance" label="Insurance Pot" />
         </div>
-        <p className="text-xs leading-5 text-neutral-500">Angler 2 is required for Team entries. Membership selections are saved with this paid walk-up and synchronized to Members automatically.</p>
+        <p className="text-xs leading-5 text-neutral-500">The next tournament boat number is assigned automatically. Angler 2 is required for Team entries. Membership selections are saved with this paid walk-up and synchronized to Members automatically.</p>
         <div className="flex flex-wrap items-center gap-3">
           <button disabled={pending} className={adminButtonStyles("primary", "min-h-11")}>{pending ? "Saving…" : "Save Walk-Up"}</button>
           <ActionMessage state={state} />

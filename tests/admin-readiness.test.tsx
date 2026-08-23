@@ -148,13 +148,13 @@ describe("Tournament Operations Dashboard", () => {
 });
 
 describe("Tournament operations status", () => {
-  it("closes registration automatically at the configured deadline", () => {
+  it("does not close registration automatically at the configured deadline", () => {
     expect(
       getTournamentRegistrationStatus(
         databaseTournament,
         new Date("2026-11-01T00:00:00-05:00"),
       ),
-    ).toBe("Closed");
+    ).toBe("Open");
   });
 
   it("advances to registration finalization after registration closes", () => {

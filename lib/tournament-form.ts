@@ -125,8 +125,6 @@ export function validateTournamentForm(
 ): TournamentFormErrors {
   const errors: TournamentFormErrors = {};
   const tournamentDate = inputValueToTimestamp(values.tournamentDate);
-  const registrationOpens = inputValueToTimestamp(values.registrationOpens);
-  const registrationCloses = inputValueToTimestamp(values.registrationCloses);
 
   if (!values.name) {
     errors.name = "Enter the tournament name.";
@@ -138,17 +136,6 @@ export function validateTournamentForm(
 
   if (!tournamentDate) {
     errors.tournamentDate = "Enter a valid tournament date and time.";
-  }
-
-  if (
-    values.registrationOpens &&
-    values.registrationCloses &&
-    registrationOpens &&
-    registrationCloses &&
-    new Date(registrationCloses) < new Date(registrationOpens)
-  ) {
-    errors.registrationCloses =
-      "Registration closing time must be after registration opens.";
   }
 
   if (
@@ -204,8 +191,6 @@ export function tournamentFormToUpdate(
     scales_close: values.scalesClose || null,
     launch_type: values.launchType || null,
     morning_registration: values.morningRegistration || null,
-    registration_opens: inputValueToTimestamp(values.registrationOpens),
-    registration_closes: inputValueToTimestamp(values.registrationCloses),
     registration_information: values.registrationInformation || null,
     practice_information: values.practiceInformation || null,
     status: values.status,

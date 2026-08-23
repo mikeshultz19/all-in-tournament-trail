@@ -86,9 +86,9 @@ const faqSections: FaqSection[] = [
     icon: CircleDollarSign,
     items: [
       {
-        question: "When does Early Online Registration close?",
+        question: "When is online registration available?",
         answer:
-          "Early Online Registration closes at 9:00 PM America/Chicago time on the evening before the tournament. A tournament may become unavailable earlier because of capacity, tournament status, or an official operational decision.",
+          "Online registration remains available until the Tournament Director temporarily suspends it. A cancelled, postponed, unavailable, or capacity-limited tournament cannot accept new registrations.",
       },
       {
         question: "Is a payment attempt considered a confirmed registration?",

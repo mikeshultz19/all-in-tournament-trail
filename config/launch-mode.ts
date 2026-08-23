@@ -1,1 +1,0 @@
-export const SOFT_LAUNCH_REGISTRATION_CLOSED = true;

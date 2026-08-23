@@ -1,5 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { getFeaturedTournament, getNextUpcomingTournament } from "@/lib/tournaments";
+import { toPublicTournament } from "@/lib/tournament-record-adapter";
+import { getRegistrationAvailability } from "@/lib/tournament-operations";
 import {
   Fish,
   Flag,
@@ -187,7 +190,15 @@ const waysToWin = [
   },
 ];
 
-export default function HowItWorksPage() {
+export default async function HowItWorksPage() {
+  const tournamentRecord =
+    (await getFeaturedTournament()) ?? (await getNextUpcomingTournament());
+  const registrationAvailability = tournamentRecord
+    ? getRegistrationAvailability(toPublicTournament(tournamentRecord))
+    : null;
+  const registrationOpen = registrationAvailability?.canSubmit ?? false;
+  const registrationReason =
+    registrationAvailability?.reason ?? "Registration Unavailable";
   return (
     <main className="min-h-screen bg-black text-white">
       <Header />
@@ -216,12 +227,15 @@ export default function HowItWorksPage() {
             </p>
 
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-              <Link
-                href="/register"
-                className="inline-flex min-h-12 items-center justify-center border border-red-700 bg-red-800 px-7 py-3 text-sm font-black uppercase tracking-wider text-white transition hover:bg-red-700"
-              >
-                Registration Closed
-              </Link>
+              {!registrationOpen ? (
+                <span aria-disabled="true" className="inline-flex min-h-12 cursor-not-allowed items-center justify-center border border-neutral-700 px-7 py-3 text-sm font-black uppercase tracking-wider text-neutral-500">
+                  {registrationReason}
+                </span>
+              ) : (
+                <Link href="/register" className="inline-flex min-h-12 items-center justify-center border border-red-700 bg-red-800 px-7 py-3 text-sm font-black uppercase tracking-wider text-white transition hover:bg-red-700">
+                  Register
+                </Link>
+              )}
 
               <Link
                 href="/schedule"
@@ -626,12 +640,15 @@ export default function HowItWorksPage() {
         </div>
 
         <div className="flex w-full flex-col gap-3 sm:w-auto sm:flex-row">
-          <Link
-            href="/register"
-            className="inline-flex min-h-14 items-center justify-center border border-red-700 bg-red-800 px-8 py-4 text-sm font-black uppercase tracking-wider text-white transition hover:bg-red-700"
-          >
-            Registration Closed
-          </Link>
+          {!registrationOpen ? (
+            <span aria-disabled="true" className="inline-flex min-h-14 cursor-not-allowed items-center justify-center border border-neutral-700 px-8 py-4 text-sm font-black uppercase tracking-wider text-neutral-500">
+              {registrationReason}
+            </span>
+          ) : (
+            <Link href="/register" className="inline-flex min-h-14 items-center justify-center border border-red-700 bg-red-800 px-8 py-4 text-sm font-black uppercase tracking-wider text-white transition hover:bg-red-700">
+              Register
+            </Link>
+          )}
 
           <Link
             href="/schedule"

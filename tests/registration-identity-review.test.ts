@@ -12,6 +12,10 @@ const migration = readFileSync(
   "supabase/migrations/202607290005_add_registration_identity_review_queue.sql",
   "utf8",
 );
+const permissiveMigration = readFileSync(
+  "supabase/migrations/202608220003_make_registration_identity_review_permissive.sql",
+  "utf8",
+);
 const durableService = readFileSync("lib/durable-registration.ts", "utf8");
 const rosterService = readFileSync(
   "lib/tournament-registrations.ts",
@@ -83,7 +87,7 @@ describe("registration identity classification", () => {
     expect(result.participants[0].suggestedAnglerIds).toHaveLength(1);
   });
 
-  it("sends spelling differences to review instead of merging", () => {
+  it("treats a name difference by itself as a separate person", () => {
     expect(
       classifyRegistrationIdentity(
         [submitted({ firstName: "Jon", email: "jon@new.example" })],
@@ -97,10 +101,55 @@ describe("registration identity classification", () => {
           ),
         ],
       ).status,
-    ).toBe("review_required");
+    ).toBe("verified");
   });
 
-  it("sends nickname-like identities to review", () => {
+  it("allows same-name different-contact submissions as separate people", () => {
+    const result = classifyRegistrationIdentity(
+      [submitted({ firstName: "Joe", lastName: "Johnson", email: "joe-two@example.com", mobilePhone: "817-555-2222", streetAddress: "99 Different Road", city: "Azle", zipCode: "76020" })],
+      [angler("b02874df-b3d9-4828-a240-12486a404463", "Joe", "Johnson", "joe-one@example.com", "817-555-0100")],
+    );
+    expect(result.status).toBe("verified");
+    expect(result.participants).toHaveLength(1);
+    expect(result.participants[0]).toMatchObject({ status: "verified", reason: null, suggestedAnglerIds: [] });
+  });
+
+  it("flags a same-tournament strong identity overlap as a duplicate participation review", () => {
+    const result = classifyRegistrationIdentity(
+      [submitted({ firstName: "Joe", lastName: "Johnson", email: "allintournamenttrail@gmail.com", mobilePhone: "676-767-6767" })],
+      [angler("b02874df-b3d9-4828-a240-12486a404463", "Joe", "Johnson", "allintournamenttrail@gmail.com", "676-767-6767")],
+      { activeTournamentAnglerIds: new Set(["b02874df-b3d9-4828-a240-12486a404463"]) },
+    );
+    expect(result.status).toBe("review_required");
+    expect(result.participants[0].reason).toBe("Possible duplicate tournament participation: Joe Johnson is already entered in this tournament.");
+  });
+
+  it("reviews materially different contact information despite the same email and name in a later tournament context", () => {
+    const existing = {
+      ...angler("11111111-1111-4111-8111-111111111111", "John", "Smith", "john@example.com", "817-555-0100"),
+      street_address: "1 Existing Road",
+      city: "Azle",
+      state: "TX",
+      zip_code: "76020",
+    };
+    const result = classifyRegistrationIdentity(
+      [submitted({ streetAddress: "99 Submitted Road", city: "Azle", zipCode: "76020" })],
+      [existing],
+    );
+    expect(result.status).toBe("review_required");
+    expect(result.participants[0].reason).toBe("Submitted contact information differs from John Smith.");
+  });
+
+  it("reviews conflicting email and phone candidates", () => {
+    const result = classifyRegistrationIdentity([submitted()], [
+      angler("11111111-1111-4111-8111-111111111111", "John", "Smith", "john@example.com", "817-555-0199"),
+      angler("22222222-2222-4222-8222-222222222222", "Other", "Person", "other@example.com", "817-555-0100"),
+    ]);
+    expect(result.status).toBe("review_required");
+    expect(result.participants[0].reason).toBe("Submitted email and phone are associated with different existing anglers.");
+  });
+
+  it("does not force review for name-only similarity", () => {
     expect(
       classifyRegistrationIdentity(
         [
@@ -108,6 +157,7 @@ describe("registration identity classification", () => {
             firstName: "Rob",
             lastName: "Jones",
             email: "rob@new.example",
+            mobilePhone: "817-555-0191",
           }),
         ],
         [
@@ -120,10 +170,10 @@ describe("registration identity classification", () => {
           ),
         ],
       ).status,
-    ).toBe("review_required");
+    ).toBe("verified");
   });
 
-  it("requires review when normalized names are duplicated", () => {
+  it("does not force review for name-only overlap without stronger identity evidence", () => {
     const first = angler(
       "11111111-1111-4111-8111-111111111111",
       "John",
@@ -142,17 +192,11 @@ describe("registration identity classification", () => {
       [submitted({ email: "unknown@example.com", mobilePhone: "" })],
       [first, second],
     );
-    expect(result.status).toBe("review_required");
-    expect(result.participants[0].suggestedAnglerIds).toHaveLength(2);
+    expect(result.status).toBe("verified");
   });
 
   it("requires review for an unlinked current-membership claim", () => {
-    expect(
-      classifyRegistrationIdentity(
-        [submitted({ membership: "current" })],
-        [],
-      ).status,
-    ).toBe("review_required");
+    expect(classifyRegistrationIdentity([submitted({ membership: "current" })], []).status).toBe("review_required");
   });
 
   it("keeps Team and Solo classification participant counts separate", () => {
@@ -203,7 +247,8 @@ describe("durable review persistence and Admin workflow", () => {
 
   it("supports existing, different-existing, and approved-new resolution", () => {
     expect(actions).toContain("existingAnglerId");
-    expect(resolutionForm).toContain("Confirm Existing");
+    expect(resolutionForm).toContain("Confirm Match");
+    expect(resolutionForm).not.toContain("Confirm Existing");
     expect(resolutionForm).toContain("Approve New Angler");
     expect(migration).toContain("admin_confirmed_existing");
     expect(migration).toContain("admin_approved_new");
@@ -214,6 +259,21 @@ describe("durable review persistence and Admin workflow", () => {
       "AITT_REGISTRATION_REVIEW_DUPLICATE_ANGLER",
     );
     expect(migration).toContain("pg_advisory_xact_lock");
+  });
+
+  it("lets an Admin explicitly approve a separate person despite a shared contact value", () => {
+    expect(permissiveMigration).toContain("shared contact value is evidence for review");
+    expect(permissiveMigration).not.toContain("AITT_REGISTRATION_REVIEW_DUPLICATE_ANGLER");
+    expect(permissiveMigration).toContain("registration-review-new-person:");
+  });
+
+  it("defers disputed membership entitlement but not Competitive Record creation", () => {
+    expect(permissiveMigration).toContain("Possible Duplicate Membership Purchase:");
+    expect(permissiveMigration).toContain("new.review_kind <> 'membership'");
+    expect(permissiveMigration).toContain("canonical_angler_id is null");
+    expect(permissiveMigration).toContain("public.create_competitive_record");
+    expect(permissiveMigration).toContain("set review_kind = 'membership', review_status = 'review_required'");
+    expect(permissiveMigration).toContain("Membership Needs Review:");
   });
 
   it("creates or reuses the validated Team or Solo Competitive Record", () => {

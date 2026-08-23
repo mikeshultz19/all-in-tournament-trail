@@ -52,14 +52,14 @@ describe("Tournament Information form", () => {
     });
   });
 
-  it("validates required fields and the registration window", () => {
+  it("validates required fields without enforcing a registration cutoff window", () => {
     const formData = validFormData();
     formData.set("name", "");
     formData.set("registrationCloses", "2026-06-01T08:00");
     const errors = validateTournamentForm(tournamentFormData(formData));
 
     expect(errors.name).toBe("Enter the tournament name.");
-    expect(errors.registrationCloses).toContain("after registration opens");
+    expect(errors.registrationCloses).toBeUndefined();
   });
 
   it("rejects unsupported statuses", () => {

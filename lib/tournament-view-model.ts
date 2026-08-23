@@ -21,7 +21,7 @@ export interface TournamentOperationsViewModel {
   earlyRegistrationDeadlineIso: string;
   tournamentMorningWindow: string | null;
   registrationCanSubmit: boolean;
-  registrationPeriod: "early_online" | "fully_closed";
+  registrationPeriod: "online" | "fully_closed";
   registrationReason: string;
   safeLight: SafeLightViewModel;
 }

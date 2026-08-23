@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 
-import { processOnlineCardPayment } from "@/lib/online-payment-attempts";
+import { processOnlineCardPayment, RegistrationUnavailableError } from "@/lib/online-payment-attempts";
 
 export async function POST(request: Request) {
   let input: { attemptId?: string; sourceId?: string };
@@ -10,6 +10,9 @@ export async function POST(request: Request) {
     const result = await processOnlineCardPayment(input.attemptId, input.sourceId);
     return NextResponse.json(result, { status: result.status === "failed" ? 402 : 200 });
   } catch (error) {
+    if (error instanceof RegistrationUnavailableError) {
+      return NextResponse.json({ status: "unavailable", message: error.message }, { status: 409 });
+    }
     console.error("Online payment processing failed.", error);
     return NextResponse.json({
       status: "reconciliation_required",

@@ -6,7 +6,12 @@ const actions = readFileSync("app/admin/registration-review/actions.ts", "utf8")
 const checkIn = readFileSync("app/admin/tournament-manager/prepare/check-in-actions.ts", "utf8");
 const controls = readFileSync("components/admin/RegistrationOperationsControls.tsx", "utf8");
 const roster = readFileSync("lib/tournament-registration-roster.ts", "utf8");
+const toolbar = readFileSync("components/admin/RegistrationRosterToolbar.tsx", "utf8");
+const resolutionForm = readFileSync("components/admin/RegistrationReviewResolutionForm.tsx", "utf8");
+const membershipForm = readFileSync("components/admin/HistoricalMembershipReviewForm.tsx", "utf8");
+const allRegistrations = readFileSync("app/admin/registrations/page.tsx", "utf8");
 const migration = readFileSync("supabase/migrations/202608200002_add_admin_walkup_registration.sql", "utf8");
+const boatNumberMigration = readFileSync("supabase/migrations/202608220001_assign_sequential_boat_numbers.sql", "utf8");
 
 describe("unified Registration & Check-In workflow", () => {
   it("defaults to the next active tournament and filters without a mutation action", () => {
@@ -25,14 +30,25 @@ describe("unified Registration & Check-In workflow", () => {
     expect(page).toContain("getTournamentRegistrationRoster(selectedTournament.id)");
   });
 
-  it("offers All Registrations, Needs Review, and Walk-Ups as independent native filters", () => {
-    const allPosition = page.indexOf(">All Registrations</FilterLink>");
-    const reviewPosition = page.indexOf(">Needs Review</FilterLink>");
-    const walkUpPosition = page.indexOf(">Walk-Ups</FilterLink>");
+  it("shows one authoritative Member Status without exposing derived eligibility", () => {
+    expect(page).toContain("'Member Status'");
+    expect(page).not.toContain("'Member Benefits'");
+    expect(page).not.toContain("row.memberBenefitsEligible");
+    expect(page).not.toContain('"Eligible"');
+    expect(page).not.toContain('"Not Eligible"');
+    expect(page).toContain("row.angler1.memberStatus");
+    expect(roster).toContain("snapshot?.eligibleForTournament === true");
+    expect(roster).toContain('"Member" | "Non-Member" | "Needs Review"');
+  });
+
+  it("offers All Registrations, Needs Review, and Walk-Ups as independent client filters", () => {
+    const allPosition = toolbar.indexOf('selectFilter("all")}>All Registrations');
+    const reviewPosition = toolbar.indexOf('selectFilter("needs_review")}>Needs Review');
+    const walkUpPosition = toolbar.indexOf('selectFilter("walk_ups")}>Walk-Ups');
     expect(allPosition).toBeGreaterThan(-1);
     expect(reviewPosition).toBeGreaterThan(allPosition);
     expect(walkUpPosition).toBeGreaterThan(reviewPosition);
-    expect(page).toContain('className="mt-5 flex flex-wrap items-center gap-2"');
+    expect(toolbar).toContain('aria-label="Registration filters"');
     expect(page).toContain('requestedFilter === "needs_review" || requestedFilter === "walk_ups"');
   });
 
@@ -53,9 +69,37 @@ describe("unified Registration & Check-In workflow", () => {
     expect(page).toContain('className="mt-3 flex flex-wrap gap-x-8 gap-y-3 text-sm"');
   });
 
-  it("labels the existing paid-reference summary as Payment Recorded", () => {
-    expect(page).toContain('Metric label="Payment Recorded" value={summary.paid}');
-    expect(page).not.toContain('Metric label="Paid" value={summary.paid}');
+  it("removes payment and financial summaries from the tournament-morning roster", () => {
+    expect(page).not.toContain('Metric label="Payment Recorded"');
+    expect(page).not.toContain("row.paymentStatus");
+    expect(page).not.toContain("row.totalPaidCents");
+    expect(page).not.toContain("MoneyLine");
+    expect(page).not.toContain("Card Fee");
+  });
+
+  it("uses one compact Team/Solo row with selected pots and operational yes/no fields", () => {
+    expect(page).toContain("function RosterRow");
+    expect(page).toContain("row.angler1.displayName");
+    expect(page).toContain("row.angler2.displayName");
+    expect(page).toContain("row.angler1.memberStatus");
+    expect(page).toContain("row.angler2.memberStatus");
+    expect(page).toContain('row.memberPot ? title(row.memberPot) : "None"');
+    expect(page).toContain("yesNo(row.insurance)");
+    expect(page).toContain("yesNo(row.bigBass)");
+    expect(page).toContain("compactDateTime(row.registeredAt)");
+    expect(page).not.toContain("Bronze: No");
+    expect(page).not.toContain("Silver: No");
+    expect(page).not.toContain("Gold: No");
+    expect(page).toContain("'Boat #','Type','Participants'");
+    expect(page).toContain("{title(row.registrationType)}</td>");
+    expect(page).toContain('row.angler2 ? ` / ${row.angler2.displayName}` : ""');
+  });
+
+  it("keeps general registration editing out of the roster and in All Registrations", () => {
+    expect(page).not.toContain("RegistrationEditControl");
+    expect(page).not.toContain("Edit / Registration Details");
+    expect(allRegistrations).toContain("RegistrationEditControl");
+    expect(allRegistrations).toContain('row.status === "active"');
   });
 
   it("keeps Needs Review independent and preserves check-in actions in every filtered row", () => {
@@ -64,8 +108,37 @@ describe("unified Registration & Check-In workflow", () => {
     expect(page).toContain("<RegistrationCheckInControl");
   });
 
+  it("shows review UI only while a review is unresolved", () => {
+    expect(page).toContain('reviews.filter((review) => review.status === "review_required")');
+    expect(page).toContain("pendingReviews.map((review)");
+    expect(page).toContain("RegistrationReviewResolutionForm");
+    expect(page).toContain("HistoricalMembershipReviewForm");
+    expect(page).not.toContain("Review complete.");
+    expect(page).not.toContain("reopenRegistrationReviewAction");
+    expect(page).toContain("<details key={review.id}");
+  });
+
+  it("uses plain-language review decisions without exposing internal identity terms", () => {
+    expect(page).toContain("getRegistrationReviewPresentation(review)");
+    expect(resolutionForm).toContain("Confirm Match");
+    expect(resolutionForm).toContain("Approve New Angler");
+    expect(resolutionForm).toContain("Optional review note");
+    expect(resolutionForm).not.toContain("Confirm Existing");
+    expect(membershipForm).toContain("Confirm Member");
+    expect(membershipForm).toContain("Confirm Non-Member");
+    expect(membershipForm).toContain("Confirm Membership Purchase");
+    expect(resolutionForm).toContain("Registration Submission");
+    expect(resolutionForm).toContain("Existing Angler");
+    expect(resolutionForm).toContain("Membership Selection");
+    expect(resolutionForm).toContain("Membership Status");
+    expect(resolutionForm).toContain("Membership Effective");
+    expect(resolutionForm).toContain("onChange={(event) => setSelectedAnglerId(event.target.value)}");
+    expect(resolutionForm).toContain('value="existing"');
+    expect(resolutionForm).toContain('value="new"');
+  });
+
   it("searches the current filtered roster by team, either angler, or exact boat number", () => {
-    expect(page).toContain('placeholder="Search name or boat #"');
+    expect(toolbar).toContain('placeholder="Search name or boat #"');
     expect(page).toContain("const rows = search ? filteredRows.filter((row) => registrationMatchesSearch(row, search)) : filteredRows");
     expect(page).toContain('`${row.angler1.displayName} / ${row.angler2?.displayName ?? ""}`');
     expect(page).toContain('row.angler1.displayName.toLocaleLowerCase("en-US").includes(normalizedSearch)');
@@ -75,10 +148,11 @@ describe("unified Registration & Check-In workflow", () => {
 
   it("keeps search case-insensitive, composable with every filter, and clearable", () => {
     expect(page).toContain('search.toLocaleLowerCase("en-US")');
-    expect(page).toContain('name="filter" value={filter}');
-    expect(page).toContain('const searchQuery = search ? `&search=${encodeURIComponent(search)}` : ""');
-    expect(page.match(/\$\{searchQuery\}/g) ?? []).toHaveLength(3);
-    expect(page).toContain('defaultValue={search}');
+    expect(toolbar).toContain('params.set("filter", nextFilter)');
+    expect(toolbar).toContain('params.set("search", nextSearch.trim())');
+    expect(toolbar).toContain('aria-label="Clear search"');
+    expect(toolbar).toContain('router.replace(href(filter, ""), { scroll: false })');
+    expect(toolbar).toContain('router.replace(href(nextFilter, searchText), { scroll: false })');
     expect(page).toContain(': filteredRows;');
     expect(page).toContain('.filter((row) => row.registrationSource === "walk_up")');
     expect(page).toContain('allRows.filter((row) => row.needsReview || pendingReviewIds.has(row.id))');
@@ -86,14 +160,23 @@ describe("unified Registration & Check-In workflow", () => {
   });
 
   it("wraps the compact search below filters without horizontal scrolling on mobile", () => {
-    expect(page).toContain('className="flex min-w-0 flex-1 gap-2 sm:max-w-sm"');
-    expect(page).toContain('className="min-h-9 min-w-0 flex-1');
+    expect(toolbar).toContain('className="mt-4 flex flex-col gap-3 sm:flex-row');
+    expect(toolbar).toContain('className="relative min-w-0 flex-1"');
+  });
+
+  it("refreshes roster server data locally while preserving query and scroll state", () => {
+    expect(toolbar).toContain("startRefresh(() => router.refresh())");
+    expect(toolbar).not.toContain("useEffect");
+    expect(page).toContain('key={`${filter}:${search}`}');
+    expect(toolbar).not.toContain("window.location");
+    expect(toolbar).toContain('{refreshing ? "Refreshing…" : "Refresh"}');
+    expect(toolbar).toContain('{ tournament: tournamentId }');
   });
 
   it("uses mobile cards so Check In is not trapped in the desktop table", () => {
     expect(page).toContain('data-testid="mobile-registration-roster"');
-    expect(page).toContain('className="mt-4 grid gap-3 md:hidden"');
-    expect(page).toContain('className="mt-4 hidden overflow-x-auto');
+    expect(page).toContain('className="grid gap-3 p-3 md:hidden"');
+    expect(page).toContain('className="hidden overflow-x-auto md:block"');
     expect(page).toContain("<RosterActions row={row}");
   });
 
@@ -113,16 +196,29 @@ describe("unified Registration & Check-In workflow", () => {
   });
 
   it("creates a paid walk-up through the protected durable registration boundary", () => {
+    const createWalkUpAction = actions.slice(actions.indexOf("export async function createWalkUpRegistrationAction"), actions.indexOf("export async function updateRegistrationOperationsAction"));
     expect(actions).toContain("await requireAdminUser()");
-    expect(actions).toContain('"admin_create_walkup_registration"');
+    expect(createWalkUpAction).toContain('"admin_create_sequential_walkup_registration"');
+    expect(createWalkUpAction).not.toContain("p_boat_number");
     expect(migration).toContain("public.complete_durable_registration(");
     expect(migration).toContain("registration_source = 'walk_up'");
     expect(migration).toContain("p_payment_method");
     expect(controls).toContain("+ Add Walk-Up");
+    expect(controls).toContain("The next tournament boat number is assigned automatically.");
+    expect(controls).not.toContain('name="boatNumber" type="number" min="1" required className={input}');
     for (const field of ["StreetAddress", "City", "State", "ZipCode", "Email", "Phone", "Membership"]) {
       expect(controls).toContain(`\${prefix}${field}`);
     }
     expect(migration).toContain("participant_contact_snapshot = v_contact_snapshot");
+  });
+
+  it("serializes walk-up numbering after every historical tournament boat number", () => {
+    expect(boatNumberMigration).toContain("public.admin_create_sequential_walkup_registration");
+    expect(boatNumberMigration).toContain("'tournament-boat-number:' || p_tournament_id::text");
+    expect(boatNumberMigration).toContain("coalesce(max(boat_number), 0) + 1");
+    expect(boatNumberMigration).toContain("where tournament_id = p_tournament_id");
+    expect(boatNumberMigration).not.toMatch(/where tournament_id = p_tournament_id[\s\S]{0,100}registration_status = 'active'/);
+    expect(boatNumberMigration).toContain("public.admin_create_walkup_registration(");
   });
 
   it("reuses membership identity and does not create non-member memberships", () => {
@@ -165,7 +261,13 @@ describe("unified Registration & Check-In workflow", () => {
     const print = readFileSync("app/admin/registration-review/print/page.tsx", "utf8");
     expect(csv).toContain("getTournamentRegistrationRoster(tournament.id)");
     expect(csv).toContain('"boat_number"');
-    expect(csv).toContain('`angler_${position}_street_address`');
+    expect(csv).toContain('"angler_1_name"');
+    expect(csv).toContain('"member_pots"');
+    expect(csv).not.toContain('"total_paid"');
+    expect(csv).not.toContain('"payment_status"');
     expect(print).toContain("getTournamentRegistrationRoster(tournament.id)");
+    expect(print).toContain("size: landscape");
+    expect(print).not.toContain("totalPaidCents");
+    expect(print).not.toContain("paymentStatus");
   });
 });

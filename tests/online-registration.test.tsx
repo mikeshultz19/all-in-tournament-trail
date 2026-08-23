@@ -1,3 +1,5 @@
+import fs from "node:fs";
+import path from "node:path";
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
 
@@ -23,6 +25,7 @@ const POLICY_VERSIONS = {
   rulesVersion: REGISTRATION_POLICY_VERSIONS.rules,
   waiverVersion: REGISTRATION_POLICY_VERSIONS.liability_waiver,
 };
+const registrationFormSource = fs.readFileSync(path.join(process.cwd(), "components/RegistrationForm.tsx"), "utf8");
 
 function tournament(overrides: Partial<Tournament> = {}): Tournament {
   return { ...tournaments[0], registrationStatus: "open", tournamentStatus: "scheduled", status: "upcoming", ...overrides };
@@ -41,18 +44,49 @@ function validRequest(overrides: Partial<OnlineRegistrationRequest> = {}): Onlin
 
 describe("online tournament eligibility", () => {
   it("allows only eligible tournaments", () => expect(getOnlineRegistrationEligibility(tournament(), NOW).canRegister).toBe(true));
-  it("blocks registration before opening", () => expect(getOnlineRegistrationEligibility(tournament(), NOW, { registrationOpensAt: new Date("2026-08-01T00:00:00Z") }).state).toBe("opens_soon"));
-  it("blocks registration after closing", () => expect(getOnlineRegistrationEligibility(tournament(), new Date("2026-11-01T12:00:00Z")).canRegister).toBe(false));
+  it("does not close registration because an old cutoff has passed", () => expect(getOnlineRegistrationEligibility(tournament(), new Date("2026-11-01T12:00:00Z")).canRegister).toBe(true));
+  it("allows registration on tournament morning", () => expect(getOnlineRegistrationEligibility(tournament(), new Date("2026-11-01T13:00:00Z")).canRegister).toBe(true));
   it("blocks cancelled tournaments", () => expect(getOnlineRegistrationEligibility(tournament({ tournamentStatus: "cancelled" }), NOW).canRegister).toBe(false));
-  it("blocks completed tournaments", () => expect(getOnlineRegistrationEligibility(tournament({ status: "official" }), NOW).state).toBe("completed"));
+  it("blocks completed tournaments", () => {
+    const completed = getOnlineRegistrationEligibility(tournament({ status: "official", registrationStatus: "closed" }), NOW);
+    expect(completed.state).toBe("completed");
+    expect(completed.reason).toBe("Registration is no longer available for this tournament.");
+  });
   it("blocks sold-out tournaments", () => expect(getOnlineRegistrationEligibility(tournament(), NOW, { capacity: 25, confirmedCount: 25 }).state).toBe("sold_out"));
   it("blocks tournaments with online registration disabled", () => expect(getOnlineRegistrationEligibility(tournament(), NOW, { onlineRegistrationEnabled: false }).state).toBe("unavailable"));
 });
 
 describe("server-authoritative registration validation and pricing", () => {
   it("validates required angler fields", () => expect(validateOnlineRegistrationRequest(validRequest({ anglers: [{ ...validRequest().anglers[0], mobilePhone: "" }] }), NOW)).toContain("Angler 1 mobile phone is invalid."));
+  it("allows a valid Solo non-member to register without purchasing membership", () => {
+    expect(validateOnlineRegistrationRequest(validRequest(), NOW)).toEqual([]);
+    expect(createAuthoritativeRegistrationQuote(validRequest(), NOW).lineItems.map((item) => item.name)).toEqual(["Tournament Entry"]);
+  });
+  it("allows a valid Team of non-members to register without purchasing membership", () => {
+    const first = validRequest().anglers[0];
+    const team = validRequest({
+      registrationType: "team",
+      anglers: [first, { ...first, firstName: "Jordan", email: "jordan@example.com" }],
+    });
+    expect(validateOnlineRegistrationRequest(team, NOW)).toEqual([]);
+    expect(createAuthoritativeRegistrationQuote(team, NOW).lineItems.map((item) => item.name)).toEqual(["Tournament Entry"]);
+  });
+  it("continues to reject member-only pots for non-members", () => {
+    const request = validRequest({ options: { bigBass: false, insurance: false, memberPot: "bronze" } });
+    expect(validateOnlineRegistrationRequest(request, NOW)).toContain("Both anglers must be current members to enter Bronze, Silver, Gold, or the Insurance Pot.");
+  });
   it("requires Angler 2 for a team competitive record", () => expect(validateOnlineRegistrationRequest(validRequest({ registrationType: "team" }), NOW)).toContain("Angler 2 is required for Team registration."));
   it("accepts exactly one angler for a solo competitive record", () => expect(validateOnlineRegistrationRequest(validRequest(), NOW)).toEqual([]));
+  it("does not allow a client or environment override to bypass tournament suspension", () => {
+    const closedTournament = tournament({ registrationStatus: "closed" });
+
+    expect(validateOnlineRegistrationRequest(validRequest(), NOW, {}, closedTournament)).toContain("Registration is temporarily unavailable.");
+  });
+  it("uses the historical lockout message for a published tournament", () => {
+    const publishedTournament = tournament({ status: "official", registrationStatus: "closed" });
+
+    expect(validateOnlineRegistrationRequest(validRequest(), NOW, {}, publishedTournament)).toContain("Registration is no longer available for this tournament.");
+  });
   it("prohibits Angler 2 for a solo competitive record", () => {
     const angler = validRequest().anglers[0];
     expect(validateOnlineRegistrationRequest(validRequest({ anglers: [angler, { ...angler, email: "partner@example.com" }] }), NOW)).toContain("Angler 2 is not allowed for Solo registration.");
@@ -120,10 +154,62 @@ describe("payment idempotency and capacity recovery", () => {
 });
 
 describe("confirmation experience", () => {
-  const confirmation: RegistrationConfirmationView = { confirmationNumber: "AITT-EM-0001", tournamentName: "Eagle Mountain", tournamentDate: "November 1, 2026", venue: "Twin Points Park", anglers: ["Taylor Angler"], selectedOptions: ["Tournament Entry"], subtotalCents: 6000, cardProcessingFeeCents: 180, totalCents: 6180, paymentStatus: "paid" };
+  const confirmation: RegistrationConfirmationView = { boatNumber: 17, tournamentName: "Eagle Mountain Tournament", tournamentDate: "2026-11-01T12:00:00+00:00", lake: "Eagle Mountain", ramp: "Twin Points Park", launchType: "Numbered Start", morningRegistration: "4:30 AM", launchTime: "6:45 AM", officialSunrise: "7:01 AM", scalesClose: "3:00 PM", anglers: ["Taylor Angler"], selectedOptions: ["Tournament Entry"], subtotalCents: 6000, totalCents: 6180, paymentStatus: "paid" };
   const html = renderToStaticMarkup(<RegistrationConfirmation confirmation={confirmation} />);
+  it("uses one compact success heading", () => {
+    expect(html).toContain("You’re Registered");
+    expect(html).not.toContain("Registration confirmed");
+    expect(html).toContain("text-3xl");
+    expect(html).not.toContain("text-4xl");
+  });
   it("shows the tournament and anglers", () => { expect(html).toContain("Eagle Mountain"); expect(html).toContain("Taylor Angler"); });
-  it("shows the final total and Card Processing Fee", () => { expect(html).toContain("$61.80"); expect(html).toContain("Card Processing Fee"); expect(html).toContain("$1.80"); });
+  it("shows a date-only tournament date without exposing the stored timestamp", () => {
+    expect(html).toContain("November 1, 2026");
+    expect(html).not.toContain("2026-11-01T12:00:00+00:00");
+    expect(html).not.toMatch(/12:00|\+00:00/);
+  });
+  it("replaces registration-specific navigation controls with tournament logistics", () => {
+    expect(html).not.toContain("Tournament Details");
+    expect(html).not.toContain("Rules and Policies");
+    expect(html).not.toContain('href="/schedule"');
+    expect(html).not.toContain('href="/how-it-works"');
+    for (const value of ["Eagle Mountain Tournament · Eagle Mountain", "Twin Points Park", "Numbered Start", "4:30 AM", "6:45 AM", "7:01 AM", "3:00 PM"]) expect(html).toContain(value);
+    expect(html).toContain("Approx. Official Safe Light");
+    expect(html).not.toContain("Approx. Official Sunrise");
+    expect(html).toContain("Have your boat in the water and ready to launch before this time.");
+    expect(html).toContain("All tournament times are subject to change by the Tournament Director.");
+  });
+  it("uses TBA for unavailable logistics and omits sunrise readiness copy", () => {
+    const unavailable = renderToStaticMarkup(<RegistrationConfirmation confirmation={{ ...confirmation, ramp: null, launchType: null, morningRegistration: null, launchTime: null, officialSunrise: null, scalesClose: null }} />);
+    expect(unavailable.match(/>TBA</g)).toHaveLength(6);
+    expect(unavailable).not.toContain("Have your boat in the water and ready to launch before this time.");
+  });
+  it("shows one customer-facing registration and boat number with launch-order guidance", () => {
+    expect(html).not.toContain("Confirmation Number");
+    expect(html).not.toContain("AITT-EM-0001");
+    expect(html).toContain("Registration / Boat Number");
+    expect(html).toContain("#17");
+    expect(html).toContain("Your boat number is your launch-order number. If flights are used, this number will also determine which flight you are in.");
+    expect(html).not.toContain("This is your boat number and will also be your launch-order number");
+    expect(html).not.toContain("text-5xl");
+  });
+  it("shows an unassigned boat number honestly", () => {
+    const unassigned = renderToStaticMarkup(<RegistrationConfirmation confirmation={{ ...confirmation, boatNumber: null }} />);
+    expect(unassigned).toContain("Registration / Boat Number");
+    expect(unassigned).toContain(">TBA<");
+    expect(unassigned).not.toContain("assigned boat number");
+  });
+  it("shows the unchanged final amount without a processing-fee breakdown", () => {
+    expect(html).toContain("$61.80");
+    expect(html).not.toContain("Card Processing Fee");
+    expect(html).not.toContain("$1.80");
+  });
+  it("shows the informational tournament-status notice and homepage link", () => {
+    expect(html).toContain("Tournament Status");
+    expect(html).toContain("Check the AITT homepage before the tournament for weather-related postponements, cancellations, or schedule changes. Updates will also be posted on AITT social media.");
+    expect(html).toContain('href="/"');
+    expect(html).toContain("Check AITT Homepage →");
+  });
   it("preserves a recovery message after browser interruption", () => expect(renderToStaticMarkup(<RegistrationConfirmation confirmation={null} />)).toContain("do not pay again"));
 });
 
@@ -135,28 +221,25 @@ describe("online payment presentation", () => {
   it("provides the approved four-stage progress and clean payment boundary", () => {
     expect(html).toContain("Registration progress");
     expect(html).toContain("Team Info");
-    expect(html).toContain("Registration Closed");
-    expect(html).toContain('disabled=""');
+    expect(html).toContain("Continue to Payment");
     expect(html).toContain("Secure payment through Square");
     expect(html).toContain("Square and Apple Pay accepted at the ramp");
     expect(html).not.toMatch(/Visa|Mastercard|American Express|Discover/i);
   });
   it("moves tournament data into one condensed header", () => {
     const operations = operationsBySlug[tournaments[0].slug];
-    expect(html).toContain("Early Registration Deadline");
-    expect(html).toContain(operations.earlyRegistrationDeadline);
+    expect(html).not.toContain("Early Registration Deadline");
     expect(html).toContain("Estimated Safe Light");
     expect(html).toContain(operations.safeLight.time);
     expect(html).toContain(operations.safeLight.officialSunrise);
-    expect(html).toContain('data-icon-src="/icons/calendar-deadline.svg"');
     expect(html).toContain('data-icon-src="/icons/sun-safe-light.svg"');
-    expect(html.match(/aria-hidden="true"/g)?.length).toBeGreaterThanOrEqual(2);
+    expect(html.match(/aria-hidden="true"/g)?.length).toBeGreaterThanOrEqual(1);
   });
   it("removes verbose registration-page information blocks", () => {
     expect(html).not.toContain("Tournament-morning registration");
     expect(html).not.toContain("Updated ");
     expect(html).not.toContain(tournaments[0].statusMessage);
-    expect(html.match(/Early Registration Deadline/g)).toHaveLength(1);
+    expect(html).not.toContain("Early Registration Deadline");
     expect(html.match(/Estimated Safe Light/g)).toHaveLength(1);
   });
   it("renders one required combined acknowledgment with policy links", () => {
@@ -180,19 +263,66 @@ describe("online payment presentation", () => {
     expect(html).toContain("Individual / Solo");
     expect(html).not.toMatch(/Co-Angler/i);
   });
-  it("shows team-only fields only for team registration", () => {
-    const teamHtml = renderToStaticMarkup(<RegistrationForm tournaments={tournaments} operationsBySlug={operationsBySlug} policyVersions={POLICY_VERSIONS} initialRegistrationType="team" />);
-    expect(html).not.toContain("Team Details — Angler 2");
-    expect(html).toContain("Fish this tournament as a Solo competitor.");
-    expect(html).toContain("This registration applies only to this tournament and does not create a separate season-long division.");
-    expect(teamHtml).toContain("Team Details — Angler 2");
-    expect(teamHtml).toContain('name="angler2.firstName"');
-    expect(teamHtml).toContain("Fish this tournament as a Team.");
-    expect(teamHtml).toContain("Enter your established season partner even if they are unable to fish this tournament.");
+  it("defaults to Team and shows Solo fields only after Solo is explicitly selected", () => {
+    const soloHtml = renderToStaticMarkup(<RegistrationForm tournaments={tournaments} operationsBySlug={operationsBySlug} policyVersions={POLICY_VERSIONS} initialRegistrationType="solo" />);
+    expect(html).toMatch(/<input(?=[^>]*value="team")(?=[^>]*checked="")[^>]*>/);
+    expect(html).toContain("Team Details — Angler 2");
+    expect(html).toContain('name="angler2.firstName"');
+    expect(html).toContain("Fish this tournament as a Team.");
+    expect(html).toContain("Enter your established season partner even if they are unable to fish this tournament.");
+    expect(html).toContain('class="mt-4 font-black leading-6 text-red-500"');
+    expect(soloHtml).not.toContain("Team Details — Angler 2");
+    expect(soloHtml).toMatch(/<input(?=[^>]*value="solo")(?=[^>]*checked="")[^>]*>/);
+    expect(soloHtml).toContain("Fish this tournament as a Solo competitor.");
+    expect(soloHtml).toContain("Your tournament finish and eligible season points belong to your separate Individual / Solo Competitive Record and are not applied to any Team Competitive Record you also participate on.");
+    expect(soloHtml).toContain('class="mt-4 font-black leading-6 text-red-500"');
+  });
+  it("keeps the registration selector compact without the confirmation logistics panel", () => {
+    const selected = tournaments[0];
+    const visibleText = html.replace(/<[^>]+>/g, "");
+
+    expect(html).not.toContain('aria-label="Tournament information"');
+    expect(visibleText).toContain(selected.lake);
+    expect(visibleText).toContain(operationsBySlug[selected.slug].formattedEffectiveDate);
+    expect(visibleText).not.toContain("Lake / Tournament");
+    expect(visibleText).not.toContain("Tournament Hours");
+    expect(visibleText).not.toContain("Morning Registration / Check-In");
+    expect(visibleText).not.toContain("Scales Close / Weigh-In");
+    expect(visibleText).not.toContain("Ramp / Launch Location");
+    expect(visibleText).not.toContain("Have your boat in the water and ready to launch before this time.");
+    expect(visibleText).not.toContain("All tournament times are subject to change by the Tournament Director.");
+    const registrationStatus = "Registration is open for this tournament.";
+    expect(visibleText).toContain(registrationStatus);
+    expect(visibleText.indexOf(registrationStatus)).toBeLessThan(visibleText.indexOf("Registration Type"));
+    expect(html).not.toContain("Tournament Details");
+    expect(html).not.toContain("Rules &amp; Policies");
+    expect(html).not.toContain("How AITT Works");
+  });
+  it("shows the membership-benefits notice once beneath the first angler membership choices", () => {
+    const notice = "Memberships unlock Bronze, Silver, Gold, Insurance Pots, AOY, and Championship eligibility.";
+    const noticeMarker = "Memberships unlock";
+    const firstMembership = html.indexOf('id="angler1-membership-label"');
+    const noticePosition = html.indexOf(noticeMarker);
+    const secondAngler = html.indexOf("Team Details — Angler 2");
+    const soloHtml = renderToStaticMarkup(<RegistrationForm tournaments={tournaments} operationsBySlug={operationsBySlug} policyVersions={POLICY_VERSIONS} initialRegistrationType="solo" />);
+    const visibleText = (markup: string) => markup.replace(/<[^>]+>/g, "");
+
+    expect(html.match(new RegExp(noticeMarker, "g"))).toHaveLength(1);
+    expect(visibleText(html)).toContain(notice);
+    expect(noticePosition).toBeGreaterThan(firstMembership);
+    expect(noticePosition).toBeLessThan(secondAngler);
+    expect(soloHtml.match(new RegExp(noticeMarker, "g"))).toHaveLength(1);
+    expect(visibleText(soloHtml)).toContain(notice);
+    expect(soloHtml.indexOf(noticeMarker)).toBeGreaterThan(soloHtml.indexOf('id="angler1-membership-label"'));
   });
   it("blocks invalid registration and stale policy versions before payment review", () => {
     expect(validateOnlineRegistrationRequest(validRequest({ anglers: [] }), NOW)).toContain("Angler 1 is required for Solo registration.");
     expect(validateOnlineRegistrationRequest(validRequest({ acknowledgment: { ...validRequest().acknowledgment, rulesVersion: "0.9" } }), NOW)).toContain("Review and accept the current Official Tournament Rules.");
+  });
+  it("keeps the review button actionable so submit can expose validation errors before creating a quote", () => {
+    expect(registrationFormSource).toContain("const canAttemptReview = operations.registrationCanSubmit;");
+    expect(registrationFormSource).toContain("if (Object.keys(nextErrors).length || !formIsValid)");
+    expect(registrationFormSource).toContain("Complete all required angler information before payment.");
   });
   it("shows the compact authoritative-price summary without cash", () => {
     expect(html).toContain("Subtotal");

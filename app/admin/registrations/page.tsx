@@ -2,6 +2,7 @@ import Link from "next/link";
 
 import AdminPanel from "@/components/admin/AdminPanel";
 import AdminStatusBadge from "@/components/admin/AdminStatusBadge";
+import { RegistrationEditControl } from "@/components/admin/RegistrationOperationsControls";
 import {
   filterRegistrationHistory,
   listAllRegistrationHistory,
@@ -112,6 +113,7 @@ function RegistrationHistoryCard({ row }: { row: AdminRegistrationHistoryRow }) 
       <dl className="grid grid-cols-2 gap-x-6 gap-y-2 text-sm sm:grid-cols-4 lg:min-w-[480px]">
         <Metric label="Boat" value={row.boatNumber?.toString() ?? "—"} />
         <Metric label="Payment" value={paymentSummary(row)} />
+        <Metric label="Amount Paid" value={money(row.priceSnapshot?.totalCents)} />
         <Metric label="Check-In" value={row.checkedInAt ? "Checked In" : "Not Checked In"} />
         <Metric label="Registered" value={dateOnly(row.registeredAt)} />
       </dl>
@@ -125,14 +127,21 @@ function RegistrationHistoryCard({ row }: { row: AdminRegistrationHistoryRow }) 
         <DetailSection title="Registration Selections">
           <DetailLine label="Type" value={row.registrationType} /><DetailLine label="Big Bass" value={yesNo(row.bigBass)} /><DetailLine label="Member Pot" value={row.memberPot ?? "None"} /><DetailLine label="Insurance Pot" value={yesNo(row.insurance)} /><DetailLine label="Source" value={row.source === "walk_up" ? "Walk-Up" : "Online"} /><DetailLine label="Status" value={row.status} /><DetailLine label="Payment Method" value={row.paymentMethod ?? "Not stored"} /><DetailLine label="Payment Reference" value={row.paymentReference ?? "Not recorded"} /><DetailLine label="Online Payment" value={row.onlinePaymentState ?? "Not applicable"} />
         </DetailSection>
+        <DetailSection title="Payment &amp; Pricing">
+          {(row.priceSnapshot?.lineItems ?? []).map((item, index) => <DetailLine key={`${item.name}-${index}`} label={item.name ?? `Line ${index + 1}`} value={money(item.priceCents)} />)}
+          <DetailLine label="Card Processing Fee" value={money(row.priceSnapshot?.cardProcessingFeeCents)} />
+          <DetailLine label="Total Paid" value={money(row.priceSnapshot?.totalCents)} />
+          <DetailLine label="Square Payment ID" value={row.squarePaymentId ?? "Not recorded"} />
+        </DetailSection>
         <DetailSection title="Membership Snapshot">
           {row.membershipSnapshot.length ? row.membershipSnapshot.map((snapshot, index) => <div key={index} className="mt-2 border border-white/10 p-3 text-xs leading-5 text-neutral-300"><p className="font-bold text-white">Angler {index + 1}</p><p>Submitted: {String(snapshot.submittedClassification ?? "Unknown")}</p><p>Resolved: {String(snapshot.resolvedClassification ?? "Unknown")}</p><p>Status: {String(snapshot.status ?? "Not stored")}</p></div>) : <p className="text-sm text-neutral-500">No membership snapshot stored.</p>}
         </DetailSection>
         <DetailSection title="Needs Attention / Review History">
-          {row.reviews.length ? row.reviews.map((review) => <div key={review.id} className="mt-2 border border-amber-400/20 p-3 text-xs leading-5 text-neutral-300"><p className="font-bold text-amber-200">{review.participantName} · {review.kind} · {review.status}</p><p>{review.reason}</p>{review.note ? <p>Note: {review.note}</p> : null}{review.history.map((item, index) => <p key={index} className="mt-2 border-t border-white/10 pt-2">{item.previousStatus} → {item.newStatus} via {item.method}{item.note ? ` · ${item.note}` : ""}</p>)}</div>) : <p className="text-sm text-neutral-500">No review records.</p>}
+          {row.reviews.length ? row.reviews.map((review) => <div key={review.id} className="mt-2 border border-amber-400/20 p-3 text-xs leading-5 text-neutral-300"><p className="font-bold text-amber-200">{review.participantName} · {review.kind} · {review.status}</p><p>{review.reason}</p>{review.note ? <p>Note: {review.note}</p> : null}{review.resolvedAt ? <p>Resolved: {dateTime(review.resolvedAt)}</p> : null}{review.history.map((item, index) => <p key={index} className="mt-2 border-t border-white/10 pt-2">{item.previousStatus} → {item.newStatus} via {item.method}{item.note ? ` · ${item.note}` : ""} · {dateTime(item.createdAt)}</p>)}</div>) : <p className="text-sm text-neutral-500">No review records.</p>}
         </DetailSection>
       </div>
     </details>
+    {row.status === "active" ? <RegistrationEditControl tournamentId={row.tournamentId} registrationId={row.id} boatNumber={row.boatNumber} bigBass={row.bigBass} memberPot={row.memberPot} insurance={row.insurance} checkedIn={Boolean(row.checkedInAt)} walkUp={row.source === "walk_up"} contactSnapshot={row.contacts} /> : null}
   </AdminPanel>;
 }
 
@@ -142,6 +151,8 @@ function Metric({ label, value }: { label: string; value: string }) { return <di
 function DetailSection({ title, children }: { title: string; children: React.ReactNode }) { return <section><h3 className="text-xs font-black uppercase tracking-[0.12em] text-red-400">{title}</h3><div className="mt-2">{children}</div></section>; }
 function DetailLine({ label, value }: { label: string; value: string }) { return <p className="mt-1 text-sm text-neutral-300"><span className="font-bold text-white">{label}:</span> {value}</p>; }
 function dateOnly(value: string) { return new Intl.DateTimeFormat("en-US", { timeZone: "America/Chicago", year: "numeric", month: "short", day: "numeric" }).format(new Date(value)); }
+function dateTime(value: string) { return new Intl.DateTimeFormat("en-US", { timeZone: "America/Chicago", dateStyle: "medium", timeStyle: "short" }).format(new Date(value)); }
 function paymentSummary(row: AdminRegistrationHistoryRow) { if (row.source === "online") return row.onlinePaymentState === "completed" && row.squarePaymentId ? "Completed" : "Needs Review"; return row.paymentReference ? "Recorded" : "Needs Review"; }
+function money(value: number | undefined) { return typeof value === "number" ? new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(value / 100) : "Not stored"; }
 function membershipLabel(value: RegistrationHistoryContact["membership"]) { return value === "current" ? "Current Member" : value === "joining" ? "Joining / Purchased" : "Non-Member"; }
 function yesNo(value: boolean) { return value ? "Yes" : "No"; }

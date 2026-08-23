@@ -3,6 +3,7 @@ import "server-only";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 export type RegistrationMembershipLabel = "Current Member" | "Purchased Membership / Joining" | "Non-Member";
+export type RegistrationMemberStatus = "Member" | "Non-Member" | "Needs Review";
 
 export interface RegistrationParticipantContactSnapshot {
   firstName: string; lastName: string; streetAddress: string; city: string;
@@ -15,6 +16,7 @@ export interface RegistrationRosterAngler {
   lastName: string | null;
   displayName: string;
   membership: RegistrationMembershipLabel;
+  memberStatus: RegistrationMemberStatus;
   eligibleForTournament: boolean;
   email: string | null;
   phone: string | null;
@@ -32,7 +34,6 @@ export interface TournamentRegistrationRosterRow {
   registrationType: "team" | "solo";
   angler1: RegistrationRosterAngler;
   angler2: RegistrationRosterAngler | null;
-  memberBenefitsEligible: boolean;
   entryType: "Free Entry" | "Base Entry";
   bigBass: boolean;
   memberPot: "bronze" | "silver" | "gold" | null;
@@ -92,6 +93,7 @@ type RegistrationRow = {
   online_payment_state: "completed" | null; square_payment_id: string | null;
 };
 type AnglerNameRow = { id: string; first_name: string; last_name: string; display_name: string; email: string | null; phone: string | null };
+type ActiveReviewRow = { registration_id: string };
 
 function validCents(value: unknown): number | null {
   return Number.isInteger(value) && Number(value) >= 0 ? Number(value) : null;
@@ -111,6 +113,16 @@ function membershipLabel(snapshot: MembershipSnapshot | undefined): Registration
   return "Non-Member";
 }
 
+export function deriveRegistrationMemberStatus(
+  snapshot: MembershipSnapshot | undefined,
+): RegistrationMemberStatus {
+  if (!snapshot || !snapshot.resolvedClassification) return "Needs Review";
+  return snapshot.status === "active" &&
+    snapshot.resolvedClassification === "current"
+    ? "Member"
+    : "Non-Member";
+}
+
 function makeAngler(name: string, id: string | null, snapshot: MembershipSnapshot | undefined, names: Map<string, AnglerNameRow>): RegistrationRosterAngler {
   const canonical = id ? names.get(id) : undefined;
   return {
@@ -118,23 +130,45 @@ function makeAngler(name: string, id: string | null, snapshot: MembershipSnapsho
     lastName: canonical?.last_name ?? null,
     displayName: canonical?.display_name || name,
     membership: membershipLabel(snapshot),
+    memberStatus: deriveRegistrationMemberStatus(snapshot),
     eligibleForTournament: snapshot?.eligibleForTournament === true,
     email: canonical?.email ?? null,
     phone: canonical?.phone ?? null,
   };
 }
 
-export function areRegistrationMemberBenefitsEligible(registrationType: "team" | "solo", memberships: readonly { eligibleForTournament: boolean }[]): boolean {
-  const requiredCount = registrationType === "team" ? 2 : 1;
-  return memberships.length === requiredCount && memberships.every((membership) => membership.eligibleForTournament);
+async function loadUnresolvedReviewRegistrationIds(
+  registrationIds: readonly string[],
+): Promise<Set<string>> {
+  if (!registrationIds.length) {
+    return new Set();
+  }
+
+  const supabase = createSupabaseServerClient();
+  const { data, error } = await supabase
+    .from("registration_identity_reviews")
+    .select("registration_id")
+    .eq("review_status", "review_required")
+    .in("registration_id", [...new Set(registrationIds)]);
+
+  if (error) {
+    throw new Error("Registration review status could not be loaded.", {
+      cause: error,
+    });
+  }
+
+  return new Set((data ?? []).map((row) => (row as ActiveReviewRow).registration_id));
 }
 
-function toRosterRow(row: RegistrationRow, names: Map<string, AnglerNameRow>): TournamentRegistrationRosterRow {
+function toRosterRow(
+  row: RegistrationRow,
+  names: Map<string, AnglerNameRow>,
+  unresolvedReviewIds: ReadonlySet<string>,
+): TournamentRegistrationRosterRow {
   const memberships = row.membership_snapshot ?? [];
   const angler1 = makeAngler(row.angler1_name, row.angler1_id, memberships[0], names);
   const angler2 = row.registration_type === "team" && row.angler2_name
     ? makeAngler(row.angler2_name, row.angler2_id, memberships[1], names) : null;
-  const memberBenefitsEligible = areRegistrationMemberBenefitsEligible(row.registration_type, [angler1, angler2].filter((angler): angler is RegistrationRosterAngler => Boolean(angler)));
   const entryAmountCents = lineAmount(row.price_snapshot, (item) => item.code === "base_entry" || item.name === "Tournament Entry");
   const membershipAmountCents = lineAmount(row.price_snapshot, (item) => item.code === "annual_membership" || Boolean(item.name?.endsWith(" Membership")));
   const bigBassAmountCents = lineAmount(row.price_snapshot, (item) => item.code === "big_bass" || item.name === "Big Bass");
@@ -143,7 +177,10 @@ function toRosterRow(row: RegistrationRow, names: Map<string, AnglerNameRow>): T
   const paymentStatus = row.registration_source === "walk_up"
     ? row.payment_reference ? "Paid" : "Needs Review"
     : row.online_payment_state === "completed" && row.square_payment_id ? "Paid" : "Needs Review";
-  const needsReview = row.identity_review_status === "review_required" || paymentStatus !== "Paid";
+  const needsReview =
+    row.identity_review_status === "review_required" ||
+    unresolvedReviewIds.has(row.id) ||
+    paymentStatus !== "Paid";
   const sidePots = [row.big_bass ? "Big Bass" : null, row.member_pot ? `${row.member_pot[0].toUpperCase()}${row.member_pot.slice(1)}` : null, row.insurance ? "Insurance" : null].filter((value): value is string => Boolean(value));
   const membershipDetails = [angler1, angler2].filter((angler): angler is RegistrationRosterAngler => Boolean(angler)).map((angler, index) => `Angler ${index + 1}: ${angler.membership}`);
   return {
@@ -152,7 +189,7 @@ function toRosterRow(row: RegistrationRow, names: Map<string, AnglerNameRow>): T
     registrationSource: row.registration_source, boatNumber: row.boat_number,
     paymentMethod: row.payment_method, registrationType: row.registration_type,
     participantContactSnapshot: row.participant_contact_snapshot ?? [],
-    angler1, angler2, memberBenefitsEligible,
+    angler1, angler2,
     entryType: entryAmountCents === 0 ? "Free Entry" : "Base Entry",
     bigBass: row.big_bass, memberPot: row.member_pot, insurance: row.insurance,
     entryAmountCents, membershipAmountCents, bigBassAmountCents, memberPotAmountCents,
@@ -161,14 +198,25 @@ function toRosterRow(row: RegistrationRow, names: Map<string, AnglerNameRow>): T
     identityReviewStatus: row.identity_review_status, checkedInAt: row.checked_in_at,
     checkedInByAdminId: row.checked_in_by_admin_id,
     boater: angler1.displayName, partner: angler2?.displayName ?? null,
-    membershipStatus: memberBenefitsEligible ? "Member" : angler1.eligibleForTournament || angler2?.eligibleForTournament ? "Mixed" : "Non-Member",
+    membershipStatus: angler2
+      ? `A1: ${angler1.memberStatus} · A2: ${angler2.memberStatus}`
+      : angler1.memberStatus,
     membershipDetails, entryStatus: needsReview ? "Needs Review" : "Confirmed", sidePots,
     registrationTotalCents: validCents(row.price_snapshot?.totalCents),
   };
 }
 
 export function summarizeTournamentRegistrationRoster<T extends Pick<TournamentRegistrationRosterRow, "paymentStatus" | "entryStatus"> & { needsReview?: boolean }>(rows: readonly T[]): TournamentRegistrationRosterSummary {
-  return { total: rows.length, paid: rows.filter((row) => row.paymentStatus === "Paid").length, needReview: rows.filter((row) => row.needsReview ?? (row.entryStatus === "Needs Review" || row.paymentStatus !== "Paid")).length };
+  return {
+    total: rows.length,
+    paid: rows.filter((row) => row.paymentStatus === "Paid").length,
+    needReview: rows.filter(
+      (row) =>
+        row.needsReview === true ||
+        row.entryStatus === "Needs Review" ||
+        row.paymentStatus !== "Paid",
+    ).length,
+  };
 }
 
 export async function getTournamentRegistrationRoster(tournamentId: string): Promise<TournamentRegistrationRosterRow[]> {
@@ -178,6 +226,9 @@ export async function getTournamentRegistrationRoster(tournamentId: string): Pro
     .eq("tournament_id", tournamentId).eq("registration_status", "active").order("registered_at", { ascending: true });
   if (error) throw new Error("Tournament registration roster could not be loaded.", { cause: error });
   const rows = (data ?? []) as RegistrationRow[];
+  const unresolvedReviewIds = await loadUnresolvedReviewRegistrationIds(
+    rows.map((row) => row.id),
+  );
   const ids = [...new Set(rows.flatMap((row) => [row.angler1_id, row.angler2_id]).filter((id): id is string => Boolean(id)))];
   let names = new Map<string, AnglerNameRow>();
   if (ids.length) {
@@ -185,16 +236,35 @@ export async function getTournamentRegistrationRoster(tournamentId: string): Pro
     if (result.error) throw new Error("Registration angler names could not be loaded.", { cause: result.error });
     names = new Map(((result.data ?? []) as AnglerNameRow[]).map((angler) => [angler.id, angler]));
   }
-  return rows.map((row) => toRosterRow(row, names));
+  return rows.map((row) => toRosterRow(row, names, unresolvedReviewIds));
 }
 
 export async function listTournamentRegistrationRosterSummaries(tournamentIds: readonly string[]): Promise<Record<string, TournamentRegistrationRosterSummary>> {
   if (!tournamentIds.length) return {};
   const supabase = createSupabaseServerClient();
-  const { data, error } = await supabase.from("tournament_registrations").select("tournament_id,payment_reference,identity_review_status,registration_source,online_payment_state,square_payment_id").in("tournament_id", [...tournamentIds]).eq("registration_status", "active");
+  const { data, error } = await supabase.from("tournament_registrations").select("id,tournament_id,payment_reference,identity_review_status,registration_source,online_payment_state,square_payment_id").in("tournament_id", [...tournamentIds]).eq("registration_status", "active");
   if (error) throw new Error("Tournament registration summaries could not be loaded.", { cause: error });
   const result = Object.fromEntries(tournamentIds.map((id) => [id, { total: 0, paid: 0, needReview: 0 }]));
-  for (const row of data ?? []) { const summary = result[row.tournament_id]; if (!summary) continue; const paid = row.registration_source === "walk_up" ? Boolean(row.payment_reference) : row.online_payment_state === "completed" && Boolean(row.square_payment_id); summary.total += 1; if (paid) summary.paid += 1; if (!paid || row.identity_review_status === "review_required") summary.needReview += 1; }
+  const unresolvedReviewIds = await loadUnresolvedReviewRegistrationIds(
+    (data ?? []).map((row) => row.id),
+  );
+  for (const row of data ?? []) {
+    const summary = result[row.tournament_id];
+    if (!summary) continue;
+    const paid =
+      row.registration_source === "walk_up"
+        ? Boolean(row.payment_reference)
+        : row.online_payment_state === "completed" && Boolean(row.square_payment_id);
+    summary.total += 1;
+    if (paid) summary.paid += 1;
+    if (
+      !paid ||
+      row.identity_review_status === "review_required" ||
+      unresolvedReviewIds.has(row.id)
+    ) {
+      summary.needReview += 1;
+    }
+  }
   return result;
 }
 

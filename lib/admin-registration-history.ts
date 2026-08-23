@@ -26,6 +26,7 @@ export interface RegistrationHistoryReview {
   reason: string;
   note: string | null;
   createdAt: string;
+  resolvedAt: string | null;
   history: Array<{
     previousStatus: string;
     newStatus: string;
@@ -50,6 +51,11 @@ export interface AdminRegistrationHistoryRow {
   boatNumber: number | null;
   contacts: RegistrationHistoryContact[];
   membershipSnapshot: Array<Record<string, unknown>>;
+  priceSnapshot: {
+    lineItems?: Array<{ name?: string; priceCents?: number }>;
+    cardProcessingFeeCents?: number;
+    totalCents?: number;
+  } | null;
   bigBass: boolean;
   memberPot: "bronze" | "silver" | "gold" | null;
   insurance: boolean;
@@ -81,6 +87,7 @@ type RegistrationDbRow = {
   boat_number: number | null;
   participant_contact_snapshot: RegistrationHistoryContact[] | null;
   membership_snapshot: Array<Record<string, unknown>> | null;
+  price_snapshot: AdminRegistrationHistoryRow["priceSnapshot"];
   big_bass: boolean;
   member_pot: "bronze" | "silver" | "gold" | null;
   insurance: boolean;
@@ -103,6 +110,7 @@ type ReviewDbRow = {
   review_reason: string;
   review_note: string | null;
   created_at: string;
+  resolved_at: string | null;
 };
 
 type ReviewHistoryDbRow = {
@@ -165,7 +173,7 @@ export async function listAllRegistrationHistory(): Promise<AdminRegistrationHis
   const registrations = await readAll<RegistrationDbRow>(async (from, to) => {
     const result = await supabase
       .from("tournament_registrations")
-      .select("id,registration_key,tournament_id,registered_at,registration_type,registration_source,registration_status,angler1_name,angler2_name,boat_number,participant_contact_snapshot,membership_snapshot,big_bass,member_pot,insurance,payment_reference,payment_method,online_payment_state,square_payment_id,checked_in_at,identity_review_status,tournament:tournaments!inner(name,tournament_date)")
+      .select("id,registration_key,tournament_id,registered_at,registration_type,registration_source,registration_status,angler1_name,angler2_name,boat_number,participant_contact_snapshot,membership_snapshot,price_snapshot,big_bass,member_pot,insurance,payment_reference,payment_method,online_payment_state,square_payment_id,checked_in_at,identity_review_status,tournament:tournaments!inner(name,tournament_date)")
       .order("registered_at", { ascending: false })
       .range(from, to);
     return { data: result.data as unknown as RegistrationDbRow[] | null, error: result.error };
@@ -173,7 +181,7 @@ export async function listAllRegistrationHistory(): Promise<AdminRegistrationHis
   const reviews = await readAll<ReviewDbRow>(async (from, to) => {
     const result = await supabase
       .from("registration_identity_reviews")
-      .select("id,registration_id,participant_position,original_display_name,review_kind,review_status,review_reason,review_note,created_at")
+      .select("id,registration_id,participant_position,original_display_name,review_kind,review_status,review_reason,review_note,created_at,resolved_at")
       .order("created_at", { ascending: true })
       .range(from, to);
     return { data: result.data as ReviewDbRow[] | null, error: result.error };
@@ -206,6 +214,7 @@ export async function listAllRegistrationHistory(): Promise<AdminRegistrationHis
     boatNumber: row.boat_number,
     contacts: row.participant_contact_snapshot ?? [],
     membershipSnapshot: row.membership_snapshot ?? [],
+    priceSnapshot: row.price_snapshot,
     bigBass: row.big_bass,
     memberPot: row.member_pot,
     insurance: row.insurance,
@@ -224,6 +233,7 @@ export async function listAllRegistrationHistory(): Promise<AdminRegistrationHis
       reason: review.review_reason,
       note: review.review_note,
       createdAt: review.created_at,
+      resolvedAt: review.resolved_at,
       history: (historyByReview.get(review.id) ?? []).map((item) => ({
         previousStatus: item.previous_status,
         newStatus: item.new_status,

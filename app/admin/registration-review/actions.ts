@@ -48,7 +48,6 @@ export async function createWalkUpRegistrationAction(
   const admin = await requireAdminUser();
   const tournamentId = text(formData, "tournamentId");
   const registrationType = text(formData, "registrationType");
-  const boatNumber = Number(text(formData, "boatNumber"));
   const totalPaid = Number(text(formData, "totalPaid"));
   const paymentMethod = text(formData, "paymentMethod");
   const angler1Membership = membership(text(formData, "angler1Membership"));
@@ -83,7 +82,6 @@ export async function createWalkUpRegistrationAction(
 
   if (
     !tournamentId || !["solo", "team"].includes(registrationType)
-    || !Number.isSafeInteger(boatNumber) || boatNumber <= 0
     || !Number.isFinite(totalPaid) || totalPaid < 0
     || !["cash", "card", "other"].includes(paymentMethod)
     || anglers.some((angler) => !angler.firstName || !angler.lastName || !angler.streetAddress || !angler.city || !angler.state || !angler.zipCode || !angler.email || !angler.mobilePhone || !angler.membership)
@@ -96,12 +94,11 @@ export async function createWalkUpRegistrationAction(
     ? memberPotValue
     : null;
   const { error } = await createSupabaseServerClient().rpc(
-    "admin_create_walkup_registration",
+    "admin_create_sequential_walkup_registration",
     {
       p_tournament_id: tournamentId,
       p_registration_type: registrationType,
       p_anglers: anglers,
-      p_boat_number: boatNumber,
       p_options: {
         bigBass: formData.get("bigBass") === "on",
         memberPot,
@@ -190,13 +187,39 @@ export async function resolveRegistrationContactReviewAction(
   const reviewId = text(formData, "reviewId");
   const decision = text(formData, "decision");
   const reviewNote = text(formData, "reviewNote") || null;
-  if (!reviewId || (decision !== "approve" && decision !== "keep")) {
+  if (
+    !reviewId ||
+    (decision !== "approve" && decision !== "keep" && decision !== "different")
+  ) {
     return { status: "error", message: "Select a valid contact review action." };
   }
   try {
-    await resolveRegistrationContactReview({ reviewId, approve: decision === "approve", adminUserId: admin.id, reviewNote });
+    if (decision === "different") {
+      await resolveRegistrationIdentityReview({
+        reviewId,
+        resolution: "new",
+        existingAnglerId: null,
+        adminUserId: admin.id,
+        reviewNote,
+      });
+    } else {
+      await resolveRegistrationContactReview({
+        reviewId,
+        approve: decision === "approve",
+        adminUserId: admin.id,
+        reviewNote,
+      });
+    }
     revalidateRegistrationOperations();
-    return { status: "success", message: decision === "approve" ? "Member contact information updated." : "Existing member information retained." };
+    return {
+      status: "success",
+      message:
+        decision === "approve"
+          ? "Member contact information updated."
+          : decision === "keep"
+            ? "Existing member information retained."
+            : "Different person approved as a new angler.",
+    };
   } catch (error) {
     console.error("Registration contact review failed.", error);
     return { status: "error", message: "The member contact review could not be resolved." };
