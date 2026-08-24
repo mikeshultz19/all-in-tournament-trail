@@ -35,8 +35,7 @@ describe("Tournament Operations Dashboard", () => {
   it("shows the compact six-stage lifecycle", () => {
     expect(markup).toContain("Prepare Tournament");
     expect(markup).toContain("Import Results");
-    expect(markup).toContain("Insurance Pot");
-    expect(markup).toContain("Generate Checks");
+    expect(markup).toContain("Payout Summary");
     expect(markup).toContain("Publish Results");
     expect(markup).toContain("Calculate AOY");
     expect(markup.match(/aria-expanded="true"/g) ?? []).toHaveLength(1);
@@ -56,12 +55,7 @@ describe("Tournament Operations Dashboard", () => {
 
   it("shows every publishing workspace when prerequisites are complete", () => {
     const readyMarkup = renderPublishReadyDashboardFixture();
-    for (const label of [
-      "Publish Results",
-      "Final Website Check",
-      "Winner Photos",
-      "Preview Website",
-    ]) {
+    for (const label of ["Publish Results", "Final Website Check", "Winner Photos", "Preview Website"]) {
       expect(readyMarkup).toContain(label);
     }
     expect(readyMarkup).toContain("Everything is complete. Publish the tournament to the website.");
@@ -121,23 +115,19 @@ describe("Tournament Operations Dashboard", () => {
     expect(verifiedMarkup).not.toContain("Verify Imported Results");
   });
 
-  it("shows the generated ordered payout list after verification", () => {
+  it("shows the approved payout summary after verification", () => {
     const payoutMarkup = renderPayoutReadyDashboardFixture();
-    for (const label of [
-      "Checks to Write",
-      "Base Tournament",
-      "Bronze Pot",
-      "Silver Pot",
-      "Gold Pot",
-      "Big Bass — 1st Place",
-      "Big Bass — 2nd Place",
-      "Insurance Pot",
-      "Complete Tournament",
-    ]) {
-      expect(payoutMarkup).toContain(label);
-    }
+    expect(payoutMarkup).toContain("Payout Summary");
+    expect(payoutMarkup).toContain("Base Tournament");
+    expect(payoutMarkup).toContain("Bronze Pot");
+    expect(payoutMarkup).toContain("Silver Pot");
+    expect(payoutMarkup).toContain("Gold Pot");
+    expect(payoutMarkup).toContain("Big Bass");
+    expect(payoutMarkup).toContain("1st Place");
+    expect(payoutMarkup).toContain("2nd Place");
+    expect(payoutMarkup).toContain("Insurance Pot");
     expect(payoutMarkup).not.toContain("Reconciliation");
-    expect(payoutMarkup).toContain("Checks Generated");
+    expect(payoutMarkup).toContain("APPROVE PAYOUTS");
   });
 
   it("keeps unrelated modules off the operations dashboard", () => {

@@ -3,7 +3,7 @@ import Link from "next/link";
 import PrintRegistrationRosterButton from "@/components/admin/PrintRegistrationRosterButton";
 import { adminButtonStyles } from "@/components/admin/admin-button-styles";
 import { requireAdminUser } from "@/lib/admin-auth";
-import { getTournamentRegistrationRoster, summarizeTournamentRegistrationRoster } from "@/lib/tournament-registration-roster";
+import { filterTournamentRegistrationRosterRows, getTournamentRegistrationRoster, summarizeTournamentRegistrationRoster, type RegistrationRosterFilter } from "@/lib/tournament-registration-roster";
 import { getTournamentByIdentifier } from "@/lib/tournaments";
 import { formatRosterGeneratedAt } from "@/lib/tournament-time";
 
@@ -11,10 +11,12 @@ export const dynamic = "force-dynamic";
 
 export default async function RegistrationPrintPage({ searchParams }: { searchParams: Promise<{ tournament?: string }> }) {
   await requireAdminUser();
-  const { tournament: identifier } = await searchParams;
+  const { tournament: identifier, filter: requestedFilter, search: requestedSearch } = await searchParams as { tournament?: string; filter?: string; search?: string };
   const tournament = identifier ? await getTournamentByIdentifier(identifier) : null;
   if (!tournament) return <p className="p-6 text-white">A valid tournament is required.</p>;
-  const rows = await getTournamentRegistrationRoster(tournament.id);
+  const filter: RegistrationRosterFilter = requestedFilter === "needs_review" || requestedFilter === "walk_ups" || requestedFilter === "check_ins" ? requestedFilter : "all";
+  const search = requestedSearch?.trim() ?? "";
+  const rows = filterTournamentRegistrationRosterRows(await getTournamentRegistrationRoster(tournament.id), filter, search);
   const summary = summarizeTournamentRegistrationRoster(rows);
   return <div className="fixed inset-0 z-[100] overflow-y-auto bg-white text-black print:static print:z-auto print:overflow-visible">
     <style>{`@page { size: landscape; margin: 0.4in; }`}</style>

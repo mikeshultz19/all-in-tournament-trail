@@ -16,15 +16,17 @@ describe("AdminSidebar", () => {
     usePathname.mockReturnValue("/admin/announcements");
   });
 
-  it("shows the six primary Admin Console destinations", () => {
+  it("shows the primary Admin Console destinations", () => {
     const markup = renderToStaticMarkup(<AdminSidebar />);
 
     expect(markup).toContain("Home");
     expect(markup).toContain("Tournament Manager");
-    expect(markup).toContain("Members");
+    expect(markup).toContain("All Members");
     expect(markup).toContain("Website");
     expect(markup).toContain("All Registrations");
     expect(markup).toContain("Settings");
+    expect(markup).not.toContain("Rules");
+    expect(markup).not.toContain("FAQ");
     expect(markup).toContain('href="/admin/tournament-manager"');
     expect(markup).not.toContain("Registration &amp; Check-In");
     expect(markup).not.toContain('href="/admin/registration-review"');

@@ -295,7 +295,7 @@ export default function FeaturedTournament({
           )}
           <Link
             href="/registrations"
-            className="block w-full cursor-pointer border border-[#4A3A12] px-3 py-2.5 text-center text-[9px] font-black uppercase tracking-[0.1em] text-yellow-400 transition hover:border-yellow-600 hover:text-yellow-300 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#D4A017]"
+            className="block w-full cursor-pointer border border-[#6B5318] bg-gradient-to-b from-zinc-950 via-[#220909] to-[#120404] px-3 py-2.5 text-center text-[9px] font-black uppercase tracking-[0.1em] text-yellow-400 transition hover:border-[#8A6A20] hover:bg-gradient-to-b hover:from-[#1A0606] hover:via-[#2B0D0D] hover:to-[#170505] hover:text-yellow-300 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#D4A017]"
           >
             View Tournament Entries
           </Link>

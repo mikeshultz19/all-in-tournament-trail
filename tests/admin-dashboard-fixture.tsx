@@ -147,12 +147,56 @@ export function renderPublishReadyDashboardFixture(): string {
       initialTournamentId={readyTournament.id}
       comparisonDate="2026-07-23T12:00:00-05:00"
       showTournamentTools
-      initialExpandedStage={5}
+      initialExpandedStage={4}
       importEvidence={{ [readyTournament.id]: { tournamentId: readyTournament.id, persistedRowCount: 1 } }}
       importedRows={{ [readyTournament.id]: [{ id: "row-1", place: 1, team_name: "Smith / Jones", total_weight: 22.4, big_fish_weight: 6.1, bronze_payout: 100, silver_payout: 200, gold_payout: 300, original_import_data: sourceRow }] }}
       resultsRecords={{ [readyTournament.id]: { id: "results-1", tournament_id: readyTournament.id, entries: [{ place: 1, team: "Smith / Jones", weight: 22.4, kind: "final", baseWinnings: 1200, sidePot: "bronze", sidePotPlacement: 1, sidePotWeight: 6.1, sidePotPayout: 100 }], total_payout: 2200, bronze_payout: 100, silver_payout: 200, gold_payout: 300, insurance_pot_payout: 0, big_bass_angler: "Smith / Jones", big_bass_team: "Smith / Jones", big_bass_weight: 6.1, big_bass_payout: 400, champion_image_url: null, big_bass_image_url: null, published_at: "2026-08-02T12:15:00Z", created_at: "", updated_at: "" } }}
       insuranceResults={{ [readyTournament.id]: { id: "insurance-zero", tournament_id: readyTournament.id, entry_count: 0, total_pot_cents: 0, places_paid: 0, calculated_payouts: [], winners: [], published: false, published_at: null, created_at: "", updated_at: "" } }}
       closeouts={{ [readyTournament.id]: { id: "draft", tournament_id: readyTournament.id, source_file_name: "Final Tournament Checks", source_rows: [sourceRow], entry_count: 1, total_collected_cents: 100000, total_paid_cents: 220000, trail_retained_cents: 0, difference_cents: 0, checks: finalChecks, status: "complete", completed_at: "2026-08-02T12:10:00Z", completed_by_admin_id: null, created_at: "", updated_at: "" } }}
+    />,
+  );
+}
+
+export function renderPublishReadyDashboardWithManualReviewFixture(): string {
+  const readyTournament: Tournament = {
+    ...tournaments[0],
+    weighfish_imported: true,
+    weighfish_imported_at: "2026-08-02T12:00:00Z",
+    results_verified_at: "2026-08-02T12:05:00Z",
+    results_verified_by: "admin-1",
+    result_status: "ready_to_publish",
+    photos_reviewed: true,
+    champion_photo_url: "https://example.com/champ.jpg",
+    big_bass_photo_url: "https://example.com/bass.jpg",
+  };
+  const sourceRow = {
+    id: "row-4",
+    place: 4,
+    team_name: "Joe Johnson / Solo PhoneMatch",
+    fish_count: 0,
+    total_weight: 0,
+    big_fish_weight: null,
+    base_payout: 0,
+    bronze_payout: 0,
+    silver_payout: 0,
+    gold_payout: 0,
+    big_bass_payout: 0,
+    participation_status: "participated",
+  } as any;
+  return renderToStaticMarkup(
+    <AdminTournamentDashboard
+      tournaments={[readyTournament]}
+      initialTournamentId={readyTournament.id}
+      comparisonDate="2026-07-23T12:00:00-05:00"
+      showTournamentTools
+      initialExpandedStage={4}
+      importEvidence={{ [readyTournament.id]: { tournamentId: readyTournament.id, persistedRowCount: 1 } }}
+      importedRows={{ [readyTournament.id]: [sourceRow] as any }}
+      resultsRecords={{ [readyTournament.id]: { id: "results-1", tournament_id: readyTournament.id, entries: [], total_payout: 0, bronze_payout: 0, silver_payout: 0, gold_payout: 0, insurance_pot_payout: 0, big_bass_angler: null, big_bass_team: null, big_bass_weight: null, big_bass_payout: null, champion_image_url: null, big_bass_image_url: null, published_at: "2026-08-02T12:15:00Z", created_at: "", updated_at: "" } }}
+      insuranceResults={{ [readyTournament.id]: { id: "insurance-zero", tournament_id: readyTournament.id, entry_count: 0, total_pot_cents: 0, places_paid: 0, calculated_payouts: [], winners: [], published: false, published_at: null, created_at: "", updated_at: "" } }}
+      closeouts={{ [readyTournament.id]: { id: "draft", tournament_id: readyTournament.id, source_file_name: "Final Tournament Checks", source_rows: [sourceRow] as any, entry_count: 1, total_collected_cents: 100000, total_paid_cents: 100000, trail_retained_cents: 0, difference_cents: 0, checks: [] as any, status: "complete", completed_at: "2026-08-02T12:10:00Z", completed_by_admin_id: null, created_at: "", updated_at: "" } as any }}
+      manualReviewRows={{ [readyTournament.id]: [{ resultId: "row-4", place: 4, teamName: "Joe Johnson / Solo PhoneMatch", reason: "No unique active registration matches \"Joe Johnson / Solo PhoneMatch\" exactly." }] }}
+      publishReviewRegistrations={{ [readyTournament.id]: [{ id: "reg-1", tournament_id: readyTournament.id, boat_number: 1, registration_type: "team", angler1_name: "Joe Johnson", angler2_name: "Bill Stephens", competitive_record_id: "record-1", identity_review_status: "verified", membership_snapshot: [{ eligibleForTournament: true }, { eligibleForTournament: true }] }] }}
     />,
   );
 }
@@ -331,7 +375,7 @@ export function renderPayoutReadyDashboardFixture(): string {
       initialTournamentId={readyTournament.id}
       comparisonDate="2026-07-23T12:00:00-05:00"
       showTournamentTools
-      initialExpandedStage={4}
+      initialExpandedStage={3}
       importEvidence={{ [readyTournament.id]: { tournamentId: readyTournament.id, persistedRowCount: 1 } }}
       importedRows={{
         [readyTournament.id]: [
@@ -444,7 +488,7 @@ export function renderStaleFinalChecksDashboardFixture(): string {
       initialTournamentId={readyTournament.id}
       comparisonDate="2026-07-23T12:00:00-05:00"
       showTournamentTools
-      initialExpandedStage={4}
+      initialExpandedStage={3}
       importEvidence={{ [readyTournament.id]: { tournamentId: readyTournament.id, persistedRowCount: 1 } }}
       importedRows={{
         [readyTournament.id]: [

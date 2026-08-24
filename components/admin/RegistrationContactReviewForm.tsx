@@ -25,15 +25,30 @@ const labels: Record<string, string> = {
   phone: "Phone",
 };
 
+export function getMatchedByLabel(reviewReason: string): string {
+  if (/email and phone are associated with different/i.test(reviewReason)) {
+    return "Email and Phone";
+  }
+  if (/submitted email is already associated/i.test(reviewReason)) {
+    return "Email";
+  }
+  if (/submitted phone is already associated/i.test(reviewReason)) {
+    return "Phone";
+  }
+  return "Contact Information";
+}
+
 export default function RegistrationContactReviewForm({
   reviewId,
   participantName,
+  reviewReason,
   existing,
   submitted,
   differingFields,
 }: {
   reviewId: string;
   participantName: string;
+  reviewReason: string;
   existing: RegistrationContact;
   submitted: RegistrationContact;
   differingFields: string[];
@@ -52,6 +67,10 @@ export default function RegistrationContactReviewForm({
       <p className="text-xs text-neutral-300">
         <strong className="text-white">{participantName}</strong> — Contact
         information mismatch
+      </p>
+      <p className="text-xs text-neutral-300">
+        <strong className="text-white">Matched by:</strong>{" "}
+        {getMatchedByLabel(reviewReason)}
       </p>
       <p className="text-xs text-amber-300">
         <strong>Differences:</strong>{" "}

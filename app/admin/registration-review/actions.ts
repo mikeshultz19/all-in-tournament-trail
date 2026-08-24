@@ -5,6 +5,10 @@ import { revalidatePath } from "next/cache";
 import { requireAdminUser } from "@/lib/admin-auth";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import {
+  createWalkUpRegistrationDraft,
+  type WalkUpRegistrationDraft,
+} from "@/lib/walk-up-registration-form";
+import {
   reopenRegistrationIdentityReview,
   resolveRegistrationContactReview,
   resolveHistoricalMembershipReview,
@@ -19,6 +23,7 @@ export interface RegistrationReviewActionState {
 export interface RegistrationOperationsActionState {
   status: "idle" | "success" | "error";
   message: string;
+  draft?: WalkUpRegistrationDraft;
 }
 
 function text(formData: FormData, name: string) {
@@ -46,6 +51,7 @@ export async function createWalkUpRegistrationAction(
 ): Promise<RegistrationOperationsActionState> {
   void _previousState;
   const admin = await requireAdminUser();
+  const draft = createWalkUpRegistrationDraft(formData);
   const tournamentId = text(formData, "tournamentId");
   const registrationType = text(formData, "registrationType");
   const totalPaid = Number(text(formData, "totalPaid"));
@@ -86,7 +92,7 @@ export async function createWalkUpRegistrationAction(
     || !["cash", "card", "other"].includes(paymentMethod)
     || anglers.some((angler) => !angler.firstName || !angler.lastName || !angler.streetAddress || !angler.city || !angler.state || !angler.zipCode || !angler.email || !angler.mobilePhone || !angler.membership)
   ) {
-    return { status: "error", message: "Complete all required walk-up registration fields." };
+    return { status: "error", message: "Complete all required walk-up registration fields.", draft };
   }
 
   const memberPotValue = text(formData, "memberPot");
@@ -112,7 +118,7 @@ export async function createWalkUpRegistrationAction(
 
   if (error) {
     console.error("Walk-up registration save failed.", error);
-    return { status: "error", message: "The walk-up registration could not be saved. Verify the identity and membership selections." };
+    return { status: "error", message: "The walk-up registration could not be saved. Verify the identity and membership selections.", draft };
   }
 
   revalidateRegistrationOperations();

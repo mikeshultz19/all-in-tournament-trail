@@ -26,6 +26,9 @@ export interface TournamentRegistrationRosterRow {
   id: string;
   registrationKey: string;
   registeredAt: string;
+  angler1Id?: string | null;
+  angler2Id?: string | null;
+  membershipSnapshot?: readonly MembershipSnapshot[] | null;
   registrationPeriod: "Early Online" | "Walk-Up";
   registrationSource: "online" | "walk_up";
   boatNumber: number | null;
@@ -65,6 +68,8 @@ export interface TournamentRegistrationRosterSummary {
   paid: number;
   needReview: number;
 }
+
+export type RegistrationRosterFilter = "all" | "needs_review" | "walk_ups" | "check_ins";
 
 type PriceLineItem = { code?: string; name?: string; priceCents?: number };
 type PriceSnapshot = {
@@ -137,6 +142,49 @@ function makeAngler(name: string, id: string | null, snapshot: MembershipSnapsho
   };
 }
 
+function toTitleCase(value: string | null | undefined): string {
+  const normalized = value?.trim() ?? "";
+  if (!normalized) return "";
+  return normalized
+    .toLocaleLowerCase("en-US")
+    .replace(/\b([a-z])/g, (character) => character.toLocaleUpperCase("en-US"));
+}
+
+function makeSubmittedAngler(
+  submittedName: string,
+  submittedContact: RegistrationParticipantContactSnapshot | null | undefined,
+  snapshot: MembershipSnapshot | undefined,
+): RegistrationRosterAngler {
+  const firstName = submittedContact?.firstName?.trim() || "";
+  const lastName = submittedContact?.lastName?.trim() || "";
+  const displayName = [firstName, lastName].filter(Boolean).join(" ").trim() || submittedName.trim();
+  return {
+    firstName: toTitleCase(firstName || null) || null,
+    lastName: toTitleCase(lastName || null) || null,
+    displayName: toTitleCase(displayName || null) || displayName || submittedName,
+    membership: membershipLabel(snapshot),
+    memberStatus: deriveRegistrationMemberStatus(snapshot),
+    eligibleForTournament: snapshot?.eligibleForTournament === true,
+    email: submittedContact?.email?.trim() || null,
+    phone: submittedContact?.phone?.trim() || null,
+  };
+}
+
+export function buildRosterAngler(
+  name: string,
+  id: string | null,
+  snapshot: MembershipSnapshot | undefined,
+  names: Map<string, AnglerNameRow>,
+  submittedContact: RegistrationParticipantContactSnapshot | null | undefined,
+  useSubmittedIdentity: boolean,
+): RegistrationRosterAngler {
+  if (useSubmittedIdentity) {
+    return makeSubmittedAngler(name, submittedContact, snapshot);
+  }
+
+  return makeAngler(name, id, snapshot, names);
+}
+
 async function loadUnresolvedReviewRegistrationIds(
   registrationIds: readonly string[],
 ): Promise<Set<string>> {
@@ -166,9 +214,27 @@ function toRosterRow(
   unresolvedReviewIds: ReadonlySet<string>,
 ): TournamentRegistrationRosterRow {
   const memberships = row.membership_snapshot ?? [];
-  const angler1 = makeAngler(row.angler1_name, row.angler1_id, memberships[0], names);
+  const useSubmittedIdentity =
+    row.identity_review_status === "review_required" ||
+    unresolvedReviewIds.has(row.id);
+  const angler1 = buildRosterAngler(
+    row.angler1_name,
+    row.angler1_id,
+    memberships[0],
+    names,
+    row.participant_contact_snapshot?.[0],
+    useSubmittedIdentity,
+  );
   const angler2 = row.registration_type === "team" && row.angler2_name
-    ? makeAngler(row.angler2_name, row.angler2_id, memberships[1], names) : null;
+    ? buildRosterAngler(
+      row.angler2_name,
+      row.angler2_id,
+      memberships[1],
+      names,
+      row.participant_contact_snapshot?.[1],
+      useSubmittedIdentity,
+    )
+    : null;
   const entryAmountCents = lineAmount(row.price_snapshot, (item) => item.code === "base_entry" || item.name === "Tournament Entry");
   const membershipAmountCents = lineAmount(row.price_snapshot, (item) => item.code === "annual_membership" || Boolean(item.name?.endsWith(" Membership")));
   const bigBassAmountCents = lineAmount(row.price_snapshot, (item) => item.code === "big_bass" || item.name === "Big Bass");
@@ -185,6 +251,8 @@ function toRosterRow(
   const membershipDetails = [angler1, angler2].filter((angler): angler is RegistrationRosterAngler => Boolean(angler)).map((angler, index) => `Angler ${index + 1}: ${angler.membership}`);
   return {
     id: row.id, registrationKey: row.registration_key, registeredAt: row.registered_at,
+    angler1Id: row.angler1_id, angler2Id: row.angler2_id,
+    membershipSnapshot: row.membership_snapshot,
     registrationPeriod: row.registration_source === "walk_up" ? "Walk-Up" : "Early Online",
     registrationSource: row.registration_source, boatNumber: row.boat_number,
     paymentMethod: row.payment_method, registrationType: row.registration_type,
@@ -216,6 +284,69 @@ export function summarizeTournamentRegistrationRoster<T extends Pick<TournamentR
         row.entryStatus === "Needs Review" ||
         row.paymentStatus !== "Paid",
     ).length,
+  };
+}
+
+export function registrationMatchesRosterSearch(
+  row: TournamentRegistrationRosterRow,
+  search: string,
+) {
+  const normalizedSearch = search.toLocaleLowerCase("en-US");
+  const teamName =
+    `${row.angler1.displayName} / ${row.angler2?.displayName ?? ""}`.toLocaleLowerCase("en-US");
+  const nameMatches =
+    teamName.includes(normalizedSearch) ||
+    row.angler1.displayName.toLocaleLowerCase("en-US").includes(normalizedSearch) ||
+    row.angler2?.displayName.toLocaleLowerCase("en-US").includes(normalizedSearch) === true;
+  const boatMatches = /^\d+$/.test(search) && String(row.boatNumber) === search;
+  return nameMatches || boatMatches;
+}
+
+export function filterTournamentRegistrationRosterRows(
+  rows: readonly TournamentRegistrationRosterRow[],
+  filter: RegistrationRosterFilter,
+  search: string,
+): TournamentRegistrationRosterRow[] {
+  const filteredRows =
+    filter === "needs_review"
+      ? rows.filter((row) => row.needsReview)
+      : filter === "walk_ups"
+        ? rows
+            .filter((row) => row.registrationSource === "walk_up")
+            .toSorted(
+              (left, right) =>
+                (left.boatNumber ?? Number.MAX_SAFE_INTEGER) -
+                  (right.boatNumber ?? Number.MAX_SAFE_INTEGER) ||
+                left.registeredAt.localeCompare(right.registeredAt),
+            )
+        : filter === "check_ins"
+          ? rows.filter((row) => row.checkedInAt === null)
+        : [...rows];
+
+  return search.trim()
+    ? filteredRows.filter((row) =>
+        registrationMatchesRosterSearch(row, search.trim()),
+      )
+    : filteredRows;
+}
+
+export function paginateTournamentRegistrationRosterRows(
+  rows: readonly TournamentRegistrationRosterRow[],
+  page: number,
+  pageSize: 25 | 50 | 100,
+) {
+  const totalRows = rows.length;
+  const totalPages = Math.max(1, Math.ceil(totalRows / pageSize));
+  const currentPage = Number.isFinite(page) && page > 0 ? Math.min(page, totalPages) : 1;
+  const startIndex = totalRows ? (currentPage - 1) * pageSize : 0;
+  const pageRows = rows.slice(startIndex, startIndex + pageSize);
+  return {
+    pageRows,
+    totalRows,
+    totalPages,
+    currentPage,
+    rangeStart: totalRows ? startIndex + 1 : 0,
+    rangeEnd: totalRows ? Math.min(startIndex + pageRows.length, totalRows) : 0,
   };
 }
 

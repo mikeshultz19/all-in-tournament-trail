@@ -3,7 +3,8 @@ import Link from "next/link";
 import OnSiteCloseoutCalculator from "@/components/admin/OnSiteCloseoutCalculator";
 import type { ImportedRow } from "@/components/admin/ImportedResultsReview";
 import { listTournamentImportedRows } from "@/lib/tournament-import-evidence";
-import { getTournamentInsurancePotResult } from "@/lib/insurance-pot-results";
+import { calculateTournamentInsurancePotResult, getTournamentInsurancePotResult } from "@/lib/insurance-pot-results";
+import { isInsurancePotWinnerDraftComplete } from "@/lib/insurance-pot";
 import { getOnSiteCloseout } from "@/lib/on-site-closeout";
 import { getTournamentByIdentifier } from "@/lib/tournaments";
 import type { OnSiteCloseoutRecord } from "@/types/on-site-closeout";
@@ -27,11 +28,20 @@ export default async function OnSiteCloseoutPage({
   let importedRows: Record<string, ImportedRow[]> = {};
 
   if (tournament) {
-    [initialCloseout, insuranceResult, importedRows] = await Promise.all([
+    const [loadedCloseout, loadedImportedRows, savedInsuranceResult] = await Promise.all([
       getOnSiteCloseout(tournament.id),
-      getTournamentInsurancePotResult(tournament.id),
       listTournamentImportedRows([tournament.id]),
+      getTournamentInsurancePotResult(tournament.id),
     ]);
+    initialCloseout = loadedCloseout;
+    importedRows = loadedImportedRows;
+    insuranceResult = savedInsuranceResult && isInsurancePotWinnerDraftComplete({
+      entryCount: savedInsuranceResult.entry_count,
+      totalPotCents: savedInsuranceResult.total_pot_cents,
+      placesPaid: savedInsuranceResult.places_paid,
+      winners: savedInsuranceResult.winners,
+      published: savedInsuranceResult.published,
+    }) ? savedInsuranceResult : await loadComputedInsuranceResult(tournament.id);
   }
 
   const initialImportedRows = tournament
@@ -45,13 +55,13 @@ export default async function OnSiteCloseoutPage({
       <Link
         href={
           identifier
-            ? `/admin/tournament-manager?tournament=${encodeURIComponent(identifier)}&step=4`
-            : "/admin/tournament-manager?step=4"
+            ? `/admin/tournament-manager?tournament=${encodeURIComponent(identifier)}&step=3`
+            : "/admin/tournament-manager?step=3"
         }
         className="inline-flex min-h-11 items-center gap-2 text-xs font-black uppercase tracking-[0.14em] text-neutral-400 hover:text-[#D4A017]"
       >
         <ArrowLeft className="size-4" />
-        Back to Generate Checks
+        Back to Payout Summary
       </Link>
 
       <header className="mt-6 border-b border-white/10 pb-6">
@@ -94,4 +104,25 @@ export default async function OnSiteCloseoutPage({
       )}
     </>
   );
+}
+
+async function loadComputedInsuranceResult(
+  tournamentId: string,
+): Promise<TournamentInsurancePotResultRecord | null> {
+  const result = await calculateTournamentInsurancePotResult(tournamentId);
+  if (!result) return null;
+  const now = new Date().toISOString();
+  return {
+    id: `computed-${tournamentId}`,
+    tournament_id: tournamentId,
+    entry_count: result.entryCount,
+    total_pot_cents: result.totalPotCents,
+    places_paid: result.placesPaid,
+    calculated_payouts: result.winners.map((winner) => winner.amountCents),
+    winners: result.winners,
+    published: result.published,
+    published_at: result.publishedAt ?? null,
+    created_at: now,
+    updated_at: now,
+  };
 }

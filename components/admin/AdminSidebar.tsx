@@ -20,7 +20,7 @@ const navigationItems: NavigationItem[] = [
       "/admin/results",
     ],
   },
-  { href: "/admin/members", label: "Members" },
+  { href: "/admin/members", label: "All Members" },
   { href: "/admin/registrations", label: "All Registrations" },
   {
     href: "/admin/tournament",
@@ -31,16 +31,6 @@ const navigationItems: NavigationItem[] = [
     href: "/admin/announcements",
     label: "Announcements",
     activePaths: ["/admin/announcements"],
-  },
-  {
-    href: "/admin/rules",
-    label: "Rules",
-    activePaths: ["/admin/rules"],
-  },
-  {
-    href: "/admin/faq",
-    label: "FAQ",
-    activePaths: ["/admin/faq"],
   },
   {
     href: "/admin/forms",

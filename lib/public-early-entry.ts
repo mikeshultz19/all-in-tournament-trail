@@ -4,6 +4,7 @@ export interface EarlyRegistrationRecord {
   id: string;
   tournamentSlug: string;
   registeredAt: string;
+  boatNumber: number | null;
   registrationType: RegistrationType;
   angler1: { publicDisplayName: string; email: string; phone: string };
   angler2: { publicDisplayName: string; email: string; phone: string } | null;
@@ -15,6 +16,7 @@ export interface EarlyRegistrationRecord {
 }
 
 export interface PublicEarlyEntry {
+  boatNumber: number | null;
   registeredAt: string;
   entryMode: RegistrationType;
   angler1DisplayName: string;
@@ -40,6 +42,7 @@ export function toPublicEarlyEntry(
   registration: EarlyRegistrationRecord,
 ): PublicEarlyEntry {
   return {
+    boatNumber: registration.boatNumber,
     registeredAt: registration.registeredAt,
     entryMode: registration.registrationType,
     angler1DisplayName: registration.angler1.publicDisplayName,

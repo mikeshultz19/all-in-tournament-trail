@@ -64,20 +64,23 @@ describe("Admin All Registrations", () => {
 
   it("provides contact snapshots, review history, and responsive detail UI", () => {
     const page = readFileSync("app/admin/registrations/page.tsx", "utf8");
-    expect(page).toContain("View Full Registration");
-    expect(page).toContain("Submitted Participants");
-    expect(page).toContain("contact.streetAddress");
-    expect(page).toContain("Needs Attention / Review History");
-    expect(page).toContain("review.resolvedAt");
-    expect(page).toContain("dateTime(item.createdAt)");
-    expect(page).toContain("Payment &amp; Pricing");
-    expect(page).toContain('Metric label="Amount Paid"');
-    expect(page).toContain("row.paymentReference");
-    expect(page).toContain("row.squarePaymentId");
-    expect(page).toContain('className="mt-4 grid gap-5 lg:grid-cols-2"');
-    expect(page).toContain("RegistrationEditControl");
-    expect(page).toContain('row.status === "active"');
-    expect(page).not.toContain("overflow-x-auto");
+    const list = readFileSync("components/admin/RegistrationHistoryList.tsx", "utf8");
+    expect(page).toContain("RegistrationHistoryList rows={rows}");
+    expect(page).toContain("Search registrations across every tournament");
+    expect(list).toContain("Boat #");
+    expect(list).toContain("Tournament");
+    expect(list).toContain("Participants");
+    expect(list).toContain("Registration / Status");
+    expect(list).toContain("Member Status");
+    expect(list).toContain("Payment / Paid");
+    expect(list).toContain("Registered");
+    expect(list).toContain("Submitted Participants");
+    expect(list).toContain("Payment &amp; Pricing");
+    expect(list).toContain("Membership Snapshot");
+    expect(list).toContain("Needs Attention / Review History");
+    expect(list).toContain("RegistrationEditControl");
+    expect(list).toContain("group-open:rotate-180");
+    expect(list).not.toContain("View Full Registration");
   });
 
   it("retains resolved review history outside the operational roster", () => {
@@ -97,7 +100,7 @@ describe("Admin All Registrations", () => {
     const operationalPage = readFileSync("app/admin/registration-review/page.tsx", "utf8");
     const sidebar = readFileSync("components/admin/AdminSidebar.tsx", "utf8");
     expect(operationalPage).toContain("getTournamentRegistrationRoster(selectedTournament.id)");
-    expect(sidebar.indexOf('label: "Members"')).toBeLessThan(sidebar.indexOf('label: "All Registrations"'));
+    expect(sidebar.indexOf('label: "All Members"')).toBeLessThan(sidebar.indexOf('label: "All Registrations"'));
     expect(sidebar).not.toContain('label: "Registration & Check-In"');
   });
 });

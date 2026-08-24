@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import Link from "next/link";
-import { Banknote, CalendarDays, Check, ChevronDown, ClipboardCheck, FileUp, Globe2, ShieldCheck, Trophy, type LucideIcon } from "lucide-react";
+import { Banknote, CalendarDays, Check, ChevronDown, ClipboardCheck, FileUp, Globe2, Trophy, type LucideIcon } from "lucide-react";
 import { getInitialAdminTournament } from "@/lib/admin-tournaments";
 import type { Tournament } from "@/types/tournament";
 import type { OnSiteCloseoutRecord } from "@/types/on-site-closeout";
@@ -14,18 +14,20 @@ import type { TournamentRegistrationRosterSummary } from "@/lib/tournament-regis
 import type { TournamentCollectionSummary } from "@/lib/tournament-collection-calculator";
 import WeighfishCsvUploader from "@/components/admin/WeighfishCsvUploader";
 import ImportedResultsReview, { type ImportedRow } from "@/components/admin/ImportedResultsReview";
-import InsurancePotWorkflow from "@/components/admin/InsurancePotWorkflow";
 import OnSiteCloseoutCalculator from "@/components/admin/OnSiteCloseoutCalculator";
 import PublishTournamentForm from "@/components/admin/PublishTournamentForm";
+import PublishHistoricalResultReview from "@/components/admin/PublishHistoricalResultReview";
 import StaleOfficialResultsReset from "@/components/admin/StaleOfficialResultsReset";
 import PrepareMembershipReminder from "@/components/admin/PrepareMembershipReminder";
 import AdminPanel from "@/components/admin/AdminPanel";
 import AdminStatusBadge from "@/components/admin/AdminStatusBadge";
 import { adminButtonStyles } from "@/components/admin/admin-button-styles";
 import type { TournamentResultsRecord } from "@/types/results";
-import { isInsurancePotWinnerDraftComplete } from "@/lib/insurance-pot";
 import { getTournamentPreparationStatus } from "@/lib/tournament-preparation";
 import TournamentRegistrationAvailabilityControl from "@/components/admin/TournamentRegistrationAvailabilityControl";
+import { formatMembershipSummary } from "@/lib/publish-historical-review";
+import type { TournamentPublishReviewRegistration } from "@/lib/tournament-publish-readiness";
+import type { HistoricalReviewRow } from "@/components/admin/PublishHistoricalResultReview";
 
 interface AdminTournamentDashboardProps {
   tournaments: readonly Tournament[];
@@ -40,33 +42,38 @@ interface AdminTournamentDashboardProps {
   registrationSummaries?: Record<string, TournamentRegistrationRosterSummary>;
   importedRows?: Record<string, ImportedRow[]>;
   resultsRecords?: Record<string, TournamentResultsRecord>;
+  manualReviewRows?: Record<string, HistoricalReviewRow[]>;
+  publishReviewRegistrations?: Record<string, TournamentPublishReviewRegistration[]>;
   collectionSummaries?: Record<string, TournamentCollectionSummary>;
 }
 
 const stageIcons: Record<StageNumber, LucideIcon> = {
   1: ClipboardCheck,
   2: FileUp,
-  3: ShieldCheck,
-  4: Banknote,
-  5: Globe2,
-  6: Trophy,
+  3: Banknote,
+  4: Globe2,
+  5: Trophy,
 };
 
-export default function AdminTournamentDashboard({ tournaments, initialTournamentId, comparisonDate, showTournamentTools = false, closeouts = {}, insuranceResults = {}, importEvidence = {}, initialExpandedStage, supplementalEvidence = {}, registrationSummaries = {}, importedRows = {}, resultsRecords = {} }: AdminTournamentDashboardProps) {
+export default function AdminTournamentDashboard({ tournaments, initialTournamentId, comparisonDate, showTournamentTools = false, closeouts = {}, insuranceResults = {}, importEvidence = {}, initialExpandedStage, supplementalEvidence = {}, registrationSummaries = {}, importedRows = {}, resultsRecords = {}, manualReviewRows = {}, publishReviewRegistrations = {} }: AdminTournamentDashboardProps) {
   const initialTournament = getInitialAdminTournament(tournaments, new Date(comparisonDate), initialTournamentId);
-  const [currentTournament, setCurrentTournament] = useState(initialTournament);
-  const stages = useMemo(() => currentTournament ? resolveTournamentWorkflowState(currentTournament, { tournamentId: currentTournament.id, importEvidence: importEvidence[currentTournament.id], insuranceResult: insuranceResults[currentTournament.id], closeout: closeouts[currentTournament.id], officialPublicationExists: supplementalEvidence[currentTournament.id]?.officialPublicationExists ?? false, aoyCalculationExists: supplementalEvidence[currentTournament.id]?.aoyCalculationExists ?? false, aoyCurrentProjectionExists: supplementalEvidence[currentTournament.id]?.aoyCurrentProjectionExists ?? false, preparationStatus: getTournamentPreparationStatus(currentTournament, registrationSummaries[currentTournament.id]) }) : [], [closeouts, currentTournament, importEvidence, insuranceResults, registrationSummaries, supplementalEvidence]);
-  const firstIncomplete = stages.find((stage) => stage.status !== "Complete") ?? stages[5];
+  const [selectedTournamentId, setSelectedTournamentId] = useState<string | null>(initialTournament?.id ?? null);
+  const currentTournament = useMemo(
+    () => resolveManagedTournament(tournaments, selectedTournamentId, initialTournament ?? null),
+    [initialTournament, selectedTournamentId, tournaments],
+  );
+  const stages = useMemo(() => currentTournament ? resolveTournamentWorkflowState(currentTournament, { tournamentId: currentTournament.id, importEvidence: importEvidence[currentTournament.id], closeout: closeouts[currentTournament.id], officialPublicationExists: supplementalEvidence[currentTournament.id]?.officialPublicationExists ?? false, aoyCalculationExists: supplementalEvidence[currentTournament.id]?.aoyCalculationExists ?? false, aoyCurrentProjectionExists: supplementalEvidence[currentTournament.id]?.aoyCurrentProjectionExists ?? false, preparationStatus: getTournamentPreparationStatus(currentTournament, registrationSummaries[currentTournament.id]) }) : [], [closeouts, currentTournament, importEvidence, registrationSummaries, supplementalEvidence]);
+  const firstIncomplete = stages.find((stage) => stage.status !== "Complete") ?? stages[4];
   const [expandedStage, setExpandedStage] = useState<StageNumber | null>(initialExpandedStage ?? firstIncomplete?.number ?? 1);
   function selectTournament(tournament: Tournament) {
-    setCurrentTournament(tournament);
+    setSelectedTournamentId(tournament.id);
     if (typeof window !== "undefined") {
       const url = new URL(window.location.href);
       url.searchParams.set("tournament", tournament.id);
       window.history.replaceState(window.history.state, "", url);
     }
-    const nextStage = resolveTournamentWorkflowState(tournament, { tournamentId: tournament.id, importEvidence: importEvidence[tournament.id], insuranceResult: insuranceResults[tournament.id], closeout: closeouts[tournament.id], officialPublicationExists: supplementalEvidence[tournament.id]?.officialPublicationExists ?? false, aoyCalculationExists: supplementalEvidence[tournament.id]?.aoyCalculationExists ?? false, aoyCurrentProjectionExists: supplementalEvidence[tournament.id]?.aoyCurrentProjectionExists ?? false, preparationStatus: getTournamentPreparationStatus(tournament, registrationSummaries[tournament.id]) }).find((stage) => stage.status !== "Complete");
-    setExpandedStage(nextStage?.number ?? 6);
+    const nextStage = resolveTournamentWorkflowState(tournament, { tournamentId: tournament.id, importEvidence: importEvidence[tournament.id], closeout: closeouts[tournament.id], officialPublicationExists: supplementalEvidence[tournament.id]?.officialPublicationExists ?? false, aoyCalculationExists: supplementalEvidence[tournament.id]?.aoyCalculationExists ?? false, aoyCurrentProjectionExists: supplementalEvidence[tournament.id]?.aoyCurrentProjectionExists ?? false, preparationStatus: getTournamentPreparationStatus(tournament, registrationSummaries[tournament.id]) }).find((stage) => stage.status !== "Complete");
+    setExpandedStage(nextStage?.number ?? 5);
   }
 
   if (!currentTournament) return <p className="border border-white/10 bg-[#111111] p-5 text-sm text-neutral-300">No tournaments are available to manage.</p>;
@@ -109,11 +116,10 @@ export default function AdminTournamentDashboard({ tournaments, initialTournamen
         <button type="button" aria-expanded={open} aria-controls={`manager-stage-panel-${stage.number}`} onClick={() => setExpandedStage(open ? null : stage.number)} className="flex w-full items-center gap-4 px-4 py-3 text-left transition hover:bg-white/[0.025] focus-visible:outline-2 focus-visible:outline-inset focus-visible:outline-[#D4A017] sm:px-5"><span className={`flex size-8 shrink-0 items-center justify-center gap-0.5 rounded-sm border text-xs font-black ${complete ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-300" : open ? "border-red-500/40 bg-red-500/10 text-red-300" : "border-white/15 bg-black/20 text-neutral-300"}`}>{stage.number}{complete ? <Check aria-label={`Stage ${stage.number} complete`} className="size-3" /> : null}</span><span className="min-w-0 flex-1"><span className="flex flex-wrap items-center gap-x-3 gap-y-1"><span className={`flex size-6 items-center justify-center rounded-sm border ${open ? "border-red-500/30 bg-red-500/10 text-red-300" : "border-white/10 bg-black/20 text-neutral-500"}`}><StageIcon aria-hidden="true" className="size-3.5" /></span><span id={`manager-stage-${stage.number}`} className="font-black uppercase text-white">{stage.title}</span><AdminStatusBadge>{stage.status}</AdminStatusBadge></span><span className="mt-1 block truncate text-sm text-neutral-500">{stage.description}</span></span><ChevronDown aria-hidden="true" className={`size-5 shrink-0 text-neutral-500 transition ${open ? "rotate-180 text-white" : ""}`} /></button>
         {open ? <div id={`manager-stage-panel-${stage.number}`} className="border-t border-white/10 px-4 py-5 sm:px-5">{stage.number === 1 ? <PrepareStage tournament={currentTournament} identifier={identifier} summary={registrationSummaries[currentTournament.id]} undoBlockers={[
           ...((importedRows[currentTournament.id]?.length ?? 0) > 0 || currentTournament.weighfish_imported || currentTournament.weighfish_imported_at ? ["Imported Results"] : []),
-          ...(insuranceResults[currentTournament.id] ? ["Insurance Pot"] : []),
           ...(closeouts[currentTournament.id] ? ["Generated Checks / Payout Closeout"] : []),
           ...(supplementalEvidence[currentTournament.id]?.officialPublicationExists ? ["Published Results"] : []),
           ...(supplementalEvidence[currentTournament.id]?.aoyCalculationExists ? ["AOY Processing"] : []),
-        ]} /> : stage.number === 2 ? <ImportStage tournament={currentTournament} rows={importedRows[currentTournament.id] ?? []} publicationExists={supplementalEvidence[currentTournament.id]?.officialPublicationExists ?? false} locked={stage.locked} /> : stage.number === 3 ? <InsuranceStage tournament={currentTournament} importedRows={importedRows[currentTournament.id] ?? []} insuranceResult={insuranceResults[currentTournament.id] ?? null} locked={stage.locked} strongerResetWarning={stages.find((item) => item.number === 4)?.status === "Complete"} /> : stage.number === 4 ? <PayoutStage tournament={currentTournament} importedRows={importedRows[currentTournament.id] ?? []} closeout={closeouts[currentTournament.id]} insuranceResult={insuranceResults[currentTournament.id] ?? null} locked={stage.locked} publicationExists={supplementalEvidence[currentTournament.id]?.officialPublicationExists ?? false} /> : stage.number === 5 ? <PublishStage tournament={currentTournament} importedRows={importedRows[currentTournament.id] ?? []} results={resultsRecords[currentTournament.id]} insuranceResult={insuranceResults[currentTournament.id] ?? null} locked={stage.locked} payoutComplete={stages.find((item) => item.number === 4)?.status === "Complete"} /> : <AoyStage />}</div> : null}
+        ]} /> : stage.number === 2 ? <ImportStage tournament={currentTournament} rows={importedRows[currentTournament.id] ?? []} publicationExists={supplementalEvidence[currentTournament.id]?.officialPublicationExists ?? false} locked={stage.locked} /> : stage.number === 3 ? <PayoutStage tournament={currentTournament} importedRows={importedRows[currentTournament.id] ?? []} closeout={closeouts[currentTournament.id]} insuranceResult={insuranceResults[currentTournament.id] ?? null} locked={stage.locked} publicationExists={supplementalEvidence[currentTournament.id]?.officialPublicationExists ?? false} /> : stage.number === 4 ? <PublishStage tournament={currentTournament} importedRows={importedRows[currentTournament.id] ?? []} results={resultsRecords[currentTournament.id]} insuranceResult={insuranceResults[currentTournament.id] ?? null} locked={stage.locked} payoutComplete={stages.find((item) => item.number === 3)?.status === "Complete"} manualReviewRows={manualReviewRows[currentTournament.id] ?? []} publishRegistrations={publishReviewRegistrations[currentTournament.id] ?? []} /> : <AoyStage />}</div> : null}
       </section>;
     })}</div>
 
@@ -132,16 +138,10 @@ function ImportStage({ tournament, rows, publicationExists, locked }: { tourname
   if (locked && !hasImportedRows) return <div className="max-w-3xl border-y border-white/10 py-4"><p className="font-black uppercase text-white">Complete Tournament Preparation before importing results.</p><p className="mt-2 text-sm leading-6 text-neutral-400">Resolve registration review issues and confirm the paper membership checklist first.</p><div className="mt-4 flex flex-wrap gap-3"><Link href={`/admin/registration-review?tournament=${identifier}`} className="inline-flex min-h-10 items-center border border-white/15 px-4 text-xs font-black uppercase text-white transition hover:border-[#D4A017] hover:text-[#D4A017]">Registration &amp; Check-In</Link><Link href={`/admin/members?tournament=${identifier}&returnTo=${encodeURIComponent(`/admin/tournament-manager?tournament=${identifier}&step=1`)}`} className="inline-flex min-h-10 items-center border border-white/15 px-4 text-xs font-black uppercase text-white transition hover:border-[#D4A017] hover:text-[#D4A017]">{tournament.name} Members List →</Link></div></div>;
   return <div className="max-w-5xl space-y-5">{hasImportedRows ? <ImportedResultsReview tournamentId={tournament.id} tournamentSlug={tournament.slug || tournament.id} rows={rows} verified={Boolean(tournament.results_verified_at)} published={tournament.result_status === "official"} /> : <><WeighfishCsvUploader key={tournament.id} tournamentId={tournament.id} />{hasStaleOfficialLock ? <div className="mt-5"><StaleOfficialResultsReset tournamentId={tournament.id} /></div> : null}</>}<Link href={`/admin/tournament-manager/import?tournament=${identifier}`} className="inline-flex text-xs font-black uppercase text-neutral-500 hover:text-[#D4A017]">Open Full Import Workspace →</Link></div>;
 }
-function InsuranceStage({ tournament, importedRows, insuranceResult, locked, strongerResetWarning }: { tournament: Tournament; importedRows: ImportedRow[]; insuranceResult?: TournamentInsurancePotResultRecord | null; locked: boolean; strongerResetWarning: boolean }) {
-  const identifier = encodeURIComponent(tournament.slug || tournament.id);
-  if (locked) return <div className="max-w-3xl border-y border-white/10 py-4"><p className="font-black uppercase text-white">Complete the Import Results step before calculating the Insurance Pot.</p><p className="mt-2 text-sm leading-6 text-neutral-400">Verify imported results first, then return here to calculate and save Insurance Pot winners.</p><Link href={`/admin/tournament-manager?tournament=${identifier}&step=3`} className="mt-4 inline-flex min-h-10 items-center border border-white/15 px-4 text-xs font-black uppercase text-white transition hover:border-[#D4A017] hover:text-[#D4A017]">Go to Insurance Pot</Link></div>;
-  return <InsurancePotWorkflow tournament={tournament} importedRows={importedRows} insuranceResult={insuranceResult ?? null} strongerResetWarning={strongerResetWarning} />;
-}
-
 function PayoutStage({ tournament, importedRows, closeout, insuranceResult, locked, publicationExists }: { tournament: Tournament; importedRows: ImportedRow[]; closeout?: OnSiteCloseoutRecord; insuranceResult?: TournamentInsurancePotResultRecord | null; locked: boolean; publicationExists: boolean }) {
   const identifier = encodeURIComponent(tournament.slug || tournament.id);
   const verifiedSourceRows = importedRows.flatMap((row) => row.participation_status !== "disqualified" && row.original_import_data ? [row.original_import_data] : []);
-  if (locked) return <div className="max-w-3xl border-y border-white/10 py-4"><p className="font-black uppercase text-white">Complete the Insurance Pot step before generating final payout checks.</p><p className="mt-2 text-sm leading-6 text-neutral-400">Return to Insurance Pot to save the calculation and winners first.</p><Link href={`/admin/tournament-manager?tournament=${identifier}&step=3`} className="mt-4 inline-flex min-h-10 items-center border border-white/15 px-4 text-xs font-black uppercase text-white transition hover:border-[#D4A017] hover:text-[#D4A017]">Go to Insurance Pot</Link></div>;
+  if (locked) return <div className="max-w-3xl border-y border-white/10 py-4"><p className="font-black uppercase text-white">Complete the Import Results step before approving payouts.</p><p className="mt-2 text-sm leading-6 text-neutral-400">Verify imported results first, then return here to review payout totals and approve the closeout.</p><Link href={`/admin/tournament-manager?tournament=${identifier}&step=2`} className="mt-4 inline-flex min-h-10 items-center border border-white/15 px-4 text-xs font-black uppercase text-white transition hover:border-[#D4A017] hover:text-[#D4A017]">Go to Import Results</Link></div>;
   return <div className="max-w-6xl space-y-8">
     <OnSiteCloseoutCalculator key={tournament.id} tournament={tournament} initialImportedRows={verifiedSourceRows} initialCloseout={closeout ?? null} insuranceResult={insuranceResult ?? null} strongerResetWarning={Boolean(publicationExists || insuranceResult?.published || closeout?.checks.some((check) => check.status === "delivered"))} />
   </div>;
@@ -153,6 +153,8 @@ function PublishStage({
   insuranceResult,
   locked,
   payoutComplete,
+  manualReviewRows = [],
+  publishRegistrations = [],
 }: {
   tournament: Tournament;
   importedRows: ImportedRow[];
@@ -160,31 +162,21 @@ function PublishStage({
   insuranceResult?: TournamentInsurancePotResultRecord;
   locked: boolean;
   payoutComplete: boolean;
+  manualReviewRows?: HistoricalReviewRow[];
+  publishRegistrations?: TournamentPublishReviewRegistration[];
 }) {
   if (locked) {
     return (
       <div className="max-w-3xl border-y border-white/10 py-4">
         <p className="font-black uppercase text-white">Publish Results is locked</p>
         <p className="mt-2 text-sm leading-6 text-neutral-400">
-          Complete Tournament Payouts before publishing public results.
+          Approve payouts before publishing public results.
         </p>
       </div>
     );
   }
 
   const identifier = encodeURIComponent(tournament.slug || tournament.id);
-  const insuranceReady = Boolean(
-    insuranceResult?.published ||
-      (insuranceResult &&
-        isInsurancePotWinnerDraftComplete({
-          entryCount: insuranceResult.entry_count,
-          totalPotCents: insuranceResult.total_pot_cents,
-          placesPaid: insuranceResult.places_paid,
-          winners: insuranceResult.winners,
-          published: insuranceResult.published,
-        })),
-  );
-
   const readyChecks = [
     {
       label: "Results",
@@ -195,8 +187,8 @@ function PublishStage({
       ready: payoutComplete,
     },
     {
-      label: "Insurance Pot",
-      ready: insuranceReady,
+      label: "Checks Saved",
+      ready: payoutComplete,
     },
     {
       label: "Winner Photos",
@@ -207,6 +199,18 @@ function PublishStage({
       ),
     },
   ] as const;
+  const registrationOptions = publishRegistrations.map((registration) => ({
+    id: registration.id,
+    boatNumber: registration.boat_number,
+    registrationType: registration.registration_type,
+    angler1Name: registration.angler1_name,
+    angler2Name: registration.angler2_name,
+    identityReviewStatus: registration.identity_review_status,
+    membershipSummary: formatMembershipSummary(
+      registration.membership_snapshot,
+      registration.registration_type,
+    ),
+  }));
 
   return (
     <div className="max-w-5xl space-y-6">
@@ -240,6 +244,54 @@ function PublishStage({
         </dl>
       </AdminPanel>
 
+      {manualReviewRows.length ? (
+        <AdminPanel className="p-5 sm:p-6">
+          <div className="flex flex-wrap items-start justify-between gap-4">
+            <div>
+              <p className="text-xs font-black uppercase tracking-[0.18em] text-[#D4A017]">
+                Historical Review Required
+              </p>
+              <h3 className="mt-2 text-xl font-bold text-white">
+                Resolve ambiguous result ownership
+              </h3>
+            </div>
+          </div>
+
+          <div className="mt-5 overflow-hidden rounded-sm border border-white/10">
+            <table className="min-w-full text-left text-sm">
+              <thead className="border-b border-white/15 bg-black/40 text-xs font-black uppercase tracking-[0.1em] text-neutral-400">
+                <tr>
+                  <th className="px-4 py-3">Place</th>
+                  <th className="px-4 py-3">Result</th>
+                  <th className="px-4 py-3">Action</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-white/10">
+                {manualReviewRows.map((row) => (
+                  <tr key={row.resultId} className="align-top">
+                    <td className="whitespace-nowrap px-4 py-3 font-black text-[#D4A017]">
+                      {row.place ?? "—"}
+                    </td>
+                    <td className="px-4 py-3">
+                      <p className="font-bold text-white">{row.teamName}</p>
+                      <p className="mt-1 text-xs text-neutral-500">{row.reason}</p>
+                    </td>
+                    <td className="whitespace-nowrap px-4 py-3">
+                      <PublishHistoricalResultReview
+                        tournamentId={tournament.id}
+                        identifier={tournament.slug || tournament.id}
+                        row={row}
+                        registrations={registrationOptions}
+                      />
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </AdminPanel>
+      ) : null}
+
       <section className="grid gap-3 sm:grid-cols-2">
         <Link
           href={`/admin/results?tournament=${identifier}`}
@@ -269,7 +321,7 @@ function PublishStage({
             Publish Results
           </h3>
           <p className="mt-2 text-sm text-neutral-300">
-            Complete Tournament Payouts before publishing.
+            Approve payouts before publishing.
           </p>
         </section>
       )}
@@ -281,6 +333,18 @@ function PublicationCheck({ label, ready }: { label: string; ready: boolean }) {
   return <div className="flex items-center justify-between gap-4 rounded-sm border border-white/10 bg-black/40 px-4 py-3"><dt className="text-sm text-neutral-300">{label}</dt><dd><AdminStatusBadge tone={ready ? "positive" : "attention"}>{ready ? "Ready" : "Pending"}</AdminStatusBadge></dd></div>;
 }
 function AoyStage() { return <div className="max-w-3xl border-y border-white/10 py-4"><p className="text-sm text-neutral-400">AOY management tools are not implemented yet.</p></div>; }
+
+export function resolveManagedTournament(
+  tournaments: readonly Tournament[],
+  selectedTournamentId: string | null,
+  fallbackTournament: Tournament | null,
+): Tournament | null {
+  if (!selectedTournamentId) return null;
+  return (
+    tournaments.find((tournament) => tournament.id === selectedTournamentId) ??
+    fallbackTournament
+  );
+}
 
 
 function CompactTournamentSummary({ tournament, stages }: { tournament: Tournament; stages: Stage[] }) { return <AdminPanel accent className="p-5"><p className="text-xs font-black uppercase tracking-wider text-red-500">Current Tournament</p><h1 className="mt-2 text-2xl font-black uppercase text-white">{tournament.name}</h1><dl className="mt-4 grid gap-3 sm:grid-cols-2">{stages.map((stage) => <div key={stage.number} className="flex items-center justify-between gap-4"><dt className="text-sm text-neutral-300">{stage.title}</dt><dd><AdminStatusBadge>{stage.status}</AdminStatusBadge></dd></div>)}</dl></AdminPanel>; }

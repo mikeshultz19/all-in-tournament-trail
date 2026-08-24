@@ -4,6 +4,7 @@ import RegistrationReviewResolutionForm from "@/components/admin/RegistrationRev
 import RegistrationContactReviewForm from "@/components/admin/RegistrationContactReviewForm";
 import HistoricalMembershipReviewForm from "@/components/admin/HistoricalMembershipReviewForm";
 import RegistrationCheckInControl from "@/components/admin/RegistrationCheckInControl";
+import RegistrationCheckInSummaryStat from "@/components/admin/RegistrationCheckInSummaryStat";
 import PrepareMembershipReminder from "@/components/admin/PrepareMembershipReminder";
 import { AddWalkUpControl } from "@/components/admin/RegistrationOperationsControls";
 import RegistrationRosterToolbar from "@/components/admin/RegistrationRosterToolbar";
@@ -12,19 +13,26 @@ import AdminStatusBadge from "@/components/admin/AdminStatusBadge";
 import { adminButtonStyles } from "@/components/admin/admin-button-styles";
 import { requireAdminUser } from "@/lib/admin-auth";
 import { listRegistrationReviewItems, listReviewAnglerOptions } from "@/lib/registration-identity-review";
-import { getTournamentRegistrationRoster, summarizeTournamentRegistrationRoster, type TournamentRegistrationRosterRow } from "@/lib/tournament-registration-roster";
+import { filterTournamentRegistrationRosterRows, getTournamentRegistrationRoster, paginateTournamentRegistrationRosterRows, summarizeTournamentRegistrationRoster, type RegistrationRosterFilter, type TournamentRegistrationRosterRow } from "@/lib/tournament-registration-roster";
 import { getRegistrationReviewPresentation } from "@/lib/registration-review-presentation";
 import { getActiveSeasonSchedule, getNextUpcomingTournament } from "@/lib/tournaments";
 import { getPreparationUndoProtection } from "@/lib/tournament-preparation-protection";
 
 export const dynamic = "force-dynamic";
-type RosterFilter = "all" | "needs_review" | "walk_ups";
 
-export default async function RegistrationReviewPage({ searchParams }: { searchParams: Promise<{ tournament?: string; filter?: string; search?: string }> }) {
+const pageSizes = [25, 50, 100] as const;
+
+export default async function RegistrationReviewPage({ searchParams }: { searchParams: Promise<{ tournament?: string; filter?: string; search?: string; page?: string; pageSize?: string }> }) {
   await requireAdminUser();
-  const { tournament, filter: requestedFilter, search: requestedSearch } = await searchParams;
-  const filter: RosterFilter = requestedFilter === "needs_review" || requestedFilter === "walk_ups" ? requestedFilter : "all";
+  const { tournament, filter: requestedFilter, search: requestedSearch, page: requestedPage, pageSize: requestedPageSize } = await searchParams;
+  const filter: RegistrationRosterFilter = requestedFilter === "needs_review" || requestedFilter === "walk_ups" || requestedFilter === "check_ins" ? requestedFilter : "all";
   const search = requestedSearch?.trim() ?? "";
+  const pageSize: 25 | 50 | 100 = requestedPageSize === "50"
+    ? 50
+    : requestedPageSize === "100"
+      ? 100
+      : 25;
+  const requestedPageNumber = Number.parseInt(requestedPage ?? "1", 10);
   const [tournaments, currentTournament] = await Promise.all([getActiveSeasonSchedule(), getNextUpcomingTournament()]);
   const selectedTournament = tournaments.find((item) => item.id === tournament || item.slug === tournament)
     ?? currentTournament
@@ -36,14 +44,13 @@ export default async function RegistrationReviewPage({ searchParams }: { searchP
   const reviewsByRegistration = new Map<string, typeof reviewItems>();
   for (const item of reviewItems) reviewsByRegistration.set(item.registrationId, [...(reviewsByRegistration.get(item.registrationId) ?? []), item]);
   const pendingReviewIds = new Set(reviewItems.filter((item) => item.status === "review_required").map((item) => item.registrationId));
-  const filteredRows = filter === "needs_review"
-    ? allRows.filter((row) => row.needsReview || pendingReviewIds.has(row.id))
-    : filter === "walk_ups"
-      ? allRows
-          .filter((row) => row.registrationSource === "walk_up")
-          .toSorted((left, right) => (left.boatNumber ?? Number.MAX_SAFE_INTEGER) - (right.boatNumber ?? Number.MAX_SAFE_INTEGER) || left.registeredAt.localeCompare(right.registeredAt))
-      : allRows;
-  const rows = search ? filteredRows.filter((row) => registrationMatchesSearch(row, search)) : filteredRows;
+  const checkInRemainingCount = allRows.filter((row) => row.checkedInAt === null).length;
+  const filteredRows = filterTournamentRegistrationRosterRows(
+    allRows.filter((row) => filter !== "needs_review" || row.needsReview || pendingReviewIds.has(row.id)),
+    filter === "needs_review" ? "all" : filter,
+    search,
+  );
+  const { pageRows: rows, totalRows, totalPages, currentPage, rangeStart, rangeEnd } = paginateTournamentRegistrationRosterRows(filteredRows, requestedPageNumber, pageSize);
   const baseSummary = summarizeTournamentRegistrationRoster(allRows);
   const summary = {
     ...baseSummary,
@@ -51,7 +58,11 @@ export default async function RegistrationReviewPage({ searchParams }: { searchP
     walkUps: allRows.filter((row) => row.registrationSource === "walk_up").length,
   };
   const tournamentValue = selectedTournament?.id ?? "";
-  const queryBase = tournamentValue ? `tournament=${encodeURIComponent(tournamentValue)}` : "";
+  const queryBaseParams = new URLSearchParams();
+  if (tournamentValue) queryBaseParams.set("tournament", tournamentValue);
+  if (filter !== "all") queryBaseParams.set("filter", filter);
+  if (search) queryBaseParams.set("search", search);
+  const queryBase = queryBaseParams.toString();
 
   return <>
     <header>
@@ -84,7 +95,7 @@ export default async function RegistrationReviewPage({ searchParams }: { searchP
         <div className="flex flex-wrap items-end justify-between gap-5">
           <div>
             <h2 className="text-sm font-bold uppercase text-white">{selectedTournament.name}</h2>
-            <dl className="mt-3 flex flex-wrap gap-x-8 gap-y-3 text-sm"><Metric label="Registrations" value={summary.total} /><Metric label="Needs Review" value={summary.needReview} /><Metric label="Walk-Ups" value={summary.walkUps} /></dl>
+            <dl className="mt-3 flex flex-wrap gap-x-8 gap-y-3 text-sm"><Metric label="Registrations" value={summary.total} /><Metric label="Needs Review" value={summary.needReview} /><Metric label="Walk-Ups" value={summary.walkUps} /><RegistrationCheckInSummaryStat tournamentId={selectedTournament.id} filter={filter} search={search} pageSize={pageSize} count={checkInRemainingCount} /></dl>
           </div>
           <div>
             <p className="mb-2 text-[10px] font-black uppercase tracking-[0.14em] text-neutral-500">Export / Share</p>
@@ -115,7 +126,18 @@ export default async function RegistrationReviewPage({ searchParams }: { searchP
       </div>
 
       <section id="registration-entries" className="mt-5 overflow-hidden rounded-md border border-white/10 bg-[#0f0f0f]">
-       <RegistrationRosterToolbar key={`${filter}:${search}`} tournamentId={tournamentValue} filter={filter} search={search} />
+       <RegistrationRosterToolbar
+          key={`${filter}:${search}:${pageSize}`}
+          tournamentId={tournamentValue}
+          filter={filter}
+          search={search}
+          page={currentPage}
+          pageSize={pageSize}
+          totalRows={totalRows}
+          totalPages={totalPages}
+          rangeStart={rangeStart}
+          rangeEnd={rangeEnd}
+        />
       <div className="grid gap-3 p-3 md:hidden" data-testid="mobile-registration-roster">
         {rows.map((row) => <MobileRosterCard key={row.id} row={row} tournamentId={selectedTournament.id} reviews={reviewsByRegistration.get(row.id) ?? []} anglers={anglers} />)}
         {!rows.length ? <p className="border border-white/10 bg-[#111] px-4 py-10 text-center text-sm text-neutral-500">{emptyRosterMessage(filter)}</p> : null}
@@ -166,7 +188,7 @@ function RosterActions({ row, tournamentId, reviews, anglers }: { row: Tournamen
       <summary className="cursor-pointer text-xs font-bold text-amber-200">{review.participantName} — {presentation.heading}</summary>
       {review.reviewKind === "contact" ? null : <div className="mt-2 text-xs text-neutral-300"><p><span className="font-bold text-white">Issue:</span> {presentation.issue}</p>{presentation.identityFollowUp ? <p className="mt-1 text-neutral-400">{presentation.identityFollowUp}</p> : null}</div>}
       {review.reviewKind === "contact" && review.existingContact && review.submittedContact
-        ? <RegistrationContactReviewForm reviewId={review.id} participantName={review.participantName} existing={review.existingContact} submitted={review.submittedContact} differingFields={review.differingFields} />
+        ? <RegistrationContactReviewForm reviewId={review.id} participantName={review.participantName} reviewReason={review.reason} existing={review.existingContact} submitted={review.submittedContact} differingFields={review.differingFields} />
         : review.reviewKind === "membership" ? <HistoricalMembershipReviewForm reviewId={review.id} />
         : <RegistrationReviewResolutionForm reviewId={review.id} anglers={anglers} suggestedAnglerIds={review.suggestedAnglers.map((angler) => angler.id)} submission={{ name: review.participantName, email: review.email, phone: review.phone, membership: review.submittedMembership }} />}
     </details>})}
@@ -174,16 +196,7 @@ function RosterActions({ row, tournamentId, reviews, anglers }: { row: Tournamen
 }
 
 function Metric({ label, value }: { label: string; value: number }) { return <div><dt className="text-[10px] uppercase text-neutral-500">{label}</dt><dd className="mt-1 font-black tabular-nums text-white">{value}</dd></div>; }
-function registrationMatchesSearch(row: TournamentRegistrationRosterRow, search: string) {
-  const normalizedSearch = search.toLocaleLowerCase("en-US");
-  const teamName = `${row.angler1.displayName} / ${row.angler2?.displayName ?? ""}`.toLocaleLowerCase("en-US");
-  const nameMatches = teamName.includes(normalizedSearch)
-    || row.angler1.displayName.toLocaleLowerCase("en-US").includes(normalizedSearch)
-    || row.angler2?.displayName.toLocaleLowerCase("en-US").includes(normalizedSearch) === true;
-  const boatMatches = /^\d+$/.test(search) && String(row.boatNumber) === search;
-  return nameMatches || boatMatches;
-}
-function emptyRosterMessage(filter: RosterFilter) { return filter === "needs_review" ? "No registrations need review." : filter === "walk_ups" ? "No active walk-ups are available for this tournament." : "No registrations are available for this tournament."; }
+function emptyRosterMessage(filter: RegistrationRosterFilter) { return filter === "needs_review" ? "No registrations need review." : filter === "walk_ups" ? "No active walk-ups are available for this tournament." : filter === "check_ins" ? "No unchecked registrations remain." : "No registrations are available for this tournament."; }
 function compactDateTime(value: string) { return new Intl.DateTimeFormat("en-US", { timeZone: "America/Chicago", month: "short", day: "numeric", hour: "numeric", minute: "2-digit" }).format(new Date(value)); }
 function dateOnly(value: string) { return new Intl.DateTimeFormat("en-US", { timeZone: "America/Chicago", dateStyle: "medium" }).format(new Date(`${value.slice(0, 10)}T12:00:00-05:00`)); }
 function title(value: string) { return value[0].toUpperCase() + value.slice(1); }

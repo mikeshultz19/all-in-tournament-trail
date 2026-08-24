@@ -1,7 +1,6 @@
 import Link from "next/link";
 
 import type { PublicEarlyEntry } from "@/lib/public-early-entry";
-import { formatPublicRegistrationTimestamp } from "@/lib/tournament-time";
 
 const bonusPotLabels = { bronze: "Bronze", silver: "Silver", gold: "Gold" } as const;
 
@@ -33,7 +32,7 @@ export default function EarlyEntriesTable({
         <caption className="sr-only">Tournament entries, ordered from oldest registration to newest.</caption>
         <thead className="bg-[#171717] text-xs font-black uppercase tracking-[0.12em] text-[#D4A017]">
           <tr>
-            <th scope="col" className="min-w-60 border-b border-[#4A3A12] px-4 py-3">Registered</th>
+            <th scope="col" className="min-w-32 border-b border-[#4A3A12] px-4 py-3">BOAT #</th>
             <th scope="col" className="min-w-32 border-b border-[#4A3A12] px-4 py-3">Competing As</th>
             <th scope="col" className="min-w-44 border-b border-[#4A3A12] px-4 py-3">Angler 1</th>
             <th scope="col" className="min-w-44 border-b border-[#4A3A12] px-4 py-3">Angler 2</th>
@@ -45,7 +44,7 @@ export default function EarlyEntriesTable({
         <tbody className="divide-y divide-white/10 bg-[#0E0E0E] text-neutral-200">
           {entries.map((entry) => (
             <tr key={`${entry.registeredAt}-${entry.angler1DisplayName}`} className="hover:bg-white/[0.03]">
-              <td className="whitespace-nowrap px-4 py-3"><time dateTime={entry.registeredAt}>{formatPublicRegistrationTimestamp(entry.registeredAt)}</time></td>
+              <td className="whitespace-nowrap px-4 py-3 font-black text-white">{entry.boatNumber?.toString() ?? "—"}</td>
               <td className="px-4 py-3 font-black uppercase tracking-[0.1em] text-[#D4A017]">
                 {entry.entryMode === "team" ? "Team" : "Solo"}
               </td>

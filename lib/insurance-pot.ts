@@ -1,5 +1,6 @@
 export type InsurancePotWinner = {
   entryId?: string;
+  boatNumber?: number | null;
   entryName: string;
   finishingPosition?: number;
   amountCents: number;

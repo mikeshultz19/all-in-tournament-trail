@@ -2,6 +2,7 @@
 
 import { useActionState, useEffect, useMemo, useState } from "react";
 import { CheckCircle2, Loader2 } from "lucide-react";
+import { useRouter } from "next/navigation";
 import AdminDisclosureToggle from "@/components/admin/AdminDisclosureToggle";
 import ResetPayoutCalculations from "@/components/admin/ResetPayoutCalculations";
 import { saveOnSiteCloseoutAction, type CloseoutState } from "@/app/admin/tournament-manager/closeout/actions";
@@ -21,16 +22,6 @@ const payoutCategories = [
   "Gold Pot",
   "Big Bass",
   "AITT Insurance Pot",
-] as const;
-
-const finalCheckDisplayOrder = [
-  "Base Tournament",
-  "Bronze Pot",
-  "Silver Pot",
-  "Gold Pot",
-  "Big Bass — 1st Place",
-  "Big Bass — 2nd Place",
-  "Insurance Pot",
 ] as const;
 
 function money(cents: number) {
@@ -78,16 +69,6 @@ function buildInsuranceChecks(insuranceResult: TournamentInsurancePotResultRecor
 
 function sectionTotal(checks: readonly OnSiteCloseoutCheck[]) {
   return checks.reduce((sum, check) => sum + check.amountCents, 0);
-}
-
-function finalChecksForDisplay(
-  title: (typeof finalCheckDisplayOrder)[number],
-  checks: readonly OnSiteCloseoutCheck[],
-): OnSiteCloseoutCheck[] {
-  if (title === "Big Bass — 1st Place") return checks.filter((check) => check.category === "Big Bass").slice(0, 1);
-  if (title === "Big Bass — 2nd Place") return checks.filter((check) => check.category === "Big Bass").slice(1, 2);
-  if (title === "Insurance Pot") return checks.filter((check) => check.category === "AITT Insurance Pot");
-  return checks.filter((check) => check.category === title);
 }
 
 function categoryLabel(category: string, index: number) {
@@ -148,14 +129,17 @@ export default function OnSiteCloseoutCalculator({
   strongerResetWarning: boolean;
 }) {
   const [reviewExpanded, setReviewExpanded] = useState(true);
-  const [finalExpanded, setFinalExpanded] = useState(true);
   const [reviewAcknowledged, setReviewAcknowledged] = useState(false);
   const [state, action, pending] = useActionState(saveOnSiteCloseoutAction.bind(null, tournament.id), initialState);
+  const router = useRouter();
 
   const sourceRows = useMemo(() => initialImportedRows, [initialImportedRows]);
   const reviewChecks = useMemo(() => sortCloseoutChecks(buildWeighfishChecks(sourceRows)), [sourceRows]);
   const insuranceChecks = useMemo(() => buildInsuranceChecks(insuranceResult), [insuranceResult]);
   const insurancePayouts = insuranceResult?.calculated_payouts ?? [];
+  const insuranceRecipients = insuranceResult?.winners.map((winner) =>
+    winner.boatNumber ? `Boat #${winner.boatNumber} — ${winner.entryName}` : winner.entryName,
+  ) ?? [];
   const currentFinalChecks = useMemo(
     () => sortCloseoutChecks([...reviewChecks, ...insuranceChecks]),
     [insuranceChecks, reviewChecks],
@@ -165,7 +149,7 @@ export default function OnSiteCloseoutCalculator({
     [initialCloseout?.checks],
   );
 
-  const reviewConfirmed = Boolean(initialCloseout) || (state.status === "success" && state.savedIntent === "review");
+  const closeoutApproved = Boolean(initialCloseout) || (state.status === "success" && state.savedIntent === "approve");
   const insuranceComplete = Boolean(insuranceResult) && isInsurancePotWinnerDraftComplete({
     entryCount: insuranceResult?.entry_count ?? 0,
     totalPotCents: insuranceResult?.total_pot_cents ?? 0,
@@ -173,10 +157,9 @@ export default function OnSiteCloseoutCalculator({
     winners: insuranceResult?.winners ?? [],
     published: insuranceResult?.published ?? false,
   });
-  const finalChecksCurrent = reviewConfirmed && insuranceComplete && areChecksCurrent(savedCloseoutChecks, currentFinalChecks);
-  const finalChecksStale = reviewConfirmed && insuranceComplete && savedCloseoutChecks.length > 0 && !finalChecksCurrent;
-  const canGenerateFinalChecks = reviewConfirmed && insuranceComplete && reviewChecks.length > 0;
-  const finalChecksActionLabel = savedCloseoutChecks.length > 0 ? "Regenerate Checks" : "Generate Checks";
+  const finalChecksCurrent = closeoutApproved && insuranceComplete && areChecksCurrent(savedCloseoutChecks, currentFinalChecks);
+  const finalChecksStale = closeoutApproved && insuranceComplete && savedCloseoutChecks.length > 0 && !finalChecksCurrent;
+  const approvalReady = reviewAcknowledged && insuranceComplete && reviewChecks.length > 0 && !finalChecksCurrent;
   const trailRetainedCents = initialCloseout?.trail_retained_cents ?? 0;
   const totalPaidCents = sectionTotal(currentFinalChecks);
   const totalCollectedCents = totalPaidCents + trailRetainedCents;
@@ -189,16 +172,16 @@ export default function OnSiteCloseoutCalculator({
 
   useEffect(() => {
     if (state.status === "success") {
-      window.location.reload();
+      router.refresh();
     }
-  }, [state.status]);
+  }, [router, state.status]);
 
   if (!sourceRows.length) {
     return (
       <section className="border border-white/10 bg-[#111111] p-6">
         <h2 className="text-xl font-black uppercase text-white">Verified Results</h2>
         <p className="mt-3 text-sm leading-6 text-neutral-300">
-          Verified results are required before checks can be generated. Return to Import Results to upload and verify the WeighFish CSV.
+          Verified results are required before payout approval. Return to Import Results to upload and verify the WeighFish CSV.
         </p>
       </section>
     );
@@ -212,17 +195,56 @@ export default function OnSiteCloseoutCalculator({
           <span><strong className="text-white">{sourceRows.length}</strong> Entries</span>
           {tournament.results_verified_at ? <span>Verified: {tournament.results_verified_at}</span> : null}
           {tournament.results_verified_by ? <span>Verified By: {tournament.results_verified_by}</span> : null}
-          {insurancePayouts.length ? <span>Insurance Pot: {insurancePerTeam}</span> : null}
+          {insurancePayouts.length ? <span>Insurance: {insurancePerTeam}</span> : null}
         </div>
       </section>
+
+      {insuranceResult ? (
+        <section className="rounded-md border border-white/10 bg-gradient-to-br from-[#171717] to-[#0d0d0d] p-5 shadow-[0_16px_40px_rgba(0,0,0,0.16)] sm:p-6">
+          <p className="text-xs font-black uppercase tracking-[0.2em] text-[#D4A017]">Insurance Summary</p>
+          <dl className="mt-4 grid gap-3 text-sm text-neutral-300 sm:grid-cols-2 xl:grid-cols-4">
+            <div>
+              <dt className="text-[10px] font-black uppercase tracking-[0.16em] text-neutral-500">Entry Count</dt>
+              <dd className="mt-1 font-black text-white">{insuranceResult.entry_count}</dd>
+            </div>
+            <div>
+              <dt className="text-[10px] font-black uppercase tracking-[0.16em] text-neutral-500">Total Pot</dt>
+              <dd className="mt-1 font-black text-white">{money(insuranceResult.total_pot_cents)}</dd>
+            </div>
+            <div>
+              <dt className="text-[10px] font-black uppercase tracking-[0.16em] text-neutral-500">Places Paid</dt>
+              <dd className="mt-1 font-black text-white">{insuranceResult.places_paid}</dd>
+            </div>
+            <div>
+              <dt className="text-[10px] font-black uppercase tracking-[0.16em] text-neutral-500">Per Recipient</dt>
+              <dd className="mt-1 font-black text-white">{money(insuranceResult.calculated_payouts[0] ?? 0)}</dd>
+            </div>
+          </dl>
+          <div className="mt-4">
+            <p className="text-[10px] font-black uppercase tracking-[0.16em] text-neutral-500">Recipients</p>
+            <p className="mt-2 flex flex-wrap gap-2 text-sm text-neutral-200">
+              {insuranceRecipients.length ? insuranceRecipients.map((recipient) => (
+                <span key={recipient} className="rounded-sm border border-white/10 bg-black/20 px-2.5 py-1">
+                  {recipient}
+                </span>
+              )) : <span className="text-neutral-500">No eligible recipients</span>}
+            </p>
+          </div>
+        </section>
+      ) : null}
 
       <section className="rounded-md border border-white/10 bg-gradient-to-br from-[#171717] to-[#0d0d0d] p-5 shadow-[0_16px_40px_rgba(0,0,0,0.16)] sm:p-6">
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div>
-            <p className="text-xs font-black uppercase tracking-[0.2em] text-[#D4A017]">Tournament Payouts</p>
-            <h3 className="mt-2 text-xl font-black uppercase text-white">Payout Summary</h3>
-            <p className="mt-2 text-sm text-neutral-400">Review who will be paid and the amount for each payout category.</p>
-            <p className="mt-3 text-sm font-black uppercase text-white">Tournament Payout Total: {money(totalPaidCents)}</p>
+            <p className="text-xs font-black uppercase tracking-[0.2em] text-[#D4A017]">Payout Summary</p>
+            <h3 className="mt-2 text-xl font-black uppercase text-white">Review Payouts</h3>
+            <p className="mt-2 text-sm text-neutral-400">
+              {finalChecksCurrent
+                ? "Closeout complete. Publish Results can proceed."
+                : finalChecksStale
+                  ? "Review the payouts below, acknowledge them, and approve the closeout to update the saved check package."
+                  : "Review the calculated payouts below, acknowledge them, and approve the closeout."}
+            </p>
           </div>
           <AdminDisclosureToggle
             expanded={reviewExpanded}
@@ -230,6 +252,7 @@ export default function OnSiteCloseoutCalculator({
             onToggle={() => setReviewExpanded((current) => !current)}
           />
         </div>
+
         <div id="weighfish-payout-review" className={reviewExpanded ? "mt-5 space-y-4" : "mt-5 hidden"}>
           <div className="space-y-3">
             {payoutCategories.map((category) => {
@@ -247,168 +270,45 @@ export default function OnSiteCloseoutCalculator({
           </div>
 
           <form action={action} className="space-y-4 border-t border-white/10 pt-5">
-            <input type="hidden" name="intent" value="review" />
-            <input type="hidden" name="sourceFileName" value="Verified Tournament Payouts" />
-            <input type="hidden" name="sourceRows" value={JSON.stringify(sourceRows)} />
-            <input type="hidden" name="checks" value="[]" />
-            <input type="hidden" name="totalCollected" value="0" />
-            <input type="hidden" name="trailRetained" value="0" />
-            <label className="flex items-start gap-3 text-sm text-neutral-200">
-              <input
-                type="checkbox"
-                checked={reviewConfirmed || reviewAcknowledged}
-                onChange={(event) => setReviewAcknowledged(event.target.checked)}
-                disabled={pending || reviewConfirmed}
-                className="mt-0.5 size-4 accent-[#D4A017]"
-              />
-              <span className="font-semibold text-white">I have reviewed these payouts against WeighFish and confirm they are correct.</span>
-            </label>
-            {reviewConfirmed ? <p className="font-black uppercase text-emerald-400">Payout Review Confirmed</p> : null}
-            <button
-              type="submit"
-              disabled={pending || reviewConfirmed || !reviewAcknowledged}
-              className="inline-flex min-h-11 items-center justify-center gap-2 bg-[#D4A017] px-5 text-xs font-black uppercase text-black disabled:cursor-not-allowed disabled:opacity-50"
-            >
-              {pending && state.savedIntent === "review" ? <Loader2 className="size-4 animate-spin" /> : <CheckCircle2 className="size-4" />}
-              Confirm Payout Review
-            </button>
-          </form>
-          <div className="flex justify-end border-t border-white/10 pt-5">
-            <AdminDisclosureToggle
-              expanded={reviewExpanded}
-              controls="weighfish-payout-review"
-              onToggle={() => setReviewExpanded((current) => !current)}
-            />
-          </div>
-        </div>
-      </section>
-
-      <section className="rounded-md border border-white/10 bg-gradient-to-br from-[#171717] to-[#0d0d0d] p-5 shadow-[0_16px_40px_rgba(0,0,0,0.16)] sm:p-6">
-        <div className="flex flex-wrap items-start justify-between gap-4">
-          <div>
-            <p className="text-xs font-black uppercase tracking-[0.2em] text-red-500">Generate Checks</p>
-            <h3 className="mt-2 text-xl font-black uppercase text-white">
-              {finalChecksCurrent ? "Checks to Write" : finalChecksActionLabel}
-            </h3>
-            <p className="mt-2 text-sm text-neutral-400">
-              {reviewConfirmed
-                ? insuranceComplete
-                  ? finalChecksStale
-                    ? "Insurance Pot changes were saved. Regenerate checks to include the latest Insurance Pot payouts."
-                    : finalChecksCurrent
-                      ? "Work down this list to write and distribute each check."
-                      : "Generate checks from the confirmed payout review."
-                  : "Complete the Insurance Pot before generating checks."
-                : "Confirm the payout review before generating checks."}
-            </p>
-          </div>
-          <AdminDisclosureToggle
-            expanded={finalExpanded}
-            controls="final-checks"
-            onToggle={() => setFinalExpanded((current) => !current)}
-          />
-        </div>
-
-        <div id="final-checks" className={finalExpanded ? "mt-5 space-y-4" : "mt-5 hidden"}>
-          {reviewConfirmed && insuranceComplete && finalChecksCurrent ? (
-            <>
-              <div className="space-y-3">
-                {finalCheckDisplayOrder.map((title) => {
-                  const checks = finalChecksForDisplay(title, currentFinalChecks);
-                  if (!checks.length) return null;
-                  return (
-                    <CheckGroup
-                      key={`final-${title}`}
-                      title={title}
-                      category={
-                        title === "Insurance Pot"
-                          ? "AITT Insurance Pot"
-                          : title.startsWith("Big Bass")
-                            ? "Big Bass"
-                            : title
-                      }
-                      checks={checks}
-                    />
-                  );
-                })}
-              </div>
-
-              <p className="text-sm font-black uppercase text-emerald-400">Checks are ready to write.</p>
-            </>
-          ) : (
-            <form action={action} className="flex flex-wrap items-center gap-3">
-              <input type="hidden" name="intent" value="final" />
-              <input type="hidden" name="sourceFileName" value={sourceFileName} />
-              <input type="hidden" name="sourceRows" value={JSON.stringify(sourceRows)} />
-              <input type="hidden" name="checks" value={JSON.stringify(currentFinalChecks)} />
-              <input type="hidden" name="totalCollected" value={(totalCollectedCents / 100).toFixed(2)} />
-              <input type="hidden" name="trailRetained" value={(trailRetainedCents / 100).toFixed(2)} />
-              <button
-                type="submit"
-                disabled={pending || !canGenerateFinalChecks}
-                className="inline-flex min-h-11 items-center justify-center gap-2 bg-[#D4A017] px-5 text-xs font-black uppercase text-black disabled:cursor-not-allowed disabled:opacity-50"
-              >
-                {pending && state.savedIntent === "final" ? <Loader2 className="size-4 animate-spin" /> : <CheckCircle2 className="size-4" />}
-                {finalChecksActionLabel}
-              </button>
-              {!reviewConfirmed ? <p className="text-xs text-neutral-500">Confirm the payout review to enable check generation.</p> : null}
-            </form>
-          )}
-
-          {state.message ? (
-            <p
-              role={state.status === "error" ? "alert" : "status"}
-              className={`text-sm ${state.status === "error" ? "text-red-300" : "text-emerald-300"}`}
-            >
-              {state.message}
-            </p>
-          ) : null}
-          <div className="flex justify-end border-t border-white/10 pt-5">
-            <AdminDisclosureToggle
-              expanded={finalExpanded}
-              controls="final-checks"
-              onToggle={() => setFinalExpanded((current) => !current)}
-            />
-          </div>
-        </div>
-      </section>
-
-      <section className="rounded-md border border-white/10 bg-gradient-to-br from-[#171717] to-[#0d0d0d] p-5 shadow-[0_16px_40px_rgba(0,0,0,0.16)] sm:p-6">
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <div>
-            <p className="text-xs font-black uppercase tracking-[0.2em] text-red-500">Complete Tournament</p>
-            <p className="mt-2 text-sm text-neutral-400">
-              {finalChecksCurrent
-                ? "Tournament payouts are ready."
-                : reviewConfirmed
-                  ? insuranceComplete
-                    ? "Generate checks before completing tournament payouts."
-                    : "Complete the Insurance Pot before completing tournament payouts."
-                  : "Confirm the WeighFish payouts before completing tournament payouts."}
-            </p>
-          </div>
-          <form action={action}>
-            <input type="hidden" name="intent" value="complete" />
+            <input type="hidden" name="intent" value="approve" />
             <input type="hidden" name="sourceFileName" value={sourceFileName} />
             <input type="hidden" name="sourceRows" value={JSON.stringify(sourceRows)} />
             <input type="hidden" name="checks" value={JSON.stringify(currentFinalChecks)} />
             <input type="hidden" name="totalCollected" value={(totalCollectedCents / 100).toFixed(2)} />
             <input type="hidden" name="trailRetained" value={(trailRetainedCents / 100).toFixed(2)} />
+            <label className="flex items-start gap-3 text-sm text-neutral-200">
+              <input
+                type="checkbox"
+                checked={reviewAcknowledged}
+                onChange={(event) => setReviewAcknowledged(event.target.checked)}
+                disabled={pending || finalChecksCurrent}
+                className="mt-0.5 size-4 accent-[#D4A017]"
+              />
+              <span className="font-semibold text-white">I have reviewed these payouts against WeighFish and confirm they are correct.</span>
+            </label>
             <button
               type="submit"
-              disabled={pending || !finalChecksCurrent || !insuranceComplete}
+              disabled={pending || !approvalReady}
               className="inline-flex min-h-11 items-center justify-center gap-2 bg-[#D4A017] px-5 text-xs font-black uppercase text-black disabled:cursor-not-allowed disabled:opacity-50"
             >
-              {pending && state.savedIntent === "complete" ? <Loader2 className="size-4 animate-spin" /> : <CheckCircle2 className="size-4" />}
-              Complete Tournament
+              {pending && state.savedIntent === "approve" ? <Loader2 className="size-4 animate-spin" /> : <CheckCircle2 className="size-4" />}
+              APPROVE PAYOUTS
             </button>
+            {state.message ? (
+              <p
+                role={state.status === "error" ? "alert" : "status"}
+                className={`text-sm ${state.status === "error" ? "text-red-300" : "text-emerald-300"}`}
+              >
+                {state.message}
+              </p>
+            ) : null}
+            {finalChecksCurrent ? (
+              <p className="text-xs font-black uppercase tracking-[0.12em] text-emerald-400">Closeout Complete</p>
+            ) : finalChecksStale ? (
+              <p className="text-xs font-black uppercase tracking-[0.12em] text-amber-300">Saved closeout needs approval again because the payout totals changed.</p>
+            ) : null}
           </form>
         </div>
-        {finalChecksCurrent ? (
-          <p className="mt-4 text-xs font-black uppercase tracking-[0.12em] text-emerald-400">Checks Generated</p>
-        ) : finalChecksStale ? (
-          <p className="mt-4 text-xs font-black uppercase tracking-[0.12em] text-amber-300">Insurance Pot changes were saved. Regenerate checks to include the latest Insurance Pot payouts.</p>
-        ) : null}
       </section>
 
       <ResetPayoutCalculations tournamentId={tournament.id} strongerWarning={strongerResetWarning} />

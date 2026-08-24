@@ -1,10 +1,19 @@
 import { ArrowLeft, Plus } from "lucide-react";
 import Link from "next/link";
 
+import MembersTournamentFilter from "@/components/admin/MembersTournamentFilter";
 import MembersList from "@/components/admin/MembersList";
 import { listMembersForSeason } from "@/lib/memberships";
+import {
+  getTournamentRegistrationRoster,
+  type TournamentRegistrationRosterRow,
+} from "@/lib/tournament-registration-roster";
 import { getActiveSeason } from "@/lib/seasons";
-import { getTournamentById, getTournamentByIdentifier } from "@/lib/tournaments";
+import {
+  getActiveSeasonSchedule,
+  getTournamentById,
+  getTournamentByIdentifier,
+} from "@/lib/tournaments";
 import type { AdminMemberListRow, Season } from "@/types/aoy";
 import type { Tournament } from "@/types/tournament";
 
@@ -36,17 +45,37 @@ export default async function MembersAdminPage({
   const returnTo = params.returnTo?.trim() ?? "";
   const pageSize = requestedTournament ? 10000 : 25;
   let activeSeason: Season | null = null;
+  let seasonTournaments: Tournament[] = [];
   let selectedTournament: Tournament | null = null;
+  let tournamentVisibilitySummary: TournamentVisibilitySummary | null = null;
+  let totalMemberCount = 0;
   let members: AdminMemberListRow[] = [];
   let total = 0;
   let loadFailed = false;
 
   try {
-    activeSeason = await getActiveSeason();
+    [activeSeason, seasonTournaments] = await Promise.all([
+      getActiveSeason(),
+      getActiveSeasonSchedule(),
+    ]);
     selectedTournament = requestedTournament
       ? await getTournamentByIdentifier(requestedTournament)
       : null;
+    if (selectedTournament) {
+      const selectedTournamentRows = await getTournamentRegistrationRoster(
+        selectedTournament.id,
+      );
+      tournamentVisibilitySummary = summarizeTournamentVisibility(
+        selectedTournamentRows,
+      );
+    }
     if (activeSeason) {
+      const totalMembersResult = await listMembersForSeason(activeSeason.id, {
+        active: true,
+        pageSize: 10000,
+      });
+      totalMemberCount = totalMembersResult.total;
+
       const result = await listMembersForSeason(activeSeason.id, {
         search,
         active: status === "all" ? null : status === "active",
@@ -102,6 +131,14 @@ export default async function MembersAdminPage({
               Filtered for {selectedTournament.name}
             </p>
           ) : null}
+          {seasonTournaments.length ? (
+            <div className="mt-5 max-w-3xl">
+              <MembersTournamentFilter
+                tournaments={seasonTournaments}
+                selectedTournamentId={selectedTournament?.id ?? ""}
+              />
+            </div>
+          ) : null}
         </div>
 
         <Link
@@ -112,6 +149,21 @@ export default async function MembersAdminPage({
           Add Member
         </Link>
       </div>
+
+      {selectedTournament && tournamentVisibilitySummary ? (
+        <section className="mt-6 border border-white/10 bg-[#111111] p-4 sm:p-5">
+          <dl className="grid gap-3 sm:grid-cols-2">
+            <VisibilityMetric
+              label="TOTAL MEMBERS"
+              value={totalMemberCount}
+            />
+            <VisibilityMetric
+              label="EAGLE MOUNTAIN MEMBERS"
+              value={tournamentVisibilitySummary.members}
+            />
+          </dl>
+        </section>
+      ) : null}
 
       {saved && (
         <p
@@ -155,6 +207,57 @@ export default async function MembersAdminPage({
         </>
       )}
     </>
+  );
+}
+
+type TournamentVisibilitySummary = {
+  members: number;
+};
+
+function summarizeTournamentVisibility(
+  rows: readonly TournamentRegistrationRosterRow[],
+): TournamentVisibilitySummary {
+  const uniqueMemberIds = new Set<string>();
+
+  for (const row of rows) {
+    const memberships = row.membershipSnapshot ?? [];
+    const participantIds = [row.angler1Id, row.angler2Id];
+
+    for (let index = 0; index < participantIds.length; index += 1) {
+      const participantId = participantIds[index];
+      const membership = memberships[index];
+
+      if (
+        !participantId ||
+        membership?.resolvedClassification !== "current" ||
+        membership.status !== "active"
+      ) {
+        continue;
+      }
+
+      uniqueMemberIds.add(participantId);
+    }
+  }
+
+  return {
+    members: uniqueMemberIds.size,
+  };
+}
+
+function VisibilityMetric({
+  label,
+  value,
+}: {
+  label: string;
+  value: number;
+}) {
+  return (
+    <div className="border border-white/10 bg-black/30 p-4">
+      <dt className="text-[10px] font-black uppercase tracking-[0.14em] text-neutral-500">
+        {label}
+      </dt>
+      <dd className="mt-2 text-2xl font-black text-white">{value}</dd>
+    </div>
   );
 }
 

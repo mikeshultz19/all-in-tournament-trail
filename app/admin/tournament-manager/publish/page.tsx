@@ -6,6 +6,7 @@ import {
 import Link from "next/link";
 
 import PublishTournamentForm from "@/components/admin/PublishTournamentForm";
+import PublishHistoricalResultReview from "@/components/admin/PublishHistoricalResultReview";
 import { excludeDisqualified } from "@/lib/disqualification";
 import {
   calculateResultPayouts,
@@ -13,6 +14,8 @@ import {
 } from "@/lib/result-payouts";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { getTournamentByIdentifier } from "@/lib/tournaments";
+import { formatMembershipSummary } from "@/lib/publish-historical-review";
+import { buildTournamentPublishReadinessPlan } from "@/lib/tournament-publish-readiness";
 
 interface PublishPageProps {
   searchParams: Promise<{
@@ -23,6 +26,7 @@ interface PublishPageProps {
 export const dynamic = "force-dynamic";
 
 type ImportedEntry = {
+  id: string;
   place: number | null;
   team_name: string;
   fish_count: number | null;
@@ -34,6 +38,24 @@ type ImportedEntry = {
   gold_payout: number | null;
   big_bass_payout: number | null;
   participation_status: string;
+  registration_id: string | null;
+  competitive_record_id: string | null;
+  record_type: "team" | "solo" | null;
+  aoy_eligible: boolean | null;
+  aoy_eligibility_snapshot: Record<string, unknown> | null;
+  eligibility_reviewed_at: string | null;
+  eligibility_reviewed_by_admin_id: string | null;
+};
+
+type RegistrationOption = {
+  id: string;
+  boat_number: number | null;
+  registration_type: "team" | "solo";
+  angler1_name: string;
+  angler2_name: string | null;
+  competitive_record_id: string | null;
+  identity_review_status: string;
+  membership_snapshot: Array<Record<string, unknown>> | null;
 };
 
 function currency(value: number): string {
@@ -86,7 +108,7 @@ export default async function PublishPage({
   const { data, error } = await supabase
     .from("tournament_result_entries")
     .select(
-      "place, team_name, fish_count, total_weight, big_fish_weight, base_payout, bronze_payout, silver_payout, gold_payout, big_bass_payout, participation_status",
+      "id, place, team_name, fish_count, total_weight, big_fish_weight, base_payout, bronze_payout, silver_payout, gold_payout, big_bass_payout, participation_status, registration_id, competitive_record_id, record_type, aoy_eligible, aoy_eligibility_snapshot, eligibility_reviewed_at, eligibility_reviewed_by_admin_id",
     )
     .eq("tournament_id", tournament.id)
     .order("place", {
@@ -94,11 +116,30 @@ export default async function PublishPage({
       nullsFirst: false,
     });
 
+  const { data: registrationsData, error: registrationsError } = await supabase
+    .from("tournament_registrations")
+    .select(
+      "id,boat_number,registration_type,angler1_name,angler2_name,competitive_record_id,identity_review_status,membership_snapshot",
+    )
+    .eq("tournament_id", tournament.id)
+    .eq("registration_status", "active")
+    .order("boat_number", { ascending: true, nullsFirst: true });
+
   if (error) {
     console.error("Publish review load failed.", error);
   }
+  if (registrationsError) {
+    console.error("Publish review registrations load failed.", registrationsError);
+  }
 
   const entries = excludeDisqualified((data ?? []) as ImportedEntry[]);
+  const registrations = (registrationsData ?? []) as RegistrationOption[];
+  const manualReviewRows = buildTournamentPublishReadinessPlan({
+    resultRows: entries as any,
+    registrations: registrations as any,
+    reviewerAdminId: tournament.results_verified_by ?? tournament.updated_by ?? null,
+  }).manualReviewRows;
+  const manualReviewRowIds = new Set(manualReviewRows.map((row) => row.resultId));
 
   const champion =
     entries.find((entry) => entry.place === 1) ??
@@ -352,6 +393,9 @@ export default async function PublishPage({
                       Big Bass
                     </th>
                     <th className="px-4 py-3">Total</th>
+                    {manualReviewRowIds.size > 0 ? (
+                      <th className="px-4 py-3">Review</th>
+                    ) : null}
                   </tr>
                 </thead>
 
@@ -434,6 +478,44 @@ export default async function PublishPage({
                         <td className="whitespace-nowrap px-4 py-3 font-bold text-[#D4A017]">
                           {currency(rowTotal)}
                         </td>
+                        {manualReviewRowIds.size > 0 ? (
+                          <td className="whitespace-nowrap px-4 py-3 text-right">
+                            {manualReviewRowIds.has(entry.id) ? (
+                              <PublishHistoricalResultReview
+                                tournamentId={tournament.id}
+                                identifier={identifier}
+                                row={{
+                                  resultId: entry.id,
+                                  place: entry.place,
+                                  teamName: entry.team_name,
+                                  reason:
+                                    manualReviewRows.find(
+                                      (row) => row.resultId === entry.id,
+                                    )?.reason ?? "Historical review required.",
+                                }}
+                                registrations={registrations.map(
+                                  (registration) => ({
+                                    id: registration.id,
+                                    boatNumber: registration.boat_number,
+                                    registrationType: registration.registration_type,
+                                    angler1Name: registration.angler1_name,
+                                    angler2Name: registration.angler2_name,
+                                    identityReviewStatus:
+                                      registration.identity_review_status,
+                                    membershipSummary: formatMembershipSummary(
+                                      registration.membership_snapshot,
+                                      registration.registration_type,
+                                    ),
+                                  }),
+                                )}
+                              />
+                            ) : (
+                              <span className="text-xs font-black uppercase tracking-[0.12em] text-emerald-300">
+                                Ready
+                              </span>
+                            )}
+                          </td>
+                        ) : null}
                       </tr>
                     );
                   })}

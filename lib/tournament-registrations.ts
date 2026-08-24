@@ -21,6 +21,7 @@ type TournamentRegistrationRow = {
   registration_key: string;
   tournament_id: string;
   registered_at: string;
+  boat_number: number | null;
   registration_type: "solo" | "team";
   angler1_name: string;
   angler2_name: string | null;
@@ -63,6 +64,7 @@ function mapRowToPublicEntry(row: TournamentRegistrationRow): PublicEarlyEntry {
     id: row.registration_key,
     tournamentSlug: row.tournament_id,
     registeredAt: row.registered_at,
+    boatNumber: row.boat_number,
     registrationType: row.registration_type,
     angler1: {
       publicDisplayName: row.angler1_name,
@@ -93,7 +95,7 @@ export async function getTournamentRegistrationRows(
   const { data, error } = await supabase
     .from("tournament_registrations")
     .select(
-      "registration_key,tournament_id,registered_at,registration_type,angler1_name,angler2_name,big_bass,member_pot,insurance,payment_reference,admin_notes",
+      "registration_key,tournament_id,registered_at,boat_number,registration_type,angler1_name,angler2_name,big_bass,member_pot,insurance,payment_reference,admin_notes",
     )
     .eq("tournament_id", tournamentId)
     .eq("registration_status", "active")

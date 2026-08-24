@@ -1,5 +1,9 @@
 import { readFileSync } from "node:fs";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
+
+vi.mock("next/navigation", () => ({
+  useRouter: () => ({ refresh: vi.fn() }),
+}));
 
 import {
   renderPayoutLockedDashboardFixture,
@@ -15,18 +19,18 @@ describe("verified import payout source", () => {
     expect(markup).toContain("Smith / Jones");
     expect(markup).not.toContain("Choose WeighFish CSV");
     expect(markup).not.toContain('type="file"');
-    expect(markup).toContain("Checks to Write");
+    expect(markup).toContain("Payout Summary");
+    expect(markup).toContain("APPROVE PAYOUTS");
     expect(markup).not.toContain("Reconciliation");
-    expect(markup).toContain("Checks Generated");
   });
 
   it("shows prerequisite guidance instead of an uploader without a verified import", () => {
     const markup = renderPayoutLockedDashboardFixture();
 
-    expect(markup).toContain("Complete the Import Results step before calculating the Insurance Pot.");
-    expect(markup).toContain("Verify imported results first, then return here to calculate and save Insurance Pot winners.");
-    expect(markup).toContain("Go to Insurance Pot");
-    expect(markup).toContain("step=3");
+    expect(markup).toContain("Complete the Import Results step before approving payouts.");
+    expect(markup).toContain("Verify imported results first, then return here to review payout totals and approve the closeout.");
+    expect(markup).toContain("Go to Import Results");
+    expect(markup).toContain("step=2");
     expect(markup).not.toContain("Choose WeighFish CSV");
     expect(markup).not.toContain('type="file"');
   });
@@ -38,7 +42,6 @@ describe("verified import payout source", () => {
     expect(source).not.toContain('type="file"');
     expect(source).not.toContain("Choose WeighFish CSV");
     expect(source).toContain("initialImportedRows");
-    expect(source).toContain('"Verified Tournament Payouts"');
     expect(source).toContain('"Final Tournament Checks"');
   });
 
@@ -46,9 +49,9 @@ describe("verified import payout source", () => {
     const source = readFileSync("components/admin/OnSiteCloseoutCalculator.tsx", "utf8");
     expect(source).toContain("insuranceResult?.calculated_payouts");
     expect(source).toContain('category: "AITT Insurance Pot"');
-    expect(source).toContain("Complete Tournament");
+    expect(source).not.toContain("Complete Tournament");
     expect(source).not.toContain("Enter the Insurance Pot winners in Calculate Payouts");
-    expect(source).toContain("Checks Generated");
+    expect(source).toContain("APPROVE PAYOUTS");
   });
 
   it("keeps reset responsible for invalidating both imported rows and derived payouts", () => {

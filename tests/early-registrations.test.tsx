@@ -9,7 +9,6 @@ import EarlyRegistrationStats from "@/components/EarlyRegistrationStats";
 import { earlyRegistrationRecords, getPublicEarlyEntries } from "@/data/early-registrations";
 import { tournaments } from "@/data/tournaments";
 import { getTournamentEntrySummary, toPublicEarlyEntry } from "@/lib/public-early-entry";
-import { formatPublicRegistrationTimestamp } from "@/lib/tournament-time";
 import { databaseTournament } from "@/tests/tournament-db-fixture";
 
 const entries = getPublicEarlyEntries("eagle-mountain-2026");
@@ -86,9 +85,12 @@ describe("Tournament Entries", () => {
   });
 
   it("formats exact timestamps deterministically in America/Chicago", () => {
-    expect(formatPublicRegistrationTimestamp("2026-07-10T23:34:00.000Z")).toBe("July 10, 2026 at 6:34 PM");
     const html = renderToStaticMarkup(<EarlyEntriesTable entries={entries} registrationHref="/register" registrationOpen />);
-    expect(html).toContain("July 10, 2026 at 6:34 PM");
+    expect(html).toContain("BOAT #");
+    expect(html).not.toContain("Registered");
+    expect(html).not.toContain("July 10, 2026 at 6:34 PM");
+    expect(entries.map((entry) => entry.boatNumber)).toEqual([17, 18, 19, 20]);
+    expect(html).toContain(">17<");
   });
 
   it("sorts entries oldest to newest", () => {
@@ -102,6 +104,7 @@ describe("Tournament Entries", () => {
 
   it("renders team and solo entries with their public names", () => {
     const html = renderToStaticMarkup(<EarlyEntriesTable entries={entries} registrationHref="/register" registrationOpen />);
+    expect(html).toContain("BOAT #");
     expect(html).toContain("Competing As");
     expect(html).toContain("Team");
     expect(html).toContain("Solo");
@@ -133,6 +136,7 @@ describe("Tournament Entries", () => {
       "angler1DisplayName",
       "angler2DisplayName",
       "bigBassSelected",
+      "boatNumber",
       "bonusPot",
       "entryMode",
       "insurancePotSelected",

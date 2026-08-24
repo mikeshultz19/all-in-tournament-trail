@@ -30,25 +30,25 @@ const closeout = (status: "draft" | "complete", difference = 0): OnSiteCloseoutR
 const statuses = (evidence: TournamentWorkflowEvidence, selected: Tournament = tournament) => resolveTournamentWorkflowState(selected, evidence).map((step) => step.status);
 
 describe("shared Tournament Manager workflow resolver", () => {
-  it("keeps every step Not Started without an import", () => expect(statuses(baseEvidence)).toEqual(["Not Started", "Not Started", "Not Started", "Not Started", "Not Started", "Not Started"]));
-  it("keeps downstream work stopped for an unverified upload", () => expect(statuses({ ...baseEvidence, importEvidence: { tournamentId: tournament.id, persistedRowCount: 2 } }, { ...tournament, weighfish_imported: true, weighfish_imported_at: "now", result_status: "imported" })).toEqual(["Not Started", "In Progress", "Not Started", "Not Started", "Not Started", "Not Started"]));
-  it("keeps downstream work stopped after failed validation", () => expect(statuses({ ...baseEvidence, importEvidence: { tournamentId: tournament.id, persistedRowCount: 2, validationFailed: true } })).toEqual(["Not Started", "Needs Attention", "Not Started", "Not Started", "Not Started", "Not Started"]));
-  it("makes verified downstream steps eligible but not started", () => expect(statuses({ ...baseEvidence, importEvidence: { tournamentId: tournament.id, persistedRowCount: 2 } }, verifiedTournament)).toEqual(["Not Started", "Complete", "Not Started", "Not Started", "Not Started", "Not Started"]));
+  it("keeps every step Not Started without an import", () => expect(statuses(baseEvidence)).toEqual(["Not Started", "Not Started", "Not Started", "Not Started", "Not Started"]));
+  it("keeps downstream work stopped for an unverified upload", () => expect(statuses({ ...baseEvidence, importEvidence: { tournamentId: tournament.id, persistedRowCount: 2 } }, { ...tournament, weighfish_imported: true, weighfish_imported_at: "now", result_status: "imported" })).toEqual(["Not Started", "In Progress", "Not Started", "Not Started", "Not Started"]));
+  it("keeps downstream work stopped after failed validation", () => expect(statuses({ ...baseEvidence, importEvidence: { tournamentId: tournament.id, persistedRowCount: 2, validationFailed: true } })).toEqual(["Not Started", "Needs Attention", "Not Started", "Not Started", "Not Started"]));
+  it("makes verified downstream steps eligible but not started", () => expect(statuses({ ...baseEvidence, importEvidence: { tournamentId: tournament.id, persistedRowCount: 2 } }, verifiedTournament)).toEqual(["Not Started", "Complete", "Not Started", "Not Started", "Not Started"]));
   it("marks saved payout work In Progress and invalid reconciliation Needs Attention", () => {
     const evidence = { ...baseEvidence, importEvidence: { tournamentId: tournament.id, persistedRowCount: 2 }, insuranceResult, closeout: closeout("draft") };
-    expect(statuses(evidence, verifiedTournament)[3]).toBe("In Progress");
-    expect(statuses({ ...evidence, closeout: closeout("draft", 1) }, verifiedTournament)[3]).toBe("Needs Attention");
+    expect(statuses(evidence, verifiedTournament)[2]).toBe("In Progress");
+    expect(statuses({ ...evidence, closeout: closeout("draft", 1) }, verifiedTournament)[2]).toBe("Needs Attention");
   });
   it("requires a real publication audit for Publish Complete", () => {
     const evidence = { ...baseEvidence, importEvidence: { tournamentId: tournament.id, persistedRowCount: 2 }, insuranceResult, closeout: closeout("complete") };
-    expect(statuses(evidence, { ...verifiedTournament, result_status: "official" })[4]).toBe("Not Started");
-    expect(statuses({ ...evidence, officialPublicationExists: true }, { ...verifiedTournament, result_status: "official" })[4]).toBe("Complete");
+    expect(statuses(evidence, { ...verifiedTournament, result_status: "official" })[3]).toBe("Not Started");
+    expect(statuses({ ...evidence, officialPublicationExists: true }, { ...verifiedTournament, result_status: "official" })[3]).toBe("Complete");
   });
   it("does not begin AOY without verified import and completes only on the current projection", () => {
-    expect(statuses({ ...baseEvidence, aoyCalculationExists: true, aoyCurrentProjectionExists: true })[5]).toBe("Not Started");
+    expect(statuses({ ...baseEvidence, aoyCalculationExists: true, aoyCurrentProjectionExists: true })[4]).toBe("Not Started");
     const evidence = { ...baseEvidence, importEvidence: { tournamentId: tournament.id, persistedRowCount: 2 }, insuranceResult, closeout: closeout("complete"), officialPublicationExists: true, aoyCalculationExists: true };
-    expect(statuses(evidence, verifiedTournament)[5]).toBe("In Progress");
-    expect(statuses({ ...evidence, aoyCurrentProjectionExists: true }, verifiedTournament)[5]).toBe("Complete");
+    expect(statuses(evidence, verifiedTournament)[4]).toBe("In Progress");
+    expect(statuses({ ...evidence, aoyCurrentProjectionExists: true }, verifiedTournament)[4]).toBe("Complete");
   });
   it("locks Import Results until preparation is complete", () => {
     const locked = resolveTournamentWorkflowState(verifiedTournament, {
@@ -65,6 +65,6 @@ describe("shared Tournament Manager workflow resolver", () => {
     expect(locked[1].locked).toBe(true);
     expect(unlocked[1].locked).toBe(false);
   });
-  it("reset evidence returns all steps to Not Started", () => expect(statuses(baseEvidence, tournament)).toEqual(["Not Started", "Not Started", "Not Started", "Not Started", "Not Started", "Not Started"]));
-  it("never inherits another tournament's evidence", () => expect(statuses({ ...baseEvidence, tournamentId: "event-b", importEvidence: { tournamentId: "event-b", persistedRowCount: 4 }, closeout: { ...closeout("complete"), tournament_id: "event-b" }, officialPublicationExists: true, aoyCalculationExists: true, aoyCurrentProjectionExists: true }, verifiedTournament)).toEqual(["Not Started", "Not Started", "Not Started", "Not Started", "Not Started", "Not Started"]));
+  it("reset evidence returns all steps to Not Started", () => expect(statuses(baseEvidence, tournament)).toEqual(["Not Started", "Not Started", "Not Started", "Not Started", "Not Started"]));
+  it("never inherits another tournament's evidence", () => expect(statuses({ ...baseEvidence, tournamentId: "event-b", importEvidence: { tournamentId: "event-b", persistedRowCount: 4 }, closeout: { ...closeout("complete"), tournament_id: "event-b" }, officialPublicationExists: true, aoyCalculationExists: true, aoyCurrentProjectionExists: true }, verifiedTournament)).toEqual(["Not Started", "Not Started", "Not Started", "Not Started", "Not Started"]));
 });

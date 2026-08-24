@@ -23,10 +23,8 @@ describe("compact Tournament Manager workflow", () => {
   });
 
   it("separates the calculator from the post-event publisher", () => {
-    expect(readFileSync("components/admin/InsurancePotWorkflow.tsx", "utf8")).toContain("Insurance Pot");
-    expect(readFileSync("components/admin/OnSiteCloseoutCalculator.tsx", "utf8")).toContain("Complete Tournament");
-    expect(source).toContain("Insurance Pot");
-    expect(readFileSync("lib/tournament-workflow-state.ts", "utf8")).toContain("Calculate the manual Insurance Pot, enter winners, and save the draft for publication.");
+    expect(readFileSync("components/admin/OnSiteCloseoutCalculator.tsx", "utf8")).toContain("APPROVE PAYOUTS");
+    expect(readFileSync("lib/tournament-workflow-state.ts", "utf8")).toContain("Review every tournament payout before approving the closeout.");
   });
 
   it("shows one continuous payout report without payout tabs", () => {
@@ -43,9 +41,9 @@ describe("compact Tournament Manager workflow", () => {
     expect(report).toContain('return "Tournament"');
   });
 
-  it("uses six lifecycle stages without the old card stack", () => {
+  it("uses five lifecycle stages without the old card stack", () => {
     const resolver = readFileSync("lib/tournament-workflow-state.ts", "utf8");
-    for (const stage of ["Prepare Tournament", "Import Results", "Insurance Pot", "Generate Checks", "Publish Results", "Calculate AOY"]) expect(resolver).toContain(stage);
+    for (const stage of ["Prepare Tournament", "Import Results", "Payout Summary", "Publish Results", "Calculate AOY"]) expect(resolver).toContain(stage);
     expect(source).not.toContain("TournamentOperationCard");
     expect(source).not.toContain("TournamentProgress");
     expect(source).not.toContain("CurrentTournamentCard");

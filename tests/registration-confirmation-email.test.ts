@@ -2,10 +2,16 @@ import fs from "node:fs";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
 
-import { buildRegistrationConfirmationEmail, uniqueRegistrationRecipients } from "@/lib/registration-confirmation-email-template";
+import {
+  buildRegistrationConfirmationEmail,
+  uniqueRegistrationRecipients,
+} from "@/lib/registration-confirmation-email-template";
 
 const root = process.cwd();
-const migration = fs.readFileSync(path.join(root, "supabase/migrations/202608220002_add_registration_confirmation_email_outbox.sql"), "utf8");
+const migration = fs.readFileSync(
+  path.join(root, "supabase/migrations/202608220002_add_registration_confirmation_email_outbox.sql"),
+  "utf8",
+);
 const completion = fs.readFileSync(path.join(root, "lib/online-payment-attempts.ts"), "utf8");
 const delivery = fs.readFileSync(path.join(root, "lib/registration-confirmation-email.ts"), "utf8");
 
@@ -56,6 +62,10 @@ describe("registration confirmation email outbox", () => {
     });
     expect(email.subject).toBe("AITT Registration Confirmed — Eagle Mountain Tournament");
     expect(email.html).toContain("Registration / Boat Number");
+    expect(email.html).toContain("Fish Length Requirements");
+    expect(email.html).toContain("Largemouth Bass: 14-inch minimum");
+    expect(email.html).toContain("Smallmouth Bass: 14-inch minimum");
+    expect(email.html).toContain("Spotted Bass: No minimum length");
     expect(email.html).toContain("#7");
     expect(email.html).not.toContain("Confirmation Number");
     expect(email.html).not.toContain("AITT-ABC123");
@@ -73,23 +83,60 @@ describe("registration confirmation email outbox", () => {
     expect(email.html).not.toContain('href="/"');
 
     const unassigned = buildRegistrationConfirmationEmail({
-      ...{
-        boatNumber: null,
-        tournamentName: "Legacy Tournament",
-        tournamentDate: "2026-11-01",
-        lake: null,
-        ramp: null,
-        launchType: null,
-        morningRegistration: null,
-        safeLight: null,
-        scalesClose: null,
-        anglers: ["Legacy Angler"],
-        selectedOptions: ["Tournament Entry"],
-        totalCents: 6000,
-      },
+      boatNumber: null,
+      tournamentName: "Legacy Tournament",
+      tournamentDate: "2026-11-01",
+      lake: null,
+      ramp: null,
+      launchType: null,
+      morningRegistration: null,
+      safeLight: null,
+      scalesClose: null,
+      anglers: ["Legacy Angler"],
+      selectedOptions: ["Tournament Entry"],
+      totalCents: 6000,
     });
     expect(unassigned.html).toContain("Registration / Boat Number");
     expect(unassigned.html).toContain("TBA");
+  });
+
+  it("renders the fish-length section for Team and Solo registrations", () => {
+    const team = buildRegistrationConfirmationEmail({
+      boatNumber: 12,
+      tournamentName: "Team Tournament",
+      tournamentDate: "2026-11-01T12:00:00+00:00",
+      lake: "Lake Team",
+      ramp: "Ramp Team",
+      launchType: "Numbered Takeoff",
+      morningRegistration: "4:30 AM",
+      safeLight: "6:45 AM",
+      scalesClose: "3:00 PM",
+      anglers: ["Taylor Angler", "Jordan Angler"],
+      selectedOptions: ["Tournament Entry", "Gold Pot"],
+      totalCents: 12345,
+    });
+    const solo = buildRegistrationConfirmationEmail({
+      boatNumber: 8,
+      tournamentName: "Solo Tournament",
+      tournamentDate: "2026-11-01T12:00:00+00:00",
+      lake: "Lake Solo",
+      ramp: "Ramp Solo",
+      launchType: "Numbered Takeoff",
+      morningRegistration: "4:30 AM",
+      safeLight: "6:45 AM",
+      scalesClose: "3:00 PM",
+      anglers: ["Taylor Solo"],
+      selectedOptions: ["Tournament Entry", "Big Bass"],
+      totalCents: 6789,
+    });
+
+    for (const email of [team, solo]) {
+      expect(email.html).toContain("Fish Length Requirements");
+      expect(email.html).toContain("Largemouth Bass: 14-inch minimum");
+      expect(email.html).toContain("Smallmouth Bass: 14-inch minimum");
+      expect(email.html).toContain("Spotted Bass: No minimum length");
+      expect(email.html).toContain("Tournament Information");
+    }
   });
 
   it("requires explicit staging environment and allowlist configuration", () => {
