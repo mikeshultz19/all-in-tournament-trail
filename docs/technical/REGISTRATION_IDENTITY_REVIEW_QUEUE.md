@@ -7,9 +7,9 @@ Registration and payment complete first. Canonical identity review happens
 afterward and before the registration is trusted for future official
 competition records.
 
-This describes the server-side durable completion boundary. Live Square
-checkout and verified public payment completion are not operational yet; a
-browser quote cannot invoke or substitute for trusted payment verification.
+This describes the server-side durable completion boundary used after verified
+Square payment. A browser quote cannot invoke or substitute for trusted payment
+verification, and only `COMPLETED` payment activates the registration.
 
 This milestone does not publish Official Results or calculate AOY or
 Championship qualification.
@@ -60,11 +60,11 @@ This pending state does not invalidate the registration or payment.
 The page can be filtered by tournament and shows only operational identity
 information, not payment details.
 
-An Admin may:
+An Admin's current decision labels are:
 
-- confirm a suggested existing Angler;
-- select a different existing Angler;
-- approve the submitted person as a new Angler;
+- **SAME PERSON — UPDATE INFO**;
+- **SAME PERSON — KEEP EXISTING INFO**;
+- **DIFFERENT PERSON — APPROVE NEW MEMBER**;
 - resolve both members of a Team;
 - resolve a Solo participant;
 - reopen a previously resolved review.
@@ -100,9 +100,10 @@ The Admin dashboard displays:
 - pending reviews;
 - resolved reviews.
 
-`areAllRegistrationIdentitiesVerified(tournamentId)` returns whether the pending
-count is zero. Tournament preparation and Official Results readiness use this
-evidence; publication refuses unresolved pending Registration Review records.
+`areAllRegistrationIdentitiesVerified(tournamentId)` returns whether the active
+pending count is zero. Tournament preparation and Official Results readiness use
+this evidence; publication refuses unresolved active Registration Review records
+but not cancelled/inactive historical review rows.
 The queue does not itself open or close registration.
 
 ## Email notifications

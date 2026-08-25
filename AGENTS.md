@@ -44,8 +44,10 @@ creation and deletion are not verified.
 Supabase Admin Auth exists. Protected Admin routes fail closed when required
 Auth configuration is unavailable, and protected server actions recheck Admin
 access. WeighFish import/review, Official Results publication and closeout, and
-AOY and Championship engines exist. Square checkout remains pending and is not
-live.
+AOY and Championship engines exist. Square-backed registration attempts,
+payment verification, recovery, durable registration completion, and
+confirmation email are implemented; production enablement still requires an
+explicit environment/configuration decision and rollout approval.
 
 ==================================================
 CURRENT DOCUMENTATION
@@ -198,20 +200,18 @@ PERMANENT PUBLIC FINANCIAL DISPLAY RULE
 AITT never publishes total tournament revenue or gross income. The only
 monetary total displayed publicly is `TOTAL PAID OUT TO ANGLERS`.
 
-That public payout total is the sum of the separately stored Bronze, Silver,
-Gold, and Insurance Pot payouts only. Weighfish Side Pots 1–3 map to Bronze,
-Silver, and Gold. The Insurance Pot is managed outside Weighfish and entered
-manually. Do not add any combined or standard tournament payout to this public
-total. The public total excludes
-membership fees, registration revenue, sponsor income, administrative fees,
-director compensation, and gross tournament receipts.
+That public payout total includes every actual AITT payout exactly once: Main
+Tournament, Bronze, Silver, Gold, Big Bass, and Insurance Pot. The completed
+closeout `total_paid_cents` is authoritative; summing the six categories is a
+fallback only. Weighfish Side Pots 1–3 map to Bronze, Silver, and Gold. Do not
+add category totals on top of an already aggregated closeout total. The public
+total excludes membership fees, registration revenue, sponsor income,
+administrative fees, director compensation, and gross tournament receipts.
 
-AITT Admin Center separates `Weighfish Payouts` from `Manual Insurance Pot`.
-Weighfish Payouts contains distinct standard tournament, Bronze, Silver, and
-Gold payout fields; do not combine the three side pots into one editable field.
-Label the manual field `Insurance Pot Paid Out` and show their calculated sum
-as `Total Paid Out to Anglers`. The Insurance Pot is calculated and paid in
-cash outside Weighfish; the website stores only its final payout amount. Do not
-derive payouts from placements unless the stored results data supports a
-verified calculation. Do not add public revenue, income, receipt, or fee totals
-without explicit approval to reverse this permanent business rule.
+AITT Admin Center keeps Main Tournament, Bronze, Silver, Gold, Big Bass, and
+Insurance payout categories distinct. Insurance is calculated inside the
+combined payout/closeout workflow, not as a separate Tournament Manager stage.
+Do not combine the three member pots into one editable field or derive payouts
+from placements unless verified persisted data supports the calculation. Do
+not add public revenue, income, receipt, or fee totals without explicit
+approval to reverse this permanent business rule.

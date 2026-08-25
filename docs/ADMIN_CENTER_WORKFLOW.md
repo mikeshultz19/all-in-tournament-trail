@@ -2,7 +2,8 @@ Version: 1.0
 Last Updated: July 27, 2026
 
 > This is an abbreviated workflow overview. Use
-> [DOCUMENTATION-INDEX.md](DOCUMENTATION-INDEX.md) and the Staff
+> [AITT Lifecycle and Operations](AITT_LIFECYCLE_OPERATIONS.md),
+> [DOCUMENTATION-INDEX.md](DOCUMENTATION-INDEX.md), and the Staff
 > [Admin Center Guide](knowledge-base/05-ADMIN-CENTER-GUIDE.md) for current
 > implementation and operating guidance where this overview differs.
 
@@ -78,10 +79,10 @@ Public sponsor content may continue to exist independently.
 - Tournament Information read/update workflow, including persistence after
   refresh: complete and verified.
 - Tournament creation/deletion: not verified.
-- Announcements, Conditions, results import/publishing, Auth, and Storage:
-  planned.
-
-Until Auth is implemented, do not describe the Admin Center as protected.
+- Admin Auth, import/review, payout closeout including nested Insurance,
+  Official Results publication, AOY, and Championship projections: implemented.
+- Championship qualification engine: implemented; public Championship
+  registration enforcement: pending.
 
 
 ---

@@ -1,13 +1,20 @@
 # Online Registration Workflow
 
-> Implementation note (2026-08-08): Durable registration infrastructure,
-> registration identity classification, and protected Registration Review are
-> implemented. Live Square checkout and verified public payment completion are
-> still pending and are not operational.
+> **Reconciliation status (2026-08-25): Supporting implementation history.**
+> Current operational behavior is controlled by
+> [AITT Tournament Lifecycle and Operations](AITT_LIFECYCLE_OPERATIONS.md) and
+> the [Official Tournament Rules](TOURNAMENT_RULES.md). Any deadline-driven,
+> pre-Square, Featured-controlled, or future-tense behavior below is retained
+> only as design history and is non-authoritative.
+
+> Implementation note (2026-08-25): Durable registration, Square payment
+> attempts/verification/recovery, boat-number assignment, confirmation email,
+> and protected Registration Review are implemented. Production enablement is
+> a separate approved environment/rollout decision.
 
 **Document Version:** 1.1
 
-**Status:** Approved Phase 1 Workflow; Production Payment Pending
+**Status:** Supporting design record; current lifecycle consolidated
 
 **Owner:** Product Owner
 
@@ -49,11 +56,8 @@ not part of the current Phase 1 implementation.
 
 **Last Updated:** 2026-08-08
 
-> **Authority:** This document is the source of truth for Early Online
-> Registration. Financial controls remain authoritative in the Payment
-> Operations Manual, and tournament-day rules remain authoritative in the
-> Tournament Operations and Registration Process. Unapproved policy language
-> is not made final by this workflow.
+> **Authority:** This document does not override the primary lifecycle or
+> Official Rules.
 
 ## 1. Operating Principles
 
@@ -327,7 +331,8 @@ Processing Fee**.
 Immediately before Square payment creation, the server must revalidate:
 
 - Tournament existence and online-registration enablement.
-- Opening time and deadline.
+- Tournament-specific Registration Open state. No automatic close timestamp is
+  authoritative in the final public flow.
 - Cancellation, completion, postponement, and registration status.
 - Capacity or active hold.
 - Registration format and participant count.
@@ -415,16 +420,14 @@ atomicity or equivalent concurrency protection.
 After verified payment, send a confirmation email containing the confirmation
 number, tournament, date, venue, anglers, selected options, Total Paid, Card
 Processing Fee, registration status, tournament-morning instructions, current
-policy link, and correction contact.
+policy link, fish-length rules, and correction contact. Team and Solo emails
+prominently include this exact tournament-morning line:
 
-No paid-registration confirmation email is currently implemented. The existing
-Resend integration is limited to registration-interest confirmation when
-`RESEND_API_KEY` is configured; it is not proof of a Square payment or paid
-registration. Cloudflare Email Routing only forwards inbound contact email and
-is not an application transactional-email API. A future paid-registration
-email path still requires approved sender configuration, delivery metadata,
-retry/redelivery controls, and must never reverse payment or registration when
-email delivery fails.
+> AITT TOURNAMENT CONTACT: 817-841-9120 - PLEASE SAVE THIS NUMBER IN YOUR PHONE
+
+Email failure never reverses successful payment or registration. Cloudflare
+Email Routing only forwards inbound contact email and is not the transactional
+registration-email provider.
 
 ## 12. Administrative Experience
 

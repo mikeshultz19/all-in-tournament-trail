@@ -1,6 +1,9 @@
 Version: 1.0
 Last Updated: July 27, 2026
 
+> **Historical / Non-authoritative:** This is a dated record, not current
+> operating guidance. Use [Documentation Index](../DOCUMENTATION-INDEX.md).
+
 # All In Tournament Trail Version History
 
 > **Historical / Superseded:** This document reflects an earlier implementation

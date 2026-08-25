@@ -1,6 +1,9 @@
 Version: 1.0
 Last Updated: July 27, 2026
 
+> **Historical / Non-authoritative:** Retained for design history only. Use
+> [AITT Lifecycle and Operations](../AITT_LIFECYCLE_OPERATIONS.md).
+
 # WeighFish Integration
 
 > **Historical / Superseded:** This file preserves the early planned import

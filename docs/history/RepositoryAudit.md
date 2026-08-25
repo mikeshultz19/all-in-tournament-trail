@@ -1,6 +1,9 @@
 Version: 1.0
 Last Updated: July 27, 2026
 
+> **Historical / Non-authoritative:** Retained as a dated audit only. Use
+> [Current State](../CURRENT_STATE.md) and [Repository Map](../RepositoryMap.md).
+
 # Repository Audit
 
 > **Historical / Superseded:** This audit records the 2026-07-20 cleanup

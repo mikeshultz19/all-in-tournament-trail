@@ -1,5 +1,11 @@
 # Payment Operations Manual
 
+> **Reconciliation status (2026-08-25): Supporting financial detail.** The
+> current lifecycle, payout workflow, and public-total rule are controlled by
+> [AITT Tournament Lifecycle and Operations](AITT_LIFECYCLE_OPERATIONS.md).
+> Earlier manual-Insurance, separate Generate Checks, or four-category public
+> total language below is superseded and non-authoritative.
+
 **Document Version:** 1.3
 
 **Status:** Approved
@@ -302,12 +308,11 @@ Reports containing payment or personal information are private and access contro
 
 The reports above are private operational records. AITT never publishes total
 tournament revenue or gross income. The only monetary total displayed publicly
-is `TOTAL PAID OUT TO ANGLERS`. Calculate it from the separately stored
-Bronze, Silver, Gold, and Insurance Pot payouts only. Weighfish Side Pots 1, 2,
-and 3 are Bronze, Silver, and Gold. Do not add a combined or standard
-tournament payout to this public total. The Insurance Pot is
-calculated and paid in cash outside Weighfish, and Admin records only the final amount in
-`Insurance Pot Paid Out`. The public total excludes membership fees,
+is `TOTAL PAID OUT TO ANGLERS`. It includes Main Tournament, Bronze, Silver,
+Gold, Big Bass, and Insurance Pot payouts exactly once. Completed closeout
+`total_paid_cents` is authoritative; a category sum is fallback only. WeighFish
+Side Pots 1, 2, and 3 are Bronze, Silver, and Gold. Insurance is calculated
+inside AITT's combined payout/closeout workflow. The public total excludes membership fees,
 registration revenue, sponsor income, administrative fees, director
 compensation, and gross tournament receipts.
 

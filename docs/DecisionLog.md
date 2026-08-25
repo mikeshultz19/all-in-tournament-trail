@@ -1,7 +1,27 @@
 Version: 1.0
-Last Updated: July 27, 2026
+Last Updated: August 25, 2026
 
 # Decision Log
+
+## 2026-08-25 — Reconcile the implemented tournament lifecycle
+
+- **Status:** Approved and implemented in staging; supersedes conflicting active
+  descriptions below while retaining them as decision history.
+- **Registration:** Each future tournament opens independently. Public current
+  selection uses `getNextUpcomingTournament()` and does not gate registration.
+  Only verified Square `COMPLETED` payment activates an entry.
+- **Operations:** Insurance is nested in combined payout/closeout. The completed
+  closeout total includes Main Tournament, Bronze, Silver, Gold, Big Bass, and
+  Insurance exactly once and is the public payout-total authority.
+- **Results:** Publication ignores cancelled/inactive identity-review history,
+  blocks active review and duplicate result ownership, and preserves immutable
+  Official Results.
+- **Season:** AOY uses historical eligibility, eligible reranking, 200-descending
+  scoring, zero-weight participation points, and best five of eight.
+  Championship remains a separate five-participation Competitive-Record engine;
+  its public registration gate is pending.
+- **Authority:** [AITT Lifecycle and Operations](AITT_LIFECYCLE_OPERATIONS.md)
+  is the primary human-readable lifecycle source.
 
 Use this document to record approved project decisions that affect architecture, routes, design, data, integrations, or maintenance.
 

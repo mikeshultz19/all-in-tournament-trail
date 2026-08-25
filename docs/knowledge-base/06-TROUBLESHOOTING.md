@@ -1,34 +1,39 @@
 # Troubleshooting
 
+> Apply this with [AITT Lifecycle and Operations](../AITT_LIFECYCLE_OPERATIONS.md),
+> which is authoritative when older troubleshooting language conflicts.
+
 Use only safe corrective actions. Never “fix” a mismatch by editing published
 Official Results or creating duplicate people.
 
 ## Registration will not open
 
 - **Symptom:** Registration page says closed/unavailable.
-- **Likely causes:** Wrong featured/selected tournament, status/window, missing
-  tournament, or incomplete payment/persistence implementation.
+- **Likely causes:** The selected tournament is not Registration Open, is
+  completed/cancelled/postponed, is full, or payment cannot complete.
 - **Checks:** Compare Admin tournament ID, dates, status, and registration page.
 - **Safe corrective action:** Correct the selected tournament configuration
   before entries exist; refresh and retry.
-- **Stop:** Live Square checkout is not operational. Do not use a quote or
-  browser step as proof of completed payment; use only supported confirmed
-  records.
+- **Stop:** Do not use a quote or browser step as proof of payment. Only a
+  verified Square `COMPLETED` payment activates a registration.
 
 ## Featured Tournament is wrong
 
 - **Symptom:** Homepage shows another event or no event.
-- **Likely causes:** Wrong featured/homepage flags or load failure.
-- **Checks:** Open Tournament Information and compare UUID, name, date, flags.
+- **Likely causes:** Incorrect upcoming-event dates/status or load failure.
+- **Checks:** Compare the event selected by `getNextUpcomingTournament()` with
+  tournament UUID, name, date, and lifecycle status.
 - **Safe corrective action:** Save the intended event and refresh.
-- **Stop:** Multiple featured rows, database error, or Admin/public disagreement.
+- **Stop:** Database error or Admin/public disagreement. Legacy `is_featured`
+  flags are not authoritative for this public selection.
 
 ## Early Entries count is wrong
 
 - **Symptom:** Public count/list differs from confirmed registrations.
 - **Likely causes:** Wrong tournament, duplicate/missing persisted row, or load
   fallback.
-- **Checks:** Compare public list with tournament-scoped saved registrations.
+- **Checks:** Compare the public list with registrations for the exact event
+  returned by `getNextUpcomingTournament()`.
 - **Safe corrective action:** Reconcile before closing registration.
 - **Stop:** Never expose payment reference/admin notes or edit unrelated events.
 
@@ -87,10 +92,11 @@ Official Results or creating duplicate people.
 - **Symptom:** Weights or payout totals disagree with WeighFish.
 - **Likely causes:** Payout labels not recognized, wrong file, duplicate import,
   or standard/side-pot confusion.
-- **Checks:** Compare each row/category. Public total is Bronze + Silver + Gold
-  + Insurance only.
+- **Checks:** Compare each row/category. Public total is Main Tournament +
+  Bronze + Silver + Gold + Big Bass + Insurance exactly once. Reconcile it to
+  completed closeout `total_paid_cents`.
 - **Safe corrective action:** Correct WeighFish labels/source or manual
-  Insurance before publication.
+  nested Insurance result before publication.
 - **Stop:** Unexplained difference.
 
 ## Payout checks or closeout do not balance

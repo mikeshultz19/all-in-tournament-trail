@@ -14,8 +14,13 @@
 - **Financial Closeout:** Tournament-scoped reconciliation of collections,
   payout assignments, checks, and delivery status. It is completed before
   website publication.
+- **Total Paid Out to Anglers:** Completed closeout total containing Main
+  Tournament, Bronze, Silver, Gold, Big Bass, and Insurance exactly once.
 - **Early Entries:** Saved registrations displayed before tournament day.
-- **Featured Tournament:** The tournament selected for primary homepage display.
+- **Current/Featured Tournament:** The next eligible upcoming tournament selected
+  by `getNextUpcomingTournament()` for the homepage spotlight, Early Registration
+  Status, and public Entries. Legacy `is_featured` is not authoritative and this
+  selection does not control another tournament's registration availability.
 - **First Eligible Tournament:** The first event at which a membership can
   count for AOY, Championship qualification, and member benefits.
 - **Membership Effective Date:** Administrative date the membership was

@@ -1,18 +1,17 @@
 # AITT Current State
 
-Last verified: 2026-08-10
+Last verified: 2026-08-25
 
 ## Current Readiness
 
 AITT's public site and authenticated Admin Center are deployed, and the
-repository implements the tournament workflow from protected WeighFish import
-through reviewed identity ownership, payout closeout, Official Results, AOY,
-and Championship qualification. It is not yet cleared for unrestricted
-production operation: the migration chain still leaves anonymous tournament
-updates available, hosted database and Storage policy state needs direct
-verification, and the complete workflow still requires a recorded disposable
-tournament simulation. Square-backed public registration and online membership
-creation are intentionally not live.
+repository implements the tournament workflow from protected registration and
+WeighFish import through identity ownership, payout/Insurance closeout,
+Official Results, AOY, and Championship qualification. The complete Eagle
+Mountain lifecycle was exercised in staging. Production rollout must remain
+incremental, explicitly approved, backed up, and migration-reviewed.
+Square-backed public registration is implemented; production enablement remains
+an environment and rollout decision.
 
 ## Resolved Former Blockers
 
@@ -66,14 +65,16 @@ creation are intentionally not live.
 - Verify effective hosted grants, RLS, RPC permissions, service-role secret
   boundaries, and Storage read/write/delete policies. Repository inspection
   cannot establish hosted policy state.
-- Complete and record the disposable end-to-end tournament simulations in the
+- Complete and record additional clean disposable tournament simulations in the
   [Launch Test Plan](knowledge-base/AITT-LAUNCH-TEST-PLAN.md), including Admin
   denial paths, import retry/replacement, manual identity review, DQ persistence,
-  closeout, publication, audited correction, AOY, and Championship rebuilds.
-- Keep online registration disabled unless and until Square checkout,
-  callbacks, idempotent payment finalization/recovery, confirmations, and
-  payment email pass sandbox-to-production testing. Online membership creation
-  depends on that same verified payment boundary.
+  closeout, publication, audited correction, AOY, Championship rebuilds, and an
+  explicit DQ case.
+- Enable production registration only through an approved Square/environment
+  rollout with verified secrets, payment finalization/recovery, confirmation
+  email, and production smoke evidence.
+- Implement the public Championship registration qualification gate before
+  Championship registration opens.
 
 ## Operational Testing Still Required
 

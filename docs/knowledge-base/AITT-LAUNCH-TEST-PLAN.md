@@ -1,5 +1,11 @@
 # AITT Launch Test Plan
 
+> Reconciled 2026-08-25. [AITT Lifecycle and Operations](../AITT_LIFECYCLE_OPERATIONS.md)
+> controls current business rules. Any older case below that assumes a featured
+> flag controls registration, an automatic 9:00 PM close, standalone Insurance,
+> or unavailable Square completion is superseded and must be executed using the
+> current lifecycle.
+
 ## Purpose
 
 This is an executable manual acceptance plan. Run every case in order against
@@ -275,6 +281,19 @@ case prevents launch.
 
 ## Simulation E — Failure and Recovery
 
+### Required clean-staging DQ case
+
+- **Purpose:** Prove competitive disqualification is not confused with invalid
+  import correction.
+- **Steps:** In the next clean disposable staging tournament, disqualify one
+  otherwise valid participating entry through the supported audited control;
+  complete payout, publication, AOY, and Championship processing.
+- **Pass:** `participation_status`, Official Results presentation, zero payout,
+  zero AOY credit, no Championship participation credit, and audit history all
+  agree. Legitimate entries remain unchanged.
+- **Stop:** Do not perform this test against production or use DQ merely to
+  remove synthetic/import data.
+
 ### E-01 — Duplicate and invalid registration
 
 - **Purpose:** Ensure duplicate/invalid input does not create partial rows.
@@ -382,7 +401,7 @@ Record the actual expected value and compare every applicable surface.
 ## Launch decision
 
 Launch requires every required case for the enabled production scope to pass.
-Live Square checkout remains disabled until its payment, persistence, recovery,
-and confirmation cases pass. Any unexplained identity, payout, closeout,
+Verified Square completion must remain disabled in production until its
+production payment, persistence, recovery, and confirmation cases pass. Any unexplained identity, payout, closeout,
 Official Results, AOY, or Championship discrepancy is a no-launch decision for
 that affected workflow.

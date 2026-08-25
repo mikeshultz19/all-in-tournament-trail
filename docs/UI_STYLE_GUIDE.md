@@ -107,7 +107,9 @@ be ambiguous, following the existing registration and operations conventions.
   page. Use concise registration and entry-list calls to action on the homepage.
 - Use these summary labels: Tournament Entries, Team Entries, Solo Entries,
   Big Bass, Bronze, Silver, Gold, and Insurance Pot.
-- Do not shorten Insurance Pot to Insurance.
+- Use **Insurance Pot** in rules, forms, and summaries. The approved compact
+  public Results-row winner badge may use **INSURANCE** to avoid stretching
+  Team rows; it does not replace the full Insurance Pot summary.
 
 ## Tournament Conditions
 

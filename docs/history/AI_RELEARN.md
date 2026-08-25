@@ -1,6 +1,9 @@
 Version: 1.0
 Last Updated: July 27, 2026
 
+> **Historical / Non-authoritative:** Retained for context only. Begin with
+> [Documentation Index](../DOCUMENTATION-INDEX.md).
+
 # AI Relearn
 
 > **Historical / Superseded:** This former AI handoff reflects an earlier
@@ -35,9 +38,9 @@ Its purpose is rapid recovery of project context, collaboration style, developme
   endpoint exists.
 - **Repository goals:** Provide a maintainable public tournament website, implement documented registration and tournament operations, add simple administration, and eventually reconcile official WeighFish records for results and AOY.
 
-Use the [Master Site Map](MasterSiteMap.md) for approved routes,
+Use the [Master Site Map](../MasterSiteMap.md) for approved routes,
 [Tournament Data Model](DataModel.md) for the implemented schema, and
-[Supabase Setup](SUPABASE_SETUP.md) for database operations.
+[Supabase Setup](../SUPABASE_SETUP.md) for database operations.
 
 ### Permanent public financial display rule
 
@@ -198,8 +201,8 @@ Never claim that a tool or test succeeded unless it was actually run.
 2. [ProjectStatus.md](ProjectStatus.md) — authoritative current phase, progress, and next work.
 3. [HOW_THE_WEBSITE_WORKS.md](HOW_THE_WEBSITE_WORKS.md) — plain-language behavior, stack, and workflow.
 4. [DATABASE_DESIGN.md](DATABASE_DESIGN.md) — approved persistence blueprint and data boundaries.
-5. [TOURNAMENT_OPERATIONS_AND_REGISTRATION_PROCESS.md](TOURNAMENT_OPERATIONS_AND_REGISTRATION_PROCESS.md) — authoritative tournament, registration, weather, privacy, and Director workflows.
-6. Documentation specific to the active task, including the [Decision Log](DecisionLog.md) and [Master Site Map](MasterSiteMap.md) when applicable.
+5. [TOURNAMENT_OPERATIONS_AND_REGISTRATION_PROCESS.md](../TOURNAMENT_OPERATIONS_AND_REGISTRATION_PROCESS.md) — historical context for tournament, registration, weather, privacy, and Director workflows.
+6. Documentation specific to the active task, including the [Decision Log](../DecisionLog.md) and [Master Site Map](../MasterSiteMap.md) when applicable.
 7. Relevant implementation files.
 
 The exact order may vary with the task, but current status and task-specific authoritative documents must be read before recommendations.
@@ -213,7 +216,7 @@ The public website phase is documented as complete, and registration persistence
 | Current phase | [ProjectStatus.md](ProjectStatus.md) |
 | Database design | [DATABASE_DESIGN.md](DATABASE_DESIGN.md) |
 | Website behavior | [HOW_THE_WEBSITE_WORKS.md](HOW_THE_WEBSITE_WORKS.md) |
-| Tournament workflow | [TOURNAMENT_OPERATIONS_AND_REGISTRATION_PROCESS.md](TOURNAMENT_OPERATIONS_AND_REGISTRATION_PROCESS.md) |
+| Tournament workflow | [TOURNAMENT_OPERATIONS_AND_REGISTRATION_PROCESS.md](../TOURNAMENT_OPERATIONS_AND_REGISTRATION_PROCESS.md) |
 | AI collaboration process | [AI_RELEARN.md](AI_RELEARN.md) |
 
 ## Decision Boundaries

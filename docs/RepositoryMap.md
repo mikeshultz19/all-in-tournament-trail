@@ -1,6 +1,12 @@
 # Repository Map
 
-Last updated: 2026-08-08
+Last updated: 2026-08-25
+
+See [AITT Lifecycle and Operations](AITT_LIFECYCLE_OPERATIONS.md) for the
+authoritative operating and business rules. Insurance remains represented by
+internal modules/routes but is nested in the combined payout/closeout workflow,
+not a standalone Tournament Director step. Completed closeout
+`total_paid_cents` is the authoritative public payout total.
 
 ## Routes
 

@@ -1,5 +1,10 @@
 # AITT AOY SYSTEM SPECIFICATION
 
+> **Supporting technical specification.** The Official Rules control AOY
+> competition policy, and
+> [AITT Tournament Lifecycle and Operations](AITT_LIFECYCLE_OPERATIONS.md)
+> controls current operational/public behavior.
+
 > **Constitutional precedence (July 29, 2026):**
 > [AITT Competition Rules Version 1.0](AITT_COMPETITION_RULES.md) is the
 > authoritative business specification for Competitive Records, AOY, and

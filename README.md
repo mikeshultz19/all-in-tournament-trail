@@ -8,12 +8,15 @@ Supabase PostgreSQL, Auth, and Storage provide the backend.
 - Production hosting: Cloudflare Workers through OpenNext and Wrangler
 - DNS and inbound email routing: Cloudflare
 - Registration-interest confirmation email: Resend when `RESEND_API_KEY` is configured
-- Online payment: Square checkout is pending and is not live
+- Online payment: Square-backed registration/payment lifecycle is implemented;
+  production enablement requires explicit configuration and rollout approval
 - Public contact: `info@allintrail.com` through visitor-initiated `mailto:`
 
 Start with the canonical [AITT Documentation Index](docs/DOCUMENTATION-INDEX.md)
 for current technical, staff, operational, and public documentation. Dated
 audits and status reports are retained only as historical references.
+The primary operational source is
+[AITT Tournament Lifecycle and Operations](docs/AITT_LIFECYCLE_OPERATIONS.md).
 The concise repository-backed readiness summary is
 [AITT Current State](docs/CURRENT_STATE.md).
 
@@ -28,8 +31,9 @@ stable teams, and team-member tables are present.
 The production application runs on Cloudflare Workers through OpenNext and
 Wrangler. Supabase provides the database, Admin authentication, and storage.
 The Admin Center includes WeighFish import and review, Official Results,
-payout closeout, and AOY and Championship processing. Square checkout remains
-pending and must not be described as live.
+payout closeout, and AOY and Championship processing. Square registration,
+payment verification/recovery, and durable completion are implemented, but
+production enablement must not be inferred from implementation alone.
 
 ## Local setup
 

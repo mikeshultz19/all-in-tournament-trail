@@ -1,6 +1,9 @@
 Version: 1.0
 Last Updated: July 27, 2026
 
+> **Historical / Non-authoritative:** Retained for context only. Use
+> [AITT Lifecycle and Operations](../AITT_LIFECYCLE_OPERATIONS.md).
+
 # How the All-In Tournament Trail Website Works
 
 > **Historical / Superseded:** This owner primer preserves earlier platform and

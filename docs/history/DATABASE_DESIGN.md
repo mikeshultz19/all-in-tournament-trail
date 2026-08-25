@@ -1,6 +1,9 @@
 Version: 1.0
 Last Updated: July 27, 2026
 
+> **Historical / Non-authoritative:** Retained for design history. Inspect the
+> current migrations and [System Architecture](../SYSTEM_ARCHITECTURE.md).
+
 # All In Tournament Trail Database Design
 
 > **Historical / Superseded:** This is the original database blueprint. Use the

@@ -1,8 +1,9 @@
 # Supabase Explained
 
-> Current-state note (2026-07-29): Supabase currently stores tournament,
-> registration, Results, AOY-row, season, member, team, and reset foundations.
-> Sponsor management and Championship qualification are not completed systems.
+> Current-state note (2026-08-25): Supabase stores tournament, registration,
+> identity/membership history, Working and Official Results, closeout/Insurance,
+> AOY, and Championship projections. Sponsor management remains separate work;
+> Championship public registration enforcement remains pending.
 
 Version: 1.0
 Last Updated: July 27, 2026

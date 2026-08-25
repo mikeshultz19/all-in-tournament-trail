@@ -4,8 +4,8 @@
 
 ## Purpose
 
-This is the operating source of truth for the inaugural All In Tournament Trail
-team. It explains how to prepare a tournament, manage members and entries,
+This knowledge base supports the primary human-readable authority,
+[AITT Lifecycle and Operations](../AITT_LIFECYCLE_OPERATIONS.md). It explains how to prepare a tournament, manage members and entries,
 import and validate WeighFish results, prepare payouts, close out an event,
 publish results, and update season standings without requiring software
 knowledge.
@@ -47,10 +47,10 @@ Read the applicable procedure before changing live tournament data. Verify the
 result in both Admin and the public website. Stop when a listed stop condition
 occurs; do not work around missing or inconsistent data by inventing values.
 
-The protected Admin Center, WeighFish import/review, identity reconciliation,
-payout closeout, Official Results workflow, and AOY and Championship engines
-are implemented. Live Square checkout is not operational; do not represent an
-online quote or registration attempt as a completed paid entry.
+The protected Admin Center, verified Square registration boundary, WeighFish
+import/review, identity reconciliation, payout closeout, Official Results, AOY,
+and Championship engines are implemented. Production payment enablement is a
+separate controlled rollout; only a verified completed payment creates an entry.
 
 Technical implementation and repository maintenance belong in the separate
 developer documentation path listed in

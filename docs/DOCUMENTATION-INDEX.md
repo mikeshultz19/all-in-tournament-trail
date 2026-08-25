@@ -1,10 +1,24 @@
 # AITT Documentation Index
 
-Last reconciled: 2026-08-10
+Last reconciled: 2026-08-25
 
 This is the canonical entry point for AITT documentation. Use the sections
 below to distinguish current technical guidance, staff operating instructions,
 official public documents, and retained historical records.
+
+## Primary lifecycle authority
+
+- [AITT Tournament Lifecycle and Operations](AITT_LIFECYCLE_OPERATIONS.md) —
+  primary human-readable source for implemented registration, tournament
+  morning, import, payout/closeout, publication, public Results, AOY,
+  Championship, environment, and release behavior.
+- [Markdown Reconciliation — 2026-08-25](MARKDOWN_RECONCILIATION_2026-08-25.md)
+  — dated inventory and consolidation record; not a business-rule authority.
+
+The [Official Tournament Rules](TOURNAMENT_RULES.md) control competition rules.
+When a supporting technical or staff document summarizes lifecycle behavior,
+it must defer to the primary lifecycle document rather than establish a
+different rule.
 
 > **Historical documents are preserved for decision history and must not be
 > treated as current implementation or operating instructions.** When a dated
@@ -42,8 +56,8 @@ official public documents, and retained historical records.
 
 ### Registration
 
-- [Online Registration Workflow](ONLINE_REGISTRATION_WORKFLOW.md) — approved
-  lifecycle; Square checkout remains pending and is not live.
+- [Online Registration Workflow](ONLINE_REGISTRATION_WORKFLOW.md) — detailed
+  registration/payment implementation supporting the primary lifecycle.
 - [Durable Registration](technical/DURABLE_REGISTRATION.md)
 
 ### Results, import, AOY, and Championship
@@ -96,7 +110,7 @@ Supporting operating references:
 ## Official Public Documents
 
 - [Official Tournament Rules — canonical source](TOURNAMENT_RULES.md), version
-  1.6. The matching served copy is
+  1.8. The matching served copy is
   [`public/docs/TOURNAMENT_RULES.md`](../public/docs/TOURNAMENT_RULES.md).
 - [Liability Waiver — source copy](LIABILITY_WAIVER.md), currently marked draft
   pending legal review. The matching served copy is

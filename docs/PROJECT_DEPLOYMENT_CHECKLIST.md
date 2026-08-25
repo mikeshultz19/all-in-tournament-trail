@@ -1,8 +1,9 @@
 # Project Deployment Checklist
 
-> Current-state note (2026-08-08): Production is healthy on Cloudflare Workers
+> Current-state note (2026-08-25): Production is healthy on Cloudflare Workers
 > through OpenNext and Wrangler. Admin Auth and protected operational workflows
-> are implemented. Live Square checkout remains disabled. A Wrangler
+> are implemented. Verified Square registration is implemented; production
+> enablement remains a controlled rollout decision. A Wrangler
 > remote/local configuration-drift warning involving dashboard-generated
 > metadata remains a known maintenance item, not a production outage.
 
@@ -27,6 +28,7 @@ operations.
 **Related Documents:**
 
 - [Documentation Index](DOCUMENTATION-INDEX.md)
+- [AITT Lifecycle and Operations](AITT_LIFECYCLE_OPERATIONS.md)
 - [Development Roadmap](DevelopmentRoadmap.md)
 - [Decision Log](DecisionLog.md)
 - [Payment Operations Manual](PAYMENT_OPERATIONS.md)
@@ -35,7 +37,21 @@ operations.
 - [Master Site Map](MasterSiteMap.md)
 - [README](../README.md)
 
-**Last Updated:** 2026-08-08
+**Last Updated:** 2026-08-25
+
+## Production data and release order
+
+- Staging Supabase: `vcjhufuklqwvnqmarpqi` through `.env.local`.
+- Production Supabase: `qrmnglzylrrdhcvashmx` through `.env.production.local`.
+- `npm run dev` is staging. The production wrapper must reject staging config.
+- Never print secrets or mix staging and production data.
+- Before a production migration: back up production, run
+  `supabase migration list`, run `supabase db push --dry-run`, inspect every
+  pending migration, and apply only the explicitly approved set.
+- Release incrementally: database prerequisites; registration core/public;
+  check-in/tournament morning; Members/All Registrations; payouts/Insurance;
+  Results/historical review; AOY/Championship; then public cosmetic changes.
+- Review cross-cutting files individually; do not blindly deploy mixed commits.
 
 ## Verified Platform Status
 
@@ -363,7 +379,8 @@ server-side contact submission endpoint.
 - [ ] Confirm all critical vendor accounts are active, funded where necessary, and recoverable.
 - [ ] Complete an online solo registration test from start through confirmed payment.
 - [ ] Complete an online team registration test from start through confirmed payment.
-- [ ] Verify the online deadline at 9:00 PM `America/Chicago` on the evening before the tournament.
+- [ ] Verify each tournament's independent Registration Open/closed state; no
+  automatic 9:00 PM timestamp controls the current public flow.
 - [ ] Complete a successful cash registration test in the tournament-morning workflow.
 - [ ] Complete a successful card-reader payment test with the 3% Card Processing Fee.
 - [ ] Complete an Apple Pay test on a supported online device and browser.

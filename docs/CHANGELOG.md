@@ -1,7 +1,22 @@
 Version: 1.1
-Last Updated: August 8, 2026
+Last Updated: August 25, 2026
 
 # Changelog
+
+## 2026-08-25
+
+### Completed staging tournament lifecycle
+
+- Reconciled independent per-tournament registration, verified Square
+  activation, current public-tournament selection, public Entries scoping, and
+  permanent registration closure after publication.
+- Completed preparation guards, Working Result ownership validation, combined
+  payout/Insurance closeout and reset protections, Official Results readiness,
+  and public Results payout/pagination/mobile behavior.
+- Completed deterministic AOY and Championship projections and compact public
+  AOY standings. Championship public registration enforcement remains pending.
+- Selected [AITT Lifecycle and Operations](AITT_LIFECYCLE_OPERATIONS.md) as the
+  primary human-readable operating and business-rule authority.
 
 ## 2026-08-08
 
@@ -23,7 +38,8 @@ Last Updated: August 8, 2026
   reconciliation, and immutable Official Results publication/correction.
 - Added Insurance, payout/check preparation, tournament financial closeout,
   AOY, and Championship qualification processing.
-- Live Square checkout/payment remains pending and is not operational.
+- At this dated 2026-08-08 milestone, live Square checkout/payment remained
+  pending. The 2026-08-25 entry supersedes that implementation status.
 
 ### Email
 

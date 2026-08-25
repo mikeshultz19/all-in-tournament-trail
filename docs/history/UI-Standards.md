@@ -1,6 +1,9 @@
 Version: 1.0
 Last Updated: July 27, 2026
 
+> **Historical / Non-authoritative:** Use [UI Style Guide](../UI_STYLE_GUIDE.md)
+> and [AITT Lifecycle and Operations](../AITT_LIFECYCLE_OPERATIONS.md).
+
 # UI Standards
 
 > **Historical / Superseded:** This compact visual checklist is preserved as an

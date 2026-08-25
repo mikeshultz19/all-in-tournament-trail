@@ -1,5 +1,5 @@
-Version: 1.1
-Last Updated: August 8, 2026
+Version: 1.2
+Last Updated: August 25, 2026
 
 # Supabase Setup
 
@@ -8,6 +8,12 @@ Admin routes, server-authorized actions, durable registration/review
 infrastructure, Working and Official Results, payout closeout, AOY, and
 Championship projections. Hosted grants, RLS, RPC permissions, and Storage
 policies still require periodic verification.
+
+Environment identity is strict: staging project `vcjhufuklqwvnqmarpqi` is
+loaded from `.env.local` and production project `qrmnglzylrrdhcvashmx` from
+`.env.production.local`. `npm run dev` uses staging. Never print credentials,
+mix project data, or apply a production migration without backup, migration
+list, dry-run, pending-SQL inspection, and explicit approval.
 
 ## Environment variables
 

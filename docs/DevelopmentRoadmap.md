@@ -1,6 +1,6 @@
 # Development Roadmap
 
-Last updated: 2026-08-10
+Last updated: 2026-08-25
 
 Current readiness and blocker classifications are maintained in
 [AITT Current State](CURRENT_STATE.md).
@@ -23,11 +23,10 @@ Current readiness and blocker classifications are maintained in
 1. Remove the remaining permissive anonymous tournament-update policy, then
    verify effective production RLS, grants, RPC permissions, Storage policies,
    and secret boundaries against the complete migration chain.
-2. Run the complete implemented workflow against disposable nonproduction data:
-   preparation, registration review, import, reconciliation, Insurance,
-   payouts/checks, closeout, publication, AOY, and Championship qualification.
-3. Implement and verify live Square sandbox checkout, callbacks, recovery,
-   confirmation, and payment email before enabling production payment.
+2. Repeat the completed staging lifecycle with a clean disposable tournament,
+   including an explicit competitive DQ case and responsive acceptance checks.
+3. Roll out the implemented Square flow incrementally only after approved
+   production configuration, recovery, confirmation-email, and smoke checks.
 4. Resolve the remaining Wrangler remote/local metadata-drift warning without
    copying Cloudflare-generated metadata or changing healthy production
    behavior.
@@ -36,7 +35,7 @@ Current readiness and blocker classifications are maintained in
 
 ## Launch gate
 
-Production public and Admin scope is live. Live Square payment remains gated on
-verified sandbox-to-production payment behavior, secure secrets, recovery,
-idempotency, and end-to-end tests. Operational workflows remain gated on clean
-identity, payout, closeout, Official Results, AOY, and Championship evidence.
+Production public and Admin scope is live. Production Square enablement remains
+gated on explicit approval, secure production configuration, recovery,
+idempotency, confirmation, and smoke tests. Championship public registration
+also remains gated on qualification enforcement.

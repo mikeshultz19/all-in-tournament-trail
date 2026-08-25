@@ -1,6 +1,9 @@
 Version: 1.0
 Last Updated: July 27, 2026
 
+> **Historical / Non-authoritative:** This dated model must not be used for
+> migrations. Use [System Architecture](../SYSTEM_ARCHITECTURE.md).
+
 # Tournament Data Model
 
 > **Historical / Superseded:** This file preserves the original tournament

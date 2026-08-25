@@ -1,141 +1,62 @@
 # Memberships and Registration
 
-## Purpose
+The complete rule authority is [AITT Lifecycle and Operations](../AITT_LIFECYCLE_OPERATIONS.md).
 
-This guide explains how AITT identifies members, determines eligibility, accepts
-entries, and prepares the official tournament field.
+## Operating principle
 
-## Current fees and options
+Registration is permissive. Review is corrective. Payment failure is blocking.
+Identity or membership uncertainty may create review work, but it must not erase
+a valid completed payment or silently attach a person to a weak match.
 
-- Tournament Entry is required and costs **$60**.
-- Annual membership costs **$40 per angler**.
-- Big Bass is optional.
-- Bronze is an optional **+$40** member pot.
-- Silver is an optional **+$100** member pot.
-- Gold is an optional **+$500** member pot.
-- Choose no more than one of Bronze, Silver, or Gold.
-- The Insurance Pot is optional and members-only.
+Square's verified `COMPLETED` payment is the activation boundary. A failed
+attempt creates no active registration and consumes no boat number. Email
+failure does not invalidate a completed registration.
 
-The Insurance Pot uses a true 1-in-5 payout, with a minimum of one paid place
-whenever there are Insurance Pot entries. Payouts begin with the first eligible
-team outside the Tournament Entry payout. The Official Tournament Rules govern
-eligibility and payout details.
+## Tournament availability and public entries
 
-## Membership seasons
+Each tournament has its own registration state. Multiple eligible future events
+may be open at the same time, regardless of which event is current. Registration
+is accepted only when that tournament is open, not published/completed, not
+cancelled/postponed, and below capacity. Published events display
+**REGISTRATION CLOSED** and cannot be reopened through normal controls.
 
-Each membership belongs to one Membership Season. Admin Settings controls the
-single Active Membership Season. Member creation defaults to that season; do
-not select a competing active season elsewhere.
+`getNextUpcomingTournament()` is the authoritative public current-tournament
+selector for the homepage spotlight, Early Registration Status, and public View
+Tournament Entries. Legacy `is_featured` is not authoritative for those views.
+The public entry list shows only that current event; Admin retains every
+tournament's registrations.
 
-If no season exists, the system can create the initial `2026–2027` season.
-Changing the active season affects which records Members and Add Member use.
+## Numbers and identity
 
-## New and existing memberships
+Boat Number, Registration Number, and launch order are the same number. It is
+assigned only after verified successful completion. Cancelled numbers are not
+reused, and walkups continue the sequence. A separate customer confirmation
+reference is not the boat number.
 
-Admin can create a member from a completed physical form. The member record
-stores name and supported contact information; its membership stores status,
-season, Effective Date, and First Eligible Tournament. Possible statuses are
-Active, Cancelled, and Refunded. The person can also be Active or Inactive for
-future administration.
+The submitted tournament identity snapshot remains the historical evidence for
+that event. Canonical members and Competitive Records support membership, AOY,
+Championship, and history. Review decisions are:
 
-The Add Member process checks strong duplicate identifiers such as email and
-does not silently merge people. The member and membership are created together
-so one cannot remain without the other.
+- **SAME PERSON — UPDATE INFO**
+- **SAME PERSON — KEEP EXISTING INFO**
+- **DIFFERENT PERSON — APPROVE NEW MEMBER**
 
-Renewal editing is not currently available. Do not describe renewal as an
-operational feature.
+Tournament-time membership and `aoy_eligible` snapshots control historical
+calculations; a later membership change cannot rewrite an old event.
 
-## First Eligible Tournament
+For teams and Solo entries, apply the membership-dependent pot rules already
+implemented against the relevant tournament-time snapshot. Do not silently
+remove a paid/selected option because identity is uncertain; flag it for review.
 
-First Eligible Tournament is the business eligibility control for AOY,
-Championship qualification, and member benefits. Membership Effective Date is
-administrative only. Never substitute one for the other.
+## Tournament morning
 
-For the official practice privilege, current membership is necessary but is
-not sufficient by itself. The member must also be registered for that specific
-tournament. An eligible member receives one official practice day immediately
-before the event and may choose Friday or Saturday, but not both. A registered
-non-member is off-limits beginning at 12:00 AM midnight on Monday of tournament
-week. The public Rules page controls this policy before every event.
+Use the Registration & Check-In roster, confirm online boat numbers, add walkups
+sequentially, reconcile paper memberships, perform Membership Reconciliation,
+and make the AITT field agree with WeighFish. Insurance participation is
+reconciled in AITT because WeighFish is not its authoritative workflow.
 
-Example: a membership recorded on August 1 with “Lake Two” selected as First
-Eligible Tournament does not become eligible for Lake One merely because Lake
-One occurred after the recorded Effective Date.
-
-## Stable member and team records
-
-Use the existing member whenever identity is confirmed. Do not create a new
-person to correct spelling. Partner order does not create a new team. A
-different two-person pairing is a different team. A solo appearance by one
-registered partner should remain attached to the original two-person team.
-
-Tournament Manager supports registration review and imported-result identity
-reconciliation. Resolve every required review against the source information;
-never guess or create a duplicate person merely to clear the queue.
-
-## Registration paths currently present
-
-- The public registration page selects a tournament, collects angler/options
-  information, validates registration state, and obtains a server-authoritative
-  quote.
-- The public Entries page reads saved tournament registrations.
-- Tournament-morning/walk-in teams may exist only in WeighFish and later enter
-  the official field through the complete WeighFish export.
-
-Live Square checkout is still pending and is not operational. The durable
-registration foundation and Admin registration-review workflow exist, but
-staff must not describe a quote, browser step, or unverified payment as a
-completed paid registration. No unsupported waitlist or external-registration
-path should be advertised.
-
-## What the Tournament Director Does
-
-1. Confirm the Active Membership Season in Settings.
-2. Search Members before creating a person.
-3. Select the exact First Eligible Tournament.
-4. Review public Entries and compare them with paid/confirmed registrations.
-5. Close registration at the intended time.
-6. Add tournament-morning teams in WeighFish.
-7. Treat the final WeighFish export as the complete official tournament field.
-8. Use Registration Review and the WeighFish import workspace to resolve every
-   required identity review before results, AOY, or Championship publication.
-
-## What to Verify
-
-- Member name/contact data appears once in Admin Members.
-- Season, status, Effective Date, and First Eligible Tournament are correct.
-- The selected tournament is the same in Featured Tournament, registration,
-  Entries, and Admin.
-- Entry counts and names agree before tournament day.
-- Non-members remain in Official Results but receive no member-only season
-  credit.
-
-## Common scenarios
-
-- **Existing email detected:** open the linked member; do not create another.
-- **Partner absent:** remaining partner may fish alone for the original team.
-- **Different partner:** treat the pairing as a new team.
-- **Membership purchased late:** choose the approved First Eligible Tournament;
-  do not backdate eligibility using Effective Date.
-- **Inactive member:** retain history; reactivate only after confirming the
-  record is the correct person.
-
-## BUSINESS RULE CONFIRMATION REQUIRED
-
-- Exact operational renewal procedure is not implemented.
-- Live Square checkout and its public payment finalization remain unavailable.
-- Do not infer paid membership or registration from a public selection without
-  a supported confirmed record.
-
-## What Can Go Wrong
-
-Duplicate people, name spelling differences, wrong seasons, wrong eligibility
-tournaments, unpersisted public registration, and mismatches between saved
-Entries and WeighFish can corrupt later standings. Stop and reconcile before
-publishing.
-
-## Related Documents
+## Related documents
 
 - [Running a Tournament](02-RUNNING-A-TOURNAMENT.md)
-- [Troubleshooting](06-TROUBLESHOOTING.md)
-- [AOY Specification](../AOY_SPECIFICATION.md)
+- [Official Tournament Rules](../TOURNAMENT_RULES.md)
+- [Registration identity review](../technical/REGISTRATION_IDENTITY_REVIEW_QUEUE.md)

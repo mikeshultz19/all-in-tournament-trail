@@ -1,5 +1,8 @@
 # Admin Center Guide
 
+> This is a route-level supporting guide. [AITT Lifecycle and Operations](../AITT_LIFECYCLE_OPERATIONS.md)
+> is authoritative for business rules and the current end-to-end workflow.
+
 ## Access
 
 Admin login uses each active administrator's own account. Sessions persist
@@ -12,8 +15,8 @@ untrusted device. Server actions recheck Admin status.
 | --- | --- | --- | --- |
 | `/admin` | Tournament Operations dashboard; used throughout an event. | Selected tournament and lifecycle progress; links to next action. | Coordinates work. Confirm selected event before every action. |
 | `/admin/login` | Sign in. | Username/email and password; persistent session. | No public content change. Invalid/inactive account is denied. |
-| `/admin/tournament` | Prepare selected tournament and access Danger Zone. | Tournament information, dates, ramp, registration/practice text, visibility/status; reset preview/dialog. | Updates Featured Tournament, schedule, registration. Reset irreversibly removes selected event activity but preserves configuration/members/seasons. |
-| `/admin/tournament-manager` | Six-stage tournament workspace. | Prepare Tournament, Import Results, Insurance Pot, Calculate Payouts, Publish Results, and Calculate AOY. | Primary event workflow. Always verify the selected tournament and complete stages in order. |
+| `/admin/tournament` | Prepare selected tournament and access Danger Zone. | Tournament information, dates, ramp, registration/practice text, visibility/status; reset preview/dialog. | Updates schedule and that event's registration controls. Public current selection still comes from `getNextUpcomingTournament()`. Reset removes selected event activity but preserves configuration/members/seasons. |
+| `/admin/tournament-manager` | Tournament lifecycle workspace. | Prepare, Import/Verify, combined Payout/Closeout (including Insurance), Publish, and AOY. | Primary event workflow. Always verify the selected tournament and complete stages in order. |
 | `/admin/tournament-manager/prepare` | Review the pre-event roster and check-in materials. | Registration roster, payment/review counts, WeighFish export, printed check-in list, membership confirmations. | Blocks import readiness when required registration or membership review remains unresolved. |
 | `/admin/registration-review` | Resolve registrations needing staff review. | Tournament-scoped registrations, identity/payment context, resolution and notes. | Determines which records can be trusted for preparation; never mark an unverified payment as paid. |
 | `/admin/announcements` | List/delete homepage announcements. | Existing global announcements. | Homepage news changes after revalidation. Delete is irreversible. |
@@ -26,7 +29,7 @@ untrusted device. Server actions recheck Admin status.
 | `/admin/members/export` | On-demand current search/filter CSV. | Query/filter from Members. | Downloads data; treat contact information as private. |
 | `/admin/settings` | Select Active Membership Season. | One season. | Changes default/current membership administration context. High-impact but reversible. |
 | `/admin/tournament-manager/import` | Import, review, validate, reset, or replace WeighFish working results. | Official CSV, imported rows, verification state, identity reconciliation. | Nothing is public until publication. Compare every row with WeighFish and resolve review items before verification. |
-| `/admin/tournament-manager/insurance` | Calculate and assign Insurance Pot winners. | Entry count, true 1-in-5 calculation, pot total, places, eligible winners. | Required before final payout checks; feeds the saved Insurance Pot result. |
+| `/admin/tournament-manager/insurance` | Legacy/internal route retained by the implementation. | Insurance data used by combined payout/closeout. | Not a standalone Tournament Director step or reset control. |
 | `/admin/tournament-manager/closeout` | Complete tournament-day payout closeout. | Imported payout evidence, collections, place/category assignments, payees, checks, delivery status, reconciliation difference. | First priority after verified import because anglers are waiting. It does not publish website content. |
 | `/admin/tournament-manager/photos` | Upload winner and Big Bass images. | Image files for selected event. | Feeds Winner's Circle/Results after publication. Verify previews. |
 | `/admin/tournament-manager/publish` | Preview and publish verified Official Results. | Results, completed payouts, Insurance Pot, photos, public preview, confirmation. | Publishes website results only after closeout readiness is complete. |
@@ -46,7 +49,7 @@ Use `/admin` to select the tournament and Tournament Manager to complete the
 stages in order. Before the event, prepare the roster, resolve Registration
 Review, and confirm memberships. During weigh-in, enter results in WeighFish.
 Immediately afterward, import and verify the CSV, resolve identity reviews,
-calculate Insurance and all other payouts, prepare checks, and finish closeout.
+calculate all payouts including nested Insurance, approve payouts, and finish closeout.
 Only then upload photos, preview and publish website results, and recalculate
 AOY and Championship projections as appropriate.
 

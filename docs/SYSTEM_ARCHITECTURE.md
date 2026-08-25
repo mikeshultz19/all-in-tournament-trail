@@ -1,6 +1,9 @@
 # System Architecture
 
-Last Updated: August 8, 2026
+Last Updated: August 25, 2026
+
+Business and operational behavior is defined in
+[AITT Lifecycle and Operations](AITT_LIFECYCLE_OPERATIONS.md).
 
 AITT is a Next.js 16, React 19, and TypeScript application deployed to
 Cloudflare Workers through OpenNext and Wrangler. `wrangler.jsonc` is the
@@ -33,8 +36,8 @@ The elevated Supabase client is server-only and reads `SUPABASE_URL` and
 Cloudflare Secret. Browser/Auth clients use only the public Supabase URL and
 anonymous key; elevated credentials must never use a `NEXT_PUBLIC_*` name.
 
-The durable registration and identity-review infrastructure exists. Live
-Square checkout, verified Square payment completion, and production online
-payment remain pending and must not be represented as operational. Resend is
+The durable registration, verified Square payment boundary, and identity-review
+infrastructure exist. Production payment enablement remains an explicitly
+controlled release step. Resend is
 used by the registration-interest flow when `RESEND_API_KEY` is configured;
 Contact remains visitor-initiated email through Cloudflare Email Routing.

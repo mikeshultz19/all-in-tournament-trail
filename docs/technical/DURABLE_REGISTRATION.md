@@ -11,9 +11,10 @@ completion is a separate server-only boundary that may be called only after a
 payment integration has independently verified an authorized payment reference
 and amount.
 
-The repository does not currently contain a working Square checkout or payment
-callback. Durable Registration therefore does not expose a public completion
-endpoint or pretend that an unverified browser request represents payment.
+The Square checkout and verified completion path now use this boundary. Only a
+verified `COMPLETED` payment can invoke durable activation. Production payment
+enablement remains a separate controlled release concern; an unverified browser
+request never represents payment.
 
 ## Transaction
 

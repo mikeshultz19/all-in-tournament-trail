@@ -75,6 +75,8 @@ action independently requires an active Admin.
 ## Limitations
 
 - Championship tournament scoring is not implemented.
+- The public Championship registration qualification gate is not implemented;
+  review and add it before Championship registration opens.
 - Publication does not automatically rebuild qualification; the protected
   rebuild action must run after newly publishing Official Results.
 - Legacy Official Results without historical snapshots require reviewed

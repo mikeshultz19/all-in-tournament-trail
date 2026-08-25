@@ -42,15 +42,22 @@ Working Results remain temporary and cannot appear on public Results pages.
 - the tournament belongs to a season;
 - a regular-season event has immutable number 1–8;
 - a Championship is unnumbered;
-- the Registration Review queue has no pending registrations;
+- active/current tournament registrations have no unresolved identity review;
+  cancelled/inactive `review_required` history does not block publication;
 - at least one Working Result exists;
 - placements and weights pass validation;
 - every entry has a canonical Competitive Record;
+- no non-null registration UUID is assigned to more than one Working Result;
 - each Competitive Record belongs to the tournament season;
 - any linked imported identity is confirmed against that same record.
 
 Failures return stable `AITT_OFFICIAL_RESULTS_*` domain codes. Registration and
 payment remain unaffected.
+
+Historical-review save detects duplicate registration ownership before write,
+identifies both affected result rows for manual review, and leaves the database
+unique constraint as final protection. Publication readiness repeats this check
+before invoking the RPC.
 
 ## Official publication
 

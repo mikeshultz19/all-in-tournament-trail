@@ -152,13 +152,18 @@ Online registration requires immediate successful payment. A draft, quote,
 payment attempt, browser message, or payment redirect does not constitute a
 confirmed registration.
 
-### Registration Window and Deadline
+### Registration Availability
 
-Early Online Registration closes at **9:00 PM America/Chicago time on the
-evening before the tournament**. The website uses server time and the
-`America/Chicago` time zone, including daylight-saving changes, to determine
-availability. A tournament may be unavailable earlier because of status,
-capacity, or an official operational decision.
+Each tournament has its own registration lifecycle. Online registration is
+available while that tournament is marked **Registration Open**, capacity is
+available, and the event is not completed, Cancelled, or Postponed. Multiple
+future tournaments may be open at the same time. Featured/current tournament
+selection does not control registration availability.
+
+There is no automatic website closing timestamp in the implemented public
+flow. AITT may suspend or close a tournament independently through its official
+lifecycle controls. Results Published tournaments display **REGISTRATION
+CLOSED** and cannot be reopened through normal registration controls.
 
 ### Immediate Online Payment
 
@@ -170,8 +175,9 @@ unpaid reservations, payment at the ramp, Venmo, and Stripe are not offered.
 
 Tournament-Morning Registration is a normal in-person registration period and
 is not late registration. It is conducted by the Tournament Director at the
-registration table and recorded in WeighFish. It is not submitted through the
-AITT website.
+registration table and recorded in the AITT Registration & Check-In workflow,
+then reconciled with WeighFish. It is not submitted through the public AITT
+registration page.
 
 **Pending approval:** Exact tournament-morning operating hours and the final
 registration cutoff will be published with event instructions.
@@ -180,8 +186,10 @@ registration cutoff will be published with event instructions.
 
 - **Square:** Processes online card and supported digital-wallet payments and
   in-person electronic payments made through the Square reader.
-- **WeighFish:** Owns the tournament-day roster, tournament-morning
-  registration record, check-in, weigh-in, scoring, and official results.
+- **AITT:** Owns Registration & Check-In, walkup reconciliation, membership
+  reconciliation, Insurance participation, and durable tournament identities.
+- **WeighFish:** Owns tournament-day scoring and finish data entered during
+  weigh-in. AITT and WeighFish fields must be reconciled before publication.
 - **Cash:** Accepted only during Tournament-Morning Registration. Cash has no
   Card Processing Fee.
 - **Card and supported digital wallets:** A 3% Card Processing Fee applies to
@@ -510,7 +518,13 @@ them safely after weigh-in.
 
 #### Short Fish
 
-Any fish that does not meet the tournament's minimum legal length will not be
+The tournament-wide minimums are:
+
+- Largemouth Bass: 14 inches
+- Smallmouth Bass: 14 inches
+- Spotted Bass: no minimum
+
+Any fish that does not meet the applicable tournament minimum will not be
 counted toward the tournament catch.
 
 A short fish:
@@ -740,6 +754,7 @@ administrative notes, and internal identifiers must not be displayed publicly.
 
 | Version | Date | Summary |
 | --- | --- | --- |
+| 1.8 | August 25, 2026 | Aligned registration availability with manual per-tournament lifecycle controls, clarified AITT/WeighFish tournament-morning ownership, and documented species length minimums. |
 | 1.7 | August 9, 2026 | Clarified that disqualified entries receive no AOY points, Championship appearance credit, or tournament payouts. |
 | 1.6 | August 5, 2026 | Added approved participant age, parental-consent, adult-supervision, and applicable-law requirements. |
 | 1.5 | August 5, 2026 | Restored AOY and Championship Qualification sections. Confirmed best five of eight for AOY and five-of-eight participation for Championship qualification. |

@@ -77,6 +77,14 @@ tie breakers and best-five selection cannot become partially stale.
 members, counted and dropped performances, participation totals, and tie
 details, without recalculating it.
 
+## Public projection
+
+Public standings paginate at 25 records. Default rows remain compact: rank,
+Team/Angler, AOY points, events fished, Championship progress, and an expand
+control. Expansion exposes only Tournament/Lake and Points, with **Dropped** on
+performances outside the best five. Internal eligibility and audit evidence
+remains Admin-only.
+
 ## Integrity and security
 
 Database constraints enforce one performance per record/tournament/run,

@@ -3,6 +3,13 @@ Last Updated: July 27, 2026
 
 # Tournament Operations and Registration Process
 
+> **Consolidated 2026-08-25.** Current staff procedure is maintained in
+> [AITT Tournament Lifecycle and Operations](AITT_LIFECYCLE_OPERATIONS.md).
+> This longer document is retained as supporting design/history. Automatic
+> registration deadlines, Featured-controlled registration, standalone
+> Insurance steps, or older payout/check sequences below are superseded and
+> non-authoritative.
+
 > Implementation note (2026-07-29): Protected import/publication, identity
 > reconciliation, Official Results, AOY, and Championship qualification are
 > implemented. Use the Knowledge Base for executable current operations.
