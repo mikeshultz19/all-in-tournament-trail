@@ -3,6 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 
 import {
+  displayResultsPayout,
   formatResultsDate,
   isSidePotEntry,
 } from "@/lib/result-payouts";
@@ -11,17 +12,17 @@ import type { LatestTournamentResults } from "@/types/results";
 const sidePots = [
   {
     name: "bronze",
-    label: "Bronze Pot Winner",
+    label: "Bronze Winner",
     textClass: "text-[#CD7F32]",
   },
   {
     name: "silver",
-    label: "Silver Pot Winner",
+    label: "Silver Winner",
     textClass: "text-[#C0C0C0]",
   },
   {
     name: "gold",
-    label: "Gold Pot Winner",
+    label: "Gold Winner",
     textClass: "text-[#D4AF37]",
   },
 ] as const;
@@ -55,6 +56,8 @@ export default function MobileWinnerCircle({
     .sort((a, b) => a.place - b.place);
 
   const champion = finalEntries[0] ?? null;
+  const basePayoutWinner =
+    finalEntries.find((entry) => (entry.baseWinnings ?? 0) > 0) ?? null;
 
   const championImage =
     latestResults.championImage ||
@@ -131,19 +134,38 @@ export default function MobileWinnerCircle({
           </p>
         </div>
 
-        {latestResults.tournamentRecap ? (
-          <div className="mt-5 border-t border-white/10 pt-4">
+        <div className="mt-5 min-w-0 border-t border-white/10 pt-4">
             <p className="text-[0.65rem] font-black uppercase tracking-[0.15em] text-neutral-500">
               Tournament Recap
             </p>
 
-            <p className="mt-2 text-sm leading-6 text-neutral-300">
-              {latestResults.tournamentRecap}
+            <p className="mt-2 break-words text-sm leading-6 text-neutral-300">
+              {latestResults.tournamentRecap ??
+                "No tournament recap has been added."}
             </p>
           </div>
-        ) : null}
 
         <div className="mt-5 space-y-3 border-t border-white/10 pt-4">
+          <div className="grid min-w-0 grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] items-start gap-3">
+            <div className="flex min-w-0 items-center gap-2">
+              <Trophy
+                aria-hidden="true"
+                className="size-4 shrink-0 text-[#c9aa4a]"
+              />
+              <span className="text-[0.68rem] font-black uppercase tracking-[0.1em] text-[#c9aa4a]">
+                Base Payout
+              </span>
+            </div>
+            <div className="min-w-0 text-right">
+              <p className="break-words text-xs font-bold leading-5 text-white">
+                {basePayoutWinner?.team ?? "—"}
+              </p>
+              <p className="mt-0.5 text-xs font-black tabular-nums text-[#c9aa4a]">
+                {displayResultsPayout(basePayoutWinner?.baseWinnings)}
+              </p>
+            </div>
+          </div>
+
           {sidePots.map((sidePot) => {
             const winner = latestResults.results.entries
               .filter(
@@ -160,7 +182,7 @@ export default function MobileWinnerCircle({
             return (
               <div
                 key={sidePot.name}
-                className="flex items-center justify-between gap-4"
+                className="grid min-w-0 grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] items-start gap-3"
               >
                 <div className="flex min-w-0 items-center gap-2">
                   <Medal
@@ -175,15 +197,20 @@ export default function MobileWinnerCircle({
                   </span>
                 </div>
 
-                <span className="truncate text-right text-xs font-bold text-white">
-                  {winner?.team ?? "—"}
-                </span>
+                <div className="min-w-0 text-right">
+                  <p className="break-words text-xs font-bold leading-5 text-white">
+                    {winner?.team ?? "—"}
+                  </p>
+                  <p className="mt-0.5 text-xs font-black tabular-nums text-[#c9aa4a]">
+                    {displayResultsPayout(winner?.sidePotPayout)}
+                  </p>
+                </div>
               </div>
             );
           })}
 
           {/* Big Bass result — mobile text only, no photo */}
-          <div className="flex items-center justify-between gap-4 border-t border-white/10 pt-3">
+          <div className="grid min-w-0 grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] items-start gap-3 border-t border-white/10 pt-3">
             <div className="flex min-w-0 items-center gap-2">
               <Fish
                 aria-hidden="true"
@@ -191,12 +218,12 @@ export default function MobileWinnerCircle({
               />
 
               <span className="text-[0.68rem] font-black uppercase tracking-[0.1em] text-[#c9aa4a]">
-                Big Bass Winner
+                Big Bass
               </span>
             </div>
 
             <div className="min-w-0 text-right">
-              <p className="truncate text-xs font-bold text-white">
+              <p className="break-words text-xs font-bold leading-5 text-white">
                 {bigBassName}
               </p>
 
@@ -204,6 +231,9 @@ export default function MobileWinnerCircle({
                 {bigBassWeight === null
                   ? "—"
                   : `${bigBassWeight.toFixed(2)} lbs`}
+                {latestResults.results.big_bass_payout
+                  ? ` · ${displayResultsPayout(latestResults.results.big_bass_payout)}`
+                  : ""}
               </p>
             </div>
           </div>

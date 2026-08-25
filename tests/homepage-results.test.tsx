@@ -2,6 +2,7 @@ import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
 
 import WinnersCircle from "@/components/WinnersCircle";
+import MobileWinnerCircle from "@/components/MobileWinnerCircle";
 import { databaseTournament } from "@/tests/tournament-db-fixture";
 import type { LatestTournamentResults } from "@/types/results";
 
@@ -135,6 +136,37 @@ const latestResults: LatestTournamentResults = {
 };
 
 describe("homepage latest tournament results", () => {
+  it("shows the compact mobile payout winners with the base payout first", () => {
+    const html = renderToStaticMarkup(
+      <MobileWinnerCircle latestResults={latestResults} />,
+    );
+
+    const base = html.indexOf("Base Payout");
+    const bronze = html.indexOf("Bronze Winner");
+    const silver = html.indexOf("Silver Winner");
+    const gold = html.indexOf("Gold Winner");
+    const bigBass = html.indexOf("Big Bass");
+
+    expect(base).toBeGreaterThan(-1);
+    expect(base).toBeLessThan(bronze);
+    expect(bronze).toBeLessThan(silver);
+    expect(silver).toBeLessThan(gold);
+    expect(gold).toBeLessThan(bigBass);
+    expect(html).toContain("Smith / Jones");
+    expect(html).toContain("$2,500");
+    expect(html).toContain("$540");
+    expect(html).toContain("$630");
+    expect(html).toContain("$900");
+    expect(html).toContain("8.91 lbs");
+    expect(html).toContain("$650");
+    expect(html).not.toContain("Bronze Pot Winner");
+    expect(html).not.toContain("Silver Pot Winner");
+    expect(html).not.toContain("Gold Pot Winner");
+    expect(html).not.toContain("Big Bass Winner");
+    expect(html).not.toContain("Insurance Pot");
+    expect(html).toContain("break-words");
+  });
+
   it("shows the tournament identity and showcase panels", () => {
     const html = renderToStaticMarkup(
       <WinnersCircle latestResults={latestResults} />,
