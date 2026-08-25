@@ -14,14 +14,19 @@ export async function resetPayoutCalculationsAction(
   await requireAdminUser();
   const supabase = createSupabaseServerClient();
 
-  const [publication, closeout] = await Promise.all([
+  const [publication, closeout, insurance] = await Promise.all([
     supabase.from("official_results_publication_audit").select("id").eq("tournament_id", tournamentId).limit(1).maybeSingle(),
     supabase.from("on_site_tournament_closeouts").select("checks").eq("tournament_id", tournamentId).maybeSingle(),
+    supabase.from("tournament_insurance_pot_results").select("published").eq("tournament_id", tournamentId).maybeSingle(),
   ]);
-  const evidenceError = publication.error ?? closeout.error;
+  const evidenceError = publication.error ?? closeout.error ?? insurance.error;
   if (evidenceError) {
     console.error("Payout reset evidence query failed.", { tournamentId, code: evidenceError.code, message: evidenceError.message, details: evidenceError.details, hint: evidenceError.hint });
     return { status: "error", message: "Payout calculations could not be reset because their current status could not be confirmed." };
+  }
+
+  if (insurance.data?.published) {
+    return { status: "error", message: "Published Insurance Pot results remain protected and cannot be cleared by the normal payout reset." };
   }
 
   const checks = Array.isArray(closeout.data?.checks) ? closeout.data.checks : [];
@@ -31,9 +36,11 @@ export async function resetPayoutCalculationsAction(
     return { status: "error", message: "Confirm the stronger warning before resetting payout work that has delivered checks or published results." };
   }
 
-  const { error: closeoutError } = await supabase.from("on_site_tournament_closeouts").delete().eq("tournament_id", tournamentId);
-  if (closeoutError) {
-    console.error("On-site closeout reset failed.", { tournamentId, code: closeoutError.code, message: closeoutError.message, details: closeoutError.details, hint: closeoutError.hint });
+  const { error: resetError } = await supabase.rpc("reset_tournament_payout_workflow", {
+    p_tournament_id: tournamentId,
+  });
+  if (resetError) {
+    console.error("Payout workflow reset failed.", { tournamentId, code: resetError.code, message: resetError.message, details: resetError.details, hint: resetError.hint });
     return { status: "error", message: "The generated payouts could not be reset. No imported results were changed." };
   }
 
@@ -43,6 +50,6 @@ export async function resetPayoutCalculationsAction(
   revalidatePath("/admin/tournament-manager/insurance");
   return {
     status: "success",
-    message: "Payout calculations were reset. The verified WeighFish import and completed Insurance Pot remain available.",
+    message: "Payout calculations and unpublished Insurance Pot work were reset. The verified WeighFish import remains available.",
   };
 }

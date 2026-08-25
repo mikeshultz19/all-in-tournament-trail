@@ -16,9 +16,11 @@ vi.mock("@/lib/supabase/server", () => ({
 import {
   buildTournamentPublishReadinessPlan,
   syncTournamentPublishReadiness,
+  type RegistrationRow,
+  type WorkingResultRow,
 } from "@/lib/tournament-publish-readiness";
 
-function makeResultRow(overrides: Record<string, unknown>): any {
+function makeResultRow(overrides: Partial<WorkingResultRow>): WorkingResultRow {
   return {
     id: "result-1",
     place: 1,
@@ -35,7 +37,7 @@ function makeResultRow(overrides: Record<string, unknown>): any {
   };
 }
 
-function makeRegistration(overrides: Record<string, unknown>): any {
+function makeRegistration(overrides: Partial<RegistrationRow>): RegistrationRow {
   return {
     id: "reg-1",
     registration_type: "solo",
@@ -116,6 +118,48 @@ function mockSupabase(input: {
 describe("tournament publish readiness", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+  });
+
+  it("returns every pre-existing duplicate registration owner to manual review", () => {
+    const registration = makeRegistration({ id: "reg-duplicate", boat_number: 4 });
+    const complete = {
+      registration_id: registration.id,
+      competitive_record_id: registration.competitive_record_id,
+      record_type: "solo",
+      aoy_eligible: true,
+      aoy_eligibility_snapshot: { eligible: true },
+      eligibility_reviewed_at: "2026-08-24T12:00:00Z",
+      eligibility_reviewed_by_admin_id: "admin-1",
+    };
+    const plan = buildTournamentPublishReadinessPlan({
+      reviewerAdminId: "admin-1",
+      registrations: [registration],
+      resultRows: [
+        makeResultRow({ ...complete, id: "result-4", place: 4, team_name: "Joe Johnson / Solo PhoneMatch" }),
+        makeResultRow({ ...complete, id: "result-21", place: 21, team_name: "Stress Unverified41873390" }),
+      ],
+    });
+
+    expect(plan.autoResolvedRows).toHaveLength(0);
+    expect(plan.manualReviewRows.map((row) => row.resultId)).toEqual(["result-4", "result-21"]);
+    for (const row of plan.manualReviewRows) {
+      expect(row.reason).toContain("Registration reg-duplicate (Boat #4)");
+      expect(row.reason).toContain("Place 4 — Joe Johnson / Solo PhoneMatch");
+      expect(row.reason).toContain("Place 21 — Stress Unverified41873390");
+    }
+  });
+
+  it("keeps distinct complete registration mappings ready", () => {
+    const plan = buildTournamentPublishReadinessPlan({
+      reviewerAdminId: "admin-1",
+      registrations: [],
+      resultRows: [
+        makeResultRow({ id: "result-1", registration_id: "reg-1", competitive_record_id: "record-1", record_type: "solo", aoy_eligible: true, aoy_eligibility_snapshot: {}, eligibility_reviewed_at: "now", eligibility_reviewed_by_admin_id: "admin-1" }),
+        makeResultRow({ id: "result-2", registration_id: "reg-2", competitive_record_id: "record-2", record_type: "solo", aoy_eligible: true, aoy_eligibility_snapshot: {}, eligibility_reviewed_at: "now", eligibility_reviewed_by_admin_id: "admin-1" }),
+      ],
+    });
+
+    expect(plan.manualReviewRows).toEqual([]);
   });
 
   it("auto-resolves exact registration matches and leaves ambiguous rows for manual review", () => {

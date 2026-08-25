@@ -50,6 +50,7 @@ function PrepareMembershipReminderState(props: PrepareMembershipReminderProps) {
     initialRegistrationReviewComplete && initialPaperMembershipsConfirmed && needReviewCount === 0,
   );
   const [confirmingUndo, setConfirmingUndo] = useState(false);
+  const [showingUndoProtection, setShowingUndoProtection] = useState(false);
   const [state, formAction, pending] = useActionState(
     async (previousState: PrepareReminderState, formData: FormData) => {
       const nextState = await savePrepareMembershipReminderAction(
@@ -175,13 +176,26 @@ function PrepareMembershipReminderState(props: PrepareMembershipReminderProps) {
         <div className="mt-5 border-t border-white/10 pt-4">
           {undoBlockers.length > 0 ? (
             <>
-              <button type="button" disabled className={adminButtonStyles("ghost", "border border-white/10 text-neutral-600")}>
+              <button
+                type="button"
+                onClick={() => setShowingUndoProtection(true)}
+                className={adminButtonStyles("warning")}
+              >
                 Uncheck &amp; Save
               </button>
-              <div className="mt-3 border border-amber-500/30 bg-amber-500/5 p-3 text-xs leading-5 text-amber-200" role="status">
-                <p className="font-bold">Cannot uncheck preparation yet. Undo the later tournament steps first before changing these confirmations.</p>
-                <ul className="mt-2 list-disc pl-5">{undoBlockers.map((blocker) => <li key={blocker}>{blocker}</li>)}</ul>
-              </div>
+              {showingUndoProtection ? (
+                <div className="mt-3 border border-amber-500/30 bg-amber-500/5 p-3 text-xs leading-5 text-amber-200" role="alert">
+                  <p className="font-bold">Cannot uncheck preparation yet. Undo the later tournament steps first before changing these confirmations.</p>
+                  <ul className="mt-2 list-disc pl-5">{undoBlockers.map((blocker) => <li key={blocker}>{blocker}</li>)}</ul>
+                  <button
+                    type="button"
+                    onClick={() => setShowingUndoProtection(false)}
+                    className={adminButtonStyles("secondary", "mt-3")}
+                  >
+                    Cancel
+                  </button>
+                </div>
+              ) : null}
             </>
           ) : confirmingUndo ? (
             <form action={formAction} className="border border-amber-500/30 bg-amber-500/5 p-4">

@@ -1,5 +1,41 @@
 import type { NextConfig } from "next";
 
+function configuredSupabaseImagePatterns(): Array<{
+  protocol: "https";
+  hostname: string;
+  pathname: "/storage/v1/object/public/**";
+}> {
+  const configuredUrls = [
+    process.env.NEXT_PUBLIC_SUPABASE_URL,
+    process.env.SUPABASE_URL,
+  ];
+  const patterns = new Map<string, {
+    protocol: "https";
+    hostname: string;
+    pathname: "/storage/v1/object/public/**";
+  }>();
+
+  for (const configuredUrl of configuredUrls) {
+    if (!configuredUrl?.trim()) continue;
+    try {
+      const url = new URL(configuredUrl.trim());
+      if (url.protocol !== "https:") continue;
+      patterns.set(
+        url.hostname,
+        {
+          protocol: "https",
+          hostname: url.hostname,
+          pathname: "/storage/v1/object/public/**",
+        },
+      );
+    } catch {
+      // Supabase configuration validation reports malformed URLs elsewhere.
+    }
+  }
+
+  return [...patterns.values()];
+}
+
 const squareSandboxContentSecurityPolicy = [
   "default-src 'self'",
   "base-uri 'self'",
@@ -15,6 +51,9 @@ const squareSandboxContentSecurityPolicy = [
 ].join("; ");
 
 const nextConfig: NextConfig = {
+  images: {
+    remotePatterns: configuredSupabaseImagePatterns(),
+  },
   async headers() {
     return [
       {

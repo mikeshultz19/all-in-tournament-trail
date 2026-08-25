@@ -2,11 +2,6 @@ import type { TournamentInsurancePotResultRecord } from "@/types/insurance-pot";
 
 const money = (cents: number) =>
   new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(cents / 100);
-const ordinal = (position: number) => {
-  const mod100 = position % 100;
-  if (mod100 >= 11 && mod100 <= 13) return `${position}th`;
-  return `${position}${position % 10 === 1 ? "st" : position % 10 === 2 ? "nd" : position % 10 === 3 ? "rd" : "th"}`;
-};
 
 export default function InsurancePotWinnersSection({
   result,
@@ -37,14 +32,6 @@ export default function InsurancePotWinnersSection({
           </div>
         ))}
       </dl>
-      <div className="mt-5 divide-y divide-white/10 border-y border-white/10">
-        {result.winners.map((winner, index) => (
-          <div key={winner.entryId ?? `${winner.entryName}-${index}`} className="flex flex-col gap-1 py-4 sm:flex-row sm:items-center sm:justify-between">
-            <p className="font-black uppercase text-white">{winner.finishingPosition ? `${ordinal(winner.finishingPosition)} Place — ` : ""}{winner.entryName}</p>
-            <p className="font-black text-[#d0ae4c]">{money(winner.amountCents)}</p>
-          </div>
-        ))}
-      </div>
     </section>
   );
 }

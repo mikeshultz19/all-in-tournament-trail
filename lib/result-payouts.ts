@@ -1,6 +1,8 @@
 import type { ResultEntry } from "@/types/results";
+import type { TournamentInsurancePotResultRecord } from "@/types/insurance-pot";
 
 export type PayoutValue = number | null | undefined;
+export const RESULTS_PER_PAGE = 25;
 
 export interface ResultPayoutSource {
   total_payout?: PayoutValue;
@@ -17,12 +19,20 @@ export function payoutAmount(value: PayoutValue): number {
   return Number.isFinite(amount) && amount >= 0 ? amount : 0;
 }
 
-export function calculateResultPayouts(source: ResultPayoutSource) {
+export function calculateResultPayouts(
+  source: ResultPayoutSource,
+  insurancePotResult?: TournamentInsurancePotResultRecord | null,
+) {
   const standardTournament = payoutAmount(source.total_payout);
   const bronze = payoutAmount(source.bronze_payout);
   const silver = payoutAmount(source.silver_payout);
   const gold = payoutAmount(source.gold_payout);
-  const insurance = payoutAmount(source.insurance_pot_payout);
+  const insurance = insurancePotResult?.published
+    ? insurancePotResult.winners.reduce(
+        (total, winner) => total + payoutAmount(winner.amountCents) / 100,
+        0,
+      )
+    : payoutAmount(source.insurance_pot_payout);
   const bigBass = payoutAmount(source.big_bass_payout);
 
   return {
@@ -37,6 +47,40 @@ export function calculateResultPayouts(source: ResultPayoutSource) {
     // Useful for admin review only; never label this as the public payout total.
     allListedCashPayouts:
       standardTournament + bronze + silver + gold + insurance + bigBass,
+  };
+}
+
+export function getInsurancePotWinnersForEntry(
+  entry: ResultEntry,
+  result?: TournamentInsurancePotResultRecord | null,
+) {
+  if (!result?.published) return [];
+
+  const normalizedTeam = normalizeResultTeam(entry.team);
+
+  return result.winners.filter(
+    (winner) =>
+      winner.finishingPosition === entry.place &&
+      normalizeResultTeam(winner.entryName) === normalizedTeam,
+  );
+}
+
+export function paginateResultEntries(
+  entries: ResultEntry[],
+  requestedPage: number,
+  pageSize = RESULTS_PER_PAGE,
+) {
+  const totalPages = Math.max(1, Math.ceil(entries.length / pageSize));
+  const page = Math.min(
+    totalPages,
+    Math.max(1, Number.isInteger(requestedPage) ? requestedPage : 1),
+  );
+  const start = (page - 1) * pageSize;
+
+  return {
+    entries: entries.slice(start, start + pageSize),
+    page,
+    totalPages,
   };
 }
 

@@ -6,8 +6,12 @@ describe("payout-only reset workflow", () => {
   const control = readFileSync("components/admin/ResetPayoutCalculations.tsx", "utf8");
 
   it("clears generated payouts and the unpublished Insurance calculation and winners", () => {
-    expect(action).toContain('.from("on_site_tournament_closeouts").delete().eq("tournament_id", tournamentId)');
-    expect(action).not.toContain('.from("tournament_insurance_pot_results").delete().eq("tournament_id", tournamentId).eq("published", false)');
+    expect(action).toContain('rpc("reset_tournament_payout_workflow"');
+    const migration = readFileSync("supabase/migrations/202608240002_reset_unpublished_insurance_with_payout_workflow.sql", "utf8");
+    expect(migration).toContain("delete from public.on_site_tournament_closeouts");
+    expect(migration).toContain("delete from public.tournament_insurance_pot_results");
+    expect(migration).toContain("published = false");
+    expect(migration).toContain("AITT_PUBLISHED_INSURANCE_RESET_PROTECTED");
   });
 
   it("preserves verified imported rows and verification evidence", () => {

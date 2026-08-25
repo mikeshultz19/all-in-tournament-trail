@@ -17,7 +17,7 @@ type HistoricalEligibilitySnapshot = {
   matchRule: "exact_registration_display_name";
 };
 
-type WorkingResultRow = {
+export type WorkingResultRow = {
   id: string;
   place: number | null;
   team_name: string;
@@ -31,8 +31,9 @@ type WorkingResultRow = {
   eligibility_reviewed_by_admin_id: string | null;
 };
 
-type RegistrationRow = {
+export type RegistrationRow = {
   id: string;
+  boat_number?: number | null;
   registration_type: "team" | "solo";
   angler1_name: string;
   angler2_name: string | null;
@@ -166,14 +167,35 @@ export function buildTournamentPublishReadinessPlan(input: {
     aoyEligible: boolean;
     snapshot: HistoricalEligibilitySnapshot;
   }> = [];
-  const manualReviewRows: TournamentPublishReadinessBlocker[] = [];
+  const manualReviewRows = new Map<string, TournamentPublishReadinessBlocker>();
+  const rowsByRegistration = new Map<string, WorkingResultRow[]>();
+  for (const row of input.resultRows) {
+    if (!row.registration_id) continue;
+    rowsByRegistration.set(row.registration_id, [
+      ...(rowsByRegistration.get(row.registration_id) ?? []),
+      row,
+    ]);
+  }
+  const duplicateResultIds = new Set<string>();
+  for (const [registrationId, rows] of rowsByRegistration) {
+    if (rows.length < 2) continue;
+    const registration = input.registrations.find((item) => item.id === registrationId);
+    const boat = registration?.boat_number ?? "—";
+    const assignments = rows.map((row) => `Place ${row.place ?? "—"} — ${row.team_name}`).join(" and ");
+    const reason = `Registration ${registrationId} (Boat #${boat}) is assigned to both ${assignments}. Choose a unique registration for each result.`;
+    for (const row of rows) {
+      duplicateResultIds.add(row.id);
+      manualReviewRows.set(row.id, { resultId: row.id, place: row.place, teamName: row.team_name, reason });
+    }
+  }
 
   for (const row of input.resultRows) {
+    if (duplicateResultIds.has(row.id)) continue;
     if (isHistoricalSnapshotComplete(row)) continue;
 
     const registration = selectUnambiguousRegistration(row, input.registrations);
     if (!registration) {
-      manualReviewRows.push({
+      manualReviewRows.set(row.id, {
         resultId: row.id,
         place: row.place,
         teamName: row.team_name,
@@ -184,13 +206,40 @@ export function buildTournamentPublishReadinessPlan(input: {
     }
 
     if (!reviewerAdminId) {
-      manualReviewRows.push({
+      manualReviewRows.set(row.id, {
         resultId: row.id,
         place: row.place,
         teamName: row.team_name,
         reason:
           `The tournament verification record is missing, so ${displayNameForRegistration(registration)} cannot be auto-reviewed.`,
       });
+      continue;
+    }
+
+    const existingOwner = input.resultRows.find(
+      (candidate) => candidate.id !== row.id && candidate.registration_id === registration.id,
+    ) ?? autoResolvedRows.find(
+      (candidate) => candidate.row.id !== row.id && candidate.registration.id === registration.id,
+    )?.row;
+    if (existingOwner) {
+      const boat = registration.boat_number ?? "—";
+      const reason = `Registration ${registration.id} (Boat #${boat}) is assigned to both Place ${existingOwner.place ?? "—"} — ${existingOwner.team_name} and Place ${row.place ?? "—"} — ${row.team_name}. Choose a unique registration for each result.`;
+      manualReviewRows.set(existingOwner.id, {
+        resultId: existingOwner.id,
+        place: existingOwner.place,
+        teamName: existingOwner.team_name,
+        reason,
+      });
+      manualReviewRows.set(row.id, {
+        resultId: row.id,
+        place: row.place,
+        teamName: row.team_name,
+        reason,
+      });
+      const autoOwnerIndex = autoResolvedRows.findIndex(
+        (candidate) => candidate.row.id === existingOwner.id,
+      );
+      if (autoOwnerIndex >= 0) autoResolvedRows.splice(autoOwnerIndex, 1);
       continue;
     }
 
@@ -208,7 +257,7 @@ export function buildTournamentPublishReadinessPlan(input: {
     });
   }
 
-  return { autoResolvedRows, manualReviewRows };
+  return { autoResolvedRows, manualReviewRows: [...manualReviewRows.values()] };
 }
 
 export async function syncTournamentPublishReadiness(
@@ -220,7 +269,7 @@ export async function syncTournamentPublishReadiness(
       supabase
         .from("tournaments")
         .select(
-          "id,season_id,name,slug,status,show_on_homepage,weighfish_imported,weighfish_imported_at,results_verified_at,results_verified_by,result_status,photos_reviewed,champion_photo_url,big_bass_photo_url,official_results_published_at,official_results_published_by,updated_at,updated_by",
+          "id,season_id,name,slug,status,show_on_homepage,weighfish_imported,weighfish_imported_at,results_verified_at,results_verified_by,result_status,photos_reviewed,champion_photo_url,big_bass_photo_url,official_results_published_at,official_results_published_by,prepare_registration_review_complete,paper_membership_reminder_checked,updated_at,updated_by",
         )
         .eq("id", tournamentId)
         .maybeSingle(),
@@ -235,7 +284,7 @@ export async function syncTournamentPublishReadiness(
       supabase
         .from("tournament_registrations")
         .select(
-          "id,registration_type,angler1_name,angler2_name,competitive_record_id,identity_review_status,membership_snapshot",
+          "id,boat_number,registration_type,angler1_name,angler2_name,competitive_record_id,identity_review_status,membership_snapshot",
         )
         .eq("tournament_id", tournamentId)
         .eq("registration_status", "active"),
@@ -347,6 +396,7 @@ export async function syncTournamentPublishReadiness(
     closeoutReady &&
     photosReady &&
     unresolvedRows.length === 0 &&
+    plan.manualReviewRows.length === 0 &&
     tournament.result_status !== "official";
 
   let promoted = false;
@@ -357,7 +407,7 @@ export async function syncTournamentPublishReadiness(
       .update({ result_status: "ready_to_publish" })
       .eq("id", tournamentId)
       .select(
-        "id,season_id,name,slug,status,show_on_homepage,weighfish_imported,weighfish_imported_at,results_verified_at,results_verified_by,result_status,photos_reviewed,champion_photo_url,big_bass_photo_url,official_results_published_at,official_results_published_by,updated_at,updated_by",
+        "id,season_id,name,slug,status,show_on_homepage,weighfish_imported,weighfish_imported_at,results_verified_at,results_verified_by,result_status,photos_reviewed,champion_photo_url,big_bass_photo_url,official_results_published_at,official_results_published_by,prepare_registration_review_complete,paper_membership_reminder_checked,updated_at,updated_by",
       )
       .single();
     if (error) {

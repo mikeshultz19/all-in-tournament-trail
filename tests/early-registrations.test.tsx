@@ -1,4 +1,5 @@
 import { renderToStaticMarkup } from "react-dom/server";
+import { readFileSync } from "node:fs";
 import { describe, expect, it, vi } from "vitest";
 
 import EarlyRegistrationsPage from "@/app/registrations/page";
@@ -12,15 +13,21 @@ import { getTournamentEntrySummary, toPublicEarlyEntry } from "@/lib/public-earl
 import { databaseTournament } from "@/tests/tournament-db-fixture";
 
 const entries = getPublicEarlyEntries("eagle-mountain-2026");
+const mocks = vi.hoisted(() => ({
+  getNextUpcomingTournament: vi.fn(),
+  getPublicEarlyEntriesForTournament: vi.fn(),
+}));
 
 vi.mock("@/lib/tournaments", () => ({
-  getFeaturedTournament: async () => databaseTournament,
-  getNextUpcomingTournament: async () => databaseTournament,
+  getNextUpcomingTournament: mocks.getNextUpcomingTournament,
 }));
 
 vi.mock("@/lib/tournament-registrations", () => ({
-  getPublicEarlyEntriesForTournament: async () => entries,
+  getPublicEarlyEntriesForTournament: mocks.getPublicEarlyEntriesForTournament,
 }));
+
+mocks.getNextUpcomingTournament.mockResolvedValue(databaseTournament);
+mocks.getPublicEarlyEntriesForTournament.mockResolvedValue(entries);
 
 describe("Tournament Entries", () => {
   it("renders the compact registration dashboard from the shared summary", () => {
@@ -41,13 +48,27 @@ describe("Tournament Entries", () => {
   });
 
   it("renders the public page and a semantic spreadsheet-style table", async () => {
+    mocks.getNextUpcomingTournament.mockClear();
+    mocks.getPublicEarlyEntriesForTournament.mockClear();
     const html = renderToStaticMarkup(await EarlyRegistrationsPage());
+
+    expect(mocks.getNextUpcomingTournament).toHaveBeenCalledOnce();
+    expect(mocks.getPublicEarlyEntriesForTournament).toHaveBeenCalledWith(databaseTournament.id);
     expect(html).toContain("Tournament Entries");
     expect(html).toContain("<table");
     expect(html).toContain("<thead");
     expect(html).toContain("<tbody");
     expect(html).toContain("<th scope=\"col\"");
     expect(html).toContain("<caption");
+  });
+
+  it("uses the same authoritative tournament selector as the homepage", () => {
+    const homepage = readFileSync("app/page.tsx", "utf8");
+    const entriesPage = readFileSync("app/registrations/page.tsx", "utf8");
+
+    expect(homepage).toContain("featuredTournamentDb = await getNextUpcomingTournament()");
+    expect(entriesPage).toContain("await getNextUpcomingTournament()");
+    expect(entriesPage).not.toContain("getFeaturedTournament");
   });
 
   it("links to the page from the Home featured tournament", () => {

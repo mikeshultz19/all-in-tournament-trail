@@ -23,7 +23,13 @@ import {
   listTournamentPublishReviewRegistrations,
   syncTournamentPublishReadiness,
   type TournamentPublishReviewRegistration,
+  type RegistrationRow,
+  type WorkingResultRow,
 } from "@/lib/tournament-publish-readiness";
+import { getSeasonAoyStandings } from "@/lib/aoy-engine";
+import { getSeasonChampionshipQualifications } from "@/lib/championship-qualification";
+import type { AoyStanding } from "@/types/aoy-engine";
+import type { ChampionshipQualification } from "@/types/championship-qualification";
 
 export const dynamic = "force-dynamic";
 
@@ -54,6 +60,8 @@ export default async function TournamentManagerPage({ searchParams }: Tournament
   let collectionSummaries: Record<string, TournamentCollectionSummary> = {};
   let publishReviewRegistrations: Record<string, TournamentPublishReviewRegistration[]> = {};
   let manualReviewRows: Record<string, { resultId: string; place: number | null; teamName: string; reason: string }[]> = {};
+  let aoyStandingsBySeason: Record<string, AoyStanding[]> = {};
+  let championshipQualificationsBySeason: Record<string, ChampionshipQualification[]> = {};
 
   try {
     [tournaments, currentTournament] = await Promise.all([
@@ -114,14 +122,30 @@ export default async function TournamentManagerPage({ searchParams }: Tournament
     manualReviewRows = Object.fromEntries(
       tournaments.map((tournament) => {
         const rows = buildTournamentPublishReadinessPlan({
-          resultRows: (importedRows[tournament.id] ?? []) as any,
-          registrations: (publishReviewRegistrations[tournament.id] ?? []) as any,
+          resultRows: (importedRows[tournament.id] ?? []) as unknown as WorkingResultRow[],
+          registrations: (publishReviewRegistrations[tournament.id] ?? []) as RegistrationRow[],
           reviewerAdminId: tournament.results_verified_by ?? tournament.updated_by ?? null,
         }).manualReviewRows;
         return [tournament.id, rows];
       }),
     );
     collectionSummaries = await listTournamentCollectionSummaries(tournaments.map((tournament) => tournament.id), insuranceResults);
+    const seasonIds = [...new Set(tournaments.flatMap((tournament) => tournament.season_id ? [tournament.season_id] : []))];
+    const seasonProjections = await Promise.all(
+      seasonIds.map(async (seasonId) => {
+        const [aoyStandings, championshipQualifications] = await Promise.all([
+          getSeasonAoyStandings(seasonId),
+          getSeasonChampionshipQualifications(seasonId),
+        ]);
+        return { seasonId, aoyStandings, championshipQualifications };
+      }),
+    );
+    aoyStandingsBySeason = Object.fromEntries(
+      seasonProjections.map((item) => [item.seasonId, item.aoyStandings]),
+    );
+    championshipQualificationsBySeason = Object.fromEntries(
+      seasonProjections.map((item) => [item.seasonId, item.championshipQualifications]),
+    );
   } catch (error) {
     console.error("Tournament workspace load failed.", error);
 
@@ -157,6 +181,8 @@ export default async function TournamentManagerPage({ searchParams }: Tournament
       manualReviewRows={manualReviewRows}
       publishReviewRegistrations={publishReviewRegistrations}
       collectionSummaries={collectionSummaries}
+      aoyStandingsBySeason={aoyStandingsBySeason}
+      championshipQualificationsBySeason={championshipQualificationsBySeason}
     />
     </>
   );

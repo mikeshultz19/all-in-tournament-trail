@@ -111,11 +111,11 @@ export function getTournamentOperationSteps(
     complete("Publish Results", tournament.status === "Results Published"),
     {
       label: "Update Membership Standings",
-      status: "not_available",
+      status: tournament.status === "Results Published" ? "incomplete" : "not_available",
     },
     {
       label: "Publish AOY",
-      status: "not_available",
+      status: tournament.status === "Results Published" ? "incomplete" : "not_available",
     },
     {
       label: "Tournament Complete",

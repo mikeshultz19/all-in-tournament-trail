@@ -12,7 +12,9 @@ import {
 import {
   rebuildChampionshipQualificationForOfficialResult,
 } from "@/lib/championship-qualification";
+import { rebuildAoyForOfficialResult } from "@/lib/aoy-engine";
 import type { OfficialParticipationStatus } from "@/lib/official-results";
+import { getWorkingResultRegistrationConflict } from "@/lib/working-result-registration-conflict";
 
 export async function correctWorkingResultAction(input: {
   resultEntryId: string;
@@ -42,6 +44,7 @@ export async function correctOfficialResultAction(input: {
   const admin = await requireAdminUser();
   try {
     await correctOfficialResult({ ...input, adminUserId: admin.id });
+    await rebuildAoyForOfficialResult(input.officialResultEntryId, admin.id);
     await rebuildChampionshipQualificationForOfficialResult(
       input.officialResultEntryId,
       admin.id,
@@ -70,6 +73,8 @@ export async function reviewWorkingResultHistoryAction(input: {
 }): Promise<{ status: "success" | "error"; message: string }> {
   const admin = await requireAdminUser();
   try {
+    const conflict = await getWorkingResultRegistrationConflict(input);
+    if (conflict) return { status: "error", message: conflict };
     await reviewWorkingResultHistory({ ...input, adminUserId: admin.id });
     revalidatePath("/admin/tournament-manager/import");
     revalidatePath("/admin/tournament-manager/publish");
@@ -94,6 +99,7 @@ export async function correctOfficialResultHistoryAction(input: {
   const admin = await requireAdminUser();
   try {
     await correctOfficialResultHistory({ ...input, adminUserId: admin.id });
+    await rebuildAoyForOfficialResult(input.officialResultEntryId, admin.id);
     await rebuildChampionshipQualificationForOfficialResult(
       input.officialResultEntryId,
       admin.id,

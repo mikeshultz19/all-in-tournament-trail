@@ -100,7 +100,7 @@ describe("registration confirmation email outbox", () => {
     expect(unassigned.html).toContain("TBA");
   });
 
-  it("renders the fish-length section for Team and Solo registrations", () => {
+  it("renders the tournament contact and fish-length sections for Team and Solo registrations", () => {
     const team = buildRegistrationConfirmationEmail({
       boatNumber: 12,
       tournamentName: "Team Tournament",
@@ -131,11 +131,14 @@ describe("registration confirmation email outbox", () => {
     });
 
     for (const email of [team, solo]) {
+      expect(email.html).toContain("AITT TOURNAMENT CONTACT: 817-841-9120 - PLEASE SAVE THIS NUMBER IN YOUR PHONE");
       expect(email.html).toContain("Fish Length Requirements");
       expect(email.html).toContain("Largemouth Bass: 14-inch minimum");
       expect(email.html).toContain("Smallmouth Bass: 14-inch minimum");
       expect(email.html).toContain("Spotted Bass: No minimum length");
       expect(email.html).toContain("Tournament Information");
+      expect(email.html.indexOf("Tournament Information")).toBeLessThan(email.html.indexOf("AITT TOURNAMENT CONTACT"));
+      expect(email.html.indexOf("AITT TOURNAMENT CONTACT")).toBeLessThan(email.html.indexOf("Registered Anglers"));
     }
   });
 

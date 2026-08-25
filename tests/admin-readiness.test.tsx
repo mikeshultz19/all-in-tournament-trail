@@ -182,7 +182,7 @@ describe("Tournament operations status", () => {
     ]);
   });
 
-  it("does not invent completion for unimplemented AOY operations", () => {
+  it("makes AOY operations available after Official Results without inventing completion", () => {
     const closeout = getTournamentOperationSteps(
       {
         ...databaseTournament,
@@ -194,11 +194,11 @@ describe("Tournament operations status", () => {
 
     expect(
       closeout.items.find((item) => item.label === "Publish AOY")?.status,
-    ).toBe("not_available");
+    ).toBe("incomplete");
     expect(
       closeout.items.find(
         (item) => item.label === "Update Membership Standings",
       )?.status,
-    ).toBe("not_available");
+    ).toBe("incomplete");
   });
 });

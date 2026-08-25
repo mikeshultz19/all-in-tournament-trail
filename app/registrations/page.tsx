@@ -5,7 +5,7 @@ import Header from "@/components/Header";
 import PageHeader from "@/components/PageHeader";
 import TournamentEntrySummary from "@/components/TournamentEntrySummary";
 import { getPublicEarlyEntriesForTournament } from "@/lib/tournament-registrations";
-import { getFeaturedTournament, getNextUpcomingTournament } from "@/lib/tournaments";
+import { getNextUpcomingTournament } from "@/lib/tournaments";
 import { toPublicTournament } from "@/lib/tournament-record-adapter";
 import { getTournamentOperationsViewModel } from "@/lib/tournament-view-model";
 import { getTournamentEntrySummary } from "@/lib/public-early-entry";
@@ -18,8 +18,7 @@ export const metadata: Metadata = {
 export const dynamic = "force-dynamic";
 
 export default async function EarlyRegistrationsPage() {
-  const dbTournament =
-    (await getFeaturedTournament()) ?? (await getNextUpcomingTournament());
+  const dbTournament = await getNextUpcomingTournament();
 
   if (!dbTournament) {
     return (

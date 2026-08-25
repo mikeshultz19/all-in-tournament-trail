@@ -21,11 +21,27 @@ describe("published Insurance Pot results", () => {
     expect(html).toBe("");
   });
 
-  it("shows every winner after publication with the anchor", () => {
+  it("shows the published summary without a standalone winner-detail row", () => {
     const html = renderToStaticMarkup(<InsurancePotWinnersSection result={result} />);
     expect(html).toContain('id="insurance-pot-winners"');
-    expect(html).toContain("Team One");
-    expect(html).toContain("Team Two");
+    expect(html).toContain("Insurance Pot Entries");
+    expect(html).toContain("Total Pot");
+    expect(html).toContain("Places Paid");
+    expect(html).toContain("Payout Per Winning Entry");
+    expect(html).not.toContain("Team One");
+    expect(html).not.toContain("Team Two");
+  });
+
+  it("keeps the winners section and adds row-level Insurance winner visibility", () => {
+    const resultsPage = readFileSync("app/results/page.tsx", "utf8");
+
+    expect(resultsPage).toContain("Insurance");
+    expect(resultsPage).not.toContain("winner.amountCents / 100");
+    expect(resultsPage).toContain("getInsurancePotWinnersForEntry");
+    expect(resultsPage).toContain("<InsurancePotWinnersSection");
+    expect(resultsPage.indexOf("Standings pagination")).toBeLessThan(
+      resultsPage.indexOf("<InsurancePotWinnersSection"),
+    );
   });
 
   it("loads the public explanation with examples and approved destinations", () => {

@@ -434,7 +434,10 @@ export default function WinnersCircle({
     return { sidePot, winners };
   });
 
-  const payoutTotals = calculateResultPayouts(latestResults?.results ?? {});
+  const payoutTotals = calculateResultPayouts(
+    latestResults?.results ?? {},
+    latestResults?.insurancePotResult,
+  );
 
   const champion = finalEntries[0] ?? null;
   const championImage = latestResults?.championImage

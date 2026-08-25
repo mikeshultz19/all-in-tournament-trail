@@ -28,6 +28,9 @@ import TournamentRegistrationAvailabilityControl from "@/components/admin/Tourna
 import { formatMembershipSummary } from "@/lib/publish-historical-review";
 import type { TournamentPublishReviewRegistration } from "@/lib/tournament-publish-readiness";
 import type { HistoricalReviewRow } from "@/components/admin/PublishHistoricalResultReview";
+import AoyCalculationPanel from "@/components/admin/AoyCalculationPanel";
+import type { AoyStanding } from "@/types/aoy-engine";
+import type { ChampionshipQualification } from "@/types/championship-qualification";
 
 interface AdminTournamentDashboardProps {
   tournaments: readonly Tournament[];
@@ -45,6 +48,8 @@ interface AdminTournamentDashboardProps {
   manualReviewRows?: Record<string, HistoricalReviewRow[]>;
   publishReviewRegistrations?: Record<string, TournamentPublishReviewRegistration[]>;
   collectionSummaries?: Record<string, TournamentCollectionSummary>;
+  aoyStandingsBySeason?: Record<string, AoyStanding[]>;
+  championshipQualificationsBySeason?: Record<string, ChampionshipQualification[]>;
 }
 
 const stageIcons: Record<StageNumber, LucideIcon> = {
@@ -55,7 +60,7 @@ const stageIcons: Record<StageNumber, LucideIcon> = {
   5: Trophy,
 };
 
-export default function AdminTournamentDashboard({ tournaments, initialTournamentId, comparisonDate, showTournamentTools = false, closeouts = {}, insuranceResults = {}, importEvidence = {}, initialExpandedStage, supplementalEvidence = {}, registrationSummaries = {}, importedRows = {}, resultsRecords = {}, manualReviewRows = {}, publishReviewRegistrations = {} }: AdminTournamentDashboardProps) {
+export default function AdminTournamentDashboard({ tournaments, initialTournamentId, comparisonDate, showTournamentTools = false, closeouts = {}, insuranceResults = {}, importEvidence = {}, initialExpandedStage, supplementalEvidence = {}, registrationSummaries = {}, importedRows = {}, resultsRecords = {}, manualReviewRows = {}, publishReviewRegistrations = {}, aoyStandingsBySeason = {}, championshipQualificationsBySeason = {} }: AdminTournamentDashboardProps) {
   const initialTournament = getInitialAdminTournament(tournaments, new Date(comparisonDate), initialTournamentId);
   const [selectedTournamentId, setSelectedTournamentId] = useState<string | null>(initialTournament?.id ?? null);
   const currentTournament = useMemo(
@@ -119,7 +124,7 @@ export default function AdminTournamentDashboard({ tournaments, initialTournamen
           ...(closeouts[currentTournament.id] ? ["Generated Checks / Payout Closeout"] : []),
           ...(supplementalEvidence[currentTournament.id]?.officialPublicationExists ? ["Published Results"] : []),
           ...(supplementalEvidence[currentTournament.id]?.aoyCalculationExists ? ["AOY Processing"] : []),
-        ]} /> : stage.number === 2 ? <ImportStage tournament={currentTournament} rows={importedRows[currentTournament.id] ?? []} publicationExists={supplementalEvidence[currentTournament.id]?.officialPublicationExists ?? false} locked={stage.locked} /> : stage.number === 3 ? <PayoutStage tournament={currentTournament} importedRows={importedRows[currentTournament.id] ?? []} closeout={closeouts[currentTournament.id]} insuranceResult={insuranceResults[currentTournament.id] ?? null} locked={stage.locked} publicationExists={supplementalEvidence[currentTournament.id]?.officialPublicationExists ?? false} /> : stage.number === 4 ? <PublishStage tournament={currentTournament} importedRows={importedRows[currentTournament.id] ?? []} results={resultsRecords[currentTournament.id]} insuranceResult={insuranceResults[currentTournament.id] ?? null} locked={stage.locked} payoutComplete={stages.find((item) => item.number === 3)?.status === "Complete"} manualReviewRows={manualReviewRows[currentTournament.id] ?? []} publishRegistrations={publishReviewRegistrations[currentTournament.id] ?? []} /> : <AoyStage />}</div> : null}
+        ]} /> : stage.number === 2 ? <ImportStage tournament={currentTournament} rows={importedRows[currentTournament.id] ?? []} publicationExists={supplementalEvidence[currentTournament.id]?.officialPublicationExists ?? false} locked={stage.locked} /> : stage.number === 3 ? <PayoutStage tournament={currentTournament} importedRows={importedRows[currentTournament.id] ?? []} closeout={closeouts[currentTournament.id]} insuranceResult={insuranceResults[currentTournament.id] ?? null} locked={stage.locked} publicationExists={supplementalEvidence[currentTournament.id]?.officialPublicationExists ?? false} /> : stage.number === 4 ? <PublishStage tournament={currentTournament} importedRows={importedRows[currentTournament.id] ?? []} results={resultsRecords[currentTournament.id]} locked={stage.locked} payoutComplete={stages.find((item) => item.number === 3)?.status === "Complete"} manualReviewRows={manualReviewRows[currentTournament.id] ?? []} publishRegistrations={publishReviewRegistrations[currentTournament.id] ?? []} /> : <AoyCalculationPanel tournamentId={currentTournament.id} available={!stage.locked} standings={currentTournament.season_id ? aoyStandingsBySeason[currentTournament.season_id] ?? [] : []} qualifications={currentTournament.season_id ? championshipQualificationsBySeason[currentTournament.season_id] ?? [] : []} />}</div> : null}
       </section>;
     })}</div>
 
@@ -150,7 +155,6 @@ function PublishStage({
   tournament,
   importedRows,
   results,
-  insuranceResult,
   locked,
   payoutComplete,
   manualReviewRows = [],
@@ -159,7 +163,6 @@ function PublishStage({
   tournament: Tournament;
   importedRows: ImportedRow[];
   results?: TournamentResultsRecord;
-  insuranceResult?: TournamentInsurancePotResultRecord;
   locked: boolean;
   payoutComplete: boolean;
   manualReviewRows?: HistoricalReviewRow[];
@@ -332,8 +335,6 @@ function PublishStage({
 function PublicationCheck({ label, ready }: { label: string; ready: boolean }) {
   return <div className="flex items-center justify-between gap-4 rounded-sm border border-white/10 bg-black/40 px-4 py-3"><dt className="text-sm text-neutral-300">{label}</dt><dd><AdminStatusBadge tone={ready ? "positive" : "attention"}>{ready ? "Ready" : "Pending"}</AdminStatusBadge></dd></div>;
 }
-function AoyStage() { return <div className="max-w-3xl border-y border-white/10 py-4"><p className="text-sm text-neutral-400">AOY management tools are not implemented yet.</p></div>; }
-
 export function resolveManagedTournament(
   tournaments: readonly Tournament[],
   selectedTournamentId: string | null,

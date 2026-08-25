@@ -85,8 +85,8 @@ describe("compact Tournament Manager workflow", () => {
     expect(evidence).toContain("Tournament workflow evidence query failed.");
   });
 
-  it("uses one honest AOY unavailable notice", () => {
-    expect(source).toContain("AOY management tools are not implemented yet.");
-    expect(source).not.toContain("AOY management tools are not available yet.");
+  it("uses the completed AOY calculation panel", () => {
+    expect(source).toContain("<AoyCalculationPanel");
+    expect(source).not.toContain("AOY management tools are not implemented yet.");
   });
 });

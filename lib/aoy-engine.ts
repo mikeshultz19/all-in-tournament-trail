@@ -24,6 +24,7 @@ interface OfficialRow {
   penalty_weight: number | string;
   participation_status: AoyOfficialResultInput["participationStatus"];
   aoy_eligible: boolean;
+  aoy_eligibility_snapshot: unknown;
   published_at: string;
 }
 
@@ -70,7 +71,7 @@ export async function loadOfficialAoySource(
     supabase
       .from("official_result_entries")
       .select(
-        "id,tournament_id,registration_id,competitive_record_id,record_type,place,total_weight,penalty_weight,participation_status,aoy_eligible,published_at",
+        "id,tournament_id,registration_id,competitive_record_id,record_type,place,total_weight,penalty_weight,participation_status,aoy_eligible,aoy_eligibility_snapshot,published_at",
       )
       .in("tournament_id", tournamentIds),
     supabase
@@ -115,6 +116,18 @@ export async function loadOfficialAoySource(
     const publicationId = publicationByTournament.get(row.tournament_id);
     if (!tournament || !record || !publicationId || !row.registration_id) {
       throw new Error("Official AOY history is incomplete.");
+    }
+    const snapshot = row.aoy_eligibility_snapshot;
+    if (
+      !snapshot ||
+      typeof snapshot !== "object" ||
+      (snapshot as { eligible?: unknown }).eligible !== row.aoy_eligible ||
+      (snapshot as { registrationId?: unknown }).registrationId !== row.registration_id ||
+      (snapshot as { competitiveRecordId?: unknown }).competitiveRecordId !== row.competitive_record_id ||
+      (snapshot as { recordType?: unknown }).recordType !== row.record_type ||
+      !Array.isArray((snapshot as { membershipSnapshot?: unknown }).membershipSnapshot)
+    ) {
+      throw new Error("Official AOY eligibility history is incomplete or inconsistent.");
     }
     const members = (record.members ?? []).flatMap((member) => {
       const angler = one(member.angler);
@@ -241,6 +254,21 @@ export async function rebuildAoyForCompetitiveRecord(
     .single();
   if (error || !data?.season_id) throw new Error("Record season not found.");
   return rebuildSeasonAoy(data.season_id, adminUserId);
+}
+
+export async function rebuildAoyForOfficialResult(
+  officialResultEntryId: string,
+  adminUserId: string,
+) {
+  const { data, error } = await createSupabaseServerClient()
+    .from("official_result_entries")
+    .select("tournament_id")
+    .eq("id", officialResultEntryId)
+    .single();
+  if (error || !data?.tournament_id) {
+    throw new Error("Official Result tournament not found.");
+  }
+  return rebuildAoyForTournament(data.tournament_id, adminUserId);
 }
 
 export async function getSeasonAoyStandings(

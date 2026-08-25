@@ -34,7 +34,10 @@ function escapeHtml(value: string): string {
 
 function row(label: string, value: string | null | undefined): string {
   if (!value) return "";
-  return `<tr><td style="padding:6px 16px 6px 0;color:#777;font-size:13px;vertical-align:top">${escapeHtml(label)}</td><td style="padding:6px 0;color:#111;font-size:14px;font-weight:700">${escapeHtml(value)}</td></tr>`;
+  const tournamentContact = label === "Tournament / Lake"
+    ? `<tr><td colspan="2" style="padding:14px;border:2px solid #d4a017;background:#111;color:#fff;font-size:15px;font-weight:700;line-height:1.5;text-align:center">AITT TOURNAMENT CONTACT: 817-841-9120 - PLEASE SAVE THIS NUMBER IN YOUR PHONE</td></tr><tr><td colspan="2" style="height:10px"></td></tr>`
+    : "";
+  return `${tournamentContact}<tr><td style="padding:6px 16px 6px 0;color:#777;font-size:13px;vertical-align:top">${escapeHtml(label)}</td><td style="padding:6px 0;color:#111;font-size:14px;font-weight:700">${escapeHtml(value)}</td></tr>`;
 }
 
 export function buildRegistrationConfirmationEmail(view: RegistrationConfirmationEmailView) {

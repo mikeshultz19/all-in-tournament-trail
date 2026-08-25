@@ -37,6 +37,15 @@ describe("Tournament preparation undo", () => {
     expect(component).toContain('name="intent" value="undo"');
   });
 
+  it("shows downstream undo protection only after an attempted protected undo", () => {
+    const component = readFileSync("components/admin/PrepareMembershipReminder.tsx", "utf8");
+    expect(component).toContain("const [showingUndoProtection, setShowingUndoProtection] = useState(false)");
+    expect(component).toContain("onClick={() => setShowingUndoProtection(true)}");
+    expect(component).toContain("{showingUndoProtection ? (");
+    expect(component).toContain("onClick={() => setShowingUndoProtection(false)}");
+    expect(component).not.toContain("type=\"button\" disabled className={adminButtonStyles(\"ghost\"");
+  });
+
   it("applies successful action state directly and resets state between tournaments", () => {
     const component = readFileSync("components/admin/PrepareMembershipReminder.tsx", "utf8");
     expect(component).toContain("await savePrepareMembershipReminderAction(");
