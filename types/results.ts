@@ -7,6 +7,10 @@ export interface ResultEntry {
   weight: number;
   kind?: "final" | "sidePot";
   baseWinnings?: number;
+  bronzePayout?: number;
+  silverPayout?: number;
+  goldPayout?: number;
+  bigBassPayout?: number;
   sidePot?: "bronze" | "silver" | "gold";
   sidePotPlacement?: number;
   sidePotWeight?: number;
@@ -43,4 +47,5 @@ export interface LatestTournamentResults {
   completeResultsUrl: string;
   insurancePotResult?: TournamentInsurancePotResultRecord | null;
   insurancePotWinnersUrl?: string;
+  totalPaidOutToAnglers?: number;
 }

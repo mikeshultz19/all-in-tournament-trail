@@ -42,9 +42,10 @@ export function calculateResultPayouts(
     gold,
     insurance,
     bigBass,
-    // This is the only aggregate payout total published by AITT.
-    totalPaidOutToAnglers: bronze + silver + gold + insurance,
-    // Useful for admin review only; never label this as the public payout total.
+    // Fallback when a completed closeout total is unavailable. Each persisted
+    // payout category is included exactly once.
+    totalPaidOutToAnglers:
+      standardTournament + bronze + silver + gold + insurance + bigBass,
     allListedCashPayouts:
       standardTournament + bronze + silver + gold + insurance + bigBass,
   };
@@ -133,6 +134,7 @@ export function getTeamPayouts(
   team: string,
   bigBassTeam: string | null,
   bigBassPayout: PayoutValue,
+  insurancePayout: PayoutValue = 0,
 ) {
   const normalizedTeam = normalizeResultTeam(team);
   const finalEntry = entries.find(
@@ -155,14 +157,21 @@ export function getTeamPayouts(
       );
 
   const standardTournament = payoutAmount(finalEntry?.baseWinnings);
-  const bronze = sidePotTotal("bronze");
-  const silver = sidePotTotal("silver");
-  const gold = sidePotTotal("gold");
-  const bigBass =
-    bigBassTeam &&
-    normalizeResultTeam(bigBassTeam) === normalizedTeam
+  const bronze = finalEntry?.bronzePayout === undefined
+    ? sidePotTotal("bronze")
+    : payoutAmount(finalEntry.bronzePayout);
+  const silver = finalEntry?.silverPayout === undefined
+    ? sidePotTotal("silver")
+    : payoutAmount(finalEntry.silverPayout);
+  const gold = finalEntry?.goldPayout === undefined
+    ? sidePotTotal("gold")
+    : payoutAmount(finalEntry.goldPayout);
+  const bigBass = finalEntry?.bigBassPayout === undefined
+    ? bigBassTeam && normalizeResultTeam(bigBassTeam) === normalizedTeam
       ? payoutAmount(bigBassPayout)
-      : 0;
+      : 0
+    : payoutAmount(finalEntry.bigBassPayout);
+  const insurance = payoutAmount(insurancePayout);
 
   return {
     standardTournament,
@@ -170,6 +179,19 @@ export function getTeamPayouts(
     silver,
     gold,
     bigBass,
-    totalWon: standardTournament + bronze + silver + gold + bigBass,
+    totalWon:
+      standardTournament + bronze + silver + gold + bigBass + insurance,
   };
+}
+
+export function getTeamPayoutBreakdown(
+  payouts: ReturnType<typeof getTeamPayouts>,
+) {
+  return [
+    { label: "Tournament", amount: payouts.standardTournament },
+    { label: "Bronze", amount: payouts.bronze },
+    { label: "Silver", amount: payouts.silver },
+    { label: "Gold", amount: payouts.gold },
+    { label: "Big Bass", amount: payouts.bigBass },
+  ].filter((item) => item.amount > 0);
 }

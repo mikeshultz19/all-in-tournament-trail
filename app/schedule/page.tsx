@@ -25,6 +25,10 @@ function RegistrationControl({
   className: string;
 }) {
   const availability = getRegistrationAvailability(tournament);
+  const unavailableLabel =
+    tournament.status === "official"
+      ? "Registration Closed"
+      : availability.reason;
 
   return availability.canSubmit ? (
     <Link
@@ -36,10 +40,10 @@ function RegistrationControl({
   ) : (
     <span
       aria-disabled="true"
-      title={availability.reason}
+      title={unavailableLabel}
       className={`${className} cursor-not-allowed border border-neutral-700 text-neutral-500`}
     >
-      {availability.reason}
+      {unavailableLabel}
     </span>
   );
 }

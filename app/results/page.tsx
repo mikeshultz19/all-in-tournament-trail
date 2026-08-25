@@ -10,6 +10,7 @@ import {
   displayResultsPayout,
   formatResultsDate,
   getInsurancePotWinnersForEntry,
+  getTeamPayoutBreakdown,
   getTeamPayouts,
   isSidePotEntry,
   paginateResultEntries,
@@ -163,7 +164,8 @@ export default async function ResultsPage({
 
                   <p className="mt-2 text-2xl font-black text-[#c9aa4a]">
                     {displayResultsPayout(
-                      payoutTotals.totalPaidOutToAnglers,
+                      latestResults.totalPaidOutToAnglers ??
+                        payoutTotals.totalPaidOutToAnglers,
                     )}
                   </p>
                 </div>
@@ -191,7 +193,77 @@ export default async function ResultsPage({
               </div>
             </div>
 
-            <div id="standings" className="scroll-mt-24 overflow-x-auto border border-[#8f762f]/60 bg-[#111111]">
+            <div id="standings" className="scroll-mt-24 space-y-3 md:hidden">
+              {paginatedEntries.entries.map((entry) => {
+                const insurancePotWinners = getInsurancePotWinnersForEntry(
+                  entry,
+                  latestResults.insurancePotResult,
+                );
+                const teamPayouts = getTeamPayouts(
+                  latestResults.results.entries,
+                  entry.team,
+                  latestResults.results.big_bass_team,
+                  latestResults.results.big_bass_payout,
+                  insurancePotWinners.reduce(
+                    (total, winner) => total + payoutAmount(winner.amountCents) / 100,
+                    0,
+                  ),
+                );
+                const payoutBreakdown = getTeamPayoutBreakdown(teamPayouts);
+
+                return (
+                  <article
+                    key={`mobile-${entry.place}-${entry.team}`}
+                    className="min-w-0 border border-[#8f762f]/50 bg-[#111111] p-4"
+                  >
+                    <div className="grid min-w-0 grid-cols-[2.5rem_minmax(0,1fr)] gap-3">
+                      <div>
+                        <p className="text-[0.6rem] font-black uppercase tracking-[0.1em] text-neutral-500">Place</p>
+                        <p className="mt-1 text-xl font-black text-[#c9aa4a]">{entry.place}</p>
+                      </div>
+                      <div className="min-w-0">
+                        <p className="text-[0.6rem] font-black uppercase tracking-[0.1em] text-neutral-500">Team / Angler</p>
+                        <div className="mt-1 flex min-w-0 flex-wrap items-center gap-2">
+                          <p className="min-w-0 break-words text-sm font-bold text-[#f4eee7]">{entry.team}</p>
+                          {insurancePotWinners.map((winner, index) => (
+                            <span
+                              key={`${winner.entryId ?? winner.entryName}-${index}`}
+                              className="inline-flex shrink-0 items-center rounded-full border border-[#c9aa4a]/60 bg-[#c9aa4a]/10 px-2 py-0.5 text-[0.55rem] font-black uppercase leading-4 tracking-[0.08em] text-[#d0ae4c]"
+                            >
+                              Insurance
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+
+                    <dl className="mt-3 grid grid-cols-2 gap-3 border-t border-white/10 pt-3">
+                      <div>
+                        <dt className="text-[0.6rem] font-black uppercase tracking-[0.1em] text-neutral-500">Weight</dt>
+                        <dd className="mt-1 text-sm font-bold tabular-nums text-neutral-200">{payoutAmount(entry.weight).toFixed(2)} lbs</dd>
+                      </div>
+                      <div className="text-right">
+                        <dt className="text-[0.6rem] font-black uppercase tracking-[0.1em] text-neutral-500">Total Won</dt>
+                        <dd className="mt-1 text-sm font-black tabular-nums text-[#c9aa4a]">{displayResultsPayout(teamPayouts.totalWon)}</dd>
+                      </div>
+                    </dl>
+
+                    {payoutBreakdown.length ? (
+                      <dl className="mt-3 space-y-1.5 border-t border-white/10 pt-3">
+                        {payoutBreakdown.map((payout) => (
+                          <div key={payout.label} className="flex items-center justify-between gap-3 text-xs">
+                            <dt className="font-black uppercase tracking-[0.08em] text-neutral-400">{payout.label}</dt>
+                            <dd className="shrink-0 font-black tabular-nums text-[#c9aa4a]">{displayResultsPayout(payout.amount)}</dd>
+                          </div>
+                        ))}
+                      </dl>
+                    ) : null}
+                  </article>
+                );
+              })}
+            </div>
+
+            <div className="hidden overflow-x-auto border border-[#8f762f]/60 bg-[#111111] md:block">
               <table className="min-w-full border-collapse">
                 <thead>
                   <tr className="border-b border-[#8f762f]/60 bg-[#171717]">
@@ -244,6 +316,10 @@ export default async function ResultsPage({
                       entry.team,
                       latestResults.results.big_bass_team,
                       latestResults.results.big_bass_payout,
+                      insurancePotWinners.reduce(
+                        (total, winner) => total + payoutAmount(winner.amountCents) / 100,
+                        0,
+                      ),
                     );
 
                     return (

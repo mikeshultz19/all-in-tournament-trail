@@ -536,7 +536,12 @@ export default function WinnersCircle({
                 <div className="my-2 border-t border-[#c9aa4a]/60" />
                 <SummaryRow
                   label="TOTAL PAID OUT TO ANGLERS"
-                  value={hasResults ? payoutTotals.totalPaidOutToAnglers : 0}
+                  value={
+                    hasResults
+                      ? latestResults?.totalPaidOutToAnglers ??
+                        payoutTotals.totalPaidOutToAnglers
+                      : 0
+                  }
                   emphasis
                 />
               </div>

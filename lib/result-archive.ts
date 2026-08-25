@@ -9,12 +9,19 @@ export function buildPublishedResultsArchive(
   publishedTournaments: Tournament[],
   resultsRecords: TournamentResultsRecord[],
   insurancePotRecords: TournamentInsurancePotResultRecord[] = [],
+  closeoutTotals: Array<{ tournament_id: string; total_paid_cents: number }> = [],
 ): LatestTournamentResults[] {
   const resultsByTournamentId = new Map(
     resultsRecords.map((result) => [result.tournament_id, result]),
   );
   const insuranceByTournamentId = new Map(
     insurancePotRecords.map((result) => [result.tournament_id, result]),
+  );
+  const closeoutTotalByTournamentId = new Map(
+    closeoutTotals.map((closeout) => [
+      closeout.tournament_id,
+      Number(closeout.total_paid_cents) / 100,
+    ]),
   );
 
   return publishedTournaments.flatMap((tournament) => {
@@ -44,6 +51,7 @@ export function buildPublishedResultsArchive(
         completeResultsUrl,
         insurancePotResult: insuranceByTournamentId.get(tournament.id) ?? null,
         insurancePotWinnersUrl: `${completeResultsUrl}#insurance-pot-winners`,
+        totalPaidOutToAnglers: closeoutTotalByTournamentId.get(tournament.id),
       },
     ];
   });

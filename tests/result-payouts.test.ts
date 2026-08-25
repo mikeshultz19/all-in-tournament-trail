@@ -1,15 +1,17 @@
+import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 
 import {
   calculateResultPayouts,
   getInsurancePotWinnersForEntry,
+  getTeamPayoutBreakdown,
   getTeamPayouts,
   paginateResultEntries,
 } from "@/lib/result-payouts";
 import type { ResultEntry } from "@/types/results";
 
 describe("Results payout semantics", () => {
-  it("includes Bronze, Silver, Gold, and Insurance exactly once", () => {
+  it("includes Main, Bronze, Silver, Gold, Big Bass, and Insurance exactly once", () => {
     const totals = calculateResultPayouts({
       total_payout: 6250,
       bronze_payout: 900,
@@ -19,10 +21,10 @@ describe("Results payout semantics", () => {
       big_bass_payout: 650,
     });
 
-    expect(totals.totalPaidOutToAnglers).toBe(4850);
+    expect(totals.totalPaidOutToAnglers).toBe(11750);
   });
 
-  it("excludes standard tournament and Big Bass payouts from the public total", () => {
+  it("includes standard tournament and Big Bass payouts in the public total", () => {
     const totals = calculateResultPayouts({
       total_payout: 9000,
       big_bass_payout: 1200,
@@ -30,7 +32,7 @@ describe("Results payout semantics", () => {
 
     expect(totals.standardTournament).toBe(9000);
     expect(totals.bigBass).toBe(1200);
-    expect(totals.totalPaidOutToAnglers).toBe(0);
+    expect(totals.totalPaidOutToAnglers).toBe(10200);
   });
 
   it("uses published Insurance winner awards instead of a legacy summary value", () => {
@@ -59,7 +61,7 @@ describe("Results payout semantics", () => {
     );
 
     expect(totals.insurance).toBe(120);
-    expect(totals.totalPaidOutToAnglers).toBe(620);
+    expect(totals.totalPaidOutToAnglers).toBe(1770);
   });
 
   it("treats missing and malformed optional payout fields as zero", () => {
@@ -102,6 +104,73 @@ describe("Results payout semantics", () => {
       bigBass: 650,
       totalWon: 4050,
     });
+  });
+
+  it("uses authoritative per-entry payouts and returns only won mobile categories", () => {
+    const entries: ResultEntry[] = [{
+      kind: "final",
+      place: 2,
+      team: "Two Person / Team Name",
+      weight: 20.43,
+      baseWinnings: 200,
+      bronzePayout: 0,
+      silverPayout: 100,
+      goldPayout: 200,
+      bigBassPayout: 100,
+    }];
+
+    const payouts = getTeamPayouts(entries, entries[0].team, "Different Team", 250);
+
+    expect(payouts).toEqual({
+      standardTournament: 200,
+      bronze: 0,
+      silver: 100,
+      gold: 200,
+      bigBass: 100,
+      totalWon: 600,
+    });
+    expect(getTeamPayoutBreakdown(payouts)).toEqual([
+      { label: "Tournament", amount: 200 },
+      { label: "Silver", amount: 100 },
+      { label: "Gold", amount: 200 },
+      { label: "Big Bass", amount: 100 },
+    ]);
+  });
+
+  it("includes persisted Insurance winnings in Total Won without adding a breakdown line", () => {
+    const entries: ResultEntry[] = [{
+      kind: "final",
+      place: 6,
+      team: "Lena Porter",
+      weight: 17.54,
+      baseWinnings: 0,
+      bronzePayout: 0,
+      silverPayout: 0,
+      goldPayout: 0,
+      bigBassPayout: 0,
+    }];
+
+    const insuranceOnly = getTeamPayouts(
+      entries,
+      "Lena Porter",
+      null,
+      0,
+      120,
+    );
+    expect(insuranceOnly.totalWon).toBe(120);
+    expect(getTeamPayoutBreakdown(insuranceOnly)).toEqual([]);
+
+    const combined = getTeamPayouts(
+      [{ ...entries[0], baseWinnings: 300 }],
+      "Lena Porter",
+      null,
+      0,
+      120,
+    );
+    expect(combined.totalWon).toBe(420);
+    expect(getTeamPayoutBreakdown(combined)).toEqual([
+      { label: "Tournament", amount: 300 },
+    ]);
   });
 
   it("matches each published Insurance winner to only its standings row", () => {
@@ -161,5 +230,17 @@ describe("Results payout semantics", () => {
     );
     expect(paginateResultEntries(entries, 99)).toMatchObject({ page: 3, totalPages: 3 });
     expect(paginateResultEntries(entries.slice(0, 25), 1)).toMatchObject({ totalPages: 1 });
+  });
+
+  it("renders compact mobile payout cards without a horizontally scrolling table", () => {
+    const source = readFileSync("app/results/page.tsx", "utf8");
+
+    expect(source).toContain('className="scroll-mt-24 space-y-3 md:hidden"');
+    expect(source).toContain('className="hidden overflow-x-auto');
+    expect(source).toContain("getTeamPayoutBreakdown(teamPayouts)");
+    expect(source).toContain("Team / Angler");
+    expect(source).toContain("Total Won");
+    expect(source).toContain("Insurance");
+    expect(source).toContain("break-words");
   });
 });

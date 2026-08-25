@@ -72,6 +72,22 @@ describe("published Results archive mapping", () => {
     expect(buildPublishedResultsArchive([], [])).toEqual([]);
   });
 
+  it("uses the completed closeout total as the authoritative public payout total", () => {
+    const tournament = {
+      ...databaseTournament,
+      status: "Results Published" as const,
+    };
+
+    const [archiveEntry] = buildPublishedResultsArchive(
+      [tournament],
+      [resultFor(tournament.id)],
+      [],
+      [{ tournament_id: tournament.id, total_paid_cents: 177000 }],
+    );
+
+    expect(archiveEntry.totalPaidOutToAnglers).toBe(1770);
+  });
+
   it("excludes unpublished tournaments defensively", () => {
     const tournament = {
       ...databaseTournament,

@@ -130,7 +130,7 @@ describe("tournament publish readiness", () => {
       aoy_eligibility_snapshot: { eligible: true },
       eligibility_reviewed_at: "2026-08-24T12:00:00Z",
       eligibility_reviewed_by_admin_id: "admin-1",
-    };
+    } satisfies Partial<WorkingResultRow>;
     const plan = buildTournamentPublishReadinessPlan({
       reviewerAdminId: "admin-1",
       registrations: [registration],

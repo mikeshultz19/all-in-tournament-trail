@@ -160,7 +160,7 @@ describe("homepage latest tournament results", () => {
     expect(html).toContain("Gold Side Pot Payout");
     expect(html).toContain("Insurance Pot");
     expect(html).toContain("TOTAL PAID OUT TO ANGLERS");
-    expect(html).toContain("$4,850");
+    expect(html).toContain("$11,750");
     expect(html).toContain("BRONZE SIDE POT WINNER");
     expect(html).toContain("SILVER SIDE POT WINNER");
     expect(html).toContain("GOLD SIDE POT WINNER");

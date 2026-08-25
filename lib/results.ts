@@ -220,21 +220,71 @@ export async function getPublishedTournamentResultsArchive(): Promise<
     );
   }
 
-  const { data: insurancePotRecords, error: insurancePotError } = await supabase
-    .from("tournament_insurance_pot_results")
-    .select("*")
-    .in("tournament_id", tournamentIds)
-    .eq("published", true);
+  const [insurancePotResult, closeoutResult, officialPayoutResult] = await Promise.all([
+    supabase
+      .from("tournament_insurance_pot_results")
+      .select("*")
+      .in("tournament_id", tournamentIds)
+      .eq("published", true),
+    supabase
+      .from("on_site_tournament_closeouts")
+      .select("tournament_id,total_paid_cents")
+      .in("tournament_id", tournamentIds)
+      .eq("status", "complete"),
+    supabase
+      .from("official_result_entries")
+      .select("tournament_id,place,team_name,base_payout,bronze_payout,silver_payout,gold_payout,big_bass_payout")
+      .in("tournament_id", tournamentIds),
+  ]);
 
-  if (insurancePotError) {
+  if (insurancePotResult.error) {
     throw new ResultsDataError("We could not load published Insurance Pot results.", {
-      cause: insurancePotError,
+      cause: insurancePotResult.error,
+    });
+  }
+  if (closeoutResult.error) {
+    throw new ResultsDataError("We could not load authoritative payout totals.", {
+      cause: closeoutResult.error,
+    });
+  }
+  if (officialPayoutResult.error) {
+    throw new ResultsDataError("We could not load Official Result payouts.", {
+      cause: officialPayoutResult.error,
     });
   }
 
+  const officialPayouts = new Map(
+    (officialPayoutResult.data ?? []).map((row) => [
+      `${row.tournament_id}:${row.place}:${row.team_name.trim().replace(/\s+/g, " ").toLowerCase()}`,
+      row,
+    ]),
+  );
+  const enrichedResultsRecords = ((resultsRecords ?? []) as TournamentResultsRecord[]).map(
+    (record) => ({
+      ...record,
+      entries: record.entries.map((entry) => {
+        if (entry.kind === "sidePot") return entry;
+        const payout = officialPayouts.get(
+          `${record.tournament_id}:${entry.place}:${entry.team.trim().replace(/\s+/g, " ").toLowerCase()}`,
+        );
+        return payout
+          ? {
+              ...entry,
+              baseWinnings: Number(payout.base_payout ?? 0),
+              bronzePayout: Number(payout.bronze_payout ?? 0),
+              silverPayout: Number(payout.silver_payout ?? 0),
+              goldPayout: Number(payout.gold_payout ?? 0),
+              bigBassPayout: Number(payout.big_bass_payout ?? 0),
+            }
+          : entry;
+      }),
+    }),
+  );
+
   return buildPublishedResultsArchive(
     publishedTournaments,
-    (resultsRecords ?? []) as TournamentResultsRecord[],
-    (insurancePotRecords ?? []) as TournamentInsurancePotResultRecord[],
+    enrichedResultsRecords,
+    (insurancePotResult.data ?? []) as TournamentInsurancePotResultRecord[],
+    closeoutResult.data ?? [],
   );
 }

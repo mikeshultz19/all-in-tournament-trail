@@ -13,4 +13,16 @@ describe("registration availability consistency", () => {
     expect(source).not.toContain("launchModeOverride");
     expect(source).toContain("validateOnlineRegistrationRequest");
   });
+
+  it("labels completed Schedule entries Registration Closed without changing eligibility", () => {
+    const schedule = readFileSync("app/schedule/page.tsx", "utf8");
+    const eligibility = readFileSync("lib/tournament-operations.ts", "utf8");
+
+    expect(schedule).toContain('tournament.status === "official"');
+    expect(schedule).toContain('? "Registration Closed"');
+    expect(schedule).toContain(": availability.reason");
+    expect(eligibility).toContain(
+      'reason: "Registration is no longer available for this tournament."',
+    );
+  });
 });
