@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
 import { requireAdminUser } from "@/lib/admin-auth";
+import { validateTournamentRecap } from "@/lib/tournament-recap";
 import { updateTournament } from "@/lib/tournaments";
 
 export interface WinnerPhotosFormState {
@@ -77,4 +78,49 @@ export async function saveWinnerPhotosAction(
   }
 
   redirect(`/admin/tournament-manager?tournament=${encodeURIComponent(tournamentId)}&step=5`);
+}
+
+export interface TournamentRecapFormState {
+  status: "idle" | "success" | "error";
+  message: string;
+}
+
+export async function saveTournamentRecapAction(
+  tournamentId: string,
+  _previousState: TournamentRecapFormState,
+  formData: FormData,
+): Promise<TournamentRecapFormState> {
+  const admin = await requireAdminUser();
+  const validation = validateTournamentRecap(
+    String(formData.get("tournamentRecap") ?? ""),
+  );
+
+  if (!validation.ok) {
+    return { status: "error", message: validation.message };
+  }
+
+  try {
+    await updateTournament(tournamentId, {
+      tournament_recap: validation.value,
+      updated_by: admin.id,
+    });
+
+    revalidatePath("/");
+    revalidatePath("/results");
+    revalidatePath("/results/[slug]", "page");
+    revalidatePath("/admin/tournament-manager/photos");
+
+    return {
+      status: "success",
+      message: validation.value
+        ? "Tournament recap saved."
+        : "Tournament recap cleared.",
+    };
+  } catch (error) {
+    console.error("Tournament recap save failed.", error);
+    return {
+      status: "error",
+      message: "We could not save the tournament recap. Please try again.",
+    };
+  }
 }

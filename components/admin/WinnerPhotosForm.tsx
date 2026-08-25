@@ -132,7 +132,7 @@ export default function WinnerPhotosForm({
 
           <div>
             <h2 className="text-lg font-black uppercase tracking-tight text-white">
-              Winner Photos
+              Champion &amp; Big Bass Photos
             </h2>
 
             <p className="mt-1 text-sm leading-6 text-neutral-400">
@@ -165,7 +165,7 @@ export default function WinnerPhotosForm({
 
       <section className="border border-white/10 bg-[#111111] p-5 sm:p-7">
         <h2 className="text-lg font-black uppercase tracking-tight text-red-500">
-          Final Photo Review
+          Final Photos &amp; Recap Review
         </h2>
 
         <label className="mt-5 flex min-h-12 cursor-pointer items-start gap-3 border border-white/10 px-4 py-3 text-sm font-semibold text-neutral-200">
@@ -177,7 +177,7 @@ export default function WinnerPhotosForm({
           />
 
           <span>
-            <span className="block">Winner photos reviewed and approved</span>
+            <span className="block">Winner photos and recap reviewed and approved</span>
 
             <span className="mt-1 block text-xs font-normal leading-5 text-neutral-500">
               Confirm that both photos show the correct winners and are ready
@@ -227,7 +227,7 @@ export default function WinnerPhotosForm({
         ) : (
           <>
             <CheckCircle2 aria-hidden="true" className="size-4" />
-            Save Winner Photos
+            Save Photos
           </>
         )}
       </button>

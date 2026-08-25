@@ -48,6 +48,7 @@ export interface Tournament {
   paper_membership_reminder_checked?: boolean | null;
   status: TournamentStatus;
   description: string | null;
+  tournament_recap?: string | null;
   hero_image_url: string | null;
   is_featured: boolean;
   show_on_homepage: boolean;
@@ -103,6 +104,7 @@ export type TournamentUpdate = Partial<
     | "paper_membership_reminder_checked"
     | "status"
     | "description"
+    | "tournament_recap"
     | "hero_image_url"
     | "is_featured"
     | "show_on_homepage"

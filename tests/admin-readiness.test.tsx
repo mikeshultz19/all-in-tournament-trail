@@ -55,7 +55,7 @@ describe("Tournament Operations Dashboard", () => {
 
   it("shows every publishing workspace when prerequisites are complete", () => {
     const readyMarkup = renderPublishReadyDashboardFixture();
-    for (const label of ["Publish Results", "Final Website Check", "Winner Photos", "Preview Website"]) {
+    for (const label of ["Publish Results", "Final Website Check", "Winner Photos &amp; Recap", "Preview Website"]) {
       expect(readyMarkup).toContain(label);
     }
     expect(readyMarkup).toContain("Everything is complete. Publish the tournament to the website.");

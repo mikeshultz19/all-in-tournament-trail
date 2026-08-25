@@ -2,6 +2,7 @@ import "server-only";
 
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { getOnSiteCloseout } from "@/lib/on-site-closeout";
+import { getWinnerPhotosAndRecapReadiness } from "@/lib/tournament-recap";
 import type { Tournament } from "@/types/tournament";
 
 type HistoricalEligibilitySnapshot = {
@@ -269,7 +270,7 @@ export async function syncTournamentPublishReadiness(
       supabase
         .from("tournaments")
         .select(
-          "id,season_id,name,slug,status,show_on_homepage,weighfish_imported,weighfish_imported_at,results_verified_at,results_verified_by,result_status,photos_reviewed,champion_photo_url,big_bass_photo_url,official_results_published_at,official_results_published_by,prepare_registration_review_complete,paper_membership_reminder_checked,updated_at,updated_by",
+          "id,season_id,name,slug,status,show_on_homepage,weighfish_imported,weighfish_imported_at,results_verified_at,results_verified_by,result_status,photos_reviewed,champion_photo_url,big_bass_photo_url,tournament_recap,official_results_published_at,official_results_published_by,prepare_registration_review_complete,paper_membership_reminder_checked,updated_at,updated_by",
         )
         .eq("id", tournamentId)
         .maybeSingle(),
@@ -376,11 +377,7 @@ export async function syncTournamentPublishReadiness(
 
   const refreshedRowsData = (refreshedRows.data ?? []) as WorkingResultRow[];
   const unresolvedRows = refreshedRowsData.filter((row) => !isHistoricalSnapshotComplete(row));
-  const photosReady = Boolean(
-    tournament.photos_reviewed &&
-      tournament.champion_photo_url &&
-      tournament.big_bass_photo_url,
-  );
+  const photosReady = getWinnerPhotosAndRecapReadiness(tournament).ready;
   const importReady = Boolean(
     tournament.weighfish_imported &&
       tournament.weighfish_imported_at &&
@@ -401,13 +398,18 @@ export async function syncTournamentPublishReadiness(
 
   let promoted = false;
   let updatedTournament = tournament;
-  if (canPromote && tournament.result_status !== "ready_to_publish") {
+  const nextResultStatus = canPromote
+    ? "ready_to_publish"
+    : tournament.result_status === "ready_to_publish"
+      ? "under_review"
+      : null;
+  if (nextResultStatus && tournament.result_status !== nextResultStatus) {
     const { data, error } = await supabase
       .from("tournaments")
-      .update({ result_status: "ready_to_publish" })
+      .update({ result_status: nextResultStatus })
       .eq("id", tournamentId)
       .select(
-        "id,season_id,name,slug,status,show_on_homepage,weighfish_imported,weighfish_imported_at,results_verified_at,results_verified_by,result_status,photos_reviewed,champion_photo_url,big_bass_photo_url,official_results_published_at,official_results_published_by,prepare_registration_review_complete,paper_membership_reminder_checked,updated_at,updated_by",
+        "id,season_id,name,slug,status,show_on_homepage,weighfish_imported,weighfish_imported_at,results_verified_at,results_verified_by,result_status,photos_reviewed,champion_photo_url,big_bass_photo_url,tournament_recap,official_results_published_at,official_results_published_by,prepare_registration_review_complete,paper_membership_reminder_checked,updated_at,updated_by",
       )
       .single();
     if (error) {
@@ -416,7 +418,7 @@ export async function syncTournamentPublishReadiness(
       });
     }
     updatedTournament = data as Tournament;
-    promoted = true;
+    promoted = nextResultStatus === "ready_to_publish";
   }
 
   return {

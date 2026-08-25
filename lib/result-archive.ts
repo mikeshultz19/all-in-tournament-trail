@@ -52,6 +52,7 @@ export function buildPublishedResultsArchive(
         insurancePotResult: insuranceByTournamentId.get(tournament.id) ?? null,
         insurancePotWinnersUrl: `${completeResultsUrl}#insurance-pot-winners`,
         totalPaidOutToAnglers: closeoutTotalByTournamentId.get(tournament.id),
+        tournamentRecap: tournament.tournament_recap ?? undefined,
       },
     ];
   });

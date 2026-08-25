@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Banknote, CalendarDays, Check, ChevronDown, ClipboardCheck, FileUp, Globe2, Trophy, type LucideIcon } from "lucide-react";
 import { getInitialAdminTournament } from "@/lib/admin-tournaments";
 import type { Tournament } from "@/types/tournament";
+import { getWinnerPhotosAndRecapReadiness } from "@/lib/tournament-recap";
 import type { OnSiteCloseoutRecord } from "@/types/on-site-closeout";
 import type { TournamentInsurancePotResultRecord } from "@/types/insurance-pot";
 import type { TournamentImportEvidence } from "@/lib/tournament-import-status";
@@ -124,7 +125,7 @@ export default function AdminTournamentDashboard({ tournaments, initialTournamen
           ...(closeouts[currentTournament.id] ? ["Generated Checks / Payout Closeout"] : []),
           ...(supplementalEvidence[currentTournament.id]?.officialPublicationExists ? ["Published Results"] : []),
           ...(supplementalEvidence[currentTournament.id]?.aoyCalculationExists ? ["AOY Processing"] : []),
-        ]} /> : stage.number === 2 ? <ImportStage tournament={currentTournament} rows={importedRows[currentTournament.id] ?? []} publicationExists={supplementalEvidence[currentTournament.id]?.officialPublicationExists ?? false} locked={stage.locked} /> : stage.number === 3 ? <PayoutStage tournament={currentTournament} importedRows={importedRows[currentTournament.id] ?? []} closeout={closeouts[currentTournament.id]} insuranceResult={insuranceResults[currentTournament.id] ?? null} locked={stage.locked} publicationExists={supplementalEvidence[currentTournament.id]?.officialPublicationExists ?? false} /> : stage.number === 4 ? <PublishStage tournament={currentTournament} importedRows={importedRows[currentTournament.id] ?? []} results={resultsRecords[currentTournament.id]} locked={stage.locked} payoutComplete={stages.find((item) => item.number === 3)?.status === "Complete"} manualReviewRows={manualReviewRows[currentTournament.id] ?? []} publishRegistrations={publishReviewRegistrations[currentTournament.id] ?? []} /> : <AoyCalculationPanel tournamentId={currentTournament.id} available={!stage.locked} standings={currentTournament.season_id ? aoyStandingsBySeason[currentTournament.season_id] ?? [] : []} qualifications={currentTournament.season_id ? championshipQualificationsBySeason[currentTournament.season_id] ?? [] : []} />}</div> : null}
+        ]} /> : stage.number === 2 ? <ImportStage tournament={currentTournament} rows={importedRows[currentTournament.id] ?? []} publicationExists={supplementalEvidence[currentTournament.id]?.officialPublicationExists ?? false} locked={stage.locked} /> : stage.number === 3 ? <PayoutStage tournament={currentTournament} importedRows={importedRows[currentTournament.id] ?? []} closeout={closeouts[currentTournament.id]} insuranceResult={insuranceResults[currentTournament.id] ?? null} locked={stage.locked} publicationExists={supplementalEvidence[currentTournament.id]?.officialPublicationExists ?? false} /> : stage.number === 4 ? <PublishStage tournament={currentTournament} importedRows={importedRows[currentTournament.id] ?? []} results={resultsRecords[currentTournament.id]} locked={stage.locked} payoutComplete={stages.find((item) => item.number === 3)?.status === "Complete"} publicationExists={supplementalEvidence[currentTournament.id]?.officialPublicationExists ?? false} manualReviewRows={manualReviewRows[currentTournament.id] ?? []} publishRegistrations={publishReviewRegistrations[currentTournament.id] ?? []} /> : <AoyCalculationPanel tournamentId={currentTournament.id} available={!stage.locked} standings={currentTournament.season_id ? aoyStandingsBySeason[currentTournament.season_id] ?? [] : []} qualifications={currentTournament.season_id ? championshipQualificationsBySeason[currentTournament.season_id] ?? [] : []} />}</div> : null}
       </section>;
     })}</div>
 
@@ -157,6 +158,7 @@ function PublishStage({
   results,
   locked,
   payoutComplete,
+  publicationExists,
   manualReviewRows = [],
   publishRegistrations = [],
 }: {
@@ -165,6 +167,7 @@ function PublishStage({
   results?: TournamentResultsRecord;
   locked: boolean;
   payoutComplete: boolean;
+  publicationExists: boolean;
   manualReviewRows?: HistoricalReviewRow[];
   publishRegistrations?: TournamentPublishReviewRegistration[];
 }) {
@@ -180,6 +183,11 @@ function PublishStage({
   }
 
   const identifier = encodeURIComponent(tournament.slug || tournament.id);
+  const winnerPhotosAndRecap = getWinnerPhotosAndRecapReadiness(tournament);
+  const publicationComplete =
+    publicationExists ||
+    tournament.result_status === "official" ||
+    tournament.status === "Results Published";
   const readyChecks = [
     {
       label: "Results",
@@ -194,12 +202,9 @@ function PublishStage({
       ready: payoutComplete,
     },
     {
-      label: "Winner Photos",
-      ready: Boolean(
-        tournament.champion_photo_url &&
-          tournament.big_bass_photo_url &&
-          tournament.photos_reviewed,
-      ),
+      label: "Winner Photos & Recap",
+      ready: publicationComplete || winnerPhotosAndRecap.ready,
+      missing: publicationComplete ? [] : winnerPhotosAndRecap.missing,
     },
   ] as const;
   const registrationOptions = publishRegistrations.map((registration) => ({
@@ -242,6 +247,7 @@ function PublishStage({
               key={check.label}
               label={check.label}
               ready={check.ready}
+              missing={"missing" in check ? check.missing : undefined}
             />
           ))}
         </dl>
@@ -308,7 +314,7 @@ function PublishStage({
           href={`/admin/tournament-manager/photos?tournament=${identifier}`}
           className="flex min-h-14 items-center justify-between border border-white/15 bg-black/20 px-5 text-sm font-black uppercase text-white transition hover:border-[#D4A017] hover:text-[#D4A017]"
         >
-          Winner Photos
+          Winner Photos &amp; Recap
           <span aria-hidden="true">→</span>
         </Link>
       </section>
@@ -332,8 +338,8 @@ function PublishStage({
   );
 }
 
-function PublicationCheck({ label, ready }: { label: string; ready: boolean }) {
-  return <div className="flex items-center justify-between gap-4 rounded-sm border border-white/10 bg-black/40 px-4 py-3"><dt className="text-sm text-neutral-300">{label}</dt><dd><AdminStatusBadge tone={ready ? "positive" : "attention"}>{ready ? "Ready" : "Pending"}</AdminStatusBadge></dd></div>;
+function PublicationCheck({ label, ready, missing }: { label: string; ready: boolean; missing?: readonly string[] }) {
+  return <div className="flex items-start justify-between gap-4 rounded-sm border border-white/10 bg-black/40 px-4 py-3"><dt className="text-sm text-neutral-300">{label}{!ready && missing?.length ? <ul className="mt-2 space-y-1 text-xs text-amber-300">{missing.map((item) => <li key={item}>{item}</li>)}</ul> : null}</dt><dd><AdminStatusBadge tone={ready ? "positive" : "attention"}>{ready ? "Ready" : "Pending"}</AdminStatusBadge></dd></div>;
 }
 export function resolveManagedTournament(
   tournaments: readonly Tournament[],

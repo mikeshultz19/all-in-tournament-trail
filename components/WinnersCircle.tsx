@@ -521,9 +521,11 @@ export default function WinnersCircle({
     Tournament Recap
   </p>
 
-  <p className="mt-3 text-sm leading-7 text-neutral-300">
+  <p className="mt-3 break-words text-sm leading-7 text-neutral-300">
     {latestResults?.tournamentRecap ??
-      "Tournament recap will be published after results become official."}
+      (hasResults
+        ? "No tournament recap has been added."
+        : "Tournament recap will be published after results become official.")}
   </p>
 </div>
               <div className="mt-5 border border-[#8f762f]/60 bg-[#111111] p-3">

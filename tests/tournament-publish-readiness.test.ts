@@ -219,6 +219,7 @@ describe("tournament publish readiness", () => {
         photos_reviewed: true,
         champion_photo_url: "https://example.com/champ.jpg",
         big_bass_photo_url: "https://example.com/bass.jpg",
+        tournament_recap: "A complete tournament recap.",
         updated_by: "admin-1",
       },
       resultRows: [makeResultRow({ id: "r1", team_name: "Fresh SoloGold" })],
@@ -248,6 +249,7 @@ describe("tournament publish readiness", () => {
         photos_reviewed: true,
         champion_photo_url: "https://example.com/champ.jpg",
         big_bass_photo_url: "https://example.com/bass.jpg",
+        tournament_recap: "A complete tournament recap.",
         updated_by: "admin-1",
       },
       updatedTournament: {
@@ -260,6 +262,7 @@ describe("tournament publish readiness", () => {
         photos_reviewed: true,
         champion_photo_url: "https://example.com/champ.jpg",
         big_bass_photo_url: "https://example.com/bass.jpg",
+        tournament_recap: "A complete tournament recap.",
         updated_by: "admin-1",
       },
       resultRows: [
@@ -290,5 +293,52 @@ describe("tournament publish readiness", () => {
     expect(result.manualReviewRows).toHaveLength(0);
     expect(result.promoted).toBe(true);
     expect(result.tournament?.result_status).toBe("ready_to_publish");
+  });
+
+  it("demotes pre-publication readiness when the saved recap is whitespace", async () => {
+    const completeRow = {
+      ...makeResultRow({ id: "r1", team_name: "Fresh SoloGold" }),
+      registration_id: "reg-1",
+      competitive_record_id: "record-1",
+      record_type: "solo" as const,
+      aoy_eligible: true,
+      aoy_eligibility_snapshot: { eligible: true },
+      eligibility_reviewed_at: "2026-08-24T02:30:00Z",
+      eligibility_reviewed_by_admin_id: "admin-1",
+    };
+    const { tournamentUpdate } = mockSupabase({
+      tournament: {
+        id: "tour-1",
+        weighfish_imported: true,
+        weighfish_imported_at: "2026-08-24T02:07:24.28091+00:00",
+        results_verified_at: "2026-08-24T02:21:14.98896+00:00",
+        results_verified_by: "admin-1",
+        result_status: "ready_to_publish",
+        photos_reviewed: true,
+        champion_photo_url: "https://example.com/champ.jpg",
+        big_bass_photo_url: "https://example.com/bass.jpg",
+        tournament_recap: "   ",
+        updated_by: "admin-1",
+      },
+      updatedTournament: {
+        id: "tour-1",
+        result_status: "under_review",
+        tournament_recap: "   ",
+      },
+      resultRows: [completeRow],
+      registrations: [makeRegistration({})],
+    });
+    getOnSiteCloseout.mockResolvedValue({
+      status: "complete",
+      difference_cents: 0,
+    });
+
+    const result = await syncTournamentPublishReadiness("tour-1");
+
+    expect(tournamentUpdate).toHaveBeenCalledWith({
+      result_status: "under_review",
+    });
+    expect(result.promoted).toBe(false);
+    expect(result.tournament?.result_status).toBe("under_review");
   });
 });

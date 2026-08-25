@@ -88,6 +88,25 @@ describe("published Results archive mapping", () => {
     expect(archiveEntry.totalPaidOutToAnglers).toBe(1770);
   });
 
+  it("projects the tournament recap without changing published result data", () => {
+    const tournament = {
+      ...databaseTournament,
+      status: "Results Published" as const,
+      tournament_recap: "A strong finish on Eagle Mountain.",
+    };
+    const results = resultFor(tournament.id);
+
+    const [archiveEntry] = buildPublishedResultsArchive(
+      [tournament],
+      [results],
+    );
+
+    expect(archiveEntry.tournamentRecap).toBe(
+      "A strong finish on Eagle Mountain.",
+    );
+    expect(archiveEntry.results).toBe(results);
+  });
+
   it("excludes unpublished tournaments defensively", () => {
     const tournament = {
       ...databaseTournament,

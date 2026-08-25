@@ -2,6 +2,7 @@ import { ArrowLeft, Camera } from "lucide-react";
 import Link from "next/link";
 
 import WinnerPhotosForm from "@/components/admin/WinnerPhotosForm";
+import TournamentRecapForm from "@/components/admin/TournamentRecapForm";
 import {
   getNextUpcomingTournament,
   getTournamentByIdentifier,
@@ -49,7 +50,7 @@ export default async function WinnerPhotosPage({
         </p>
 
         <h1 className="mt-2 text-3xl font-black uppercase tracking-tight text-white">
-          Winner Photos
+          Winner Photos &amp; Recap
         </h1>
 
         {tournament && (
@@ -65,6 +66,7 @@ export default async function WinnerPhotosPage({
             key={tournament.id}
             tournament={tournament}
           />
+          <TournamentRecapForm tournament={tournament} />
         </div>
       ) : (
         <section className="mt-6 border border-white/10 bg-[#111111] p-6">

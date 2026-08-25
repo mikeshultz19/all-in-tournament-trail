@@ -19,7 +19,7 @@ describe("compact Tournament Manager workflow", () => {
     expect(source).toContain("Final Website Check");
     expect(source).toContain("Edit Results");
     expect(source).toContain("Preview Website");
-    expect(source).toContain("Winner Photos");
+    expect(source).toContain("Winner Photos & Recap");
   });
 
   it("separates the calculator from the post-event publisher", () => {
