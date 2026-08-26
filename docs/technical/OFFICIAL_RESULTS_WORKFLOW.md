@@ -59,6 +59,13 @@ identifies both affected result rows for manual review, and leaves the database
 unique constraint as final protection. Publication readiness repeats this check
 before invoking the RPC.
 
+The Import/Verify page also performs roster reconciliation: it normalizes case,
+spacing, punctuation, and separators; auto-matches exact identities and unique
+high-confidence one-edit fuzzy matches; and presents ambiguous or partial
+matches for Admin confirmation. Missing active roster results, unmatched import
+rows, unresolved matches, and duplicate ownership prevent verification. AITT
+does not invent a result for a missing roster entry.
+
 ## Official publication
 
 The protected Tournament Manager publish action calls one transactional RPC.

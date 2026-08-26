@@ -117,9 +117,9 @@ Use this document to record approved project decisions that affect architecture,
   homepage Tournament Conditions presentation, tests, and weather
   documentation. Tournament Status and Safe Light remain independent.
 
-### 2026-07-30 — Finalize public sponsor presentation and discovery links
+### 2026-07-30 — Finalize public sponsor presentation and discovery links (historical)
 
-- **Status:** Approved
+- **Status:** Historical; superseded by the 2026-08-26 sponsor update below.
 - **Context:** The public homepage needed to distinguish Fenix Parts from
   Phoenix Boats, use the approved Mad Dawg logo, and direct prospective
   partners to complete sponsorship information.
@@ -136,6 +136,20 @@ Use this document to record approved project decisions that affect architecture,
   tile or an unrelated homepage section.
 - **Impact:** Homepage sponsor data and presentation, homepage hero,
   `/sponsors`, public header navigation, and focused public-page tests.
+
+### 2026-08-26 — Update public premier sponsors
+
+- **Status:** Current
+- **Decision:** Public sponsor listings are Mad Dawg Graphics & Design, Texas
+  Boat Works, and Tri-Lakes Tackle Town, each presented as a Premier Sponsor.
+  The homepage order is Tri-Lakes, Texas Boat Works, then Mad Dawg. The
+  Sponsors page order is Mad Dawg, Texas Boat Works, then Tri-Lakes. Phoenix /
+  Fenix Parts has been removed from public sponsor presence.
+- **Decision:** Tri-Lakes uses the approved `tri-lakes-logo.png` asset, links
+  to `https://trilakestackletown.com/`, and uses the approved public description.
+- **Impact:** Public sponsor data, homepage and Sponsors page presentation,
+  responsive logo sizing, and sponsor-focused tests. This remains separate
+  from Tournament Manager operations.
 
 ### 2026-07-30 — Approve the event-specific Practice and Off-Limits Policy
 
@@ -238,9 +252,10 @@ Use this document to record approved project decisions that affect architecture,
 
 ### 2026-07-22 — Use Square for card and supported wallet payments
 
-- **Status:** Approved
+- **Status:** Historical; fee wording superseded by the current Square Service
+  Fee policy in the lifecycle and payment documents.
 - **Context:** Early Online Registration needs immediate card payment, while tournament-morning operations already belong in WeighFish and should not be duplicated by AITT.
-- **Decision:** Square processes credit-card, debit-card, Apple Pay, and other supported contactless-wallet payments. Apple Pay is available on compatible devices and browsers online, and supported contactless wallets are accepted through the tournament-morning Square reader. A flat 3% Card Processing Fee applies equally to card and digital-wallet payments online and at the reader; morning cash has no fee. AITT owns Early Online Registration and confirms it only after successful Square payment. The Tournament Director owns Tournament-Morning Registration in WeighFish, including Cash or Card selection. The homepage advertises card and Apple Pay availability within Latest News & Announcements. Apple Pay branding must use only official, unmodified Apple-provided artwork under Apple's marketing guidelines; a text fallback is used until that artwork is approved and added. The AITT website does not operate a morning point of sale or live payment ledger. After the tournament, AITT will import the official WeighFish CSV through a future protected workflow.
+- **Decision:** Square processes credit-card, debit-card, Apple Pay, and other supported contactless-wallet payments. The current Square Service Fee is 3% of the applicable subtotal plus $0.30 per card transaction; customer-facing itemization is `SQUARE SERVICE FEE (3%)`, and cash has no fee. AITT owns Early Online Registration and confirms it only after successful Square payment. The Tournament Director owns Tournament-Morning Registration in WeighFish, including Cash or Card selection. The website does not operate a morning point of sale or live payment ledger.
 - **Reasoning:** Clear system ownership keeps AITT focused, avoids duplicate records and reconciliation, and preserves WeighFish as the official tournament-day system.
 - **Impact:** Payment operations, registration availability, public payment copy, fee calculations, future persistence, Square integration, and WeighFish import must follow this boundary.
 - **Follow-up:** Complete registration persistence before enabling production Square checkout; later implement the protected CSV import without real-time synchronization.

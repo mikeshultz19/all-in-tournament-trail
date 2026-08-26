@@ -37,7 +37,7 @@ operations.
 - [Master Site Map](MasterSiteMap.md)
 - [README](../README.md)
 
-**Last Updated:** 2026-08-25
+**Last Updated:** 2026-08-26
 
 ## Production data and release order
 
@@ -241,7 +241,7 @@ server-side contact submission endpoint.
 - [ ] Verify public rules, fees, payment options, privacy information, and tournament-morning instructions are current.
 - [ ] Confirm online registration remains disabled until persistence and secure Square payment confirmation are production-ready.
 - [ ] Complete a production-like online registration using approved test procedures.
-- [ ] Verify Square checkout displays the correct itemized subtotal, 3% Card Processing Fee, and total.
+- [ ] Verify Square checkout displays the correct itemized subtotal, `SQUARE SERVICE FEE (3%)`, and total; the internal $0.30 component is not separately shown.
 - [ ] Test successful, declined, cancelled, duplicate, and interrupted checkout outcomes.
 - [ ] Test Apple Pay on a supported device and browser without implying universal availability.
 - [ ] Verify card and Apple Pay branding uses only approved official assets or approved text fallbacks.
@@ -287,7 +287,7 @@ server-side contact submission endpoint.
 - [ ] Confirm primary and backup internet connections are working.
 - [ ] Open the correct tournament in WeighFish.
 - [ ] Confirm all early online registrations have been entered into WeighFish through the supported process.
-- [ ] Verify the current entry fees, memberships, optional pots, and 3% Card Processing Fee reference.
+- [ ] Verify the current entry fees, memberships, optional pots, and Square Service Fee reference (3% plus internal $0.30 per card transaction).
 - [ ] Count starting cash with the authorized staff member and record the amount.
 - [ ] Secure the cash box and limit access to authorized staff.
 - [ ] Complete the staff briefing and assign registration, payment, and exception responsibilities.
@@ -297,7 +297,7 @@ server-side contact submission endpoint.
 - [ ] Register every walk-up team or individual in WeighFish.
 - [ ] Record Cash or Card accurately in WeighFish for every walk-up registration.
 - [ ] Process card and supported contactless-wallet payments through the Square reader.
-- [ ] Apply the approved 3% Card Processing Fee to reader payments and no fee to cash.
+- [ ] Apply the approved Square Service Fee (3% plus internal $0.30) to reader payments and no fee to cash.
 - [ ] Keep payment-card data out of paper forms, notes, and AITT records.
 - [ ] Record operational exceptions and preserve supporting evidence.
 - [ ] Before launch, confirm every participating angler is entered into WeighFish.
@@ -313,7 +313,7 @@ server-side contact submission endpoint.
 - [ ] Train staff to verify membership selections and member-only eligibility without making unsupported exceptions.
 - [ ] Train staff to explain required Tournament Entry and optional pot selections.
 - [ ] Train staff to process card and supported contactless-wallet payments through the Square reader.
-- [ ] Train staff to explain the 3% Card Processing Fee and fee-free morning cash option.
+- [ ] Train staff to explain the Square Service Fee (3% label; internal $0.30 not itemized) and fee-free morning cash option.
 - [ ] Train staff on cash acceptance, change, custody, counting, transfer, and discrepancy reporting.
 - [ ] Train authorized staff on the approved refund, credit, transfer, and cancellation procedure.
 - [ ] Train staff to identify and escalate duplicate, failed, disputed, partial, or uncertain payments.
@@ -359,8 +359,8 @@ server-side contact submission endpoint.
 - [ ] Explain that online registration is confirmed only after successful Square payment.
 - [ ] Explain Tournament-Morning Registration as a normal in-person option, not late registration.
 - [ ] Explain that morning registration is completed with the Tournament Director in WeighFish.
-- [ ] Explain the 3% Card Processing Fee clearly before anglers choose a payment method.
-- [ ] Explain that tournament-morning cash has no Card Processing Fee.
+- [ ] Explain the `SQUARE SERVICE FEE (3%)` clearly before anglers choose a payment method; do not itemize the internal $0.30 component.
+- [ ] Explain that tournament-morning cash has no Square Service Fee.
 - [ ] Explain that Apple Pay availability depends on a supported device and browser.
 - [ ] Explain supported contactless-wallet payments at the Square reader without promising unsupported methods.
 - [ ] Use only current approved rules, prices, dates, locations, and contact information.
@@ -382,7 +382,7 @@ server-side contact submission endpoint.
 - [ ] Verify each tournament's independent Registration Open/closed state; no
   automatic 9:00 PM timestamp controls the current public flow.
 - [ ] Complete a successful cash registration test in the tournament-morning workflow.
-- [ ] Complete a successful card-reader payment test with the 3% Card Processing Fee.
+- [ ] Complete a successful card-reader payment test with the Square Service Fee (3% plus internal $0.30).
 - [ ] Complete an Apple Pay test on a supported online device and browser.
 - [ ] Complete a supported contactless-wallet test through the Square reader.
 - [ ] Complete declined, cancelled, interrupted, and uncertain payment tests.

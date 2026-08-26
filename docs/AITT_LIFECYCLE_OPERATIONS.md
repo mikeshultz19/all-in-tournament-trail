@@ -1,6 +1,6 @@
 # AITT Tournament Lifecycle and Operations
 
-Last reconciled: 2026-08-25
+Last reconciled: 2026-08-26
 
 Status: **Primary human-readable authority for implemented AITT business and
 operational behavior.**
@@ -115,6 +115,12 @@ never be mixed.
 6. Assign the next Boat/Registration Number.
 7. Queue and deliver the confirmation email.
 
+Card/online quotes use the centralized Square Service Fee: 3% of the
+chargeable subtotal, rounded to cents, plus a fixed $0.30 per transaction.
+Customer-facing itemization uses `SQUARE SERVICE FEE (3%)` and shows only the
+calculated dollar amount; the fixed component is an internal calculation and
+is not separately displayed. Cash walk-ups have no Square Service Fee.
+
 Payment failure does not create an active registration or consume a boat
 number. Attempt and provider history remain available for recovery. Email
 failure does not invalidate a successful registration; delivery can be retried.
@@ -211,6 +217,16 @@ WeighFish is authoritative for scoring and finish data entered during weigh-in.
 AITT imports the CSV, validates results, maps rows to tournament registrations
 and Competitive Records, calculates AITT-specific payouts, handles Insurance,
 publishes Official Results, and calculates AOY/Championship projections.
+
+Reconciliation normalizes case, whitespace, punctuation, and separators before
+comparison. Exact normalized matches and a uniquely strong, high-confidence
+fuzzy match may auto-match. Plausible but ambiguous, partial, or materially
+different identities require Tournament Director review; no weak match is
+silently assigned. Every active AITT registration must have a corresponding
+imported result, and every imported row must have a viable roster owner.
+Missing roster results, unmatched imports, unresolved review rows, and duplicate
+registration ownership block Verify Results. The reconciliation summary is
+shown in the existing Import/Verify workflow.
 
 A non-null `registration_id` may belong to only one working result in the same
 tournament:
@@ -318,6 +334,11 @@ rebuild affected AOY and Championship projections. Synthetic staging recovery
 is not a normal Tournament Director workflow and must not be documented as
 one.
 
+An explicit one-click **Reopen Results** lifecycle action is not currently
+implemented. Published corrections are available only through the protected,
+reason-required audited correction workflow; working-result corrections and
+import reset/replacement remain available before publication.
+
 Competitive disqualification is an explicit audited action. It:
 
 - sets participation status to `disqualified`;
@@ -394,6 +415,14 @@ control.
 
 Completed and Cancelled tournaments cannot be reopened through the normal
 registration-availability action.
+
+### Public sponsor presentation
+
+The public sponsor presentation is separate from tournament operations. Current
+public partners are Mad Dawg Graphics & Design, Texas Boat Works, and Tri-Lakes
+Tackle Town, each presented as a Premier Sponsor on the Sponsors page. Phoenix
+Parts/Fenix Parts is no longer a public sponsor. Sponsor content does not add a
+Tournament Manager readiness step.
 
 ## 15. Fish length and tournament contact
 

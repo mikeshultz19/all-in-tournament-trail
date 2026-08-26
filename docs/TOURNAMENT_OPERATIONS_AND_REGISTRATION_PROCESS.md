@@ -147,7 +147,8 @@ does not depend on the angler's browser clock.
 
 The website stores these registrations only after successful Square card
 payment. Credit or debit card payment is required, cash is unavailable online,
-and a 3% Card Processing Fee applies to the card-payment subtotal. Tournament
+and the Square Service Fee is 3% of the card-payment subtotal plus $0.30 per
+transaction. Tournament
 officials use the confirmed registrations as part of the pre-tournament
 WeighFish workflow.
 
@@ -159,8 +160,8 @@ Director at the registration table in WeighFish, not through the AITT website.
 
 The Tournament Director enters the team or individual in WeighFish and records
 Cash or Card. Cash has no processing fee. Card payments are processed
-separately through the Square reader and include the same 3% Card Processing
-Fee used online. A paper form is maintained only as emergency operational
+separately through the Square reader and include the same Square Service Fee
+(3% plus the internal $0.30 transaction component) used online. A paper form is maintained only as emergency operational
 backup.
 
 AITT does not operate a morning point-of-sale screen, duplicate the WeighFish
@@ -179,7 +180,7 @@ Every online registration must store enough information to identify:
 - Entry selections
 - Selected payout pots
 - Itemized charges
-- Card-payment subtotal, Card Processing Fee, and total charged for Early
+- Card-payment subtotal, Square Service Fee, and total charged for Early
   Online Registration
 - Minimum Square payment reference and payment status for Early Online
   Registration
@@ -240,8 +241,8 @@ scoring, official results, and official CSV export.
 - Open WeighFish at the registration table
 - Enter each walk-up team or individual
 - Record Cash or Card in WeighFish
-- For Card, process payment through the Square reader with the 3% Card
-  Processing Fee
+- For Card, process payment through the Square reader with the Square Service
+  Fee (3% plus the internal $0.30 transaction component)
 - Use the paper form only if the normal operational workflow is unavailable
 
 ### Before Launch
@@ -519,7 +520,7 @@ The Registration page must display:
 - Tournament Entry as a mandatory, non-removable line item
 - Member eligibility rules
 - Itemized Registration Summary
-- Registration Subtotal, Card Processing Fee (3%), and Total Charged
+- Registration Subtotal, Square Service Fee (3%), and Total Charged
 - Notice that credit or debit card payment through Square is required online
 - Notice that registration is confirmed only after successful payment
 - Notice that cash is accepted only in person through the Tournament Director's
@@ -542,12 +543,13 @@ The Rules page must explain:
   that require Tournament Entry; both team members must be current members for
   team benefits
 
-- Early Online Registration closes at 9:00 PM `America/Chicago` time on the
-  evening before the tournament
+- Registration availability is controlled by each tournament's lifecycle state;
+  any stored deadline is informational unless explicitly enabled by the current
+  operating decision
 - Tournament-Morning Registration is a normal in-person registration period
   operated by the Tournament Director in WeighFish
-- Cash has no processing fee; Square-reader card payments include the 3% Card
-  Processing Fee
+- Cash has no processing fee; Square-reader card payments include the Square
+  Service Fee (3% plus the internal $0.30 transaction component)
 - Estimated Safe Light is the official Fort Worth sunrise for the tournament
   date minus 30 minutes, using the `America/Chicago` time zone
 - Estimated Safe Light is not a guaranteed launch schedule
@@ -575,23 +577,27 @@ Keep the FAQ concise by combining related questions.
 
 ### When can I register for a tournament?
 
-Early Online Registration closes at 9:00 PM local tournament time on the
-evening before the tournament and requires successful Square card payment.
+Early Online Registration requires successful Square card payment. Public
+availability is controlled by each tournament's lifecycle state; any stored
+deadline is informational unless explicitly enabled by the current operating
+decision.
 Tournament-Morning Registration is completed in person with the Tournament
 Director and recorded in WeighFish.
 
 ### Is there a fee for paying by credit or debit card?
 
-Yes. AITT adds a 3% card-processing fee to all credit- and debit-card payments.
-This applies to Early Online Registration and to card payments made through the
-Square reader during Tournament-Morning Registration. Cash payments made at
-Tournament-Morning Registration do not include the Card Processing Fee.
+Yes. AITT applies the Square Service Fee (3% of the applicable subtotal plus
+$0.30 per transaction) to all credit- and debit-card payments. This applies to
+Early Online Registration and to card payments made through the Square reader
+during Tournament-Morning Registration. Cash payments made at Tournament-
+Morning Registration do not include the Square Service Fee.
 
 ### How can I pay on tournament morning?
 
 Register with the Tournament Director at the registration table. Payment may
 be made with cash or with a credit or debit card through the Square reader.
-Card payments include the 3% Card Processing Fee, and the Tournament Director
+Card payments include the Square Service Fee (3% plus the internal $0.30
+transaction component), and the Tournament Director
 records the registration and payment method in WeighFish.
 
 ### What time should I arrive, and what is Estimated Safe Light?
@@ -667,9 +673,11 @@ Future implementation should:
 - Use the `America/Chicago` time zone with automatic daylight-saving
   adjustments
 - Enforce pricing and eligibility on the server
-- Calculate card amounts in integer cents; the Card Processing Fee is the
+- Calculate card amounts in integer cents; the Square Service Fee is the
   card-payment subtotal multiplied by 3%, rounded to the nearest cent with
-  half-cent results rounded upward
+  half-cent results rounded upward, plus $0.30 once per transaction. Show
+  customers `SQUARE SERVICE FEE (3%)` with only the calculated dollar amount;
+  do not expose the fixed-component formula.
 - Recalculate online amounts on the server, use Square idempotency keys, and
   confirm registration only after a successful Square payment
 - Always include Tournament Entry in registration pricing and reject standalone

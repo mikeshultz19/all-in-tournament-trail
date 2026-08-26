@@ -110,7 +110,7 @@ Tournament Archived
 
 ## 5. Payment Provider Strategy
 
-Version 1 uses **Square** for credit-card, debit-card, and supported digital-wallet payments. Apple Pay is supported through Square on compatible devices and browsers. A flat **3% Card Processing Fee** applies equally to the applicable card or digital-wallet subtotal for Early Online Registration and tournament-morning Square-reader payments. Cash is accepted only during Tournament-Morning Registration and has no card-processing fee.
+Version 1 uses **Square** for credit-card, debit-card, and supported digital-wallet payments. Apple Pay is supported through Square on compatible devices and browsers. The **Square Service Fee** is 3% of the applicable card or digital-wallet subtotal, rounded to cents, plus $0.30 per transaction for Early Online Registration and tournament-morning Square-reader payments. Customer-facing itemization is `SQUARE SERVICE FEE (3%)`; the fixed component is not separately displayed. Cash is accepted only during Tournament-Morning Registration and has no Square Service Fee.
 
 Square is authoritative for card transactions, receipts, transaction history, processing reports, deposits, and supported refunds. The AITT website must remain provider neutral at its business-policy boundary so a future provider could be introduced without changing registration rules.
 
@@ -136,14 +136,14 @@ cardProcessingFee = roundCurrency(cardSubtotal × 0.03)
 totalCharged = cardSubtotal + cardProcessingFee
 ```
 
-Application calculations use integer cents and round the calculated fee to the nearest cent, with half-cent results rounded upward. The fee must be displayed before payment submission.
+Application calculations use integer cents, round the 3% component to the nearest cent with half-cent results rounded upward, then add 30 cents once. The fee must be displayed before payment submission as `SQUARE SERVICE FEE (3%)`; do not expose the fixed-component formula.
 
 ## 6. Registration Payment Workflow
 
 1. **Registration begins.** The angler selects the tournament, solo or team registration, membership choices, and eligible entry options. Tournament Entry is required. Big Bass is optional; Bronze, Silver, Gold, and Insurance Pot follow the eligibility rules in [Tournament Operations](TOURNAMENT_OPERATIONS_AND_REGISTRATION_PROCESS.md).
 2. **Charges are established.** The registration shows itemized charges and an expected total. Prices and eligibility come from approved business rules.
 3. **Registration is created.** The record retains the tournament, registration period, trusted submission time, participants, selections, expected total, and a Pending payment state.
-4. **Amounts are disclosed.** The website shows Registration Subtotal, Card Processing Fee (3%), and Total Charged before payment.
+4. **Amounts are disclosed.** The website shows Registration Subtotal, Square Service Fee (3%), and Total Charged before payment.
 5. **Payment is submitted.** The angler enters card details only through Square's approved browser controls. AITT never collects raw card data.
 6. **The server validates payment.** AITT recalculates the amount in integer cents and creates the Square payment with an idempotency key. Browser-supplied totals are not trusted.
 7. **Square reports the result.** Declined, cancelled, interrupted, duplicate, and malformed submissions remain unconfirmed.
@@ -167,7 +167,7 @@ No production online payment may be accepted until secure registration persisten
 2. The Tournament Director enters the team or individual in WeighFish.
 3. WeighFish records Cash or Card as the payment method.
 4. Cash receives no processing fee.
-5. Card, Apple Pay, and other supported contactless-wallet payments are processed separately through the Square reader with the 3% Card Processing Fee.
+5. Card, Apple Pay, and other supported contactless-wallet payments are processed separately through the Square reader with the Square Service Fee (3% plus the internal $0.30 transaction component).
 6. The Tournament Director completes the registration in WeighFish.
 
 The AITT website does not run the live morning registration table, duplicate cash-versus-card tracking, or maintain a live morning Square ledger. The paper form is emergency backup only.
@@ -373,7 +373,7 @@ The Product Owner must approve the following before software or routine operatio
 | --- | --- | --- | --- |
 | 1.3 | 2026-07-22 | Approved | Linked the authoritative Early Online Registration workflow and clarified its Phase 1 payment boundary. |
 | 1.2 | 2026-07-22 | Approved | Added Apple Pay and supported contactless-wallet operations, fee parity, and official-branding requirements. |
-| 1.1 | 2026-07-22 | Approved | Adopted Square for card payments, the 3% Card Processing Fee, and WeighFish-owned Tournament-Morning Registration. |
+| 1.1 | 2026-07-22 | Historical | Adopted Square for card payments, the earlier 3% Card Processing Fee, and WeighFish-owned Tournament-Morning Registration. Superseded by the current Square Service Fee rule above. |
 | 1.0 | 2026-07-22 | Superseded | Initial draft. |
 
 

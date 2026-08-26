@@ -77,12 +77,12 @@ not part of the current Phase 1 implementation.
 ### AITT Owns
 
 - Tournament selection.
-- Registration availability and deadlines.
+- Registration availability and lifecycle state.
 - Team and angler information.
 - Membership validation and registration-time classification.
 - Registration options and optional pots.
 - Server-authoritative pricing calculations.
-- Card Processing Fee calculation and disclosure.
+- Square Service Fee calculation and disclosure.
 - Waiver and policy acknowledgment records.
 - Registration status and history.
 - Confirmation page and confirmation email.
@@ -150,7 +150,7 @@ The CTA is derived from server-side tournament availability:
 | --- | --- | --- |
 | Open | Register Online | Yes |
 | Before configured opening | Registration Opens Soon | No |
-| Deadline passed or explicitly closed | Registration Closed | No |
+| Explicitly closed or lifecycle unavailable | Registration Closed | No |
 | Configured capacity reached | Sold Out | No |
 | Results lifecycle reached | Tournament Completed | No |
 | Disabled, postponed, or otherwise unavailable | Registration Unavailable | No |
@@ -171,12 +171,12 @@ four-step progress sequence:
 4. Payment.
 
 The page uses one condensed header with the page heading, selected
-tournament's Early Registration Deadline, and Estimated Safe Light. On mobile,
+tournament's configured deadline (informational), and Estimated Safe Light. On mobile,
 those items stack in that order. Tournament-morning instructions and the
 verbose Tournament Status announcement are not shown on the registration form;
 status remains authoritative for eligibility. The summary continuously shows
 tournament, date, registration type, entered angler names, itemized charges,
-subtotal, Card Processing Fee, and final total. Payment remains a distinct
+subtotal, Square Service Fee, and final total. Payment remains a distinct
 action after server review.
 
 ### Step 1: Tournament
@@ -187,9 +187,10 @@ Safe Light appear once in the condensed page header.
 The current approved cancellation/refund policy must be linked when finalized.
 
 Registration is rejected for a missing tournament, a cancelled or completed
-tournament, a tournament before its configured opening, after its deadline, at
-capacity, or with online registration disabled. The server repeats these
-checks immediately before payment creation.
+tournament, a tournament before its configured opening, at capacity, or with
+online registration disabled. Lifecycle state is authoritative; stored deadline
+values are informational unless explicitly enabled by the current operating
+decision. The server repeats these checks immediately before payment creation.
 
 ### Step 2: Registration Type and Anglers
 
@@ -248,7 +249,7 @@ One required acknowledgment is shown and is never preselected. It links the
 official rules and liability waiver and covers tournament policies and
 applicable payment terms. Normal form submission confirms the user's intent to
 submit the entered information, so there is no separate accurate-information
-or Card Processing Fee checkbox.
+or Square Service Fee checkbox.
 
 The persisted design records one acceptance event containing the registration
 or draft ID, trusted acceptance timestamp, and all applicable policy versions.
@@ -273,7 +274,7 @@ and persist the acceptance before Square payment is enabled.
 ### Step 5: Review and Authoritative Quote
 
 The review includes tournament, date, venue, registration type, anglers,
-membership classifications, selected items, subtotal, Card Processing Fee,
+membership classifications, selected items, subtotal, Square Service Fee,
 total, and acknowledgment completion.
 
 The browser total is informative. The AITT quote endpoint reloads the selected
@@ -303,7 +304,7 @@ After verified payment, the confirmation page displays:
 - Tournament, date, and venue.
 - Registered anglers.
 - Selected options.
-- Registration Subtotal, Card Processing Fee, and Amount Paid.
+- Registration Subtotal, Square Service Fee, and Amount Paid.
 - Paid status.
 - Tournament-morning instructions.
 - Tournament details, rules, support, and correction paths.
@@ -315,18 +316,26 @@ transaction not to pay again and to contact AITT for reconciliation.
 
 ## 6. Pricing and Rounding
 
+Current authoritative fee rule: the Square Service Fee is 3% of the
+chargeable subtotal, rounded to cents, plus a fixed $0.30 per card transaction.
+Customer-facing itemization is `SQUARE SERVICE FEE (3%)`; the fixed component
+is internal and is not separately displayed. This supersedes any earlier
+Card Processing Fee-only examples elsewhere in this historical workflow note
+are superseded.
+
 All money uses integer cents. Current prices come from centralized approved
 configuration. The server recalculates before both quote and payment creation.
 
 ```text
-Card Processing Fee = round(subtotal cents × 300 / 10,000)
-Total Charged = subtotal cents + Card Processing Fee
+Square Service Fee = round(subtotal cents × 300 / 10,000) + 30 cents
+Total Charged = subtotal cents + Square Service Fee
 ```
 
 JavaScript `Math.round` is used on the non-negative integer-cent calculation,
-so a half-cent rounds upward. For example, a $60.00 subtotal produces a $1.80
-Card Processing Fee and a $61.80 Total Charged. The label is always **Card
-Processing Fee**.
+so a half-cent rounds upward, then adds 30 cents once per transaction. For
+example, a $60.00 subtotal produces a $2.10 Square Service Fee and a $62.10
+Total Charged. The customer-facing label is always **SQUARE SERVICE FEE (3%)**;
+the fixed component is not separately shown.
 
 Immediately before Square payment creation, the server must revalidate:
 
@@ -372,7 +381,7 @@ A durable final record includes or references:
 - Membership classification for each participant at registration time.
 - Selected configured options.
 - Currency and itemized integer-cent price snapshot.
-- Card Processing Fee rate and integer-cent fee snapshot.
+- Square Service Fee rate and integer-cent fee snapshot.
 - Total paid.
 - Registration and payment statuses.
 - Minimum Square payment ID and order or checkout reference when applicable.
@@ -529,7 +538,9 @@ mandatory.
 - Completed: responsive form enhancements and visible progress.
 - Completed: client field validation and required acknowledgments.
 - Completed: server-side validation and authoritative quote endpoint.
-- Completed: centralized integer-cent pricing and 3% Card Processing Fee.
+- Completed: centralized integer-cent pricing and Square Service Fee: 3% of
+  the chargeable subtotal plus $0.30 per card transaction. Customer-facing
+  itemization is `SQUARE SERVICE FEE (3%)`; the fixed component is not shown.
 - Completed: review summary and disabled payment boundary.
 - Completed: provider-neutral payment interface.
 - Completed: confirmation and interruption-recovery page structure.

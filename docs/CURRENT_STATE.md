@@ -1,6 +1,6 @@
 # AITT Current State
 
-Last verified: 2026-08-25
+Last verified: 2026-08-26
 
 ## Current Readiness
 
@@ -52,6 +52,14 @@ an environment and rollout decision.
   Results transactionally; migration
   [`202608020004`](../supabase/migrations/202608020004_add_import_verification_and_reset.sql)
   adds verification and audited reset protection.
+- **WeighFish reconciliation — implemented in the Import/Verify workspace.**
+  Exact normalized and uniquely strong fuzzy matches may auto-match; ambiguous,
+  partial, missing, unmatched, and duplicate-owner cases block verification.
+- **Tournament Recap and Winner Photos & Recap readiness — implemented.**
+  Recaps are limited to 300 characters, remain editable after publication, and
+  do not reopen or alter Official Results or derived projections.
+- **Printable roster Weight column — implemented.** The blank column is an
+  operational/print field only and is not stored as scoring data.
 
 ## Remaining Launch Work
 

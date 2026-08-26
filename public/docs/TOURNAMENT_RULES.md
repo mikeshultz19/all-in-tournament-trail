@@ -191,13 +191,16 @@ registration cutoff will be published with event instructions.
 - **WeighFish:** Owns tournament-day scoring and finish data entered during
   weigh-in. AITT and WeighFish fields must be reconciled before publication.
 - **Cash:** Accepted only during Tournament-Morning Registration. Cash has no
-  Card Processing Fee.
-- **Card and supported digital wallets:** A 3% Card Processing Fee applies to
-  online payments and in-person payments processed through Square.
+  Square Service Fee.
+- **Card and supported digital wallets:** The Square Service Fee is 3% of the
+  applicable subtotal plus $0.30 per transaction for online payments and
+  in-person payments processed through Square. Customer-facing itemization is
+  labeled `SQUARE SERVICE FEE (3%)`; the $0.30 component is not separately
+  displayed. Cash has no Square Service Fee.
 
-AITT calculates online charges on the server. The Card Processing Fee equals
-3% of the applicable card-payment subtotal, calculated in cents and rounded to
-the nearest cent, with half-cent results rounded upward.
+AITT calculates charges on the server using integer cents. The percentage
+component is rounded to the nearest cent, with half-cent results rounded
+upward, and $0.30 is then added once per card transaction.
 
 ### Registration Confirmation
 

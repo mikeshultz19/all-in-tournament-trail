@@ -19,8 +19,9 @@ Championship qualification.
 The server evaluates submitted participants against active, unmerged canonical
 Anglers. Browser-submitted identity classifications are not trusted.
 
-A single exact normalized email match with no conflicting phone evidence is
-clear enough for the existing Durable Registration transaction. A completely
+A normalized email and phone match to the same canonical Angler is a
+high-confidence automatic match. A single email-only or phone-only match is
+reviewed when the other strong identifier materially conflicts. A completely
 new non-member or joining member with no plausible canonical match also
 continues through the existing transaction.
 
@@ -28,13 +29,14 @@ Review is required when the server finds:
 
 - duplicate exact identities;
 - an exact phone or name that conflicts with the submitted email;
-- a possible spelling difference;
+- a possible spelling difference or other uncertain contact match;
 - a possible nickname or abbreviated first name;
 - an unlinked current-membership claim;
 - more than one plausible canonical Angler.
 
-Similar names, nicknames, reversed names, addresses, and partial matches never
-cause automatic merging.
+Name-only, nickname, reversed-name, address-only, and partial matches never
+cause automatic merging. Conflicting email and phone identifiers always require
+manual review.
 
 ## Persistence-first behavior
 

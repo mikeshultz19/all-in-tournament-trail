@@ -38,8 +38,10 @@ The [Official Tournament Rules](../TOURNAMENT_RULES.md) control competition.
 4. Calculate and review payouts. Insurance is calculated inside this combined
    payout/closeout flow; it is not a separate operational step.
 5. Approve payouts and complete financial closeout before website work.
-6. Upload and verify winner and Big Bass photographs.
-7. Publish Official Results only after every readiness check passes.
+6. Complete **Winner Photos & Recap**: upload champion and Big Bass photographs
+   and save a valid Tournament Recap (maximum 300 characters).
+7. Publish Official Results only after every readiness check passes. The recap
+   may still be edited after publication without reopening the event.
 8. Verify the public Results pages and then calculate/recalculate AOY and
    Championship projections.
 

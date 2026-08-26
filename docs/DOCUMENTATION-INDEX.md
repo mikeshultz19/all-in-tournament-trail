@@ -1,6 +1,6 @@
 # AITT Documentation Index
 
-Last reconciled: 2026-08-25
+Last reconciled: 2026-08-26
 
 This is the canonical entry point for AITT documentation. Use the sections
 below to distinguish current technical guidance, staff operating instructions,
