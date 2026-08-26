@@ -15,6 +15,18 @@ export type Sponsor = {
 // this export without coupling the homepage component to storage details.
 export const sponsors: Sponsor[] = [
   {
+    id: "tri-lakes-tackle-town",
+    name: "Tri-Lakes Tackle Town",
+    logo: "/images/sponsors/tri-lakes-logo.png",
+    websiteUrl: "https://trilakestackletown.com/",
+    tier: "featured",
+    logoScale: "standard",
+    active: true,
+    showOnHomepage: true,
+    majorSponsor: true,
+    displayOrder: 1,
+  },
+  {
     id: "texas-boat-works",
     name: "Texas Boat Works",
     logo: "/images/sponsors/texas-boat-works.png",
@@ -23,7 +35,7 @@ export const sponsors: Sponsor[] = [
     active: true,
     showOnHomepage: true,
     majorSponsor: true,
-    displayOrder: 1,
+    displayOrder: 2,
   },
   {
     id: "mad-dawg-graphics-design",
@@ -35,18 +47,6 @@ export const sponsors: Sponsor[] = [
     showOnHomepage: true,
     majorSponsor: true,
     displayOrder: 3,
-  },
-  {
-    id: "fenix-parts",
-    name: "Fenix Parts",
-    logo: "/images/sponsors/fenix-parts-logo-bright-green.png",
-    websiteUrl: "https://fenixparts.com",
-    tier: "featured",
-    logoScale: "compact",
-    active: true,
-    showOnHomepage: true,
-    majorSponsor: true,
-    displayOrder: 2,
   },
 ];
 

@@ -25,6 +25,7 @@ function SponsorLogo({
   enableFadeTransition?: boolean;
 }) {
   const isMadDawg = sponsor.name === "Mad Dawg Graphics & Design";
+  const isTriLakes = sponsor.name === "Tri-Lakes Tackle Town";
 
   const logo = (
     <Image
@@ -39,7 +40,9 @@ function SponsorLogo({
       className={`h-auto w-auto object-contain ${
         isMadDawg
           ? "scale-[1.4] bg-[#0b0b0b] max-h-[80px] max-w-full sm:scale-100 sm:max-h-[92px]"
-          : sponsor.scale === "small"
+          : isTriLakes
+            ? "max-h-[72px] max-w-[95%]"
+            : sponsor.scale === "small"
             ? "max-h-[48px] max-w-[90%]"
             : sponsor.scale === "compact"
               ? "max-h-[52px] max-w-[90%]"

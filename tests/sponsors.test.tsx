@@ -85,12 +85,15 @@ describe("homepage sponsors", () => {
   it("renders the configured sponsors in the approved order", () => {
     const html = renderToStaticMarkup(<SponsorHome sponsors={sponsors} />);
 
-    expect(html.indexOf("Texas Boat Works logo")).toBeLessThan(
-      html.indexOf("Fenix Parts logo"),
+    expect(html.indexOf("Tri-Lakes Tackle Town logo")).toBeLessThan(
+      html.indexOf("Texas Boat Works logo"),
     );
-    expect(html.indexOf("Fenix Parts logo")).toBeLessThan(
+    expect(html.indexOf("Texas Boat Works logo")).toBeLessThan(
       html.indexOf("Mad Dawg Graphics &amp; Design"),
     );
+    expect(html).not.toContain("Fenix Parts");
+    expect(html).toContain("trilakestackletown.com");
+    expect(html).toContain("tri-lakes-logo.png");
     expect(html).not.toContain("Phoenix Boats");
     expect(html).not.toContain("phoenix-boats.png");
     expect(html).toContain("mad-dawg-graphics-design-wide3.png");
@@ -104,7 +107,6 @@ describe("homepage sponsors", () => {
     expect(html).toContain("grid-cols-1");
     expect(html).toContain("min-[480px]:grid-cols-2");
     expect(html).toContain("md:grid-cols-3");
-    expect(html).toContain("max-h-[52px]");
     expect(html).toContain("max-h-[64px]");
     expect(html).toContain("border-[#4A3A12]");
   });
@@ -171,12 +173,14 @@ describe("public sponsorship paths", () => {
     expect(html).toContain('href="https://yukon-outfitters.com"');
     expect(html).toContain('target="_blank"');
     expect(html).toContain('rel="noopener noreferrer"');
-    expect(html.indexOf("Texas Boat Works")).toBeLessThan(
-      html.indexOf("Yukon Outfitters"),
-    );
     expect(html.indexOf("Mad Dawg Graphics &amp; Design")).toBeLessThan(
       html.indexOf("Texas Boat Works"),
     );
+    expect(html.indexOf("Texas Boat Works")).toBeLessThan(
+      html.indexOf("Tri-Lakes Tackle Town"),
+    );
+    expect(html).toContain("Tri-Lakes Tackle Town is a Granbury-based fishing tackle shop serving anglers across Lake Granbury, Possum Kingdom, Lake Whitney and beyond. Stop by the Granbury store for a wide selection of tackle and fishing gear, or visit Tri-Lakes Tackle Town online for a convenient online shopping experience.");
+    expect((html.match(/Premier Sponsor/g) ?? []).length).toBe(3);
     expect(html.indexOf("Badger Lures")).toBeLessThan(
       html.indexOf("Yukon Outfitters"),
     );

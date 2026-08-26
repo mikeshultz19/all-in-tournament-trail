@@ -45,6 +45,7 @@ const publicSponsors: PublicSponsor[] = [
     name: "Texas Boat Works",
     logo: "/images/sponsors/texas-boat-works.png",
     logoFit: "contain",
+    premier: true,
     partnershipIntro:
       "AITT is proud to partner with Texas Boat Works, a trusted resource for boat sales, financing, service, and parts.",
     description:
@@ -53,15 +54,16 @@ const publicSponsors: PublicSponsor[] = [
     ctaLabel: "Visit Texas Boat Works →",
   },
   {
-    name: "Fenix Parts",
-    logo: "/images/sponsors/fenix-parts-logo-bright-green.png",
+    name: "Tri-Lakes Tackle Town",
+    logo: "/images/sponsors/tri-lakes-logo.png",
     logoFit: "contain",
+    premier: true,
     partnershipIntro:
-      "AITT is proud to partner with Fenix Parts, a trusted leader in quality recycled auto parts.",
+      "Tri-Lakes Tackle Town is a Granbury-based fishing tackle shop serving anglers across Lake Granbury, Possum Kingdom, Lake Whitney and beyond. Stop by the Granbury store for a wide selection of tackle and fishing gear, or visit Tri-Lakes Tackle Town online for a convenient online shopping experience.",
     description:
-      "With more than 30 locations nationwide and over 1 million parts in stock, Fenix Parts helps customers find reliable engines, transmissions, body panels, interior components, and more—backed by knowledgeable service and strong warranty options.",
-    website: "https://fenixparts.com",
-    ctaLabel: "Visit Fenix Parts →",
+      "",
+    website: "https://trilakestackletown.com/",
+    ctaLabel: "Visit Tri-Lakes Tackle Town →",
   },
   {
     name: "Badger Lures",
@@ -181,9 +183,11 @@ export default function SponsorsPage() {
                     <p className="mt-2 text-sm leading-6 text-neutral-300 sm:text-base">
                       {sponsor.partnershipIntro}
                     </p>
-                    <p className="mt-3 text-sm italic leading-6 text-neutral-400">
-                      {sponsor.description}
-                    </p>
+                    {sponsor.description ? (
+                      <p className="mt-3 text-sm italic leading-6 text-neutral-400">
+                        {sponsor.description}
+                      </p>
+                    ) : null}
                     {sponsor.details ? (
                       <ul className="mt-3 list-disc space-y-1 pl-5 text-sm leading-5 text-neutral-400">
                         {sponsor.details.map((detail) => (
