@@ -19,6 +19,7 @@ type MobileHomePageProps = {
   >[0]["operations"];
   homepageSponsors: Parameters<typeof SponsorHome>[0]["sponsors"];
   latestResults: Parameters<typeof MobileWinnerCircle>[0]["latestResults"];
+  aoyLeader: string | null;
 };
 
 export default function MobileHomePage({
@@ -27,6 +28,7 @@ export default function MobileHomePage({
   operations,
   homepageSponsors,
   latestResults,
+  aoyLeader,
 }: MobileHomePageProps) {
   return (
     <section className="bg-black px-4 pb-4 pt-2 md:hidden">
@@ -75,6 +77,15 @@ export default function MobileHomePage({
         <BassStackScoreTracker />
 
         <MobileWinnerCircle latestResults={latestResults} />
+
+        <section className="rounded-xl border border-[#8f762f]/60 bg-[#101010] px-5 py-4 text-center">
+          <p className="text-[0.65rem] font-black uppercase tracking-[0.18em] text-[#c9aa4a]">
+            AOY Leader
+          </p>
+          <p className="mt-2 break-words text-sm font-black uppercase text-white">
+            {aoyLeader ?? "—"}
+          </p>
+        </section>
       </div>
     </section>
   );

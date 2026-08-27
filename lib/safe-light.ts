@@ -20,11 +20,13 @@ export function getSafeLight(
   effectiveTournamentDate: string,
   manualOverride: string | null = null,
   publicOverrideReason: string | null = null,
+  latitude: number = SAFE_LIGHT_REFERENCE.latitude,
+  longitude: number = SAFE_LIGHT_REFERENCE.longitude,
 ): SafeLightResult {
   const officialSunrise = SunCalc.getTimes(
     tournamentDateAtNoonUtc(effectiveTournamentDate),
-    SAFE_LIGHT_REFERENCE.latitude,
-    SAFE_LIGHT_REFERENCE.longitude,
+    latitude,
+    longitude,
   ).sunrise;
   if (!officialSunrise) {
     throw new Error(`Sunrise is unavailable for ${effectiveTournamentDate}.`);

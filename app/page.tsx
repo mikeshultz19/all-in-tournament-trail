@@ -116,6 +116,7 @@ export default async function HomePage() {
         operations={operations}
         homepageSponsors={homepageSponsors}
         latestResults={latestResults}
+        aoyLeader={aoyStandings[0]?.angler ?? null}
       />
 
       <div className="hidden md:block">

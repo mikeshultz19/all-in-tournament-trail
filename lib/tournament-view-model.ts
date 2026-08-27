@@ -35,6 +35,8 @@ export function getTournamentOperationsViewModel(
     effectiveDate,
     tournament.safeLightOverride,
     tournament.safeLightOverridePublicMessage,
+    tournament.weatherLatitude ?? undefined,
+    tournament.weatherLongitude ?? undefined,
   );
   const registration = getRegistrationAvailability(tournament, now);
 

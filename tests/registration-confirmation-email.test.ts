@@ -55,6 +55,7 @@ describe("registration confirmation email outbox", () => {
       launchType: "Numbered Takeoff",
       morningRegistration: "4:30 AM",
       safeLight: "6:45 AM",
+      officialSunrise: "7:15 AM",
       scalesClose: "3:00 PM",
       anglers: ["Taylor Angler", "Jordan Angler"],
       selectedOptions: ["Tournament Entry", "Gold Pot"],
@@ -73,7 +74,8 @@ describe("registration confirmation email outbox", () => {
     expect(email.html).toContain("November 1, 2026");
     expect(email.html).not.toContain("2026-11-01T12:00:00+00:00");
     expect(email.html).not.toContain("Processing Fee");
-    expect(email.html).toContain("Approx. Official Safe Light");
+    expect(email.html).toContain("Estimated Launch / Safe Light");
+    expect(email.html).toContain("Sunrise");
     expect(email.html).toContain("Have your boat in the water and ready to launch before this time.");
     expect(email.html).toContain("All tournament times are subject to change by the Tournament Director.");
     expect(email.html).toContain("Tournament Status");
@@ -91,6 +93,7 @@ describe("registration confirmation email outbox", () => {
       launchType: null,
       morningRegistration: null,
       safeLight: null,
+      officialSunrise: null,
       scalesClose: null,
       anglers: ["Legacy Angler"],
       selectedOptions: ["Tournament Entry"],
@@ -110,6 +113,7 @@ describe("registration confirmation email outbox", () => {
       launchType: "Numbered Takeoff",
       morningRegistration: "4:30 AM",
       safeLight: "6:45 AM",
+      officialSunrise: "7:15 AM",
       scalesClose: "3:00 PM",
       anglers: ["Taylor Angler", "Jordan Angler"],
       selectedOptions: ["Tournament Entry", "Gold Pot"],
@@ -124,6 +128,7 @@ describe("registration confirmation email outbox", () => {
       launchType: "Numbered Takeoff",
       morningRegistration: "4:30 AM",
       safeLight: "6:45 AM",
+      officialSunrise: "7:15 AM",
       scalesClose: "3:00 PM",
       anglers: ["Taylor Solo"],
       selectedOptions: ["Tournament Entry", "Big Bass"],

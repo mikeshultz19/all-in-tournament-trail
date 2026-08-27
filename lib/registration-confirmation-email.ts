@@ -55,6 +55,7 @@ async function buildEmailForDelivery(delivery: Delivery) {
     launchType: publicTournament.launchTypeText ?? display.launchType,
     morningRegistration: publicTournament.morningRegistrationText ?? display.morningRegistration,
     safeLight: operations.safeLight.time,
+    officialSunrise: operations.safeLight.officialSunrise,
     scalesClose: publicTournament.scalesCloseText ?? null,
     anglers: request.anglers.map((angler) => `${angler.firstName} ${angler.lastName}`.trim()),
     selectedOptions: quote.lineItems.map((item) => item.name),

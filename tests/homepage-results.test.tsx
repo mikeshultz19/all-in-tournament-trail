@@ -1,3 +1,4 @@
+import { readFileSync } from "node:fs";
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
 
@@ -136,6 +137,11 @@ const latestResults: LatestTournamentResults = {
 };
 
 describe("homepage latest tournament results", () => {
+  it("always renders the mobile AOY leader box with an empty-state dash", () => {
+    const source = readFileSync("components/MobileHomePage.tsx", "utf8");
+    expect(source).toContain("AOY Leader");
+    expect(source).toContain('{aoyLeader ?? "—"}');
+  });
   it("shows the compact mobile payout winners with the base payout first", () => {
     const html = renderToStaticMarkup(
       <MobileWinnerCircle latestResults={latestResults} />,

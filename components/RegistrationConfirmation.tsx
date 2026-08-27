@@ -66,8 +66,8 @@ export default function RegistrationConfirmation({ confirmation, recoveryMessage
         <TournamentDetail label="Ramp / Launch Location" value={confirmation.ramp} />
         <TournamentDetail label="Launch Type / Numbered Launch" value={confirmation.launchType} />
         <TournamentDetail label="Morning Registration / Check-In" value={confirmation.morningRegistration} />
-        <TournamentDetail label="Launch / Takeoff Time" value={confirmation.launchTime} />
-        <TournamentDetail label="Approx. Official Safe Light" value={confirmation.officialSunrise} note="Have your boat in the water and ready to launch before this time." />
+        <TournamentDetail label="Estimated Launch / Safe Light" value={confirmation.launchTime} note="Have your boat in the water and ready to launch before this time." />
+        <TournamentDetail label="Sunrise" value={confirmation.officialSunrise} />
         <TournamentDetail label="Scales Close / Weigh-In" value={confirmation.scalesClose} />
       </dl>
       <p className="mt-5 border-t border-[#2E2E2E] pt-3 text-xs italic leading-5 text-neutral-500">All tournament times are subject to change by the Tournament Director.</p>

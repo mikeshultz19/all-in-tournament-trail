@@ -30,6 +30,12 @@ describe("estimated safe light", () => {
     expect(result.safeLight.getTime()).toBe(result.calculatedSafeLight.getTime());
   });
 
+  it("uses the supplied tournament coordinates for sunrise", () => {
+    const fortWorth = getSafeLight("2026-11-01");
+    const eastTexas = getSafeLight("2026-11-01", null, null, 32.5, -95.5);
+    expect(eastTexas.officialSunrise.getTime()).not.toBe(fortWorth.officialSunrise.getTime());
+  });
+
   it("uses Central Standard Time for a winter date", () => {
     const standardTime = tournamentDateTimeToUtc("2026-01-15", "12:00");
     expect(standardTime.getUTCHours()).toBe(18);

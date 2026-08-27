@@ -12,6 +12,7 @@ export type RegistrationConfirmationEmailView = {
   launchType: string | null;
   morningRegistration: string | null;
   safeLight: string | null;
+  officialSunrise: string | null;
   scalesClose: string | null;
   anglers: string[];
   selectedOptions: string[];
@@ -43,9 +44,7 @@ function row(label: string, value: string | null | undefined): string {
 export function buildRegistrationConfirmationEmail(view: RegistrationConfirmationEmailView) {
   const tournamentLake = [...new Set([view.tournamentName, view.lake].filter(Boolean))].join(" · ");
   const date = formatRegistrationTournamentDate(view.tournamentDate);
-  const safeLight = view.safeLight
-    ? `${row("Approx. Official Safe Light", view.safeLight)}<tr><td></td><td style="padding:0 0 8px;color:#555;font-size:12px;line-height:1.5">Have your boat in the water and ready to launch before this time.</td></tr>`
-    : "";
+  const safeLight = `${row("Sunrise", view.officialSunrise)}${view.safeLight ? `${row("Estimated Launch / Safe Light", view.safeLight)}<tr><td></td><td style="padding:0 0 8px;color:#555;font-size:12px;line-height:1.5">Have your boat in the water and ready to launch before this time.</td></tr>` : ""}`;
 
   return {
     subject: `AITT Registration Confirmed — ${view.tournamentName}`,

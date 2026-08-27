@@ -174,8 +174,8 @@ describe("confirmation experience", () => {
     expect(html).not.toContain('href="/schedule"');
     expect(html).not.toContain('href="/how-it-works"');
     for (const value of ["Eagle Mountain Tournament · Eagle Mountain", "Twin Points Park", "Numbered Start", "4:30 AM", "6:45 AM", "7:01 AM", "3:00 PM"]) expect(html).toContain(value);
-    expect(html).toContain("Approx. Official Safe Light");
-    expect(html).not.toContain("Approx. Official Sunrise");
+    expect(html).toContain("Estimated Launch / Safe Light");
+    expect(html).toContain("Sunrise");
     expect(html).toContain("Have your boat in the water and ready to launch before this time.");
     expect(html).toContain("All tournament times are subject to change by the Tournament Director.");
   });
