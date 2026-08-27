@@ -21,6 +21,7 @@ interface PublicSponsor {
   borderedLogo?: boolean;
   softenWhiteBackground?: boolean;
   premier?: boolean;
+  tierLabel?: string;
   partnershipIntro: string;
   description: string;
   details?: string[];
@@ -45,7 +46,7 @@ const publicSponsors: PublicSponsor[] = [
     name: "Texas Boat Works",
     logo: "/images/sponsors/texas-boat-works.png",
     logoFit: "contain",
-    premier: true,
+    tierLabel: "Gold Sponsor",
     partnershipIntro:
       "AITT is proud to partner with Texas Boat Works, a trusted resource for boat sales, financing, service, and parts.",
     description:
@@ -174,9 +175,9 @@ export default function SponsorsPage() {
                       <h3 className="text-xl font-black uppercase tracking-tight text-white">
                         {sponsor.name}
                       </h3>
-                      {sponsor.premier ? (
+                      {sponsor.premier || sponsor.tierLabel ? (
                         <span className="inline-flex border border-[#D4A017]/60 bg-[#D4A017]/10 px-2 py-1 text-[10px] font-black uppercase tracking-[0.14em] text-[#D4A017]">
-                          Premier Sponsor
+                          {sponsor.tierLabel ?? "Premier Sponsor"}
                         </span>
                       ) : null}
                     </div>
