@@ -84,6 +84,11 @@ export function classifyRegistrationIdentity(
             (angler) => normalizeIdentityPhone(angler.phone) === phone,
           )
         : [];
+      const emailAndPhoneMatches = email && phone
+        ? emailMatches.filter((emailAngler) =>
+            phoneMatches.some((phoneAngler) => phoneAngler.id === emailAngler.id),
+          )
+        : [];
       const strongContactCandidates = new Map(
         [...emailMatches, ...phoneMatches].map((angler) => [angler.id, angler]),
       );
@@ -97,6 +102,10 @@ export function classifyRegistrationIdentity(
       const soleContactCandidate =
         strongContactCandidates.size === 1
           ? [...strongContactCandidates.values()][0]
+          : null;
+      const soleHighConfidenceCandidate =
+        emailAndPhoneMatches.length === 1
+          ? emailAndPhoneMatches[0]
           : null;
       const materiallyDifferentContact = soleContactCandidate
         ? (
@@ -142,16 +151,16 @@ export function classifyRegistrationIdentity(
         }
 
         if (
-          soleContactCandidate &&
+          soleHighConfidenceCandidate &&
           !emailAndPhoneConflict &&
-          !materiallyDifferentContact &&
-          soleContactCandidate.normalized_name === fullName
+          emailMatches.length === 1 &&
+          phoneMatches.length === 1
         ) {
           return {
             participantPosition: (index + 1) as 1 | 2,
             status: "verified",
             reason: null,
-            suggestedAnglerIds: [soleContactCandidate.id],
+            suggestedAnglerIds: [soleHighConfidenceCandidate.id],
           };
         }
 
@@ -177,6 +186,18 @@ export function classifyRegistrationIdentity(
           status: "review_required",
           reason,
           suggestedAnglerIds: [...exactCandidates],
+        };
+      }
+
+      const nameMatches = fullName
+        ? active.filter((angler) => angler.normalized_name === fullName)
+        : [];
+      if (nameMatches.length > 0) {
+        return {
+          participantPosition: (index + 1) as 1 | 2,
+          status: "review_required",
+          reason: "Submitted name matches an existing angler, but strong contact identifiers do not match.",
+          suggestedAnglerIds: nameMatches.map((angler) => angler.id),
         };
       }
 

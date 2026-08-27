@@ -16,6 +16,10 @@ const permissiveMigration = readFileSync(
   "supabase/migrations/202608220003_make_registration_identity_review_permissive.sql",
   "utf8",
 );
+const highConfidenceMigration = readFileSync(
+  "supabase/migrations/202608250002_auto_resolve_high_confidence_registration_identity.sql",
+  "utf8",
+);
 const durableService = readFileSync("lib/durable-registration.ts", "utf8");
 const rosterService = readFileSync(
   "lib/tournament-registrations.ts",
@@ -70,9 +74,9 @@ function angler(
 }
 
 describe("registration identity classification", () => {
-  it("automatically verifies one exact trusted email identity", () => {
+  it("automatically verifies normalized email and phone on the same canonical angler", () => {
     const result = classifyRegistrationIdentity(
-      [submitted()],
+      [submitted({ email: " JOHN@EXAMPLE.COM ", mobilePhone: "817 555 0100" })],
       [
         angler(
           "11111111-1111-4111-8111-111111111111",
@@ -85,6 +89,18 @@ describe("registration identity classification", () => {
     );
     expect(result.status).toBe("verified");
     expect(result.participants[0].suggestedAnglerIds).toHaveLength(1);
+  });
+
+  it("uses matching email and phone as authoritative without rewriting the submitted name", () => {
+    const result = classifyRegistrationIdentity(
+      [submitted({ firstName: "Jonathan" })],
+      [angler("11111111-1111-4111-8111-111111111111", "John", "Smith", "john@example.com", "817-555-0100")],
+    );
+    expect(result.participants[0]).toMatchObject({
+      status: "verified",
+      reason: null,
+      suggestedAnglerIds: ["11111111-1111-4111-8111-111111111111"],
+    });
   });
 
   it("treats a name difference by itself as a separate person", () => {
@@ -104,14 +120,17 @@ describe("registration identity classification", () => {
     ).toBe("verified");
   });
 
-  it("allows same-name different-contact submissions as separate people", () => {
+  it("requires review for a name-only match", () => {
     const result = classifyRegistrationIdentity(
       [submitted({ firstName: "Joe", lastName: "Johnson", email: "joe-two@example.com", mobilePhone: "817-555-2222", streetAddress: "99 Different Road", city: "Azle", zipCode: "76020" })],
       [angler("b02874df-b3d9-4828-a240-12486a404463", "Joe", "Johnson", "joe-one@example.com", "817-555-0100")],
     );
-    expect(result.status).toBe("verified");
+    expect(result.status).toBe("review_required");
     expect(result.participants).toHaveLength(1);
-    expect(result.participants[0]).toMatchObject({ status: "verified", reason: null, suggestedAnglerIds: [] });
+    expect(result.participants[0]).toMatchObject({
+      status: "review_required",
+      suggestedAnglerIds: ["b02874df-b3d9-4828-a240-12486a404463"],
+    });
   });
 
   it("flags a same-tournament strong identity overlap as a duplicate participation review", () => {
@@ -124,7 +143,7 @@ describe("registration identity classification", () => {
     expect(result.participants[0].reason).toBe("Possible duplicate tournament participation: Joe Johnson is already entered in this tournament.");
   });
 
-  it("reviews materially different contact information despite the same email and name in a later tournament context", () => {
+  it("keeps a high-confidence email and phone match despite other submitted snapshot differences", () => {
     const existing = {
       ...angler("11111111-1111-4111-8111-111111111111", "John", "Smith", "john@example.com", "817-555-0100"),
       street_address: "1 Existing Road",
@@ -136,8 +155,28 @@ describe("registration identity classification", () => {
       [submitted({ streetAddress: "99 Submitted Road", city: "Azle", zipCode: "76020" })],
       [existing],
     );
+    expect(result.status).toBe("verified");
+    expect(result.participants[0]).toMatchObject({
+      status: "verified",
+      reason: null,
+      suggestedAnglerIds: ["11111111-1111-4111-8111-111111111111"],
+    });
+  });
+
+  it("reviews an email-only match when the submitted phone differs", () => {
+    const result = classifyRegistrationIdentity(
+      [submitted({ mobilePhone: "817-555-0199" })],
+      [angler("11111111-1111-4111-8111-111111111111", "John", "Smith", "john@example.com", "817-555-0100")],
+    );
     expect(result.status).toBe("review_required");
-    expect(result.participants[0].reason).toBe("Submitted contact information differs from John Smith.");
+  });
+
+  it("reviews a phone-only match when the submitted email differs", () => {
+    const result = classifyRegistrationIdentity(
+      [submitted({ email: "changed@example.com" })],
+      [angler("11111111-1111-4111-8111-111111111111", "John", "Smith", "john@example.com", "817-555-0100")],
+    );
+    expect(result.status).toBe("review_required");
   });
 
   it("reviews conflicting email and phone candidates", () => {
@@ -173,7 +212,7 @@ describe("registration identity classification", () => {
     ).toBe("verified");
   });
 
-  it("does not force review for name-only overlap without stronger identity evidence", () => {
+  it("requires review for name-only overlap without stronger identity evidence", () => {
     const first = angler(
       "11111111-1111-4111-8111-111111111111",
       "John",
@@ -192,7 +231,8 @@ describe("registration identity classification", () => {
       [submitted({ email: "unknown@example.com", mobilePhone: "" })],
       [first, second],
     );
-    expect(result.status).toBe("verified");
+    expect(result.status).toBe("review_required");
+    expect(result.participants[0].suggestedAnglerIds).toHaveLength(2);
   });
 
   it("requires review for an unlinked current-membership claim", () => {
@@ -219,6 +259,39 @@ describe("registration identity classification", () => {
 });
 
 describe("durable review persistence and Admin workflow", () => {
+  it("auto-resolves only a verified single-candidate participant in a mixed review", () => {
+    expect(highConfidenceMigration).toContain(
+      "v_classification ->> 'status' = 'verified'",
+    );
+    expect(highConfidenceMigration).toContain(
+      "jsonb_array_length(v_candidate_ids) = 1",
+    );
+    expect(highConfidenceMigration).toContain(
+      "review_status = 'resolved_existing'",
+    );
+    expect(highConfidenceMigration).toContain(
+      "resolution_method = 'automatic_email_phone_match'",
+    );
+    expect(highConfidenceMigration).toContain(
+      "angler1_id = case when v_index = 0 then v_candidate_id",
+    );
+    expect(highConfidenceMigration).toContain(
+      "angler2_id = case when v_index = 1 then v_candidate_id",
+    );
+    expect(highConfidenceMigration).toContain(
+      "participant_contact_snapshot = v_contact_snapshot",
+    );
+    expect(highConfidenceMigration).toContain(
+      "membership_snapshot = v_membership_snapshot",
+    );
+    expect(highConfidenceMigration).not.toMatch(
+      /update public\.anglers\s+set/i,
+    );
+    expect(highConfidenceMigration).not.toMatch(
+      /insert into public\.anglers/i,
+    );
+  });
+
   it("persists paid review registrations instead of rolling them back", () => {
     expect(durableService).toContain(
       "complete_registration_for_identity_review",
