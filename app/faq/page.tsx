@@ -103,7 +103,7 @@ const faqSections: FaqSection[] = [
       {
         question: "What payment methods are accepted?",
         answer:
-          "Online card and supported digital-wallet payments are processed through Square. Tournament-morning payments may be made by cash or through the Square reader. A 3% Card Processing Fee applies to payments processed through Square.",
+          "Online card and supported digital-wallet payments are processed through Square. Tournament-morning payments may be made by cash or through the Square reader. A SQUARE SERVICE FEE (3%) applies to payments processed through Square; cash payments have no service fee.",
       },
       {
         question: "Does paying an entry fee count as participating?",

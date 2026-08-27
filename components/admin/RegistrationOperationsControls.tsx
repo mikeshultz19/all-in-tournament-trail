@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useEffect, type ReactNode } from "react";
+import { useActionState, useEffect, useState, type ReactNode } from "react";
 import { useRouter } from "next/navigation";
 
 import {
@@ -12,8 +12,11 @@ import {
 import { adminButtonStyles } from "@/components/admin/admin-button-styles";
 import {
   createDefaultWalkUpRegistrationDraft,
+  getWalkUpDisplayPricing,
   type WalkUpRegistrationDraft,
 } from "@/lib/walk-up-registration-form";
+import { formatCurrencyFromCents } from "@/config/payment-policy";
+import { hasFullMembershipEligibility, type Membership } from "@/lib/registration";
 import type { RegistrationParticipantContactSnapshot } from "@/lib/tournament-registration-roster";
 
 const initialState: RegistrationOperationsActionState = {
@@ -35,8 +38,27 @@ function useRefreshOnSuccess(state: RegistrationOperationsActionState) {
 }
 
 export function AddWalkUpControl({ tournamentId }: { tournamentId: string }) {
+  const [registrationType, setRegistrationType] = useState(initialDraft.registrationType);
+  const [paymentMethod, setPaymentMethod] = useState(initialDraft.paymentMethod);
+  const [angler1Membership, setAngler1Membership] = useState(initialDraft.angler1Membership);
+  const [angler2Membership, setAngler2Membership] = useState(initialDraft.angler2Membership);
+  const [memberPot, setMemberPot] = useState<WalkUpRegistrationDraft["memberPot"]>(initialDraft.memberPot);
+  const [bigBass, setBigBass] = useState(initialDraft.bigBass);
+  const [insurance, setInsurance] = useState(initialDraft.insurance);
   const [state, action, pending] = useActionState(
-    createWalkUpRegistrationAction,
+    async (previousState: RegistrationOperationsActionState, formData: FormData) => {
+      const nextState = await createWalkUpRegistrationAction(previousState, formData);
+      if (nextState.status === "success") {
+        setRegistrationType(initialDraft.registrationType);
+        setPaymentMethod(initialDraft.paymentMethod);
+        setAngler1Membership(initialDraft.angler1Membership);
+        setAngler2Membership(initialDraft.angler2Membership);
+        setMemberPot(initialDraft.memberPot);
+        setBigBass(initialDraft.bigBass);
+        setInsurance(initialDraft.insurance);
+      }
+      return nextState;
+    },
     initialState,
   );
   useRefreshOnSuccess(state);
@@ -44,6 +66,45 @@ export function AddWalkUpControl({ tournamentId }: { tournamentId: string }) {
   const draft = state.draft ?? initialDraft;
   const formKey =
     state.status === "error" ? JSON.stringify(draft) : "walk-up-form-default";
+  const memberships = registrationType === "team"
+    ? [angler1Membership, angler2Membership]
+    : [angler1Membership];
+  const memberOptionsEligible = hasFullMembershipEligibility({
+    registrationType,
+    memberships,
+  });
+  const walkUpPricing = getWalkUpDisplayPricing({
+    registrationType,
+    paymentMethod,
+    memberships,
+    memberPot: memberPot || null,
+    bigBass,
+    insurance,
+  });
+  const totalCollectedCents = walkUpPricing.totalCollectedCents;
+
+  function updateRegistrationType(value: "solo" | "team") {
+    setRegistrationType(value);
+    const nextMemberships = value === "team"
+      ? [angler1Membership, angler2Membership]
+      : [angler1Membership];
+    if (!hasFullMembershipEligibility({ registrationType: value, memberships: nextMemberships })) {
+      setMemberPot("");
+      setInsurance(false);
+    }
+  }
+
+  function updateMembership(position: 1 | 2, value: Membership) {
+    if (position === 1) setAngler1Membership(value);
+    else setAngler2Membership(value);
+    const nextMemberships = registrationType === "team"
+      ? [position === 1 ? value : angler1Membership, position === 2 ? value : angler2Membership]
+      : [position === 1 ? value : angler1Membership];
+    if (!hasFullMembershipEligibility({ registrationType, memberships: nextMemberships })) {
+      setMemberPot("");
+      setInsurance(false);
+    }
+  }
 
   return (
     <details className="relative border border-[#D4A017]/30 bg-[#111] p-4">
@@ -75,7 +136,8 @@ export function AddWalkUpControl({ tournamentId }: { tournamentId: string }) {
             <select
               name="registrationType"
               className={input}
-              defaultValue={draft.registrationType}
+              value={registrationType}
+              onChange={(event) => updateRegistrationType(event.target.value as "solo" | "team")}
             >
               <option value="team">Team</option>
               <option value="solo">Solo</option>
@@ -85,7 +147,8 @@ export function AddWalkUpControl({ tournamentId }: { tournamentId: string }) {
             <select
               name="paymentMethod"
               className={input}
-              defaultValue={draft.paymentMethod}
+              value={paymentMethod}
+              onChange={(event) => setPaymentMethod(event.target.value as "cash" | "card" | "other")}
             >
               <option value="cash">Cash</option>
               <option value="card">Card</option>
@@ -93,14 +156,16 @@ export function AddWalkUpControl({ tournamentId }: { tournamentId: string }) {
             </select>
           </Field>
         </div>
-        <AnglerFields position={1} required draft={draft} />
-        <AnglerFields position={2} draft={draft} />
+        <AnglerFields position={1} required draft={draft} membershipValue={angler1Membership} onMembershipChange={(value) => updateMembership(1, value)} />
+        <AnglerFields position={2} draft={draft} membershipValue={angler2Membership} onMembershipChange={(value) => updateMembership(2, value)} />
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           <Field label="Member Pot">
             <select
               name="memberPot"
               className={input}
-              defaultValue={draft.memberPot}
+              value={memberPot}
+              disabled={!memberOptionsEligible}
+              onChange={(event) => setMemberPot(event.target.value as WalkUpRegistrationDraft["memberPot"])}
             >
               <option value="">None</option>
               <option value="bronze">Bronze</option>
@@ -109,21 +174,19 @@ export function AddWalkUpControl({ tournamentId }: { tournamentId: string }) {
             </select>
           </Field>
           <Field label="Total Collected">
-            <input
-              name="totalPaid"
-              type="number"
-              min="0"
-              step="0.01"
-              required
-              className={input}
-              defaultValue={draft.totalPaid}
-            />
+            <input type="hidden" name="totalPaid" value={(totalCollectedCents / 100).toFixed(2)} />
+            <output className="flex min-h-11 items-center border border-[#D4A017]/50 bg-[#D4A017]/10 px-3 text-lg font-black tabular-nums text-[#D4A017]" aria-live="polite">
+              {formatCurrencyFromCents(totalCollectedCents)}
+            </output>
+            {paymentMethod === "card" ? <p className="mt-1 text-xs text-neutral-400">SQUARE SERVICE FEE (3%) {formatCurrencyFromCents(walkUpPricing.cardProcessingFeeCents)}</p> : null}
           </Field>
-          <Check name="bigBass" label="Big Bass" defaultChecked={draft.bigBass} />
+          <Check name="bigBass" label="Big Bass" checked={bigBass} onChange={setBigBass} />
           <Check
             name="insurance"
             label="Insurance Pot"
-            defaultChecked={draft.insurance}
+            checked={insurance}
+            disabled={!memberOptionsEligible}
+            onChange={setInsurance}
           />
         </div>
         <p className="text-xs leading-5 text-neutral-500">
@@ -149,10 +212,14 @@ function AnglerFields({
   position,
   draft,
   required = false,
+  membershipValue,
+  onMembershipChange,
 }: {
   position: 1 | 2;
   draft: WalkUpRegistrationDraft;
   required?: boolean;
+  membershipValue: Membership;
+  onMembershipChange: (membership: Membership) => void;
 }) {
   const prefix = `angler${position}` as const;
   const values =
@@ -259,7 +326,8 @@ function AnglerFields({
           <select
             name={`${prefix}Membership`}
             className={input}
-            defaultValue={values.membership}
+            value={membershipValue}
+            onChange={(event) => onMembershipChange(event.target.value as Membership)}
           >
             <option value="non-member">Non-Member</option>
             <option value="current">Current Member</option>
@@ -455,10 +523,16 @@ function Check({
   name,
   label,
   defaultChecked = false,
+  checked,
+  disabled = false,
+  onChange,
 }: {
   name: string;
   label: string;
   defaultChecked?: boolean;
+  checked?: boolean;
+  disabled?: boolean;
+  onChange?: (checked: boolean) => void;
 }) {
   return (
     <label className="flex min-h-11 items-center gap-2 border border-white/10 px-3 text-xs font-bold text-white">
@@ -466,6 +540,9 @@ function Check({
         name={name}
         type="checkbox"
         defaultChecked={defaultChecked}
+        checked={checked}
+        disabled={disabled}
+        onChange={onChange ? (event) => onChange(event.target.checked) : undefined}
         className="size-4 accent-red-600"
       />
       {label}

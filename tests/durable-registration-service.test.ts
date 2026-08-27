@@ -114,7 +114,7 @@ describe("completeDurableRegistration", () => {
     const registration = await completeDurableRegistration(request, {
       status: "authorized",
       paymentReference: "square-payment-1",
-      amountCents: 6180,
+      amountCents: 6210,
     });
 
     expect(registration.id).toBe(
@@ -159,7 +159,7 @@ describe("completeDurableRegistration", () => {
     await completeDurableRegistration(teamRequest, {
       status: "authorized",
       paymentReference: "square-team-payment-1",
-      amountCents: 6180,
+      amountCents: 6210,
     });
 
     expect(rpc).toHaveBeenCalledWith(
@@ -181,7 +181,7 @@ describe("completeDurableRegistration", () => {
       completeDurableRegistration(request, {
         status: "authorized",
         paymentReference: "square-payment-2",
-        amountCents: 6180,
+        amountCents: 6210,
       }),
     ).rejects.toBeInstanceOf(DurableRegistrationError);
   });
@@ -199,6 +199,6 @@ describe("completeDurableRegistration", () => {
       { verifiedPaymentCompletion: true },
     );
 
-    expect(quote.totalCents).toBe(6180);
+    expect(quote.totalCents).toBe(6210);
   });
 });

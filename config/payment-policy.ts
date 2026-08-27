@@ -1,5 +1,6 @@
 export const CARD_PROCESSING_FEE_RATE_BASIS_POINTS = 300;
 export const CARD_PROCESSING_FEE_PERCENT = 3;
+export const CARD_PROCESSING_FEE_FIXED_CENTS = 30;
 export const CARD_PROCESSOR = "square" as const;
 
 function requireValidCents(amountCents: number) {
@@ -10,9 +11,10 @@ function requireValidCents(amountCents: number) {
 
 export function calculateCardProcessingFeeCents(subtotalCents: number) {
   requireValidCents(subtotalCents);
+  if (subtotalCents === 0) return 0;
   return Math.round(
     (subtotalCents * CARD_PROCESSING_FEE_RATE_BASIS_POINTS) / 10_000,
-  );
+  ) + CARD_PROCESSING_FEE_FIXED_CENTS;
 }
 
 export function calculateCardTotalCents(subtotalCents: number) {

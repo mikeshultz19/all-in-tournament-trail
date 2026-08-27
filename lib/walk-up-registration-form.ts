@@ -25,6 +25,45 @@ export type WalkUpRegistrationDraft = {
   insurance: boolean;
 };
 
+export type WalkUpPricingSelections = {
+  registrationType: RegistrationType;
+  paymentMethod: WalkUpRegistrationDraft["paymentMethod"];
+  memberships: readonly Membership[];
+  memberPot: MemberPot | null;
+  bigBass: boolean;
+  insurance: boolean;
+};
+
+export function getWalkUpPricing(selections: WalkUpPricingSelections) {
+  const pricing = getRegistrationPricing({
+    registrationType: selections.registrationType,
+    baseEntry: true,
+    memberships: [...selections.memberships],
+    memberPot: selections.memberPot,
+    bigBass: selections.bigBass,
+    insurance: selections.insurance,
+  });
+  return {
+    ...pricing,
+    totalCollectedCents:
+      selections.paymentMethod === "card"
+        ? pricing.totalCents
+        : pricing.subtotalCents,
+  };
+}
+
+export function getWalkUpDisplayPricing(selections: WalkUpPricingSelections) {
+  const eligible = hasFullMembershipEligibility({
+    registrationType: selections.registrationType,
+    memberships: [...selections.memberships],
+  });
+  return getWalkUpPricing({
+    ...selections,
+    memberPot: eligible ? selections.memberPot : null,
+    insurance: eligible && selections.insurance,
+  });
+}
+
 export function createDefaultWalkUpRegistrationDraft(): WalkUpRegistrationDraft {
   return {
     registrationType: "team",
@@ -108,3 +147,10 @@ export function createWalkUpRegistrationDraft(
     insurance: booleanField(formData, "insurance"),
   };
 }
+import {
+  getRegistrationPricing,
+  hasFullMembershipEligibility,
+  type MemberPot,
+  type Membership,
+  type RegistrationType,
+} from "@/lib/registration";

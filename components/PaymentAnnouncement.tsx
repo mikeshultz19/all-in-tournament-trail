@@ -39,7 +39,7 @@ export default function PaymentAnnouncement() {
         Register early online or pay at tournament-morning registration using a credit card, debit card, or Apple Pay. Apple Pay is available on supported devices and browsers. Payments are processed securely through Square.
       </p>
       <p className="mt-2 max-w-3xl break-words text-sm leading-6 text-neutral-400">
-        A 3% Card Processing Fee applies to all card and digital-wallet payments. Cash is accepted during tournament-morning registration with no processing fee. Supported contactless wallets can be used through the Square reader.
+        A SQUARE SERVICE FEE (3%) applies to card and digital-wallet payments. Cash is accepted during tournament-morning registration with no service fee. Supported contactless wallets can be used through the Square reader.
       </p>
       <p className="mt-3 text-xs font-black uppercase tracking-[0.12em] text-neutral-300">
         Fast. Secure. Less time at the registration table.

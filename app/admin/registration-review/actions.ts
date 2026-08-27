@@ -6,6 +6,7 @@ import { requireAdminUser } from "@/lib/admin-auth";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import {
   createWalkUpRegistrationDraft,
+  getWalkUpPricing,
   type WalkUpRegistrationDraft,
 } from "@/lib/walk-up-registration-form";
 import {
@@ -54,7 +55,7 @@ export async function createWalkUpRegistrationAction(
   const draft = createWalkUpRegistrationDraft(formData);
   const tournamentId = text(formData, "tournamentId");
   const registrationType = text(formData, "registrationType");
-  const totalPaid = Number(text(formData, "totalPaid"));
+  const submittedTotalPaid = Number(text(formData, "totalPaid"));
   const paymentMethod = text(formData, "paymentMethod");
   const angler1Membership = membership(text(formData, "angler1Membership"));
   const angler2Membership = membership(text(formData, "angler2Membership"));
@@ -88,7 +89,7 @@ export async function createWalkUpRegistrationAction(
 
   if (
     !tournamentId || !["solo", "team"].includes(registrationType)
-    || !Number.isFinite(totalPaid) || totalPaid < 0
+    || !Number.isFinite(submittedTotalPaid) || submittedTotalPaid < 0
     || !["cash", "card", "other"].includes(paymentMethod)
     || anglers.some((angler) => !angler.firstName || !angler.lastName || !angler.streetAddress || !angler.city || !angler.state || !angler.zipCode || !angler.email || !angler.mobilePhone || !angler.membership)
   ) {
@@ -97,21 +98,52 @@ export async function createWalkUpRegistrationAction(
 
   const memberPotValue = text(formData, "memberPot");
   const memberPot = ["bronze", "silver", "gold"].includes(memberPotValue)
-    ? memberPotValue
+    ? memberPotValue as "bronze" | "silver" | "gold"
     : null;
+  const options = {
+    bigBass: formData.get("bigBass") === "on",
+    memberPot,
+    insurance: formData.get("insurance") === "on",
+  };
+  let authoritativeTotalCents: number;
+  try {
+    authoritativeTotalCents = getWalkUpPricing({
+      registrationType: registrationType as "solo" | "team",
+      paymentMethod: paymentMethod as "cash" | "card" | "other",
+      memberships: anglers.map((angler) =>
+        angler.membership as "current" | "joining" | "non-member"
+      ),
+      ...options,
+    }).totalCollectedCents;
+  } catch (error) {
+    return {
+      status: "error",
+      message: error instanceof Error
+        ? error.message
+        : "Verify the walk-up pricing selections.",
+      draft,
+    };
+  }
+  const submittedTotalCents = Math.round(submittedTotalPaid * 100);
+  if (submittedTotalCents !== authoritativeTotalCents) {
+    return {
+      status: "error",
+      message: "Total Collected changed. Review the current selections and submit again.",
+      draft: {
+        ...draft,
+        totalPaid: (authoritativeTotalCents / 100).toFixed(2),
+      },
+    };
+  }
   const { error } = await createSupabaseServerClient().rpc(
     "admin_create_sequential_walkup_registration",
     {
       p_tournament_id: tournamentId,
       p_registration_type: registrationType,
       p_anglers: anglers,
-      p_options: {
-        bigBass: formData.get("bigBass") === "on",
-        memberPot,
-        insurance: formData.get("insurance") === "on",
-      },
+      p_options: options,
       p_payment_method: paymentMethod,
-      p_total_paid_cents: Math.round(totalPaid * 100),
+      p_total_paid_cents: authoritativeTotalCents,
       p_admin_user_id: admin.id,
     },
   );

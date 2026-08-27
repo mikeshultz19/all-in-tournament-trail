@@ -2,6 +2,7 @@ import { REGISTRATION_OPTION_CONFIG, TOURNAMENT_REGISTRATION_CONFIG } from "@/da
 import { getTournamentBySlug, type Tournament } from "@/data/tournaments";
 import { getRegistrationPricing, type MemberPot, type Membership, type RegistrationType } from "@/lib/registration";
 import { getRegistrationAvailability } from "@/lib/tournament-operations";
+import { CARD_PROCESSING_FEE_RATE_BASIS_POINTS } from "@/config/payment-policy";
 
 export const REGISTRATION_STATES = [
   "draft",
@@ -82,7 +83,7 @@ export type RegistrationPriceSnapshot = {
   currency: "USD";
   lineItems: ReadonlyArray<{ code: string; name: string; priceCents: number }>;
   subtotalCents: number;
-  cardProcessingFeeRateBasisPoints: 300;
+  cardProcessingFeeRateBasisPoints: typeof CARD_PROCESSING_FEE_RATE_BASIS_POINTS;
   cardProcessingFeeCents: number;
   totalCents: number;
   calculatedAt: string;
@@ -300,7 +301,7 @@ export function createAuthoritativeRegistrationQuote(
       return { code: configuredOption?.[0] ?? (item.name.includes("Membership") ? "annual_membership" : `item_${index + 1}`), ...item };
     }),
     subtotalCents: pricing.subtotalCents,
-    cardProcessingFeeRateBasisPoints: 300,
+    cardProcessingFeeRateBasisPoints: CARD_PROCESSING_FEE_RATE_BASIS_POINTS,
     cardProcessingFeeCents: pricing.cardProcessingFeeCents,
     totalCents: pricing.totalCents,
     calculatedAt: now.toISOString(),

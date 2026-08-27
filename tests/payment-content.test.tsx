@@ -21,7 +21,8 @@ describe("approved payment content", () => {
     const html = renderToStaticMarkup(<FaqPage />);
     expect(html).toContain("What payment methods are accepted?");
     expect(html).toContain("processed through Square");
-    expect(html).toContain("3% Card Processing Fee");
+  expect(html).toContain("SQUARE SERVICE FEE (3%)");
+  expect(html).not.toContain("+ $0.30");
     expect(html).toContain("Tournament-morning payments may be made by cash or through the Square reader");
     expect(html).toContain("<details");
     expect(html).toContain("<summary");
@@ -55,7 +56,8 @@ describe("approved payment content", () => {
       ]),
     );
     const html = renderToStaticMarkup(<RegistrationForm tournaments={tournaments} operationsBySlug={operationsBySlug} policyVersions={{ rulesVersion: "1.0", waiverVersion: "1.0" }} />);
-    expect(html).toContain("Card Processing Fee (3%)");
+    expect(html).toContain("SQUARE SERVICE FEE (3%)");
+    expect(html).not.toContain("+ $0.30");
     expect(html).toContain("Subtotal");
     expect(html).toContain("Final Total");
     expect(html).toContain("Continue to Payment");

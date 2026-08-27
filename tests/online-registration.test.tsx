@@ -111,13 +111,13 @@ describe("server-authoritative registration validation and pricing", () => {
     request.optionPrices = { tournament_entry: 1 };
     const quote = createAuthoritativeRegistrationQuote(request, NOW);
     expect(quote.subtotalCents).toBe(6000);
-    expect(quote.totalCents).toBe(6180);
+    expect(quote.totalCents).toBe(6210);
   });
   it("uses current configuration for selected options", () => expect(createAuthoritativeRegistrationQuote(validRequest({ options: { bigBass: true, insurance: false, memberPot: null } }), NOW).subtotalCents).toBe(8000));
-  it("calculates and rounds the 3% Card Processing Fee deterministically", () => {
+  it("calculates the 3% plus fixed Square service fee deterministically", () => {
     const quote = createAuthoritativeRegistrationQuote(validRequest(), NOW);
-    expect(quote.cardProcessingFeeCents).toBe(180);
-    expect(quote.totalCents).toBe(6180);
+    expect(quote.cardProcessingFeeCents).toBe(210);
+    expect(quote.totalCents).toBe(6210);
   });
   it("requires the combined acknowledgment", () => expect(validateOnlineRegistrationRequest(validRequest({ acknowledgment: { ...POLICY_VERSIONS, acknowledgedAt: null, acknowledgmentAccepted: false } }), NOW)).toContain("Accept the Official Tournament Rules and Participant Liability Waiver."));
   it("creates one acceptance event with registration ID, timestamp, and policy versions", () => {
@@ -326,7 +326,9 @@ describe("online payment presentation", () => {
   });
   it("shows the compact authoritative-price summary without cash", () => {
     expect(html).toContain("Subtotal");
-    expect(html).toContain("Card Processing Fee (3%)");
+    expect(html).toContain("SQUARE SERVICE FEE (3%)");
+    expect(html).not.toContain("+ $0.30");
+    expect(html).not.toContain("+ $0.30");
     expect(html).toContain("Final Total");
     expect(html).not.toMatch(/cash/i);
   });
