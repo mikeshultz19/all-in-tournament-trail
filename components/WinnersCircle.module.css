@@ -181,6 +181,9 @@
   .headerMeta {
     grid-column: 1;
     grid-row: 1;
+    z-index: 1;
+    display: flex;
+    justify-self: stretch;
     align-items: flex-start;
     text-align: left;
   }

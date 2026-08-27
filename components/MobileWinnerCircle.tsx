@@ -51,7 +51,7 @@ function MobileWinnersHeader({
   tournament?: LatestTournamentResults["tournament"];
 }) {
   return (
-    <div className="border-b border-white/10 bg-black px-3 py-2 text-center">
+    <div className="border-b border-white/10 bg-[#111111] px-3 py-2 text-center">
       <div className="relative mx-auto aspect-[5/2] w-full max-w-[520px] max-h-[104px]">
         <Image
           src="/images/winners-circle-banner2.png"
