@@ -162,6 +162,7 @@ describe("public sponsorship paths", () => {
     expect(html).toContain("Gold Sponsor");
     expect(html).toContain("%2Fimages%2Fsponsors%2Fmad-dawg-sponsor.jpeg");
     expect(html).toContain("Texas Boat Works");
+    expect(html.slice(html.indexOf("Texas Boat Works"), html.indexOf("Texas Boat Works") + 1500)).toContain("Premier Sponsor");
     expect(html).toContain("texas-boat-works.png");
     expect(html).toContain('href="https://www.texasboatworks.com"');
     expect(html).toContain("Badger Lures");
@@ -181,6 +182,7 @@ describe("public sponsorship paths", () => {
       html.indexOf("Tri-Lakes Tackle Town"),
     );
     expect(html).toContain("Tri-Lakes Tackle Town is a Granbury-based fishing tackle shop serving anglers across Lake Granbury, Possum Kingdom, Lake Whitney and beyond. Stop by the Granbury store for a wide selection of tackle and fishing gear, or visit Tri-Lakes Tackle Town online for a convenient online shopping experience.");
+    expect(html.slice(html.indexOf("Tri-Lakes Tackle Town"), html.indexOf("Tri-Lakes Tackle Town") + 1500)).toContain("Gold Sponsor");
     expect((html.match(/Premier Sponsor/g) ?? []).length).toBe(2);
     expect(html.indexOf("Badger Lures")).toBeLessThan(
       html.indexOf("Yukon Outfitters"),

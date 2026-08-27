@@ -46,7 +46,7 @@ const publicSponsors: PublicSponsor[] = [
     name: "Texas Boat Works",
     logo: "/images/sponsors/texas-boat-works.png",
     logoFit: "contain",
-    tierLabel: "Gold Sponsor",
+    premier: true,
     partnershipIntro:
       "AITT is proud to partner with Texas Boat Works, a trusted resource for boat sales, financing, service, and parts.",
     description:
@@ -58,7 +58,7 @@ const publicSponsors: PublicSponsor[] = [
     name: "Tri-Lakes Tackle Town",
     logo: "/images/sponsors/tri-lakes-logo.png",
     logoFit: "contain",
-    premier: true,
+    tierLabel: "Gold Sponsor",
     partnershipIntro:
       "Tri-Lakes Tackle Town is a Granbury-based fishing tackle shop serving anglers across Lake Granbury, Possum Kingdom, Lake Whitney and beyond. Stop by the Granbury store for a wide selection of tackle and fishing gear, or visit Tri-Lakes Tackle Town online for a convenient online shopping experience.",
     description:
