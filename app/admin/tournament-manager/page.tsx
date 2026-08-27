@@ -33,44 +33,6 @@ import type { ChampionshipQualification } from "@/types/championship-qualificati
 
 export const dynamic = "force-dynamic";
 
-class TournamentWorkspaceLoadError extends Error {
-  constructor(
-    readonly step: string,
-    readonly safeCode: string | null,
-    message: string,
-    cause?: unknown,
-  ) {
-    super(message, { cause });
-    this.name = "TournamentWorkspaceLoadError";
-  }
-}
-
-function safeSupabaseError(error: unknown) {
-  const candidate = error instanceof Error && error.cause ? error.cause : error;
-  if (candidate && typeof candidate === "object") {
-    const record = candidate as { code?: unknown; message?: unknown };
-    return {
-      code: typeof record.code === "string" ? record.code : null,
-      message: typeof record.message === "string" ? record.message : error instanceof Error ? error.message : "Unknown loader error",
-    };
-  }
-  return { code: null, message: error instanceof Error ? error.message : "Unknown loader error" };
-}
-
-async function workspaceStep<T>(step: string, operation: () => Promise<T>): Promise<T> {
-  try {
-    return await operation();
-  } catch (error) {
-    const safe = safeSupabaseError(error);
-    console.error("Tournament workspace load failed", {
-      step,
-      errorCode: safe.code,
-      message: safe.message,
-    });
-    throw new TournamentWorkspaceLoadError(step, safe.code, safe.message, error);
-  }
-}
-
 interface TournamentManagerPageProps {
   searchParams: Promise<{ tournament?: string | string[]; step?: string | string[] }>;
 }
@@ -103,8 +65,8 @@ export default async function TournamentManagerPage({ searchParams }: Tournament
 
   try {
     [tournaments, currentTournament] = await Promise.all([
-        workspaceStep("Active Season Schedule", getActiveSeasonSchedule),
-        workspaceStep("Next Upcoming Tournament", getNextUpcomingTournament),
+        getActiveSeasonSchedule(),
+        getNextUpcomingTournament(),
       ]);
     if (requestedTournament) {
       currentTournament = tournaments.find(
@@ -112,11 +74,7 @@ export default async function TournamentManagerPage({ searchParams }: Tournament
       ) ?? currentTournament;
     }
     if (currentTournament) {
-      const currentTournamentId = currentTournament.id;
-      const readinessSync = await workspaceStep(
-        "Tournament Publish Readiness",
-        () => syncTournamentPublishReadiness(currentTournamentId),
-      );
+      const readinessSync = await syncTournamentPublishReadiness(currentTournament.id);
       if (readinessSync.tournament) {
         currentTournament = readinessSync.tournament;
         tournaments = tournaments.map((tournament) =>
@@ -127,14 +85,14 @@ export default async function TournamentManagerPage({ searchParams }: Tournament
       }
     }
     const [loadedCloseouts, loadedInsuranceResults, loadedImportEvidence, supplementalLoad, loadedRegistrationSummaries, loadedImportedRows, loadedResultsRecords, loadedPublishReviewRegistrations] = await Promise.all([
-      workspaceStep("On-Site Closeouts", () => listOnSiteCloseouts(tournaments.map((tournament) => tournament.id))),
-      workspaceStep("Insurance Pot Results", () => listTournamentInsurancePotResults(tournaments.map((tournament) => tournament.id))),
-      workspaceStep("Import Evidence", () => listTournamentImportEvidence(tournaments.map((tournament) => tournament.id))),
-      workspaceStep("Supplemental Workflow Evidence", () => listSupplementalWorkflowEvidence(tournaments.map((tournament) => tournament.id))),
-      workspaceStep("Registration Roster Summaries", () => listTournamentRegistrationRosterSummaries(tournaments.map((tournament) => tournament.id))),
-      workspaceStep("Imported Results", () => listTournamentImportedRows(tournaments.map((tournament) => tournament.id))),
-      workspaceStep("Results Records", () => listTournamentResultsRecords(tournaments.map((tournament) => tournament.id))),
-      workspaceStep("Publish Review Registrations", () => listTournamentPublishReviewRegistrations(tournaments.map((tournament) => tournament.id))),
+      listOnSiteCloseouts(tournaments.map((tournament) => tournament.id)),
+      listTournamentInsurancePotResults(tournaments.map((tournament) => tournament.id)),
+      listTournamentImportEvidence(tournaments.map((tournament) => tournament.id)),
+      listSupplementalWorkflowEvidence(tournaments.map((tournament) => tournament.id)),
+      listTournamentRegistrationRosterSummaries(tournaments.map((tournament) => tournament.id)),
+      listTournamentImportedRows(tournaments.map((tournament) => tournament.id)),
+      listTournamentResultsRecords(tournaments.map((tournament) => tournament.id)),
+      listTournamentPublishReviewRegistrations(tournaments.map((tournament) => tournament.id)),
     ]);
     closeouts = loadedCloseouts;
     const computedInsuranceResults = await Promise.all(
@@ -147,10 +105,7 @@ export default async function TournamentManagerPage({ searchParams }: Tournament
           winners: savedResult.winners,
           published: savedResult.published,
         })) return [tournament.id, savedResult] as const;
-        const calculatedResult = await workspaceStep(
-          "Insurance Pot Calculation",
-          () => calculateTournamentInsurancePotResult(tournament.id),
-        );
+        const calculatedResult = await calculateTournamentInsurancePotResult(tournament.id);
         return calculatedResult ? [tournament.id, toInsuranceResultRecord(tournament.id, calculatedResult)] as const : null;
       }),
     );
@@ -179,8 +134,8 @@ export default async function TournamentManagerPage({ searchParams }: Tournament
     const seasonProjections = await Promise.all(
       seasonIds.map(async (seasonId) => {
         const [aoyStandings, championshipQualifications] = await Promise.all([
-          workspaceStep("AOY Standings", () => getSeasonAoyStandings(seasonId)),
-          workspaceStep("Championship Qualifications", () => getSeasonChampionshipQualifications(seasonId)),
+          getSeasonAoyStandings(seasonId),
+          getSeasonChampionshipQualifications(seasonId),
         ]);
         return { seasonId, aoyStandings, championshipQualifications };
       }),
@@ -192,25 +147,13 @@ export default async function TournamentManagerPage({ searchParams }: Tournament
       seasonProjections.map((item) => [item.seasonId, item.championshipQualifications]),
     );
   } catch (error) {
-    const diagnostic = error instanceof TournamentWorkspaceLoadError
-      ? error
-      : null;
-    console.error("Tournament workspace load failed", {
-      step: diagnostic?.step ?? "Unknown",
-      errorCode: diagnostic?.safeCode ?? null,
-      message: diagnostic?.message ?? "Unknown loader error",
-    });
+    console.error("Tournament workspace load failed.", error);
 
     return (
       <section className="border border-red-500/30 bg-red-500/10 p-6">
         <h1 className="text-xl font-black uppercase text-white">
           Tournament Workspace Unavailable
         </h1>
-        {diagnostic ? (
-          <p className="mt-3 text-sm font-bold text-red-200">
-            Failed loading: {diagnostic.step}
-          </p>
-        ) : null}
         <p className="mt-3 text-sm leading-6 text-neutral-300">
           We could not load tournament information. Please try again.
         </p>
