@@ -171,7 +171,17 @@ describe("homepage latest tournament results", () => {
     expect(html).not.toContain("Big Bass Winner");
     expect(html).not.toContain("Insurance Pot");
     expect(html).toContain("break-words");
-    expect(html).toContain(">—</p>");
+    expect(html).toContain("Tri-Lakes Recap Coming Soon!");
+  });
+
+  it("uses the saved recap text on mobile", () => {
+    const populated = renderToStaticMarkup(
+      <MobileWinnerCircle
+        latestResults={{ ...latestResults, tournamentRecap: "A strong day on Lake Fork." }}
+      />,
+    );
+
+    expect(populated).toContain("A strong day on Lake Fork.");
   });
 
   it("shows the tournament identity and showcase panels", () => {

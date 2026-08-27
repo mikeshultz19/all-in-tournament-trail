@@ -39,7 +39,7 @@ function MobileTournamentRecap({ recap }: { recap: string | null | undefined }) 
         </p>
       </div>
       <p className="mt-2 break-words text-sm leading-6 text-neutral-300">
-        {recap?.trim() || "—"}
+        {recap && recap.trim() ? recap : "Tri-Lakes Recap Coming Soon!"}
       </p>
     </section>
   );
