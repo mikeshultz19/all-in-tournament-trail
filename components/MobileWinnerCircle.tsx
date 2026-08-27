@@ -79,16 +79,16 @@ export default function MobileWinnerCircle({
           />
 
           <p className="text-[0.65rem] font-black uppercase tracking-[0.18em] text-[#c9aa4a]">
-            Tournament Results
+            Winners Circle
           </p>
         </div>
 
         <h2 className="mt-2 text-lg font-black uppercase leading-tight text-white">
-          {latestResults.tournament.name}
+          Mad Dawg Graphics Winners Circle
         </h2>
 
         <p className="mt-1 text-xs text-neutral-400">
-          {latestResults.tournament.lake} ·{" "}
+          {latestResults.tournament.name} · {latestResults.tournament.lake} ·{" "}
           {formatResultsDate(
             latestResults.tournament.tournament_date,
           )}
@@ -136,7 +136,7 @@ export default function MobileWinnerCircle({
 
         <div className="mt-5 min-w-0 border-t border-white/10 pt-4">
             <p className="text-[0.65rem] font-black uppercase tracking-[0.15em] text-neutral-500">
-              Tournament Recap
+              Tri-Lakes Tournament Recap
             </p>
 
             <p className="mt-2 break-words text-sm leading-6 text-neutral-300">

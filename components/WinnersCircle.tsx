@@ -460,10 +460,10 @@ export default function WinnersCircle({
       <div className={`${styles.showcaseContainer} bg-[#0B0A09]`}>
         <article className="overflow-visible border border-[#8f762f]/60 bg-[#111111] shadow-[0_10px_30px_rgba(0,0,0,0.35)]">
           <TournamentHeader
-            title={hasResults && latestResults ? latestResults.tournament.name : "Tournament Results "}
+            title="Mad Dawg Graphics Winners Circle"
             subtitle={
               hasResults && latestResults
-                ? `${latestResults.tournament.lake} • ${formatResultsDate(
+                ? `${latestResults.tournament.name} • ${formatResultsDate(
                     latestResults.tournament.tournament_date,
                   )}`
                 : undefined
@@ -518,7 +518,7 @@ export default function WinnersCircle({
               />
 <div className="mt-5 rounded-md border border-[#8f762f]/60 bg-[#171717] p-4">
   <p className="text-[0.68rem] font-black uppercase tracking-[0.12em] text-[#c9aa4a]">
-    Tournament Recap
+    Tri-Lakes Tournament Recap
   </p>
 
   <p className="mt-3 break-words text-sm leading-7 text-neutral-300">
