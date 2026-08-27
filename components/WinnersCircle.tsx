@@ -28,8 +28,6 @@ type SidePotName = "bronze" | "silver" | "gold";
 const SIDE_POT_ORDER: SidePotName[] = ["bronze", "silver", "gold"];
 const RESULTS_COMING_SOON_IMAGE =
   "/images/placeholders/tournament-coming-soon.png";
-const MAD_DAWG_LOGO = "/images/sponsors/mad-dawg-graphics-design-wide3.png";
-const TRI_LAKES_LOGO = "/images/sponsors/tri-lakes-logo.png";
 
 const SIDE_POT_THEMES: Record<
   SidePotName,
@@ -140,14 +138,11 @@ function TournamentHeader({
 
       <div className="relative flex min-h-12 items-center justify-center text-center">
         <div className="flex min-w-0 flex-col items-center">
-          <Image
-            src={MAD_DAWG_LOGO}
-            alt="Mad Dawg Graphics & Design"
-            width={220}
-            height={72}
-            className="h-10 w-auto max-w-[min(70vw,220px)] object-contain sm:h-12"
-          />
-          <h2 className={`${styles.bannerTitle} mt-1`}>{title}</h2>
+          <p className="text-[0.72rem] font-black uppercase tracking-[0.2em] text-[#c9aa4a] sm:text-[0.8rem]">{title}</p>
+          <p className="mt-2 inline-flex max-w-full flex-wrap items-center justify-center gap-x-1.5 gap-y-1 rounded border border-red-500/45 bg-black/45 px-2.5 py-1 text-[0.62rem] font-semibold uppercase tracking-[0.1em] text-neutral-500 sm:text-[0.68rem]">
+            <span>Presented by</span>
+            <span className="font-black tracking-[0.04em] text-[#ef4444]">Mad Dawg Graphics</span>
+          </p>
           {subtitle ? (
             <p className="mt-1 text-[0.72rem] font-semibold uppercase tracking-[0.14em] text-neutral-500 sm:text-[0.8rem]">
               {subtitle}
@@ -527,8 +522,8 @@ export default function WinnersCircle({
               />
 <div className="mt-5 rounded-md border border-[#8f762f]/60 bg-[#171717] p-4">
   <div className="flex items-center gap-2">
-    <span className="relative inline-flex h-7 w-14 shrink-0 items-center justify-center overflow-hidden rounded border border-[#8f762f]/70 bg-black/50">
-      <Image src={TRI_LAKES_LOGO} alt="Tri-Lakes Tackle Town" fill sizes="56px" className="object-contain p-1" />
+    <span className="inline-flex min-w-[62px] shrink-0 items-center justify-center rounded border border-[#c9aa4a]/70 bg-black/70 px-2 py-1 text-center text-[0.5rem] font-black uppercase leading-none tracking-[0.08em] text-[#0095DF]">
+      Tri-Lakes
     </span>
     <p className="text-[0.68rem] font-black uppercase tracking-[0.12em] text-[#c9aa4a]">
       Tournament Recap

@@ -181,9 +181,13 @@ describe("homepage latest tournament results", () => {
     expect(html).toContain("Lake Fork Championship");
     expect(html).toContain("July 19, 2026");
     expect(html).toContain("Lake Fork");
+    expect(html).toContain("AITT");
     expect(html).toContain("WINNERS CIRCLE");
+    expect(html).toContain("Presented by");
+    expect(html).toContain("Mad Dawg Graphics");
+    expect(html).not.toContain("mad-dawg-graphics-design-wide3.png");
     expect(html).toContain("Tournament Recap");
-    expect(html).toContain("Tri-Lakes Tackle Town");
+    expect(html).toContain("Tri-Lakes");
     expect(html).toContain("FINAL STANDINGS");
     expect(html).toContain("OVERALL CHAMPION");
     expect(html).toContain("SIDE POTS &amp; PAYOUTS");

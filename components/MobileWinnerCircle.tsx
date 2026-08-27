@@ -27,8 +27,6 @@ const sidePots = [
   },
 ] as const;
 
-const MAD_DAWG_LOGO = "/images/sponsors/mad-dawg-graphics-design-wide3.png";
-const TRI_LAKES_LOGO = "/images/sponsors/tri-lakes-logo.png";
 
 export default function MobileWinnerCircle({
   latestResults,
@@ -86,16 +84,10 @@ export default function MobileWinnerCircle({
           </p>
         </div>
 
-        <Image
-          src={MAD_DAWG_LOGO}
-          alt="Mad Dawg Graphics & Design"
-          width={190}
-          height={62}
-          className="mx-auto mt-2 h-9 w-auto max-w-[70vw] object-contain"
-        />
-        <h2 className="mt-1 text-lg font-black uppercase leading-tight tracking-[0.12em] text-white">
-          Winners Circle
-        </h2>
+        <p className="mt-2 inline-flex max-w-full flex-wrap items-center justify-center gap-x-1.5 gap-y-1 rounded border border-red-500/45 bg-black/45 px-2.5 py-1 text-[0.58rem] font-semibold uppercase tracking-[0.08em] text-neutral-500">
+          <span>Presented by</span>
+          <span className="font-black tracking-[0.03em] text-[#ef4444]">Mad Dawg Graphics</span>
+        </p>
 
         <p className="mt-1 text-xs text-neutral-400">
           {latestResults.tournament.name} · {latestResults.tournament.lake} ·{" "}
@@ -146,8 +138,8 @@ export default function MobileWinnerCircle({
 
         <div className="mt-5 min-w-0 border-t border-white/10 pt-4">
             <div className="flex items-center gap-2">
-              <span className="relative inline-flex h-6 w-12 shrink-0 items-center justify-center overflow-hidden rounded border border-[#8f762f]/70 bg-black/50">
-                <Image src={TRI_LAKES_LOGO} alt="Tri-Lakes Tackle Town" fill sizes="48px" className="object-contain p-1" />
+              <span className="inline-flex min-w-[56px] shrink-0 items-center justify-center rounded border border-[#c9aa4a]/70 bg-black/70 px-1.5 py-1 text-center text-[0.45rem] font-black uppercase leading-none tracking-[0.06em] text-[#0095DF]">
+                Tri-Lakes
               </span>
               <p className="text-[0.65rem] font-black uppercase tracking-[0.15em] text-neutral-500">
                 Tournament Recap
