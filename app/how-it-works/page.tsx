@@ -226,24 +226,6 @@ export default async function HowItWorksPage() {
               confidence and goals.
             </p>
 
-            <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-              {!registrationOpen ? (
-                <span aria-disabled="true" className="inline-flex min-h-12 cursor-not-allowed items-center justify-center border border-neutral-700 px-7 py-3 text-sm font-black uppercase tracking-wider text-neutral-500">
-                  {registrationReason}
-                </span>
-              ) : (
-                <Link href="/register" className="inline-flex min-h-12 items-center justify-center border border-red-700 bg-red-800 px-7 py-3 text-sm font-black uppercase tracking-wider text-white transition hover:bg-red-700">
-                  Register
-                </Link>
-              )}
-
-              <Link
-                href="/schedule"
-                className="inline-flex min-h-12 items-center justify-center border border-white/20 bg-black px-7 py-3 text-sm font-black uppercase tracking-wider text-white transition hover:border-[#d0ae4c] hover:text-[#d0ae4c]"
-              >
-                View Tournament Schedule
-              </Link>
-            </div>
           </div>
 
    
