@@ -467,7 +467,7 @@ export default function WinnersCircle({
           <TournamentHeader
             subtitle={
               hasResults && latestResults
-                ? `${latestResults.tournament.name} • ${formatResultsDate(
+                ? `${latestResults.tournament.lake} • ${formatResultsDate(
                     latestResults.tournament.tournament_date,
                   )}`
                 : undefined
