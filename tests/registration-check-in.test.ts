@@ -37,6 +37,9 @@ describe("Early Entries check-in", () => {
     expect(page).toContain("Insurance");
     expect(page).toContain("Big Bass");
     expect(page).toContain("Check-In / Review");
+    expect(page).toContain("'Weight'");
+    expect(page.indexOf("Check-In / Review")).toBeLessThan(page.indexOf("'Weight'"));
+    expect(page).toContain("Blank weight for boat");
     expect(page).not.toContain("Entry Options");
     expect(page).toContain('data-testid="mobile-registration-roster"');
     expect(legacyRoute).toContain("redirect(`/admin/registration-review${query}`)");
