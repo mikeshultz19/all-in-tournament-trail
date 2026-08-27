@@ -3,6 +3,7 @@ import {
   Crown,
   Fish,
   Medal,
+  MapPin,
   Shield,
   Trophy,
 } from "lucide-react";
@@ -113,18 +114,12 @@ function SectionHeading({
 }
 
 function TournamentHeader({
-  title,
   subtitle,
 }: {
-  title: string;
   subtitle?: string;
 }) {
   return (
-    <header className="relative overflow-visible border-b border-[#8f762f]/60 bg-[#171717] px-4 pb-5 pt-8 shadow-[0_10px_30px_rgba(0,0,0,0.35)] sm:px-5">
-      <div
-        aria-hidden="true"
-        className="absolute inset-y-0 left-0 w-[44%] bg-[linear-gradient(90deg,rgba(90,16,32,0.46)_0%,rgba(90,16,32,0.14)_55%,transparent_100%)]"
-      />
+    <header className="relative overflow-visible border-b border-[#8f762f]/60 bg-black px-4 pb-5 pt-8 shadow-[0_10px_30px_rgba(0,0,0,0.35)] sm:px-5">
       <div
         aria-hidden="true"
         className="absolute inset-x-[12%] top-0 h-px bg-gradient-to-r from-transparent via-[#c9aa4a] to-transparent"
@@ -136,15 +131,21 @@ function TournamentHeader({
         <Trophy aria-hidden="true" className="size-4" />
       </div>
 
-      <div className="relative flex min-h-12 items-center justify-center text-center">
+      <div className="relative flex flex-col items-center justify-center text-center">
+        <div className={styles.bannerFrame}>
+          <Image
+            src="/images/winners-circle-banner.png"
+            alt="WINNERS CIRCLE"
+            fill
+            priority
+            sizes="(max-width: 767px) 92vw, 80vw"
+            className={styles.bannerImage}
+          />
+        </div>
         <div className="flex min-w-0 flex-col items-center">
-          <p className="text-[0.72rem] font-black uppercase tracking-[0.2em] text-[#c9aa4a] sm:text-[0.8rem]">{title}</p>
-          <p className="mt-2 inline-flex max-w-full flex-wrap items-center justify-center gap-x-1.5 gap-y-1 rounded border border-red-500/45 bg-black/45 px-2.5 py-1 text-[0.62rem] font-semibold uppercase tracking-[0.1em] text-neutral-500 sm:text-[0.68rem]">
-            <span>Presented by</span>
-            <span className="font-black tracking-[0.04em] text-[#ef4444]">Mad Dawg Graphics</span>
-          </p>
           {subtitle ? (
-            <p className="mt-1 text-[0.72rem] font-semibold uppercase tracking-[0.14em] text-neutral-500 sm:text-[0.8rem]">
+            <p className="mt-2 inline-flex max-w-full flex-wrap items-center justify-center gap-x-1.5 gap-y-1 text-[0.72rem] font-semibold uppercase tracking-[0.14em] text-neutral-500 sm:text-[0.8rem]">
+              <MapPin aria-hidden="true" className="size-3.5 shrink-0 text-[#c9aa4a]" />
               {subtitle}
             </p>
           ) : null}
@@ -464,7 +465,6 @@ export default function WinnersCircle({
       <div className={`${styles.showcaseContainer} bg-[#0B0A09]`}>
         <article className="overflow-visible border border-[#8f762f]/60 bg-[#111111] shadow-[0_10px_30px_rgba(0,0,0,0.35)]">
           <TournamentHeader
-            title="WINNERS CIRCLE"
             subtitle={
               hasResults && latestResults
                 ? `${latestResults.tournament.name} • ${formatResultsDate(

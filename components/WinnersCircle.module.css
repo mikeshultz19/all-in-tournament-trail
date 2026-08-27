@@ -125,3 +125,24 @@
     text-align: center;
   }
 }
+
+.bannerFrame {
+  position: relative;
+  width: min(100%, 1120px);
+  aspect-ratio: 5 / 2;
+  max-height: 150px;
+  overflow: hidden;
+  background: transparent;
+}
+
+.bannerImage {
+  object-fit: contain;
+  object-position: center;
+}
+
+@media (max-width: 767px) {
+  .bannerFrame {
+    width: 100%;
+    max-height: 104px;
+  }
+}

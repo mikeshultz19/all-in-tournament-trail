@@ -1,4 +1,4 @@
-import { Crown, Fish, Medal, Trophy } from "lucide-react";
+import { Crown, Fish, MapPin, Medal, Trophy } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -45,6 +45,33 @@ function MobileTournamentRecap({ recap }: { recap: string | null | undefined }) 
   );
 }
 
+function MobileWinnersHeader({
+  tournament,
+}: {
+  tournament?: LatestTournamentResults["tournament"];
+}) {
+  return (
+    <div className="border-b border-white/10 bg-black px-4 py-3 text-center">
+      <div className="relative mx-auto aspect-[5/2] w-full max-w-[520px]">
+        <Image
+          src="/images/winners-circle-banner.png"
+          alt="WINNERS CIRCLE"
+          fill
+          priority
+          sizes="(max-width: 767px) 92vw, 520px"
+          className="object-contain"
+        />
+      </div>
+      {tournament ? (
+        <p className="mt-1 inline-flex max-w-full flex-wrap items-center justify-center gap-x-1.5 gap-y-1 text-xs font-semibold uppercase tracking-[0.1em] text-neutral-400">
+          <MapPin aria-hidden="true" className="size-3.5 shrink-0 text-[#c9aa4a]" />
+          {tournament.lake} Â· {formatResultsDate(tournament.tournament_date)}
+        </p>
+      ) : null}
+    </div>
+  );
+}
+
 
 export default function MobileWinnerCircle({
   latestResults,
@@ -53,20 +80,18 @@ export default function MobileWinnerCircle({
 }) {
   if (!latestResults) {
     return (
-      <section className="rounded-xl border border-white/10 bg-[#111111] p-5 text-center">
-        <Trophy
-          aria-hidden="true"
-          className="mx-auto size-5 text-[#c9aa4a]"
-        />
-
-        <p className="mt-3 text-xs font-black uppercase tracking-[0.16em] text-[#c9aa4a]">
-          Tournament Results
-        </p>
-
-        <p className="mt-3 text-sm text-neutral-400">
-          Tournament results will appear here after they are published.
-        </p>
-        <MobileTournamentRecap recap={null} />
+      <section className="overflow-hidden rounded-xl border border-white/10 bg-[#111111] text-center">
+        <MobileWinnersHeader />
+        <div className="p-5">
+          <Trophy aria-hidden="true" className="mx-auto size-5 text-[#c9aa4a]" />
+          <p className="mt-3 text-xs font-black uppercase tracking-[0.16em] text-[#c9aa4a]">
+            Tournament Results
+          </p>
+          <p className="mt-3 text-sm text-neutral-400">
+            Tournament results will appear here after they are published.
+          </p>
+          <MobileTournamentRecap recap={null} />
+        </div>
       </section>
     );
   }
@@ -91,30 +116,7 @@ export default function MobileWinnerCircle({
 
   return (
     <section className="overflow-hidden rounded-xl border border-[#8f762f]/60 bg-[#101010] shadow-[0_12px_30px_rgba(0,0,0,0.35)]">
-      <div className="border-b border-white/10 px-5 py-4 text-center">
-        <div className="flex items-center justify-center gap-2">
-          <Trophy
-            aria-hidden="true"
-            className="size-4 text-[#c9aa4a]"
-          />
-
-          <p className="text-[0.65rem] font-black uppercase tracking-[0.18em] text-[#c9aa4a]">
-            Winners Circle
-          </p>
-        </div>
-
-        <p className="mt-2 inline-flex max-w-full flex-wrap items-center justify-center gap-x-1.5 gap-y-1 rounded border border-red-500/45 bg-black/45 px-2.5 py-1 text-[0.58rem] font-semibold uppercase tracking-[0.08em] text-neutral-500">
-          <span>Presented by</span>
-          <span className="font-black tracking-[0.03em] text-[#ef4444]">Mad Dawg Graphics</span>
-        </p>
-
-        <p className="mt-1 text-xs text-neutral-400">
-          {latestResults.tournament.name} · {latestResults.tournament.lake} ·{" "}
-          {formatResultsDate(
-            latestResults.tournament.tournament_date,
-          )}
-        </p>
-      </div>
+      <MobileWinnersHeader tournament={latestResults.tournament} />
 
       <div className="px-5 py-5">
         <div className="flex items-center justify-center gap-2">

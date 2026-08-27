@@ -194,8 +194,7 @@ describe("homepage latest tournament results", () => {
     expect(html).toContain("Lake Fork");
     expect(html).toContain("AITT");
     expect(html).toContain("WINNERS CIRCLE");
-    expect(html).toContain("Presented by");
-    expect(html).toContain("Mad Dawg Graphics");
+    expect(html).toContain("%2Fimages%2Fwinners-circle-banner.png");
     expect(html).not.toContain("mad-dawg-graphics-design-wide3.png");
     expect(html).toContain("Tournament Recap");
     expect(html).toContain("Tri-Lakes");
