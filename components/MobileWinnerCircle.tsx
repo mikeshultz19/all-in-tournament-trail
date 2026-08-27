@@ -27,6 +27,9 @@ const sidePots = [
   },
 ] as const;
 
+const MAD_DAWG_LOGO = "/images/sponsors/mad-dawg-graphics-design-wide3.png";
+const TRI_LAKES_LOGO = "/images/sponsors/tri-lakes-logo.png";
+
 export default function MobileWinnerCircle({
   latestResults,
 }: {
@@ -83,8 +86,15 @@ export default function MobileWinnerCircle({
           </p>
         </div>
 
-        <h2 className="mt-2 text-lg font-black uppercase leading-tight text-white">
-          Mad Dawg Graphics Winners Circle
+        <Image
+          src={MAD_DAWG_LOGO}
+          alt="Mad Dawg Graphics & Design"
+          width={190}
+          height={62}
+          className="mx-auto mt-2 h-9 w-auto max-w-[70vw] object-contain"
+        />
+        <h2 className="mt-1 text-lg font-black uppercase leading-tight tracking-[0.12em] text-white">
+          Winners Circle
         </h2>
 
         <p className="mt-1 text-xs text-neutral-400">
@@ -135,9 +145,14 @@ export default function MobileWinnerCircle({
         </div>
 
         <div className="mt-5 min-w-0 border-t border-white/10 pt-4">
-            <p className="text-[0.65rem] font-black uppercase tracking-[0.15em] text-neutral-500">
-              Tri-Lakes Tournament Recap
-            </p>
+            <div className="flex items-center gap-2">
+              <span className="relative inline-flex h-6 w-12 shrink-0 items-center justify-center overflow-hidden rounded border border-[#8f762f]/70 bg-black/50">
+                <Image src={TRI_LAKES_LOGO} alt="Tri-Lakes Tackle Town" fill sizes="48px" className="object-contain p-1" />
+              </span>
+              <p className="text-[0.65rem] font-black uppercase tracking-[0.15em] text-neutral-500">
+                Tournament Recap
+              </p>
+            </div>
 
             <p className="mt-2 break-words text-sm leading-6 text-neutral-300">
               {latestResults.tournamentRecap ??

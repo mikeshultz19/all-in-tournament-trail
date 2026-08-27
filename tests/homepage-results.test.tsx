@@ -181,8 +181,9 @@ describe("homepage latest tournament results", () => {
     expect(html).toContain("Lake Fork Championship");
     expect(html).toContain("July 19, 2026");
     expect(html).toContain("Lake Fork");
-    expect(html).toContain("Mad Dawg Graphics Winners Circle");
-    expect(html).toContain("Tri-Lakes Tournament Recap");
+    expect(html).toContain("WINNERS CIRCLE");
+    expect(html).toContain("Tournament Recap");
+    expect(html).toContain("Tri-Lakes Tackle Town");
     expect(html).toContain("FINAL STANDINGS");
     expect(html).toContain("OVERALL CHAMPION");
     expect(html).toContain("SIDE POTS &amp; PAYOUTS");
@@ -217,7 +218,7 @@ describe("homepage latest tournament results", () => {
       <WinnersCircle latestResults={null} />,
     );
 
-    expect(html).toContain("Mad Dawg Graphics Winners Circle");
+    expect(html).toContain("WINNERS CIRCLE");
     expect(html).toContain("FINAL STANDINGS");
     expect(html).toContain("OVERALL CHAMPION");
     expect(html).toContain("SIDE POTS &amp; PAYOUTS");
