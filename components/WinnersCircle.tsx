@@ -119,7 +119,7 @@ function TournamentHeader({
   subtitle?: string;
 }) {
   return (
-    <header className="relative overflow-visible border-b border-[#8f762f]/60 bg-black px-4 pb-5 pt-8 shadow-[0_10px_30px_rgba(0,0,0,0.35)] sm:px-5">
+    <header className="relative overflow-visible border-b border-[#8f762f]/60 bg-[linear-gradient(90deg,rgba(72,12,28,0.62)_0%,rgba(40,8,18,0.36)_34%,#000000_78%)] px-4 pb-5 pt-8 shadow-[0_10px_30px_rgba(0,0,0,0.35)] sm:px-5">
       <div
         aria-hidden="true"
         className="absolute inset-x-[12%] top-0 h-px bg-gradient-to-r from-transparent via-[#c9aa4a] to-transparent"
