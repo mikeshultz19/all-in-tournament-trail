@@ -531,10 +531,7 @@ export default function WinnersCircle({
   </div>
 
   <p className="mt-3 break-words text-sm leading-7 text-neutral-300">
-    {latestResults?.tournamentRecap ??
-      (hasResults
-        ? "No tournament recap has been added."
-        : "Tournament recap will be published after results become official.")}
+    {latestResults?.tournamentRecap?.trim() || "Tri-Lakes Recap Coming Soon!"}
   </p>
 </div>
               <div className="mt-5 border border-[#8f762f]/60 bg-[#111111] p-3">

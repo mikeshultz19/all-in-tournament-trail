@@ -199,6 +199,7 @@ describe("homepage latest tournament results", () => {
     expect(html).not.toContain("mad-dawg-graphics-design-wide3.png");
     expect(html).toContain("Tournament Recap");
     expect(html).toContain("Tri-Lakes");
+    expect(html).toContain("Tri-Lakes Recap Coming Soon!");
     expect(html).toContain("FINAL STANDINGS");
     expect(html).toContain("OVERALL CHAMPION");
     expect(html).toContain("SIDE POTS &amp; PAYOUTS");
@@ -228,12 +229,25 @@ describe("homepage latest tournament results", () => {
     expect(html).not.toContain(">Latest Tournament<");
   });
 
+  it("uses the saved recap text on desktop", () => {
+    const html = renderToStaticMarkup(
+      <WinnersCircle
+        latestResults={{ ...latestResults, tournamentRecap: "A saved tournament recap." }}
+      />,
+    );
+
+    expect(html).toContain("A saved tournament recap.");
+    expect(html).not.toContain("Tri-Lakes Recap Coming Soon!");
+  });
+
   it("shows a clean empty state", () => {
     const html = renderToStaticMarkup(
       <WinnersCircle latestResults={null} />,
     );
 
     expect(html).toContain("WINNERS CIRCLE");
+    expect(html).toContain("Tri-Lakes Recap Coming Soon!");
+    expect(html).not.toContain("Tournament recap will be published after results become official.");
     expect(html).toContain("FINAL STANDINGS");
     expect(html).toContain("OVERALL CHAMPION");
     expect(html).toContain("SIDE POTS &amp; PAYOUTS");
