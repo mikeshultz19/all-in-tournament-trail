@@ -119,7 +119,7 @@ function TournamentHeader({
   subtitle?: string;
 }) {
   return (
-    <header className="relative overflow-visible border-b border-[#8f762f]/60 bg-[linear-gradient(90deg,rgba(72,12,28,0.62)_0%,rgba(40,8,18,0.36)_34%,#000000_78%)] px-4 pb-5 pt-8 shadow-[0_10px_30px_rgba(0,0,0,0.35)] sm:px-5">
+    <header className={`${styles.headerShell} relative overflow-visible border-b border-[#8f762f]/60 bg-[linear-gradient(90deg,rgba(72,12,28,0.62)_0%,rgba(40,8,18,0.36)_34%,#000000_78%)] px-3 pb-3 pt-5 shadow-[0_10px_30px_rgba(0,0,0,0.35)] sm:px-4 sm:pb-4 sm:pt-6`}>
       <div
         aria-hidden="true"
         className="absolute inset-x-[12%] top-0 h-px bg-gradient-to-r from-transparent via-[#c9aa4a] to-transparent"
@@ -131,10 +131,10 @@ function TournamentHeader({
         <Trophy aria-hidden="true" className="size-4" />
       </div>
 
-      <div className="relative flex flex-col items-center justify-center text-center">
+      <div className={`${styles.headerContent} relative flex flex-col items-center justify-center text-center`}>
         <div className={styles.bannerFrame}>
           <Image
-            src="/images/winners-circle-banner.png"
+            src="/images/winners-circle-banner2.png"
             alt="WINNERS CIRCLE"
             fill
             priority
@@ -142,9 +142,9 @@ function TournamentHeader({
             className={styles.bannerImage}
           />
         </div>
-        <div className="flex min-w-0 flex-col items-center">
+        <div className={`${styles.headerMeta} flex min-w-0 flex-col items-center`}>
           {subtitle ? (
-            <p className="mt-2 inline-flex max-w-full flex-wrap items-center justify-center gap-x-1.5 gap-y-1 text-[0.72rem] font-semibold uppercase tracking-[0.14em] text-neutral-500 sm:text-[0.8rem]">
+            <p className="mt-1 inline-flex max-w-full flex-wrap items-center justify-center gap-x-1.5 gap-y-1 text-[0.72rem] font-semibold uppercase tracking-[0.14em] text-neutral-500 sm:text-[0.8rem]">
               <MapPin aria-hidden="true" className="size-3.5 shrink-0 text-[#c9aa4a]" />
               {subtitle}
             </p>

@@ -128,11 +128,23 @@
 
 .bannerFrame {
   position: relative;
-  width: min(100%, 1120px);
+  width: 100%;
   aspect-ratio: 5 / 2;
   max-height: 150px;
   overflow: hidden;
   background: transparent;
+}
+
+.headerContent {
+  min-width: 0;
+}
+
+.headerShell {
+  min-height: 0;
+}
+
+.headerMeta {
+  min-width: 0;
 }
 
 .bannerImage {
@@ -143,6 +155,38 @@
 @media (max-width: 767px) {
   .bannerFrame {
     width: 100%;
+    aspect-ratio: 5 / 2;
     max-height: 104px;
+  }
+}
+
+@media (min-width: 768px) {
+  .headerShell {
+    padding-top: 0.9rem;
+    padding-bottom: 0.75rem;
+  }
+
+  .headerContent {
+    display: grid;
+    grid-template-columns: minmax(170px, 1fr) minmax(0, 2.5fr) minmax(40px, 1fr);
+    align-items: center;
+    gap: 16px;
+  }
+
+  .bannerFrame {
+    grid-column: 2;
+    grid-row: 1;
+  }
+
+  .headerMeta {
+    grid-column: 1;
+    grid-row: 1;
+    align-items: flex-start;
+    text-align: left;
+  }
+
+  .headerMeta > p {
+    justify-content: flex-start;
+    text-align: left;
   }
 }
