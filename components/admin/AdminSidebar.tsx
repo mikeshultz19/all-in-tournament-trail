@@ -10,7 +10,7 @@ type NavigationItem = {
 };
 
 const navigationItems: NavigationItem[] = [
-  { href: "/admin", label: "Home" },
+  { href: "/admin", label: "Dashboard" },
   {
     href: "/admin/tournament-manager",
     label: "Tournament Manager",
