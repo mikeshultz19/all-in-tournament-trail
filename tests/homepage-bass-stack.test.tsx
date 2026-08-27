@@ -43,15 +43,20 @@ describe("homepage Bass Stack Phase 1 placement", () => {
   it("renders a visual-only Bass Stack score tracker", () => {
     const html = renderToStaticMarkup(<BassStackScoreTracker />);
 
-    expect(html).toContain("Bass Stack Score Tracker");
-    expect(html).toContain("AITT");
-    expect(html).toContain("Live ScoreTracker");
+    expect(html).toContain("Texas Boat Works Live Score Tracker");
+    expect(html).toContain('font-black tracking-[-0.01em] text-[#0095DF]');
+    expect(html).toContain(">LIVE</span>");
+    expect(html).toContain(">Score Tracker<span");
+    expect(html).toContain("Presented by");
+    expect(html).toContain("REAL-TIME UPDATES");
+    expect(html).not.toContain("AITT Live ScoreTracker");
+    expect(html).not.toContain("Mad Dawg Graphics Live Score Tracker");
     expect(html).not.toContain("Coming Soon");
     expect(html).toContain("Squaw Creek — Feb 14, 2027");
     expect(html).toContain("from-red-950/55");
     expect(html).toContain("Total Weight");
     expect(html).toContain('href="/bass-stack/results"');
-    expect(html).toContain("Tune in live");
+    expect(html).not.toContain("Tune in live");
     expect(html).toContain("View All");
     expect(html).not.toContain("View Full Results");
     expect(html).not.toContain("How Bass Stack Works");
