@@ -27,6 +27,24 @@ const sidePots = [
   },
 ] as const;
 
+function MobileTournamentRecap({ recap }: { recap: string | null | undefined }) {
+  return (
+    <section className="mt-5 min-w-0 rounded-md border border-[#8f762f]/60 bg-[#171717] p-4">
+      <div className="flex items-center gap-2">
+        <span className="inline-flex min-w-[56px] shrink-0 items-center justify-center rounded border border-[#c9aa4a]/70 bg-black/70 px-1.5 py-1 text-center text-[0.45rem] font-black uppercase leading-none tracking-[0.06em] text-[#0095DF]">
+          Tri-Lakes
+        </span>
+        <p className="text-[0.65rem] font-black uppercase tracking-[0.15em] text-neutral-500">
+          Tournament Recap
+        </p>
+      </div>
+      <p className="mt-2 break-words text-sm leading-6 text-neutral-300">
+        {recap?.trim() || "—"}
+      </p>
+    </section>
+  );
+}
+
 
 export default function MobileWinnerCircle({
   latestResults,
@@ -48,6 +66,7 @@ export default function MobileWinnerCircle({
         <p className="mt-3 text-sm text-neutral-400">
           Tournament results will appear here after they are published.
         </p>
+        <MobileTournamentRecap recap={null} />
       </section>
     );
   }
@@ -135,22 +154,6 @@ export default function MobileWinnerCircle({
               : `${champion.weight.toFixed(2)} lbs`}
           </p>
         </div>
-
-        <div className="mt-5 min-w-0 border-t border-white/10 pt-4">
-            <div className="flex items-center gap-2">
-              <span className="inline-flex min-w-[56px] shrink-0 items-center justify-center rounded border border-[#c9aa4a]/70 bg-black/70 px-1.5 py-1 text-center text-[0.45rem] font-black uppercase leading-none tracking-[0.06em] text-[#0095DF]">
-                Tri-Lakes
-              </span>
-              <p className="text-[0.65rem] font-black uppercase tracking-[0.15em] text-neutral-500">
-                Tournament Recap
-              </p>
-            </div>
-
-            <p className="mt-2 break-words text-sm leading-6 text-neutral-300">
-              {latestResults.tournamentRecap ??
-                "No tournament recap has been added."}
-            </p>
-          </div>
 
         <div className="mt-5 space-y-3 border-t border-white/10 pt-4">
           <div className="grid min-w-0 grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] items-start gap-3">
@@ -252,6 +255,8 @@ export default function MobileWinnerCircle({
         >
           View Full Results
         </Link>
+
+        <MobileTournamentRecap recap={latestResults.tournamentRecap} />
       </div>
     </section>
   );

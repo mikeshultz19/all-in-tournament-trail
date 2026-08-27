@@ -171,6 +171,7 @@ describe("homepage latest tournament results", () => {
     expect(html).not.toContain("Big Bass Winner");
     expect(html).not.toContain("Insurance Pot");
     expect(html).toContain("break-words");
+    expect(html).toContain(">—</p>");
   });
 
   it("shows the tournament identity and showcase panels", () => {
