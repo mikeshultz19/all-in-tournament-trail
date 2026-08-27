@@ -11,6 +11,7 @@ import {
   getTournamentRegistrationRoster,
   summarizeTournamentRegistrationRoster,
 } from "@/lib/tournament-registration-roster";
+import { reconcileWeighfishResults } from "@/lib/weighfish-reconciliation";
 
 interface ImportPageProps {
   searchParams: Promise<{ tournament?: string | string[] }>;
@@ -45,12 +46,16 @@ export default async function WeighFishImportPage({
   const { data: importedRows } = await createSupabaseServerClient()
     .from("tournament_result_entries")
     .select(
-      "id,place,team_name,total_weight,big_fish_weight,bronze_payout,silver_payout,gold_payout,participation_status,original_import_data",
+      "id,place,team_name,total_weight,big_fish_weight,bronze_payout,silver_payout,gold_payout,participation_status,original_import_data,registration_id",
     )
     .eq("tournament_id", tournament.id)
     .order("place");
   const hasImportedRows = Boolean(importedRows?.length);
   const roster = await getTournamentRegistrationRoster(tournament.id);
+  const reconciliation = reconcileWeighfishResults({
+    roster: roster.map((entry) => ({ id: entry.id, boatNumber: entry.boatNumber, registrationType: entry.registrationType, angler1Name: entry.angler1.displayName, angler2Name: entry.angler2?.displayName ?? null })),
+    results: (importedRows ?? []).map((row) => ({ id: row.id, place: row.place, teamName: row.team_name, registrationId: row.registration_id })),
+  });
   const summary = summarizeTournamentRegistrationRoster(roster);
   const preparationStatus = getTournamentPreparationStatus(tournament, summary);
   const preparationComplete = preparationStatus === "Complete";
@@ -150,6 +155,8 @@ export default async function WeighFishImportPage({
               tournamentId={tournament.id}
               tournamentSlug={tournament.slug || tournament.id}
               rows={importedRows ?? []}
+              reconciliation={reconciliation}
+              roster={roster.map((entry) => ({ id: entry.id, boatNumber: entry.boatNumber, displayName: entry.registrationType === "team" && entry.angler2 ? `${entry.angler1.displayName} / ${entry.angler2.displayName}` : entry.angler1.displayName }))}
               verified={Boolean(tournament.results_verified_at)}
               published={tournament.result_status === "official"}
             />
