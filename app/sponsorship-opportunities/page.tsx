@@ -146,15 +146,14 @@ export default function SponsorshipOpportunitiesPage() {
                 </div>
               </section>
 
-              <p className="text-base leading-7 text-neutral-300">
-                We would welcome the opportunity to discuss a sponsorship package
-                that fits your business goals.
-              </p>
-              <p className="mt-4 text-base leading-7 text-neutral-300">
-                If you are interested in becoming an AITT sponsor, please contact
-                us and we will get back with you promptly to discuss available
-                opportunities.
-              </p>
+              <div className="mt-10 border-t border-white/10 pt-8">
+                <h2 className="text-xl font-black uppercase tracking-wide text-[#D4A017]">
+                  Ready to Partner With AITT?
+                </h2>
+                <p className="mt-2 text-base leading-7 text-neutral-300">
+                  We’d welcome the opportunity to build a sponsorship package that fits your business goals.
+                </p>
+              </div>
               <Link
                 href="/contact"
                 className="mt-7 inline-flex min-h-12 items-center justify-center bg-red-700 px-7 py-3 text-sm font-black uppercase tracking-wider text-white transition hover:bg-red-600 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#D4A017]"
