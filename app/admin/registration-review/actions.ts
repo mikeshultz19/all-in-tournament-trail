@@ -4,6 +4,9 @@ import { revalidatePath } from "next/cache";
 
 import { requireAdminUser } from "@/lib/admin-auth";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { getAdminMemberById } from "@/lib/admin-members";
+import { getMembershipForAnglerAndSeason, listMembersForSeason } from "@/lib/memberships";
+import { getTournamentById } from "@/lib/tournaments";
 import {
   createWalkUpRegistrationDraft,
   getWalkUpPricing,
@@ -37,6 +40,71 @@ function membership(value: string) {
     : null;
 }
 
+export type WalkUpMemberSearchResult = {
+  anglerId: string;
+  displayName: string;
+  emailHint: string;
+  phoneHint: string;
+  membershipStatus: string;
+};
+
+function maskEmail(value: string | null) {
+  if (!value) return "No email";
+  const [local, domain] = value.split("@", 2);
+  return `${(local?.[0] ?? "*")}***@${domain ?? ""}`;
+}
+
+function maskPhone(value: string | null) {
+  const digits = (value ?? "").replace(/\D/g, "");
+  return digits.length >= 4 ? `***-***-${digits.slice(-4)}` : "No phone";
+}
+
+export async function searchWalkUpMembersAction(
+  tournamentId: string,
+  query: string,
+): Promise<WalkUpMemberSearchResult[]> {
+  await requireAdminUser();
+  const term = query.trim();
+  if (term.length < 2) return [];
+  const tournament = await getTournamentById(tournamentId);
+  if (!tournament?.season_id) return [];
+  const result = await listMembersForSeason(tournament.season_id, {
+    search: term,
+    active: true,
+    page: 1,
+    pageSize: 10,
+  });
+  return result.members.map((member) => ({
+    anglerId: member.angler_id,
+    displayName: member.display_name,
+    emailHint: maskEmail(member.email),
+    phoneHint: maskPhone(member.phone),
+    membershipStatus: member.membership_status,
+  }));
+}
+
+export async function getWalkUpMemberAction(tournamentId: string, anglerId: string) {
+  await requireAdminUser();
+  const member = await getAdminMemberById(anglerId);
+  if (!member) return null;
+  const tournament = await getTournamentById(tournamentId);
+  const membershipRecord = tournament?.season_id
+    ? await getMembershipForAnglerAndSeason(member.id, tournament.season_id)
+    : null;
+  return {
+    anglerId: member.id,
+    firstName: member.firstName,
+    lastName: member.lastName,
+    streetAddress: member.streetAddress,
+    city: member.city,
+    state: member.state,
+    zipCode: member.zipCode,
+    email: member.email,
+    phone: member.phone,
+    membershipStatus: membershipRecord?.status ?? null,
+  };
+}
+
 function revalidateRegistrationOperations() {
   revalidatePath("/admin");
   revalidatePath("/admin/members");
@@ -59,6 +127,10 @@ export async function createWalkUpRegistrationAction(
   const paymentMethod = text(formData, "paymentMethod");
   const angler1Membership = membership(text(formData, "angler1Membership"));
   const angler2Membership = membership(text(formData, "angler2Membership"));
+  const selectedMemberIds = [
+    text(formData, "angler1SelectedMemberId") || null,
+    registrationType === "team" ? (text(formData, "angler2SelectedMemberId") || null) : null,
+  ];
 
   const anglers = [
     {
@@ -94,6 +166,17 @@ export async function createWalkUpRegistrationAction(
     || anglers.some((angler) => !angler.firstName || !angler.lastName || !angler.streetAddress || !angler.city || !angler.state || !angler.zipCode || !angler.email || !angler.mobilePhone || !angler.membership)
   ) {
     return { status: "error", message: "Complete all required walk-up registration fields.", draft };
+  }
+
+  const selectedIds = selectedMemberIds.filter((id): id is string => Boolean(id));
+  if (new Set(selectedIds).size !== selectedIds.length) {
+    return { status: "error", message: "Select two different members for a Team entry.", draft };
+  }
+  for (const selectedId of selectedIds) {
+    const selected = await getAdminMemberById(selectedId);
+    if (!selected || !selected.active || selected.mergedIntoAnglerId) {
+      return { status: "error", message: "The selected member is no longer active. Search again.", draft };
+    }
   }
 
   const memberPotValue = text(formData, "memberPot");

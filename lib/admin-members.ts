@@ -22,10 +22,15 @@ export interface AdminMemberDetail {
   email: string | null;
   phone: string | null;
   active: boolean;
+  mergedIntoAnglerId: string | null;
   membershipStatus: MembershipStatus | null;
   seasonName: string | null;
   firstEligibleTournamentName: string | null;
   effectiveDate: string | null;
+  streetAddress: string | null;
+  city: string | null;
+  state: string | null;
+  zipCode: string | null;
 }
 
 export class AdminMemberDataError extends Error {
@@ -73,7 +78,12 @@ type AdminMemberDetailQueryRow = {
   last_name: string;
   email: string | null;
   phone: string | null;
+  street_address: string | null;
+  city: string | null;
+  state: string | null;
+  zip_code: string | null;
   is_active: boolean;
+  merged_into_angler_id: string | null;
   memberships: Array<{
     status: MembershipStatus;
     effective_date: string;
@@ -95,7 +105,7 @@ export async function getAdminMemberById(
   const { data, error } = await supabase
     .from("anglers")
     .select(
-      "id,first_name,last_name,email,phone,is_active,memberships(status,effective_date,updated_at,season:seasons!inner(name,is_active),first_eligible_tournament:tournaments!memberships_first_eligible_tournament_id_fkey(name))",
+      "id,first_name,last_name,email,phone,street_address,city,state,zip_code,is_active,merged_into_angler_id,memberships(status,effective_date,updated_at,season:seasons!inner(name,is_active),first_eligible_tournament:tournaments!memberships_first_eligible_tournament_id_fkey(name))",
     )
     .eq("id", memberId)
     .maybeSingle();
@@ -130,7 +140,12 @@ export async function getAdminMemberById(
     lastName: row.last_name,
     email: row.email,
     phone: row.phone,
+    streetAddress: row.street_address,
+    city: row.city,
+    state: row.state,
+    zipCode: row.zip_code,
     active: row.is_active,
+    mergedIntoAnglerId: row.merged_into_angler_id,
     membershipStatus: membership?.status ?? null,
     seasonName: membership?.season.name ?? null,
     firstEligibleTournamentName:

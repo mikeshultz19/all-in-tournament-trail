@@ -1,12 +1,14 @@
 "use client";
 
-import { useActionState, useEffect, useState, type ReactNode } from "react";
+import { useActionState, useEffect, useRef, useState, useTransition, type ReactNode } from "react";
 import { useRouter } from "next/navigation";
 
 import {
   cancelWalkUpRegistrationAction,
   createWalkUpRegistrationAction,
   updateRegistrationOperationsAction,
+  getWalkUpMemberAction,
+  searchWalkUpMembersAction,
   type RegistrationOperationsActionState,
 } from "@/app/admin/registration-review/actions";
 import { adminButtonStyles } from "@/components/admin/admin-button-styles";
@@ -45,9 +47,13 @@ export function AddWalkUpControl({ tournamentId }: { tournamentId: string }) {
   const [memberPot, setMemberPot] = useState<WalkUpRegistrationDraft["memberPot"]>(initialDraft.memberPot);
   const [bigBass, setBigBass] = useState(initialDraft.bigBass);
   const [insurance, setInsurance] = useState(initialDraft.insurance);
+  const [selectedMembers, setSelectedMembers] = useState<{ 1: string | null; 2: string | null }>({ 1: null, 2: null });
+  const [formInstance, setFormInstance] = useState(0);
+  const [displayState, setDisplayState] = useState<RegistrationOperationsActionState>(initialState);
   const [state, action, pending] = useActionState(
     async (previousState: RegistrationOperationsActionState, formData: FormData) => {
       const nextState = await createWalkUpRegistrationAction(previousState, formData);
+      setDisplayState(nextState);
       if (nextState.status === "success") {
         setRegistrationType(initialDraft.registrationType);
         setPaymentMethod(initialDraft.paymentMethod);
@@ -56,6 +62,7 @@ export function AddWalkUpControl({ tournamentId }: { tournamentId: string }) {
         setMemberPot(initialDraft.memberPot);
         setBigBass(initialDraft.bigBass);
         setInsurance(initialDraft.insurance);
+        setSelectedMembers({ 1: null, 2: null });
       }
       return nextState;
     },
@@ -65,7 +72,7 @@ export function AddWalkUpControl({ tournamentId }: { tournamentId: string }) {
 
   const draft = state.draft ?? initialDraft;
   const formKey =
-    state.status === "error" ? JSON.stringify(draft) : "walk-up-form-default";
+    state.status === "error" ? `${JSON.stringify(draft)}:${formInstance}` : `walk-up-form-default:${formInstance}`;
   const memberships = registrationType === "team"
     ? [angler1Membership, angler2Membership]
     : [angler1Membership];
@@ -82,6 +89,14 @@ export function AddWalkUpControl({ tournamentId }: { tournamentId: string }) {
     insurance,
   });
   const totalCollectedCents = walkUpPricing.totalCollectedCents;
+
+  function closeWalkUp() {
+    const details = document.querySelector<HTMLDetailsElement>("details[data-walk-up-panel]");
+    if (details) details.open = false;
+    setFormInstance((current) => current + 1);
+    setSelectedMembers({ 1: null, 2: null });
+    setDisplayState(initialState);
+  }
 
   function updateRegistrationType(value: "solo" | "team") {
     setRegistrationType(value);
@@ -107,19 +122,14 @@ export function AddWalkUpControl({ tournamentId }: { tournamentId: string }) {
   }
 
   return (
-    <details className="relative border border-[#D4A017]/30 bg-[#111] p-4">
+    <details data-walk-up-panel className="relative border border-[#D4A017]/30 bg-[#111] p-4">
       <summary className="cursor-pointer list-none text-sm font-black uppercase text-[#D4A017] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#D4A017]">
         + Add Walk-Up
       </summary>
       <button
         type="button"
         aria-label="Close walk-up form"
-        onClick={(event) => {
-          const details = event.currentTarget.closest("details");
-          if (details instanceof HTMLDetailsElement) {
-            details.open = false;
-          }
-        }}
+        onClick={closeWalkUp}
         className="absolute right-4 top-4 flex size-7 items-center justify-center border border-white/20 bg-black/70 text-xs font-black text-white transition hover:border-[#D4A017] hover:text-[#D4A017] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#D4A017]"
       >
         ×
@@ -142,6 +152,7 @@ export function AddWalkUpControl({ tournamentId }: { tournamentId: string }) {
               <option value="team">Team</option>
               <option value="solo">Solo</option>
             </select>
+            {registrationType === "solo" ? <p className="mt-2 text-xs font-bold text-red-300">Verify this entry is not part of an existing team.</p> : null}
           </Field>
           <Field label="Payment Method">
             <select
@@ -156,8 +167,10 @@ export function AddWalkUpControl({ tournamentId }: { tournamentId: string }) {
             </select>
           </Field>
         </div>
-        <AnglerFields position={1} required draft={draft} membershipValue={angler1Membership} onMembershipChange={(value) => updateMembership(1, value)} />
-        <AnglerFields position={2} draft={draft} membershipValue={angler2Membership} onMembershipChange={(value) => updateMembership(2, value)} />
+        <AnglerFields key="angler-1" position={1} required draft={draft} tournamentId={tournamentId} selectedOtherMemberId={selectedMembers[2]} onSelectedMember={(id) => setSelectedMembers((current) => ({ ...current, 1: id }))} membershipValue={angler1Membership} onMembershipChange={(value) => updateMembership(1, value)} />
+        <input type="hidden" name="angler1SelectedMemberId" value={selectedMembers[1] ?? ""} />
+        <AnglerFields key="angler-2" position={2} draft={draft} tournamentId={tournamentId} selectedOtherMemberId={selectedMembers[1]} onSelectedMember={(id) => setSelectedMembers((current) => ({ ...current, 2: id }))} membershipValue={angler2Membership} onMembershipChange={(value) => updateMembership(2, value)} />
+        <input type="hidden" name="angler2SelectedMemberId" value={selectedMembers[2] ?? ""} />
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           <Field label="Member Pot">
             <select
@@ -201,7 +214,15 @@ export function AddWalkUpControl({ tournamentId }: { tournamentId: string }) {
           >
             {pending ? "Saving..." : "Save Walk-Up"}
           </button>
-          <ActionMessage state={state} />
+          <span className="min-w-0 flex-1"><ActionMessage state={displayState} /></span>
+          <button
+            type="button"
+            onClick={closeWalkUp}
+            className="ml-auto flex size-7 shrink-0 items-center justify-center border border-white/20 bg-black/70 text-xs font-black text-white transition hover:border-[#D4A017] hover:text-[#D4A017] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#D4A017]"
+            aria-label="Close walk-up form"
+          >
+            ×
+          </button>
         </div>
       </form>
     </details>
@@ -211,17 +232,63 @@ export function AddWalkUpControl({ tournamentId }: { tournamentId: string }) {
 function AnglerFields({
   position,
   draft,
+  tournamentId,
+  selectedOtherMemberId,
+  onSelectedMember,
   required = false,
   membershipValue,
   onMembershipChange,
 }: {
   position: 1 | 2;
   draft: WalkUpRegistrationDraft;
+  tournamentId: string;
+  selectedOtherMemberId: string | null;
+  onSelectedMember: (id: string | null) => void;
   required?: boolean;
   membershipValue: Membership;
   onMembershipChange: (membership: Membership) => void;
 }) {
   const prefix = `angler${position}` as const;
+  const fieldsetRef = useRef<HTMLFieldSetElement>(null);
+  const [memberLookup, setMemberLookup] = useState(false);
+  const [search, setSearch] = useState("");
+  const [results, setResults] = useState<Awaited<ReturnType<typeof searchWalkUpMembersAction>>>([]);
+  const [selectedName, setSelectedName] = useState<string | null>(null);
+  const [lookupError, setLookupError] = useState("");
+  const [searching, startSearch] = useTransition();
+  useEffect(() => {
+    if (!memberLookup || search.trim().length < 2) return;
+    const timer = window.setTimeout(() => startSearch(async () => {
+      try { setLookupError(""); setResults(await searchWalkUpMembersAction(tournamentId, search)); }
+      catch { setResults([]); setLookupError("Member search is unavailable."); }
+    }), 250);
+    return () => window.clearTimeout(timer);
+  }, [memberLookup, search, tournamentId]);
+
+  function selectMember(id: string) {
+    if (id === selectedOtherMemberId) { setLookupError("That member is already selected for the other angler."); return; }
+    startSearch(async () => {
+      const member = await getWalkUpMemberAction(tournamentId, id);
+      if (!member) { setLookupError("Member is no longer available."); return; }
+      const values: Record<string, string> = {
+        [`${prefix}FirstName`]: member.firstName,
+        [`${prefix}LastName`]: member.lastName,
+        [`${prefix}StreetAddress`]: member.streetAddress ?? "",
+        [`${prefix}City`]: member.city ?? "",
+        [`${prefix}State`]: member.state ?? "",
+        [`${prefix}ZipCode`]: member.zipCode ?? "",
+        [`${prefix}Email`]: member.email ?? "",
+        [`${prefix}Phone`]: member.phone ?? "",
+      };
+      Object.entries(values).forEach(([name, value]) => {
+        const input = fieldsetRef.current?.querySelector<HTMLInputElement>(`[name="${name}"]`);
+        if (input) { input.value = value; input.dispatchEvent(new Event("input", { bubbles: true })); }
+      });
+      onMembershipChange(member.membershipStatus === "active" ? "current" : "non-member");
+      setSelectedName(`${member.firstName} ${member.lastName}`);
+      setSearch(""); setResults([]); setLookupError(""); onSelectedMember(id);
+    });
+  }
   const values =
     position === 1
       ? {
@@ -248,12 +315,25 @@ function AnglerFields({
         };
 
   return (
-    <fieldset className="border border-white/10 p-3">
+    <fieldset ref={fieldsetRef} className="border border-white/10 p-3">
       <legend className="px-2 text-xs font-black uppercase text-white">
         Angler {position}
         {required ? "" : " — Team Entries"}
       </legend>
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+        <label className="flex items-center gap-2 text-[11px] font-bold uppercase text-neutral-300 sm:col-span-2 lg:col-span-4">
+          <input type="checkbox" checked={memberLookup} onChange={(event) => { setMemberLookup(event.target.checked); if (!event.target.checked) { setSelectedName(null); onSelectedMember(null); } }} />
+          Member Search
+        </label>
+        {memberLookup ? <div className="relative sm:col-span-2 lg:col-span-4">
+          <label className="text-xs font-bold uppercase text-neutral-400">Find Existing Member</label>
+          <input className={input} value={search} onChange={(event) => { setSearch(event.target.value); if (event.target.value.trim().length < 2) setResults([]); }} placeholder="Name, phone, or email" />
+          {searching ? <p className="mt-1 text-xs text-neutral-400">Searching…</p> : null}
+          {!searching && search.trim().length >= 2 && results.length === 0 && !lookupError ? <p className="mt-1 text-xs text-neutral-400">No members found.</p> : null}
+          {lookupError ? <p className="mt-1 text-xs text-red-300">{lookupError}</p> : null}
+          {results.length > 0 ? <div className="absolute z-10 mt-1 w-full border border-[#D4A017]/40 bg-[#111] shadow-xl">{results.map((result) => <button key={result.anglerId} type="button" className="block w-full border-b border-white/10 px-3 py-2 text-left text-xs hover:bg-white/10" onClick={() => selectMember(result.anglerId)}><span className="block font-bold text-white">{result.displayName}</span><span className="text-neutral-400">{result.emailHint} · {result.phoneHint} · {result.membershipStatus === "active" ? "Current Member" : result.membershipStatus}</span></button>)}</div> : null}
+          {selectedName ? <p className="mt-1 text-xs font-bold text-[#D4A017]">Selected: {selectedName} · <button type="button" className="underline" onClick={() => { setSelectedName(null); onSelectedMember(null); }}>Change</button></p> : null}
+        </div> : null}
         <Field label="First Name">
           <input
             name={`${prefix}FirstName`}
@@ -539,8 +619,7 @@ function Check({
       <input
         name={name}
         type="checkbox"
-        defaultChecked={defaultChecked}
-        checked={checked}
+        {...(checked === undefined ? { defaultChecked } : { checked })}
         disabled={disabled}
         onChange={onChange ? (event) => onChange(event.target.checked) : undefined}
         className="size-4 accent-red-600"

@@ -156,9 +156,9 @@ describe("walk-up registration draft preservation", () => {
     expect(controls).toContain(
       'const formKey =',
     );
-    expect(controls).toContain(
-      'state.status === "error" ? JSON.stringify(draft) : "walk-up-form-default"',
-    );
+    expect(controls).toContain('state.status === "error" ? `${JSON.stringify(draft)}:${formInstance}`');
+    expect(controls).toContain('setFormInstance((current) => current + 1)');
+    expect(controls).toContain('setDisplayState(initialState);');
     expect(controls).toContain("key={formKey}");
     expect(controls).toContain("getWalkUpDisplayPricing");
     expect(controls).toContain('name="totalPaid"');
@@ -241,5 +241,28 @@ describe("walk-up registration draft preservation", () => {
     expect(controls).toContain('details.open = false;');
     expect(controls).toContain('className="absolute right-4 top-4');
     expect(controls).not.toContain('type="submit" aria-label="Close walk-up form"');
+  });
+
+  it("keeps Team Angler 1 and Angler 2 member lookup state and field prefixes independent", () => {
+    const controls = readFileSync(
+      "components/admin/RegistrationOperationsControls.tsx",
+      "utf8",
+    );
+    expect(controls).toContain('key="angler-1"');
+    expect(controls).toContain('key="angler-2"');
+    expect(controls).toContain('const prefix = `angler${position}` as const;');
+    expect(controls).toContain('name="angler1SelectedMemberId"');
+    expect(controls).toContain('name="angler2SelectedMemberId"');
+    expect(controls).toContain('selectedOtherMemberId');
+    expect(controls).toContain('getWalkUpMemberAction(tournamentId, id)');
+  });
+
+  it("shows the Solo team-membership reminder only for Solo entries", () => {
+    const controls = readFileSync(
+      "components/admin/RegistrationOperationsControls.tsx",
+      "utf8",
+    );
+    expect(controls).toContain('registrationType === "solo"');
+    expect(controls).toContain("Verify this entry is not part of an existing team.");
   });
 });
