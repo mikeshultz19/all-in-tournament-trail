@@ -201,6 +201,17 @@ describe("public sponsorship paths", () => {
     expect(opportunityHtml).toContain("Sponsorship benefits may include");
     expect(opportunityHtml).toContain("Website exposure");
     expect(opportunityHtml).toContain("Tournament recognition");
+    expect(opportunityHtml).toContain("Sponsorship Levels");
+    expect(opportunityHtml).toContain("Supporting Sponsor");
+    expect(opportunityHtml).toContain("Under $1,000");
+    expect(opportunityHtml).toContain("Silver Sponsor");
+    expect(opportunityHtml).toContain("$1,000–$2,499");
+    expect(opportunityHtml).toContain("Gold Sponsor");
+    expect(opportunityHtml).toContain("$2,500–$4,999");
+    expect(opportunityHtml).toContain("Premier Sponsor");
+    expect(opportunityHtml).toContain("$5,000+");
+    expect(opportunityHtml).toContain("Custom Sponsorship Opportunities");
+    expect(opportunityHtml).toContain("Sponsorship Value");
     expect(opportunityHtml).toContain("Contact Us");
     expect(opportunityHtml).toContain('href="/contact"');
     expect(opportunityHtml).toContain("break-words");

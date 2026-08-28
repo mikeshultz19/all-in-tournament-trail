@@ -23,6 +23,29 @@ const sponsorshipBenefits = [
   "Future promotional opportunities",
 ];
 
+const sponsorshipLevels = [
+  {
+    name: "Supporting Sponsor",
+    range: "Under $1,000",
+    copy: "Official AITT sponsor recognition, logo and business listing on the Sponsors Page, website link, sponsor announcement, and occasional social-media recognition.",
+  },
+  {
+    name: "Silver Sponsor",
+    range: "$1,000–$2,499",
+    copy: "Everything in Supporting, plus seasonal recognition, approved sponsor promotions, standard logo placement on applicable event signage, prize/program recognition, and the opportunity to provide promotional materials to anglers.",
+  },
+  {
+    name: "Gold Sponsor",
+    range: "$2,500–$4,999",
+    copy: "Everything in Silver, plus larger and more prominent event branding, enhanced Sponsors Page recognition, featured social-media exposure, and the opportunity for an approved on-site presence at regular-season events.",
+  },
+  {
+    name: "Premier Sponsor",
+    range: "$5,000+",
+    copy: "AITT’s highest sponsorship level. Includes priority event branding, Premier placement on the Sponsors Page, homepage recognition, enhanced Championship exposure, priority social-media recognition, and first consideration for Championship, event, prize, or presenting sponsorship opportunities.",
+  },
+] as const;
+
 export default function SponsorshipOpportunitiesPage() {
   return (
     <main className="min-h-screen overflow-x-hidden bg-black text-white">
@@ -69,6 +92,60 @@ export default function SponsorshipOpportunitiesPage() {
             </div>
 
             <div className="mt-10 max-w-4xl">
+              <section aria-labelledby="sponsorship-levels-heading" className="max-w-6xl">
+                <h2
+                  id="sponsorship-levels-heading"
+                  className="break-words text-2xl font-black uppercase tracking-wide text-[#D4A017]"
+                >
+                  Sponsorship Levels
+                </h2>
+                <p className="mt-3 max-w-4xl text-sm leading-6 text-neutral-300 sm:text-base sm:leading-7">
+                  AITT sponsorship levels are based on total approved sponsorship value, including cash, products, prizes, gift cards, and services. Each level builds on the benefits of the tier below it.
+                </p>
+
+                <div className="mt-6 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+                  {sponsorshipLevels.map((level, index) => (
+                    <article
+                      key={level.name}
+                      className={`flex min-w-0 flex-col border bg-[#111111] p-5 ${
+                        index >= 2
+                          ? "border-[#D4A017]/60"
+                          : "border-white/15"
+                      } ${index === 3 ? "shadow-[0_8px_24px_rgba(212,160,23,0.12)]" : ""}`}
+                    >
+                      <h3 className="break-words text-base font-black uppercase tracking-wide text-white">
+                        {level.name}
+                      </h3>
+                      <p className="mt-1 text-sm font-black text-[#D4A017]">
+                        {level.range}
+                      </p>
+                      <p className="mt-4 text-sm leading-6 text-neutral-300">
+                        {level.copy}
+                      </p>
+                    </article>
+                  ))}
+                </div>
+
+                <div className="mt-8 grid gap-6 border-t border-white/10 pt-6 md:grid-cols-2">
+                  <div>
+                    <h3 className="text-base font-black uppercase tracking-wide text-[#D4A017]">
+                      Custom Sponsorship Opportunities
+                    </h3>
+                    <p className="mt-2 text-sm leading-6 text-neutral-300">
+                      AITT can also build custom partnerships around individual tournaments, the Championship, Big Bass, prizes, products, services, and presenting sponsorships. Category exclusivity and naming rights may also be available through separate agreements.
+                    </p>
+                  </div>
+                  <div>
+                    <h3 className="text-base font-black uppercase tracking-wide text-[#D4A017]">
+                      Sponsorship Value
+                    </h3>
+                    <p className="mt-2 text-sm leading-6 text-neutral-300">
+                      Non-cash contributions such as products, prizes, gift cards, and services may count toward sponsorship level based on an AITT-approved value. Event participation and physical branding are subject to available space, venue requirements, and AITT approval.
+                    </p>
+                  </div>
+                </div>
+              </section>
+
               <p className="text-base leading-7 text-neutral-300">
                 We would welcome the opportunity to discuss a sponsorship package
                 that fits your business goals.
