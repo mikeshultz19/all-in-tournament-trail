@@ -70,7 +70,7 @@ function TournamentRow({ tournament }: { tournament: PublicTournamentRecord }) {
           />
           <div className="absolute inset-x-0 top-0 bg-gradient-to-b from-black/90 to-transparent px-3 pb-8 pt-2.5 sm:px-4 sm:pt-3">
             <h3 className="text-sm font-bold uppercase leading-tight tracking-wide text-white">
-              {tournament.name}
+              {tournament.lake}
             </h3>
           </div>
         </div>
