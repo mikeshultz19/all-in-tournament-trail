@@ -2,6 +2,7 @@ import { ArrowLeft, Check } from "lucide-react";
 import Link from "next/link";
 
 import TournamentInformationForm from "@/components/admin/TournamentInformationForm";
+import TournamentInformationSelector from "@/components/admin/TournamentInformationSelector";
 import TournamentResetForm from "@/components/admin/TournamentResetForm";
 import {
   getTournamentResetPreview,
@@ -10,6 +11,7 @@ import {
 import {
   getNextUpcomingTournament,
   getTournamentByIdentifier,
+  getTournaments,
 } from "@/lib/tournaments";
 
 interface TournamentAdminPageProps {
@@ -17,6 +19,7 @@ interface TournamentAdminPageProps {
     tournament?: string | string[];
     reset?: string;
     resetError?: string;
+    saved?: string;
   }>;
 }
 
@@ -31,11 +34,13 @@ export default async function TournamentAdminPage({
     : params.tournament;
 
   let tournament = null;
+  let tournaments: Awaited<ReturnType<typeof getTournaments>> = [];
   let resetPreview = null;
   const resetEnabled = isTournamentResetEnabled();
   let loadFailed = false;
 
   try {
+    tournaments = await getTournaments();
     tournament = requestedTournament
       ? await getTournamentByIdentifier(requestedTournament)
       : await getNextUpcomingTournament();
@@ -72,6 +77,20 @@ export default async function TournamentAdminPage({
 
       {tournament ? (
         <>
+          <section className="mt-6 border border-white/10 bg-[#111111] p-5 sm:p-6">
+            <TournamentInformationSelector
+              tournaments={tournaments.map((item) => ({
+                id: item.id,
+                label: `${item.lake} — ${new Intl.DateTimeFormat("en-US", {
+                  month: "short",
+                  day: "numeric",
+                  year: "numeric",
+                  timeZone: "America/Chicago",
+                }).format(new Date(item.tournament_date))}`,
+              }))}
+              selectedTournamentId={tournament.id}
+            />
+          </section>
           <aside className="mt-6 border border-[#4A3A12] bg-[#D4A017]/5 p-5">
             <p className="text-xs font-black uppercase tracking-[0.14em] text-[#D4A017]">
               This information appears on
@@ -93,6 +112,11 @@ export default async function TournamentAdminPage({
             </ul>
           </aside>
           <div className="mt-6">
+            {params.saved === "1" && (
+              <p className="mb-6 border border-emerald-500/30 bg-emerald-500/10 px-4 py-3 text-sm font-semibold text-emerald-300" role="status">
+                {tournament.name} tournament information was updated successfully.
+              </p>
+            )}
             <TournamentInformationForm
               key={tournament.id}
               tournament={tournament}

@@ -189,9 +189,24 @@ export default function TournamentInformationForm({
             Morning Registration
             <input
               name="morningRegistration"
+              type="text"
+              inputMode="numeric"
+              required
+              placeholder="05:00"
+              pattern="([01][0-9]|2[0-3]):[0-5][0-9]"
               defaultValue={values.morningRegistration}
+              aria-invalid={Boolean(state.errors.morningRegistration)}
+              aria-describedby={
+                state.errors.morningRegistration
+                  ? "morningRegistration-error"
+                  : undefined
+              }
               className={inputClassName}
             />
+            <p className="mt-2 text-xs font-normal normal-case tracking-normal text-neutral-500">
+              Use 24-hour HH:mm format. Example: 05:00
+            </p>
+            <FieldError errors={state.errors} field="morningRegistration" />
           </label>
           <label className={labelClassName}>
             Scales Close

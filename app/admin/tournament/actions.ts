@@ -51,5 +51,7 @@ export async function saveTournamentAction(
     };
   }
 
-  redirect(`/admin?tournament=${encodeURIComponent(tournamentId)}`);
+  redirect(
+    `/admin/tournament?tournament=${encodeURIComponent(tournamentId)}&saved=1`,
+  );
 }

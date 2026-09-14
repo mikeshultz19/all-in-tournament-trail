@@ -1,4 +1,7 @@
-import { tournamentDateTimeToUtc } from "@/lib/tournament-time";
+import {
+  isValidTournamentTime,
+  tournamentDateTimeToUtc,
+} from "@/lib/tournament-time";
 import {
   TOURNAMENT_STATUSES,
   type Tournament,
@@ -14,6 +17,7 @@ export interface TournamentFormErrors {
   hours?: string;
   stopFishing?: string;
   scalesClose?: string;
+  morningRegistration?: string;
   registrationCloses?: string;
   registrationInformation?: string;
   practiceInformation?: string;
@@ -138,6 +142,11 @@ export function validateTournamentForm(
     errors.tournamentDate = "Enter a valid tournament date and time.";
   }
 
+  if (!isValidTournamentTime(values.morningRegistration)) {
+    errors.morningRegistration =
+      "Please enter the time in HH:mm format, for example 05:00.";
+  }
+
   if (
     !TOURNAMENT_STATUSES.includes(values.status as TournamentStatus)
   ) {
@@ -180,6 +189,10 @@ export function validateTournamentForm(
 export function tournamentFormToUpdate(
   values: TournamentFormValues,
 ): TournamentUpdate {
+  if (!isValidTournamentTime(values.morningRegistration)) {
+    throw new Error("Invalid tournament morning registration time.");
+  }
+
   return {
     name: values.name,
     lake: values.lake,
@@ -190,7 +203,7 @@ export function tournamentFormToUpdate(
     stop_fishing: values.stopFishing || null,
     scales_close: values.scalesClose || null,
     launch_type: values.launchType || null,
-    morning_registration: values.morningRegistration || null,
+    morning_registration: values.morningRegistration,
     registration_information: values.registrationInformation || null,
     practice_information: values.practiceInformation || null,
     status: values.status,

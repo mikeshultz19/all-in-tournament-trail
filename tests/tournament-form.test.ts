@@ -15,6 +15,7 @@ function validFormData(): FormData {
   formData.set("tournamentDate", "2026-08-16T06:00");
   formData.set("hours", "Safe Light – 3:00 PM");
   formData.set("stopFishing", "Stop Fishing: 3:00 PM");
+  formData.set("morningRegistration", "05:00");
   formData.set("registrationOpens", "2026-07-01T08:00");
   formData.set("registrationCloses", "2026-08-15T18:00");
   formData.set(
@@ -84,6 +85,7 @@ describe("Tournament Information form", () => {
       show_on_homepage: true,
       hours: "Safe Light – 3:00 PM",
       stop_fishing: "Stop Fishing: 3:00 PM",
+      morning_registration: "05:00",
       registration_information:
         "Online registration closes Friday at 6:00 PM.",
       practice_information:
@@ -92,6 +94,32 @@ describe("Tournament Information form", () => {
     });
     expect(update.tournament_date).toBe("2026-08-16T11:00:00.000Z");
   });
+
+  it("trims and persists canonical morning registration times", () => {
+    const formData = validFormData();
+    formData.set("morningRegistration", " 05:00 ");
+    const values = tournamentFormData(formData);
+
+    expect(values.morningRegistration).toBe("05:00");
+    expect(validateTournamentForm(values).morningRegistration).toBeUndefined();
+    expect(tournamentFormToUpdate(values).morning_registration).toBe("05:00");
+  });
+
+  it.each(["", "not-a-time", "5:00am", "5:00 AM", "25:00"])(
+    "rejects invalid morning registration time %s",
+    (morningRegistration) => {
+      const formData = validFormData();
+      formData.set("morningRegistration", morningRegistration);
+      const values = tournamentFormData(formData);
+
+      expect(validateTournamentForm(values).morningRegistration).toBe(
+        "Please enter the time in HH:mm format, for example 05:00.",
+      );
+      expect(() => tournamentFormToUpdate(values)).toThrow(
+        "Invalid tournament morning registration time.",
+      );
+    },
+  );
 
   it("keeps practice information optional and rejects oversized content", () => {
     const formData = validFormData();

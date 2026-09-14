@@ -93,6 +93,21 @@ describe("tournament status and registration", () => {
     expect(availability.reason).toBe("Online registration is open.");
   });
 
+  it("fails closed without throwing when an optional tournament time is malformed", () => {
+    const malformed = tournament({
+      tournamentMorningRegistrationOpensAt: "5:00am",
+    });
+
+    const availability = getRegistrationAvailability(malformed);
+    const operations = getTournamentOperationsViewModel(malformed);
+
+    expect(availability.canSubmit).toBe(false);
+    expect(availability.period).toBe("fully_closed");
+    expect(availability.reason).toContain("timing requires review");
+    expect(operations.registrationCanSubmit).toBe(false);
+    expect(operations.tournamentMorningWindow).toBeNull();
+  });
+
   it("uses the rescheduled date for safe light and registration timing", () => {
     const rescheduled = tournament({ tournamentStatus: "rescheduled", rescheduledDate: "2027-03-14" });
     const operations = getTournamentOperationsViewModel(rescheduled, new Date("2027-03-12T12:00:00Z"));

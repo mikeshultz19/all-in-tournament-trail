@@ -32,6 +32,30 @@ export interface RegistrationAvailability {
   morningClosesAt: Date | null;
 }
 
+function optionalTournamentTime(
+  tournament: Tournament,
+  effectiveDate: string,
+  field: "tournamentMorningRegistrationOpensAt" | "tournamentMorningRegistrationClosesAt",
+): { value: Date | null; valid: boolean } {
+  const time = tournament[field];
+  if (!time) {
+    return { value: null, valid: true };
+  }
+
+  try {
+    return {
+      value: tournamentDateTimeToUtc(effectiveDate, time),
+      valid: true,
+    };
+  } catch (error) {
+    console.error(
+      `Invalid ${field} for tournament ${tournament.slug || tournament.name}.`,
+      error,
+    );
+    return { value: null, valid: false };
+  }
+}
+
 export function getRegistrationAvailability(
   tournament: Tournament,
   now: Date = new Date(),
@@ -42,20 +66,29 @@ export function getRegistrationAvailability(
     previousTournamentDate(effectiveDate),
     tournament.earlyRegistrationDeadlineTime,
   );
-  const morningOpensAt = tournament.tournamentMorningRegistrationOpensAt
-    ? tournamentDateTimeToUtc(
-        effectiveDate,
-        tournament.tournamentMorningRegistrationOpensAt,
-      )
-    : null;
-  const morningClosesAt = tournament.tournamentMorningRegistrationClosesAt
-    ? tournamentDateTimeToUtc(
-        effectiveDate,
-        tournament.tournamentMorningRegistrationClosesAt,
-      )
-    : null;
+  const morningOpens = optionalTournamentTime(
+    tournament,
+    effectiveDate,
+    "tournamentMorningRegistrationOpensAt",
+  );
+  const morningCloses = optionalTournamentTime(
+    tournament,
+    effectiveDate,
+    "tournamentMorningRegistrationClosesAt",
+  );
+  const morningOpensAt = morningOpens.value;
+  const morningClosesAt = morningCloses.value;
 
   const base = { earlyRegistrationDeadline, morningOpensAt, morningClosesAt };
+
+  if (!morningOpens.valid || !morningCloses.valid) {
+    return {
+      ...base,
+      period: "fully_closed",
+      canSubmit: false,
+      reason: "Registration is unavailable because tournament timing requires review.",
+    };
+  }
 
   if (tournament.status === "official" || tournament.status === "unofficial") {
     return {
