@@ -24,9 +24,12 @@ interface PublicSponsor {
   tierLabel?: string;
   partnershipIntro: string;
   description: string;
+  expandedDescription?: string[];
   details?: string[];
-  website: string;
-  ctaLabel: string;
+  website?: string;
+  phone?: string;
+  phoneHref?: string;
+  ctaLabel?: string;
 }
 
 const publicSponsors: PublicSponsor[] = [
@@ -65,6 +68,25 @@ const publicSponsors: PublicSponsor[] = [
       "",
     website: "https://trilakestackletown.com/",
     ctaLabel: "Visit Tri-Lakes Tackle Town →",
+  },
+  {
+    name: "Legacy Truck Sales, Leasing & Truck Parking",
+    logo: "/images/sponsors/legacy-trucking-logo.png",
+    logoFit: "contain",
+    tierLabel: "Gold Sponsor",
+    partnershipIntro:
+      "Legacy Truck Sales, Leasing & Truck Parking is a Dallas-based company serving owner-operators, fleets, businesses, and individuals with commercial truck sales, trailer leasing, and secure 24/7 parking solutions for trucks, trailers, boats, RVs, and more.",
+    description: "",
+    website: "https://www.legacytrucksales.com/",
+    phone: "(972) 848-2093",
+    phoneHref: "tel:+19728482093",
+    ctaLabel: "Visit Legacy Truck Sales →",
+    expandedDescription: [
+      "Established in 2019 and backed by more than 20 years of combined industry experience, Legacy Truck Sales specializes in heavy- and medium-duty commercial trucks and serves customers throughout Texas and across the United States. Their team is focused on personal service, industry knowledge, and helping customers find the right equipment for their needs.",
+      "Through Legacy Leasing, customers also have access to quality trailer leasing with affordable monthly payments, low down payments, no mileage charges, and same-day service on available equipment.",
+      "Legacy Truck Parking provides secure, convenient 24/7-access parking for trucks and trailers as well as boats, RVs, motorhomes, and personal vehicles. Their fully enclosed and gated facility offers controlled access, security lighting, and parking spaces designed to accommodate everything from commercial equipment to recreational vehicles.",
+      "Whether you’re looking to purchase commercial equipment, lease a trailer, or find a secure place to park your truck, trailer, boat, or RV, Legacy has you covered.",
+    ],
   },
   {
     name: "Badger Lures",
@@ -183,11 +205,36 @@ export default function SponsorsPage() {
                     </div>
                     <p className="mt-2 text-sm leading-6 text-neutral-300 sm:text-base">
                       {sponsor.partnershipIntro}
+                      {sponsor.phone && sponsor.phoneHref ? (
+                        <>
+                          {" Call "}
+                          <a
+                            href={sponsor.phoneHref}
+                            className="font-bold text-[#D4A017] transition-colors hover:text-yellow-300 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#D4A017]"
+                          >
+                            {sponsor.phone}
+                          </a>{" "}
+                          for more information.
+                        </>
+                      ) : null}
                     </p>
                     {sponsor.description ? (
                       <p className="mt-3 text-sm italic leading-6 text-neutral-400">
                         {sponsor.description}
                       </p>
+                    ) : null}
+                    {sponsor.expandedDescription ? (
+                      <details className="group mt-3">
+                        <summary className="inline-flex min-h-11 cursor-pointer list-none items-center text-sm font-bold text-[#D4A017] transition-colors hover:text-yellow-300 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#D4A017] [&::-webkit-details-marker]:hidden">
+                          <span className="group-open:hidden">Read More</span>
+                          <span className="hidden group-open:inline">Read Less</span>
+                        </summary>
+                        <div className="space-y-3 pb-1 text-sm leading-6 text-neutral-400 sm:text-base">
+                          {sponsor.expandedDescription.map((paragraph) => (
+                            <p key={paragraph}>{paragraph}</p>
+                          ))}
+                        </div>
+                      </details>
                     ) : null}
                     {sponsor.details ? (
                       <ul className="mt-3 list-disc space-y-1 pl-5 text-sm leading-5 text-neutral-400">
@@ -198,14 +245,16 @@ export default function SponsorsPage() {
                     ) : null}
                   </div>
 
-                  <a
-                    href={sponsor.website}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex min-h-11 items-center text-sm font-black uppercase tracking-wide text-[#D4A017] transition-colors hover:text-yellow-300 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#D4A017] sm:col-start-2 lg:col-start-auto lg:justify-self-end"
-                  >
-                    {sponsor.ctaLabel}
-                  </a>
+                  {sponsor.website && sponsor.ctaLabel ? (
+                    <a
+                      href={sponsor.website}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex min-h-11 items-center text-sm font-black uppercase tracking-wide text-[#D4A017] transition-colors hover:text-yellow-300 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#D4A017] sm:col-start-2 lg:col-start-auto lg:justify-self-end"
+                    >
+                      {sponsor.ctaLabel}
+                    </a>
+                  ) : null}
                 </article>
               ))}
             </div>
