@@ -103,7 +103,7 @@ const faqSections: FaqSection[] = [
       {
         question: "Can I register on tournament morning?",
         answer:
-          "Yes. Tournament-Morning Registration is a normal in-person registration period conducted by the Tournament Director. It is recorded in WeighFish and is not submitted through the AITT website.",
+          "Yes. Walk-up registration is available on tournament morning at the AITT check-in table.",
       },
       {
         question: "What payment methods are accepted?",
