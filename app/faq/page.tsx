@@ -96,6 +96,11 @@ const faqSections: FaqSection[] = [
           "No. A draft, quote, payment attempt, browser message, payment redirect, or Square receipt by itself does not constitute a confirmed tournament registration. Payment must be verified and AITT must complete the registration workflow.",
       },
       {
+        question: "Can I change my Bronze, Silver, or Gold Pot after registration?",
+        answer:
+          "No. Once your tournament registration is completed, your Bronze, Silver, or Gold Pot selection is final for that tournament. You cannot upgrade, downgrade, or switch to another member pot after registration.",
+      },
+      {
         question: "Can I register on tournament morning?",
         answer:
           "Yes. Tournament-Morning Registration is a normal in-person registration period conducted by the Tournament Director. It is recorded in WeighFish and is not submitted through the AITT website.",
