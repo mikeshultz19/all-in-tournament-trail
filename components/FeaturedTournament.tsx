@@ -104,7 +104,7 @@ export default function FeaturedTournament({
       >
         <div className="absolute inset-0 bg-gradient-to-t from-black via-black/10 to-transparent" />
 
-        <p className="absolute bottom-3 left-4 text-[9px] font-black uppercase tracking-[0.2em] text-yellow-400">Next Tournament</p>
+        <p className="absolute bottom-3 left-4 text-[9px] font-black uppercase tracking-[0.2em] text-yellow-400">AITT Presents</p>
       </div>
 
       {/* Info */}
@@ -115,14 +115,17 @@ export default function FeaturedTournament({
             {tournament.name}
           </h3>
 
+          <p className="mt-1 text-sm font-semibold text-zinc-300">
+            {tournament.lake}
+          </p>
           <p className="mt-1 text-[9px] font-black uppercase tracking-[0.15em] text-yellow-500">
             {display.date}
           </p>
-          <p className="mt-2 text-sm text-zinc-300">
-            {tournament.lake}
-            {tournament.venue ? ` · ${tournament.venue}` : ""}
-            {tournament.city ? ` · ${tournament.city}` : ""}
-          </p>
+          {(tournament.venue || tournament.city) && (
+            <p className="mt-1 text-xs text-zinc-400">
+              {[tournament.venue, tournament.city].filter(Boolean).join(" · ")}
+            </p>
+          )}
         </div>
 
         {/* Countdown */}

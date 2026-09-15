@@ -85,14 +85,18 @@ export default function MobileFeaturedTournament({
 
   return (
     <article className="overflow-hidden rounded-lg border border-[#8f762f]/60 bg-[#101010] shadow-[0_10px_24px_rgba(0,0,0,0.3)]">
-      <div className="border-b border-white/10 px-4 py-3">
+      <div className="border-b border-white/10 px-4 py-3 text-center">
         <p className="text-[0.6rem] font-black uppercase tracking-[0.18em] text-red-500">
-          Next Tournament
+          AITT Presents
         </p>
 
         <h2 className="mt-1.5 text-lg font-black uppercase leading-tight text-white">
           {tournament.name}
         </h2>
+
+        <p className="mt-1 text-sm font-semibold leading-tight text-neutral-300">
+          {tournament.lake}
+        </p>
 
       </div>
 
