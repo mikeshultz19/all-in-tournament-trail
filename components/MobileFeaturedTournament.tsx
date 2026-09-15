@@ -2,9 +2,10 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { CalendarDays, MapPin } from "lucide-react";
+import { CalendarDays, Clock, ListOrdered, MapPin } from "lucide-react";
 
 import type { Tournament } from "@/data/tournaments";
+import { getTournamentDisplay } from "@/lib/tournament-display";
 import { TOURNAMENT_STATUS_LABELS } from "@/lib/tournament-operations";
 import type { TournamentOperationsViewModel } from "@/lib/tournament-view-model";
 
@@ -71,6 +72,7 @@ export default function MobileFeaturedTournament({
   const statusLabel =
     TOURNAMENT_STATUS_LABELS[tournament.tournamentStatus];
   const registrationOpen = operations?.registrationCanSubmit ?? false;
+  const display = getTournamentDisplay(tournament);
 
   const formattedDate = new Date(
     `${tournament.date}T12:00:00`,
@@ -109,6 +111,36 @@ export default function MobileFeaturedTournament({
             <p className="mt-0.5 text-[0.68rem] leading-4 text-neutral-400">
               {countdown.days}d {countdown.hours}h {countdown.minutes}m until
               takeoff
+            </p>
+          </div>
+        </div>
+
+        <div className="flex items-start gap-2.5">
+          <ListOrdered
+            aria-hidden="true"
+            className="mt-0.5 size-3.5 shrink-0 text-[#D4A017]"
+          />
+
+          <div className="min-w-0">
+            <p className="text-xs font-bold text-white">Launch Type</p>
+            <p className="mt-0.5 break-words text-[0.68rem] leading-4 text-neutral-400">
+              {display.launchType}
+            </p>
+          </div>
+        </div>
+
+        <div className="flex items-start gap-2.5">
+          <Clock
+            aria-hidden="true"
+            className="mt-0.5 size-3.5 shrink-0 text-[#D4A017]"
+          />
+
+          <div className="min-w-0">
+            <p className="text-xs font-bold text-white">
+              Morning Registration Opens
+            </p>
+            <p className="mt-0.5 break-words text-[0.68rem] leading-4 text-neutral-400">
+              {display.morningRegistration}
             </p>
           </div>
         </div>
