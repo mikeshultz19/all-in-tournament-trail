@@ -9,9 +9,8 @@ import {
   isTournamentResetEnabled,
 } from "@/lib/tournament-reset";
 import {
-  getNextUpcomingTournament,
-  getTournamentByIdentifier,
-  getTournaments,
+  getActiveSeasonSchedule,
+  selectActiveOperationalTournament,
 } from "@/lib/tournaments";
 
 interface TournamentAdminPageProps {
@@ -34,16 +33,28 @@ export default async function TournamentAdminPage({
     : params.tournament;
 
   let tournament = null;
-  let tournaments: Awaited<ReturnType<typeof getTournaments>> = [];
+  let tournaments: Awaited<ReturnType<typeof getActiveSeasonSchedule>> = [];
   let resetPreview = null;
   const resetEnabled = isTournamentResetEnabled();
   let loadFailed = false;
 
   try {
-    tournaments = await getTournaments();
-    tournament = requestedTournament
-      ? await getTournamentByIdentifier(requestedTournament)
-      : await getNextUpcomingTournament();
+    tournaments = [...(await getActiveSeasonSchedule())].sort(
+      (left, right) =>
+        new Date(left.tournament_date).getTime() -
+        new Date(right.tournament_date).getTime(),
+    );
+    const requestedActiveTournament = requestedTournament
+      ? tournaments.find(
+          (item) =>
+            item.id === requestedTournament || item.slug === requestedTournament,
+        )
+      : null;
+    tournament =
+      requestedActiveTournament ??
+      selectActiveOperationalTournament(tournaments) ??
+      tournaments[0] ??
+      null;
     resetPreview = tournament
       ? await getTournamentResetPreview(tournament.id)
       : null;

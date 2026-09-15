@@ -31,9 +31,14 @@ describe("Tournament Information navigation", () => {
     expect(informationPage).toContain("TournamentInformationForm");
   });
 
-  it("lists database tournaments chronologically and reloads the selected record", () => {
-    expect(informationPage).toContain("getTournaments()");
-    expect(tournamentsData).toContain('.order("tournament_date", { ascending: true })');
+  it("lists active-season tournaments chronologically and reloads the selected record", () => {
+    expect(informationPage).toContain("getActiveSeasonSchedule()");
+    expect(informationPage).toContain("new Date(left.tournament_date).getTime()");
+    expect(informationPage).toContain("item.id === requestedTournament || item.slug === requestedTournament");
+    expect(informationPage).toContain("selectActiveOperationalTournament(tournaments)");
+    expect(informationPage).not.toContain("getTournaments()");
+    expect(informationPage).not.toContain("getTournamentByIdentifier(");
+    expect(tournamentsData).toContain('.eq("season_id", activeSeason.data.id)');
     expect(informationPage).toContain("TournamentInformationSelector");
     expect(informationPage).toContain("item.lake");
     expect(informationPage).toContain('month: "short"');
