@@ -42,7 +42,6 @@ export async function runStagingKeepalive({
       method: "GET",
       headers: {
         apikey: publishableKey,
-        Authorization: `Bearer ${publishableKey}`,
       },
       signal: AbortSignal.timeout(15_000),
     },
