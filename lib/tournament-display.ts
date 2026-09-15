@@ -36,7 +36,6 @@ export function formatTournamentTime(value?: string | null): string {
 export function getTournamentDisplay(tournament: Tournament): TournamentDisplay {
   const effectiveDate = getEffectiveTournamentDate(tournament);
   const date = new Date(`${effectiveDate}T12:00:00Z`);
-  const stopFishing = formatTournamentTime(tournament.stopFishingTime);
 
   const dateFormatter = new Intl.DateTimeFormat("en-US", {
       timeZone: "UTC",
@@ -59,9 +58,11 @@ export function getTournamentDisplay(tournament: Tournament): TournamentDisplay 
     }).format(date),
     ramp: tournament.venue ?? "To Be Announced",
     location: [tournament.city, tournament.state].filter(Boolean).join(", "),
-    hours: `${tournament.startTimeDisplay} – ${stopFishing}`,
-    stopFishing: `Stop Fishing: ${stopFishing}`,
-    launchType: TOURNAMENT_LAUNCH_TYPE_LABELS[tournament.launchType],
+    hours: tournament.hours ?? "TBA",
+    stopFishing: tournament.stopFishing ?? "TBA",
+    launchType:
+      tournament.launchTypeText ??
+      TOURNAMENT_LAUNCH_TYPE_LABELS[tournament.launchType],
     morningRegistration: formatTournamentTime(
       tournament.tournamentMorningRegistrationOpensAt,
     ),
