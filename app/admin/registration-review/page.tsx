@@ -5,7 +5,6 @@ import RegistrationContactReviewForm from "@/components/admin/RegistrationContac
 import HistoricalMembershipReviewForm from "@/components/admin/HistoricalMembershipReviewForm";
 import RegistrationCheckInControl from "@/components/admin/RegistrationCheckInControl";
 import RegistrationCheckInSummaryStat from "@/components/admin/RegistrationCheckInSummaryStat";
-import PrepareMembershipReminder from "@/components/admin/PrepareMembershipReminder";
 import { AddWalkUpControl } from "@/components/admin/RegistrationOperationsControls";
 import RegistrationRosterToolbar from "@/components/admin/RegistrationRosterToolbar";
 import AdminPanel from "@/components/admin/AdminPanel";
@@ -16,7 +15,6 @@ import { listRegistrationReviewItems, listReviewAnglerOptions } from "@/lib/regi
 import { filterTournamentRegistrationRosterRows, getTournamentRegistrationRoster, paginateTournamentRegistrationRosterRows, summarizeTournamentRegistrationRoster, type RegistrationRosterFilter, type TournamentRegistrationRosterRow } from "@/lib/tournament-registration-roster";
 import { getRegistrationReviewPresentation } from "@/lib/registration-review-presentation";
 import { getActiveSeasonSchedule, getNextUpcomingTournament } from "@/lib/tournaments";
-import { getPreparationUndoProtection } from "@/lib/tournament-preparation-protection";
 
 export const dynamic = "force-dynamic";
 
@@ -38,9 +36,9 @@ export default async function RegistrationReviewPage({ searchParams }: { searchP
     ?? currentTournament
     ?? tournaments[0]
     ?? null;
-  const [allRows, reviewItems, anglers, undoProtection] = selectedTournament
-    ? await Promise.all([getTournamentRegistrationRoster(selectedTournament.id), listRegistrationReviewItems(selectedTournament.id), listReviewAnglerOptions(selectedTournament.id), getPreparationUndoProtection(selectedTournament.id)])
-    : [[], [], [], { blockers: [] }];
+  const [allRows, reviewItems, anglers] = selectedTournament
+    ? await Promise.all([getTournamentRegistrationRoster(selectedTournament.id), listRegistrationReviewItems(selectedTournament.id), listReviewAnglerOptions(selectedTournament.id)])
+    : [[], [], []];
   const reviewsByRegistration = new Map<string, typeof reviewItems>();
   for (const item of reviewItems) reviewsByRegistration.set(item.registrationId, [...(reviewsByRegistration.get(item.registrationId) ?? []), item]);
   const pendingReviewIds = new Set(reviewItems.filter((item) => item.status === "review_required").map((item) => item.registrationId));
@@ -109,20 +107,6 @@ export default async function RegistrationReviewPage({ searchParams }: { searchP
 
       <div className="mt-5">
         <AddWalkUpControl tournamentId={selectedTournament.id} />
-      </div>
-
-      <div className="mt-5">
-        <PrepareMembershipReminder
-          tournamentId={selectedTournament.id}
-          tournamentName={selectedTournament.name}
-          tournamentIdentifier={encodeURIComponent(selectedTournament.slug || selectedTournament.id)}
-          needReviewCount={summary.needReview}
-          hasExistingImport={Boolean(selectedTournament.weighfish_imported || selectedTournament.weighfish_imported_at)}
-          initialRegistrationReviewComplete={Boolean(selectedTournament.prepare_registration_review_complete)}
-          initialPaperMembershipsConfirmed={Boolean(selectedTournament.paper_membership_reminder_checked)}
-          undoBlockers={undoProtection.blockers}
-          returnHref={`/admin/registration-review?tournament=${encodeURIComponent(selectedTournament.id)}`}
-        />
       </div>
 
       <section id="registration-entries" className="mt-5 overflow-hidden rounded-md border border-white/10 bg-[#0f0f0f]">
