@@ -1,217 +1,47 @@
-# All-In Tournament Trail
+# All-In Tournament Trail Agent Instructions
 
-- Project: All-In Tournament Trail
-- Framework: Next.js 16, React 19, Tailwind CSS 4, TypeScript
-- Design: black/charcoal background, red headings, gold accents
-- Style: premium outdoor sports, clean, simple, minimal, typography-driven
-- Avoid clutter and excessive cards.
-- Reuse existing components before creating new ones.
-- Do not invent routes or pages without approval.
-- Prefer complete, maintainable solutions over experimental placeholders.
-- Keep architecture simple because one administrator will maintain the site.
-- Verify lint, TypeScript, and build after meaningful changes.
-- Never delete files without first proving they are unused.
-- Follow the approved master sitemap in `docs/MasterSiteMap.md`.
+## Read first
 
-==================================================
-CURRENT ARCHITECTURE — VERIFIED 2026-08-08
-==================================================
+- Start with `docs/DOCUMENTATION-INDEX.md`, then read the current document for
+  the area being changed. Official Rules and waiver text require explicit approval.
+- Follow `docs/MasterSiteMap.md`. Reuse existing routes and components; keep
+  solutions simple enough for one administrator to maintain.
+- Current stack: Next.js 16, React 19, TypeScript, Tailwind CSS 4, Cloudflare
+  Workers/OpenNext, and Supabase PostgreSQL/Auth/Storage. Prisma is not used.
 
-- Public domain: `allintrail.com`
-- Canonical production URL: `https://allintrail.com`
-- Admin application: AITT Admin Center
-- Backend: Supabase PostgreSQL, Auth, and Storage
-- Prisma is not used.
-- Production hosting: Cloudflare Workers through OpenNext and Wrangler.
-- DNS and inbound email routing: Cloudflare
-- Public contact address: `info@allintrail.com`
+## Environment safety
 
-The Contact page and floating Contact widget use `mailto:` links to open the
-visitor's configured email application. Cloudflare Email Routing forwards
-inbound mail to the verified Gmail destination; it is not an application
-email-sending API. There is no server-side contact submission endpoint.
+- `.env.local` is staging-oriented. Local development must use Supabase project
+  `vcjhufuklqwvnqmarpqi`.
+- Production uses Supabase project `qrmnglzylrrdhcvashmx` and the guarded
+  production environment loaded by `scripts/deploy-production.mjs`.
+- Never casually relink the Supabase CLI to production. Production linking,
+  data changes, or migrations require explicit approval and exact target
+  verification. Never alter production data to make a staging test pass.
+- Never commit or print credentials, API keys, environment files, or private
+  customer/payment data.
 
-Resend is used only for registration-interest confirmation email when
-`RESEND_API_KEY` is configured. Do not treat Resend as the Contact page's
-delivery system, recreate `app/api/feedback`, or add contact-email environment
-variables without explicit approval.
+## Data and application rules
 
-AITT Admin Center reads live Tournament Information from Supabase, updates it
-successfully, and preserves saved values after refresh. Describe this as the
-verified Tournament Information read/update workflow, not full CRUD. Tournament
-creation and deletion are not verified.
+- Tournament Information is authoritative for tournament display fields.
+  Public Schedule and Featured Tournament views must consume database fields
+  rather than tournament-specific constants.
+- Use the active-season schedule where a current editable/public schedule is
+  required. Do not expose obsolete, seasonless, or demo records through those selectors.
+- Validate logic-dependent data at the server write boundary. Public reads must
+  fail safely; malformed optional data must not crash a public page or open a
+  registration path.
+- AITT never publishes revenue or gross receipts. Public `TOTAL PAID OUT TO
+  ANGLERS` uses completed closeout `total_paid_cents`, with the six payout
+  categories summed only as a fallback and never double-counted.
 
-Supabase Admin Auth exists. Protected Admin routes fail closed when required
-Auth configuration is unavailable, and protected server actions recheck Admin
-access. WeighFish import/review, Official Results publication and closeout, and
-AOY and Championship engines exist. Square-backed registration attempts,
-payment verification, recovery, durable registration completion, and
-confirmation email are implemented; production enablement still requires an
-explicit environment/configuration decision and rollout approval.
+## Change discipline
 
-==================================================
-CURRENT DOCUMENTATION
-==================================================
-
-Use `docs/DOCUMENTATION-INDEX.md` as the canonical documentation entry point.
-Dated audits, status reports, roadmaps, and version plans are historical unless
-the index explicitly identifies them as current. Do not add Sponsors to the
-tournament management areas or Website Readiness workflow.
-
-==================================================
-HOMEPAGE SPONSOR PANEL
-==================================================
-
-Do not stretch or shrink the Tournament Conditions or Featured Tournament
-content merely to eliminate empty space.
-
-Create a reusable homepage sponsor component named:
-
-components/SponsorHome.tsx
-
-Place SponsorHome directly beneath the Tournament Conditions panel in the
-left homepage column.
-
-The left column should contain:
-
-1. Tournament Conditions
-2. SponsorHome
-
-The combined height should visually align with the bottom of the Featured
-Tournament panel in the right column when sufficient sponsor content exists.
-
-Do not use fixed pixel heights to force alignment. Use the existing homepage
-grid/flex layout so both columns stretch naturally.
-
-SponsorHome should display the heading:
-
-MAJOR SPONSORS
-
-Display active sponsor logos in a responsive grid.
-
-Desktop:
-- 2 or 3 sponsor logos per row
-
-Tablet:
-- 2 logos per row
-
-Mobile:
-- 1 or 2 logos per row depending on available width
-
-Each sponsor may contain:
-
-- name
-- logo image
-- website URL
-- active status
-- show on homepage status
-- major sponsor status
-- display order
-
-Only render sponsors where:
-
-- active is true
-- showOnHomepage is true
-- majorSponsor is true
-
-Sort by display order.
-
-Sponsor logos must:
-
-- preserve their original aspect ratio
-- use object-fit: contain
-- not be cropped
-- have descriptive alt text
-- open the sponsor website safely when a URL exists
-- use rel="noopener noreferrer" for external links
-
-Use a subtle default opacity or grayscale treatment if it fits the existing
-site design, with a restrained brightness or color transition on hover.
-
-Do not use an automatic carousel.
-
-If no qualifying sponsors exist, do not render an empty bordered panel.
-
-==================================================
-ADMIN SPONSOR MANAGEMENT
-==================================================
-
-Inspect the existing sponsor data model and admin interface.
-
-Reuse existing sponsor fields where available.
-
-Add only missing fields needed for:
-
-- active
-- showOnHomepage
-- majorSponsor
-- displayOrder
-- logo
-- websiteUrl
-
-Allow administrators to:
-
-- upload or select a sponsor logo
-- enter the sponsor name
-- enter the sponsor website URL
-- mark a sponsor active or inactive
-- mark a sponsor as a major sponsor
-- choose whether it appears on the homepage
-- set its display order
-
-Future sponsor administration must remain separate from tournament readiness.
-If sponsor editing is implemented later, published changes must update
-SponsorHome without adding Sponsors to the four-card tournament dashboard.
-
-Do not hard-code sponsor names, images, or links into the homepage component.
-
-==================================================
-HOMEPAGE LAYOUT
-==================================================
-
-Update the homepage desktop layout so:
-
-LEFT COLUMN
-- Tournament Conditions
-- SponsorHome
-
-RIGHT COLUMN
-- Featured Tournament
-- Tournament Information
-- Early Registration Status
-
-The bottom of SponsorHome should approximately align with the bottom of the
-right-side Featured Tournament content through natural grid stretching.
-
-On mobile, stack the sections in this order:
-
-1. Featured Tournament
-2. Tournament Information
-3. Tournament Conditions
-4. Early Registration Status
-5. Major Sponsors
-
-Ensure the Contact tab does not overlap sponsor logos or content.
-
-==================================================
-PERMANENT PUBLIC FINANCIAL DISPLAY RULE
-==================================================
-
-AITT never publishes total tournament revenue or gross income. The only
-monetary total displayed publicly is `TOTAL PAID OUT TO ANGLERS`.
-
-That public payout total includes every actual AITT payout exactly once: Main
-Tournament, Bronze, Silver, Gold, Big Bass, and Insurance Pot. The completed
-closeout `total_paid_cents` is authoritative; summing the six categories is a
-fallback only. Weighfish Side Pots 1–3 map to Bronze, Silver, and Gold. Do not
-add category totals on top of an already aggregated closeout total. The public
-total excludes membership fees, registration revenue, sponsor income,
-administrative fees, director compensation, and gross tournament receipts.
-
-AITT Admin Center keeps Main Tournament, Bronze, Silver, Gold, Big Bass, and
-Insurance payout categories distinct. Insurance is calculated inside the
-combined payout/closeout workflow, not as a separate Tournament Manager stage.
-Do not combine the three member pots into one editable field or derive payouts
-from placements unless verified persisted data supports the calculation. Do
-not add public revenue, income, receipt, or fee totals without explicit
-approval to reverse this permanent business rule.
+- Inspect `git status` and the relevant diff before staging. Preserve unrelated
+  work and create isolated commits.
+- Unless explicitly requested, exclude `.env*`, `supabase/.temp/**`, logs,
+  backup scripts, staging SQL, generated output, and unrelated assets.
+- Before handoff, run focused tests, `npx tsc --noEmit`, changed-file lint,
+  `npm run build`, and `git diff --check` in proportion to the change.
+- Production deploys use `npm run deploy`; do not bypass the staging-project
+  guard or deploy directly from unreviewed mixed changes.

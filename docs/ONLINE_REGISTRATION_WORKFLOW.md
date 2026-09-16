@@ -54,7 +54,7 @@ not part of the current Phase 1 implementation.
 - [Documentation Index](DOCUMENTATION-INDEX.md)
 - [System Architecture](SYSTEM_ARCHITECTURE.md)
 
-**Last Updated:** 2026-08-08
+**Last Updated:** 2026-09-15
 
 > **Authority:** This document does not override the primary lifecycle or
 > Official Rules.
@@ -551,8 +551,14 @@ mandatory.
   snapshots.
 - Completed: conservative identity classification and protected Registration
   Review workflow.
-- Pending: live Square checkout, verified callback/payment finalization,
-  Square-backed public completion/recovery, and payment confirmation email.
+- Implemented: Square-backed payment attempts, server verification and
+  finalization, durable public completion, interruption recovery, and
+  paid-registration confirmation email.
+- Implemented: persistent confirmation-email delivery state, idempotent claim
+  and completion, retry behavior, and staging recipient restrictions.
+- Operational gate: enabling live production payment remains an explicit
+  environment/configuration and rollout decision; implementation alone does
+  not assert that live charging is enabled.
 
 
 ---

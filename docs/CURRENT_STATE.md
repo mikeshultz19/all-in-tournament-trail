@@ -1,6 +1,6 @@
 # AITT Current State
 
-Last verified: 2026-08-26
+Last verified: 2026-09-15
 
 ## Current Readiness
 
@@ -12,6 +12,31 @@ Mountain lifecycle was exercised in staging. Production rollout must remain
 incremental, explicitly approved, backed up, and migration-reviewed.
 Square-backed public registration is implemented; production enablement remains
 an environment and rollout decision.
+
+## Current Production Capabilities
+
+- Tournament Information provides a chronological active-season selector and
+  ID-scoped editing. Selection survives save/reload and cannot load seasonless
+  legacy/demo records through that editor.
+- Tournament Information is authoritative for name, lake, ramp, hours, stop
+  fishing, launch type, morning registration, and presenter display data.
+  Morning registration is validated as `HH:mm`; invalid logic-dependent time
+  data fails closed without taking down the public homepage.
+- Schedule uses active-season records, lake names on image overlays, and the
+  stored Hours, Stop Fishing, Launch Type, and Morning Registration values.
+- Featured Tournament shows the per-tournament presenter (`AITT` fallback),
+  tournament name, lake, date/details, responsive title accent lines, and mobile
+  Launch Type and Morning Registration details.
+- The Admin `Presented By` field persists `tournaments.presented_by` per event;
+  existing and blank values resolve safely to `AITT`.
+- Square payment attempts, server verification, recovery, durable registration
+  completion, sequential boat numbering, and registration confirmation email
+  delivery are implemented. The email path persists delivery state, supports
+  retry, and restricts staging recipients.
+- WeighFish import/reconciliation, combined payout and Insurance closeout,
+  Official Results, AOY, and Championship qualification are implemented.
+- Production deploys run through the environment-guarded OpenNext/Cloudflare
+  wrapper. Staging receives one daily read-only Supabase keepalive request.
 
 ## Resolved Former Blockers
 

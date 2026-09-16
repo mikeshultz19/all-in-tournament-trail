@@ -1,7 +1,47 @@
-Version: 1.0
-Last Updated: August 25, 2026
+Version: 1.1
+Last Updated: September 15, 2026
 
 # Decision Log
+
+## 2026-09-15 — Current production operating decisions
+
+### Tournament Information owns public tournament display data
+
+- **Status:** Approved and implemented.
+- **Decision:** Tournament Information is authoritative for tournament name,
+  presenter, lake, ramp, hours, stop-fishing text, launch type, and morning
+  registration. Schedule and Featured Tournament consume those database fields.
+- **Impact:** Do not reconstruct these values from constants or unrelated fields.
+
+### Limit Tournament Information selection to the active season
+
+- **Status:** Approved and implemented.
+- **Decision:** The editor selector uses the chronological active-season
+  schedule. Seasonless legacy/demo records remain stored but are not selectable.
+
+### Retain Square and Chase roles
+
+- **Status:** Approved.
+- **Decision:** Square remains the online card/payment processor. Chase remains
+  AITT's primary business bank. No account or credential details belong in the repository.
+- **Impact:** Provider integration and operating documentation must preserve
+  this separation unless a later approved decision supersedes it.
+
+### Use a read-only staging keepalive
+
+- **Status:** Approved and implemented.
+- **Decision:** GitHub Actions performs one daily GET against staging, with
+  manual dispatch, exact staging-origin validation, and explicit production refusal.
+- **Impact:** No fake records, writes, migrations, returned-row logging, or
+  production activity are permitted for keepalive purposes.
+
+### Model Featured Tournament presenter per tournament
+
+- **Status:** Approved and implemented.
+- **Decision:** `tournaments.presented_by` is per-event text with database
+  default `AITT` and an application fallback for null/blank legacy values.
+- **Impact:** Desktop and mobile render `<presented_by> Presents`; Admin edits
+  the field inside the selected Tournament Information record.
 
 ## 2026-08-25 — Reconcile the implemented tournament lifecycle
 

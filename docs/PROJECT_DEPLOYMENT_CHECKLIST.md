@@ -37,7 +37,7 @@ operations.
 - [Master Site Map](MasterSiteMap.md)
 - [README](../README.md)
 
-**Last Updated:** 2026-08-26
+**Last Updated:** 2026-09-15
 
 ## Production data and release order
 
@@ -76,6 +76,11 @@ Secret and must never be committed or added to Wrangler configuration.
 
 ## Production deployment procedure
 
+The supported entry point is `npm run deploy`. It loads the ignored production
+environment, requires both Supabase URLs to match production project
+`qrmnglzylrrdhcvashmx`, and refuses staging project
+`vcjhufuklqwvnqmarpqi` before build and again before upload.
+
 Before deployment:
 
 1. Review the intended Git diff and confirm no secret or generated output is
@@ -108,9 +113,18 @@ After deployment, smoke-check at minimum:
 - Admin login, authenticated Admin navigation, logout, and logged-out denial;
 - Tournament Manager load and the current selected tournament without making
   destructive changes;
-- registration-interest save behavior without sending unnecessary live test
-  email; and
+- registration-interest save behavior and paid-registration confirmation state
+  without sending unnecessary live test email; and
 - Cloudflare Worker logs for new runtime errors without printing secrets.
+
+### Staging keepalive
+
+GitHub Actions runs `.github/workflows/staging-supabase-keepalive.yml` daily and
+also supports manual dispatch. `scripts/staging-keepalive.mjs` permits only the
+exact staging Supabase origin, explicitly rejects production, performs
+`GET /rest/v1/tournaments?select=id&limit=1`, logs no credentials or records,
+and times out safely. The workflow uses only its staging URL and staging
+publishable-key repository secrets.
 
 ### Wrangler configuration drift
 

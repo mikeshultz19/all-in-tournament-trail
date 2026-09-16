@@ -15,7 +15,7 @@ untrusted device. Server actions recheck Admin status.
 | --- | --- | --- | --- |
 | `/admin` | Tournament Operations dashboard; used throughout an event. | Selected tournament and lifecycle progress; links to next action. | Coordinates work. Confirm selected event before every action. |
 | `/admin/login` | Sign in. | Username/email and password; persistent session. | No public content change. Invalid/inactive account is denied. |
-| `/admin/tournament` | Prepare selected tournament and access Danger Zone. | Tournament information, dates, ramp, registration/practice text, visibility/status; reset preview/dialog. | Updates schedule and that event's registration controls. Public current selection still comes from `getNextUpcomingTournament()`. Reset removes selected event activity but preserves configuration/members/seasons. |
+| `/admin/tournament` | Select and edit an active-season tournament or access its Danger Zone. | Chronological selector; name, presenter, lake, date, ramp, hours, stop fishing, launch type, canonical `HH:mm` morning registration, registration/practice text, visibility/status; reset preview/dialog. | Saves are UUID-scoped and return to the selected event. These fields feed Featured Tournament and Schedule. Reset removes selected event activity but preserves configuration/members/seasons. |
 | `/admin/tournament-manager` | Tournament lifecycle workspace. | Prepare, Import/Verify, combined Payout/Closeout (including Insurance), Publish, and AOY. | Primary event workflow. Always verify the selected tournament and complete stages in order. |
 | `/admin/tournament-manager/prepare` | Review the pre-event roster and check-in materials. | Registration roster, payment/review counts, WeighFish export, printed check-in list, membership confirmations. | Blocks import readiness when required registration or membership review remains unresolved. |
 | `/admin/registration-review` | Resolve registrations needing staff review. | Tournament-scoped registrations, identity/payment context, resolution and notes. | Determines which records can be trusted for preparation; never mark an unverified payment as paid. |
@@ -41,7 +41,6 @@ untrusted device. Server actions recheck Admin status.
 | `/admin/rules` | Rules administration entry. | Current Rules-management presentation. | The Official Tournament Rules remain the authority; do not casually change them. |
 | `/admin/faq` | FAQ administration entry. | FAQ-management presentation. | Verify any published explanation against the Official Rules. |
 | `/admin/sponsors` | Sponsor administration placeholder. | No complete sponsor-management workflow. | Do not represent it as operational until implemented and verified. |
-| `/admin/sponsors` | Placeholder. | No production sponsor management. | Homepage sponsors remain configured elsewhere; no current operational workflow. |
 
 ## Full Admin workflow
 

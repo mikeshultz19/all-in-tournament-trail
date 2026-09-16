@@ -1,5 +1,5 @@
 Version: 1.2
-Last Updated: August 25, 2026
+Last Updated: September 15, 2026
 
 # Supabase Setup
 
@@ -43,7 +43,7 @@ Use the project's npm-based CLI invocation:
 
 ```bash
 npx supabase login
-npx supabase link
+npx supabase link --project-ref vcjhufuklqwvnqmarpqi
 npx supabase db push --dry-run
 npx supabase db push
 ```
@@ -80,6 +80,19 @@ anonymous INSERT/UPDATE/DELETE access.
 AITT Admin Center Auth and protected operational workflows exist. Tournament
 Information read/update is verified; this does not imply that tournament
 creation or deletion is approved.
+
+## Staging keepalive
+
+The repository workflow `.github/workflows/staging-supabase-keepalive.yml`
+runs once daily and on manual dispatch. It invokes
+`scripts/staging-keepalive.mjs`, which validates exact staging project
+`vcjhufuklqwvnqmarpqi`, refuses production project
+`qrmnglzylrrdhcvashmx`, and performs one read-only tournament `GET`. It never
+inserts, updates, deletes, or logs credentials or returned rows.
+
+The workflow uses repository Actions secrets named `STAGING_SUPABASE_URL` and
+`STAGING_SUPABASE_PUBLISHABLE_KEY`; values must never be written to Markdown or
+committed files.
 
 ## Troubleshooting
 

@@ -1,6 +1,6 @@
 # Repository Map
 
-Last updated: 2026-08-25
+Last updated: 2026-09-15
 
 See [AITT Lifecycle and Operations](AITT_LIFECYCLE_OPERATIONS.md) for the
 authoritative operating and business rules. Insurance remains represented by
@@ -25,6 +25,21 @@ API: `/api/registrations/quote`, `/api/registration-interest`, and page-view
 analytics.
 
 ## Main modules
+
+- `lib/tournaments.ts`: all-tournament access, active-season schedule loading,
+  and active operational tournament selection.
+- `lib/tournament-form.ts`: Tournament Information form mapping, validation,
+  and scoped update payloads, including `presented_by` and strict morning time.
+- `lib/tournament-record-adapter.ts` and `lib/tournament-display.ts`: shared
+  database-to-public mapping and formatting for Featured Tournament and Schedule.
+- `components/FeaturedTournament.tsx` and
+  `components/MobileFeaturedTournament.tsx`: responsive presenter/title/lake
+  hierarchy and tournament details.
+- `.github/workflows/staging-supabase-keepalive.yml` and
+  `scripts/staging-keepalive.mjs`: daily staging-only read with explicit
+  production refusal.
+- `scripts/deploy-production.mjs`: guarded production environment validation,
+  OpenNext build, and Cloudflare deployment.
 
 - `middleware.ts`, `lib/admin-auth.ts`, `lib/supabase/auth-server.ts` — Admin
   session and authorization.

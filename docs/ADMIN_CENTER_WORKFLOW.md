@@ -1,5 +1,5 @@
 Version: 1.0
-Last Updated: July 27, 2026
+Last Updated: September 15, 2026
 
 > This is an abbreviated workflow overview. Use
 > [AITT Lifecycle and Operations](AITT_LIFECYCLE_OPERATIONS.md),
@@ -9,11 +9,17 @@ Last Updated: July 27, 2026
 
 # AITT Admin Center Workflow
 
-Updated: 2026-07-23
+Updated: 2026-09-15
 
 AITT Admin Center is organized around one selected tournament. Tournament
 identity must remain visible, and navigation must preserve the selected
 tournament ID so staff do not accidentally edit a different event.
+
+Tournament Information lists chronological active-season records only. Changing
+the selector loads that event's saved values into a keyed form; saves update
+only the selected UUID and return to the same event. The form is authoritative
+for public display fields, including `Presented By`. Blank presenter values
+resolve to `AITT`; Morning Registration requires canonical `HH:mm`.
 
 ## Dashboard order
 

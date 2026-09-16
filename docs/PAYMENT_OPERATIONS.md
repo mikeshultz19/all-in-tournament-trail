@@ -18,7 +18,7 @@
 - Developers
 - AI Assistants
 
-**Last Updated:** 2026-07-22
+**Last Updated:** 2026-09-15
 
 **Related Documents:**
 
@@ -266,8 +266,10 @@ After archival, changes require an authorized correction entry. Reopening must p
 
 ## 16. AITT Admin Center Requirements
 
-The future authenticated payment area within AITT Admin Center must support the
-operating process with:
+AITT Admin Center currently provides tournament-scoped registration review,
+payment attempts/evidence, preparation, payout/check handling, reconciliation,
+and closeout. The controls below remain the operating target; not every item is
+verified as a dedicated Admin screen or automated workflow:
 
 - A tournament-specific payment queue.
 - Payment-status, registration-period, provider, date, and exception filters.
@@ -285,7 +287,10 @@ The portal must not allow convenience features to bypass evidence, authorization
 
 ## 17. Database Considerations
 
-The future data design should keep registration records separate from payment records so one registration can retain payment attempts, corrections, refunds, or provider changes without losing history. Payment records should retain provider identity, amounts, status changes, references, evidence metadata, responsible administrators, and timestamps at an operationally appropriate level.
+The implemented data design keeps durable registration records separate from
+payment attempts so one registration can retain provider attempts, recovery,
+and confirmation-delivery history without losing evidence. Any future formal
+refund/partial-payment model must extend that history rather than overwrite it.
 
 Provider-specific details should remain behind a provider-independent business model. Registration, payment, payout, refund, and reconciliation states should remain distinct. Historical financial events should be append-only or otherwise preserved through a complete audit trail. This section defines concepts only; current registration persistence is documented in [Durable Registration](technical/DURABLE_REGISTRATION.md).
 

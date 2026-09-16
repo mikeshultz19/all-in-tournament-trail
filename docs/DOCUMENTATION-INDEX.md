@@ -1,6 +1,6 @@
 # AITT Documentation Index
 
-Last reconciled: 2026-08-26
+Last reconciled: 2026-09-15
 
 This is the canonical entry point for AITT documentation. Use the sections
 below to distinguish current technical guidance, staff operating instructions,
@@ -47,7 +47,8 @@ different rule.
 
 ### Supabase and Admin authentication
 
-- [Supabase Setup](SUPABASE_SETUP.md)
+- [Supabase Setup](SUPABASE_SETUP.md) — environment boundaries, migration
+  safety, and the staging-only keepalive.
 - [Supabase Explained](SUPABASE_EXPLAINED.md)
 - [Admin Auth Setup](ADMIN_AUTH_SETUP.md)
 - [Competitive Record Foundation](technical/COMPETITIVE_RECORD_FOUNDATION.md)

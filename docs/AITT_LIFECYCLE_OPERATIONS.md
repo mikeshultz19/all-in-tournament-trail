@@ -1,6 +1,6 @@
 # AITT Tournament Lifecycle and Operations
 
-Last reconciled: 2026-08-26
+Last reconciled: 2026-09-15
 
 Status: **Primary human-readable authority for implemented AITT business and
 operational behavior.**
@@ -46,6 +46,22 @@ Production rollout is incremental. Review cross-cutting files carefully rather
 than blindly deploying whole commits containing unrelated work.
 
 ## 3. Public schedule, current tournament, and registration
+
+### Tournament Information authority
+
+Admin Tournament Information selects only chronological active-season records.
+The selected tournament ID scopes every load and save, and invalid or
+out-of-season query selections cannot load seasonless legacy/demo rows.
+
+The selected tournament row is authoritative for public name, lake, ramp,
+hours, stop-fishing text, launch type, morning registration, and presenter.
+Schedule uses the lake on its image overlay and the stored display fields below
+it. Featured Tournament shows `<presented_by> Presents`, the tournament name,
+and the lake; blank/legacy presenter data falls back to `AITT`.
+
+Morning registration is logic-dependent and must be persisted in `HH:mm`.
+Admin rejects invalid formats. Public registration operations fail closed and
+the homepage continues rendering if malformed optional time data is encountered.
 
 ### Registration philosophy
 
@@ -418,11 +434,10 @@ registration-availability action.
 
 ### Public sponsor presentation
 
-The public sponsor presentation is separate from tournament operations. Current
-public partners are Mad Dawg Graphics & Design, Texas Boat Works, and Tri-Lakes
-Tackle Town, each presented as a Premier Sponsor on the Sponsors page. Phoenix
-Parts/Fenix Parts is no longer a public sponsor. Sponsor content does not add a
-Tournament Manager readiness step.
+Public sponsor presentation is separate from tournament operations and does not
+add a Tournament Manager readiness step. Sponsor names, tiers, links, and copy
+must be read from the current Sponsor implementation/data rather than frozen in
+this lifecycle authority.
 
 ## 15. Fish length and tournament contact
 

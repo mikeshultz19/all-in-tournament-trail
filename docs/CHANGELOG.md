@@ -1,7 +1,32 @@
-Version: 1.1
-Last Updated: August 25, 2026
+Version: 1.2
+Last Updated: September 15, 2026
 
 # Changelog
+
+## 2026-09-15
+
+### Production tournament presentation and safety
+
+- Limited Tournament Information selection to the chronological active-season
+  schedule while preserving tournament-ID-scoped editing and save navigation.
+- Made Tournament Information the shared source for Schedule Hours, Stop
+  Fishing, Launch Type, Morning Registration, lake overlay, and Featured
+  Tournament identity.
+- Added strict `HH:mm` Morning Registration validation and fail-safe public
+  operations behavior for malformed optional time data.
+- Added mobile Launch Type and Morning Registration details, the Featured
+  Tournament presenter/title/lake hierarchy, responsive title accent lines,
+  and per-tournament `presented_by` with an `AITT` default/fallback.
+
+### Environment and operations
+
+- Added a once-daily, manually dispatchable, GET-only staging Supabase
+  keepalive with exact staging validation and explicit production refusal.
+- Retained guarded OpenNext/Cloudflare production deployment through
+  `scripts/deploy-production.mjs`.
+- Documented implemented Square payment verification/recovery and durable
+  paid-registration confirmation email delivery, including retry state and
+  staging recipient restrictions.
 
 ## 2026-08-25
 
@@ -43,8 +68,9 @@ Last Updated: August 25, 2026
 
 ### Email
 
-- Resend is currently used for registration-interest confirmation when
-  `RESEND_API_KEY` is configured.
+- At this dated milestone, Resend handled registration-interest confirmation.
+  Paid-registration confirmation delivery was added later and is recorded in
+  the 2026-09-15 entry.
 - Contact remains visitor-initiated `mailto:` with inbound Cloudflare Email
   Routing.
 

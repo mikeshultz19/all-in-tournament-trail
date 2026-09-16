@@ -7,7 +7,8 @@ Supabase PostgreSQL, Auth, and Storage provide the backend.
 - Canonical domain: <https://allintrail.com>
 - Production hosting: Cloudflare Workers through OpenNext and Wrangler
 - DNS and inbound email routing: Cloudflare
-- Registration-interest confirmation email: Resend when `RESEND_API_KEY` is configured
+- Transactional email: Resend supports registration-interest acknowledgments
+  and durable paid-registration confirmation delivery when configured
 - Online payment: Square-backed registration/payment lifecycle is implemented;
   production enablement requires explicit configuration and rollout approval
 - Public contact: `info@allintrail.com` through visitor-initiated `mailto:`
@@ -46,11 +47,15 @@ production enablement must not be inferred from implementation alone.
 
 Never expose or commit the service-role key.
 
-Apply checked-in migrations with:
+Local development is staging-oriented. Before applying checked-in migrations,
+verify the linked project ref and inspect the complete dry run. Relinking to or
+changing production requires explicit approval.
+
+Staging migration workflow:
 
 ```bash
 npx supabase login
-npx supabase link
+npx supabase link --project-ref vcjhufuklqwvnqmarpqi
 npx supabase db push --dry-run
 npx supabase db push
 ```
