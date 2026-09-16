@@ -104,16 +104,28 @@ export default function FeaturedTournament({
       >
         <div className="absolute inset-0 bg-gradient-to-t from-black via-black/10 to-transparent" />
 
-        <p className="absolute bottom-3 left-4 text-[9px] font-black uppercase tracking-[0.2em] text-yellow-400">AITT Presents</p>
+        <p className="absolute bottom-3 left-4 right-4 text-[9px] font-black uppercase tracking-[0.2em] text-yellow-400">
+          {tournament.presentedBy?.trim() || "AITT"} Presents
+        </p>
       </div>
 
       {/* Info */}
       <div className="px-4 pt-4 pb-4">
 
         <div className="text-center">
-          <h3 className="text-lg font-black uppercase text-white sm:text-xl">
-            {tournament.name}
-          </h3>
+          <div className="flex items-center gap-3">
+            <span
+              aria-hidden="true"
+              className="h-px min-w-3 flex-1 bg-gradient-to-r from-transparent to-[#D4A017]/60"
+            />
+            <h3 className="min-w-0 text-lg font-black uppercase text-white sm:text-xl">
+              {tournament.name}
+            </h3>
+            <span
+              aria-hidden="true"
+              className="h-px min-w-3 flex-1 bg-gradient-to-l from-transparent to-[#D4A017]/60"
+            />
+          </div>
 
           <p className="mt-1 text-sm font-semibold text-zinc-300">
             {tournament.lake}

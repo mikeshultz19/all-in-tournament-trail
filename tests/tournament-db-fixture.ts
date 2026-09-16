@@ -6,6 +6,7 @@ export const databaseTournament: Tournament = {
   event_type: "regular_season",
   regular_season_number: null,
   name: "Eagle Mountain",
+  presented_by: "AITT",
   slug: "eagle-mountain-2026",
   lake: "Eagle Mountain",
   weather_latitude: 32.87562,

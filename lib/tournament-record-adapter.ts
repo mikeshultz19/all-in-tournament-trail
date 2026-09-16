@@ -66,7 +66,7 @@ function operationalStatus(
   return "scheduled";
 }
 
-function optionalDisplayText(value: string | null): string | null {
+function optionalDisplayText(value: string | null | undefined): string | null {
   const normalized = value?.trim();
   return normalized || null;
 }
@@ -88,6 +88,7 @@ export function toPublicTournament(
   return {
     slug: tournament.slug,
     name: tournament.name,
+    presentedBy: optionalDisplayText(tournament.presented_by) ?? "AITT",
     season: `${date.slice(0, 4)}`,
     lake: tournament.lake,
     weatherLatitude:

@@ -87,12 +87,22 @@ export default function MobileFeaturedTournament({
     <article className="overflow-hidden rounded-lg border border-[#8f762f]/60 bg-[#101010] shadow-[0_10px_24px_rgba(0,0,0,0.3)]">
       <div className="border-b border-white/10 px-4 py-3 text-center">
         <p className="text-[0.6rem] font-black uppercase tracking-[0.18em] text-red-500">
-          AITT Presents
+          {tournament.presentedBy?.trim() || "AITT"} Presents
         </p>
 
-        <h2 className="mt-1.5 text-lg font-black uppercase leading-tight text-white">
-          {tournament.name}
-        </h2>
+        <div className="mt-1.5 flex items-center gap-2.5">
+          <span
+            aria-hidden="true"
+            className="h-px min-w-2 flex-1 bg-gradient-to-r from-transparent to-[#D4A017]/60"
+          />
+          <h2 className="min-w-0 text-lg font-black uppercase leading-tight text-white">
+            {tournament.name}
+          </h2>
+          <span
+            aria-hidden="true"
+            className="h-px min-w-2 flex-1 bg-gradient-to-l from-transparent to-[#D4A017]/60"
+          />
+        </div>
 
         <p className="mt-1 text-sm font-semibold leading-tight text-neutral-300">
           {tournament.lake}

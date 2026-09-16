@@ -12,6 +12,7 @@ import {
 
 export interface TournamentFormErrors {
   name?: string;
+  presentedBy?: string;
   lake?: string;
   tournamentDate?: string;
   hours?: string;
@@ -71,6 +72,7 @@ export function tournamentToFormValues(
 ): TournamentFormValues {
   return {
     name: tournament.name,
+    presentedBy: tournament.presented_by?.trim() || "AITT",
     lake: tournament.lake,
     tournamentDate: timestampToInputValue(tournament.tournament_date),
     description: tournament.description ?? "",
@@ -94,6 +96,7 @@ export function tournamentToFormValues(
 export function tournamentFormData(formData: FormData): TournamentFormValues {
   return {
     name: String(formData.get("name") ?? "").trim(),
+    presentedBy: String(formData.get("presentedBy") ?? "").trim(),
     lake: String(formData.get("lake") ?? "").trim(),
     tournamentDate: String(formData.get("tournamentDate") ?? "").trim(),
     description: String(formData.get("description") ?? "").trim(),
@@ -132,6 +135,10 @@ export function validateTournamentForm(
 
   if (!values.name) {
     errors.name = "Enter the tournament name.";
+  }
+
+  if (values.presentedBy.length > 120) {
+    errors.presentedBy = "Keep the presenter name to 120 characters or fewer.";
   }
 
   if (!values.lake) {
@@ -195,6 +202,7 @@ export function tournamentFormToUpdate(
 
   return {
     name: values.name,
+    presented_by: values.presentedBy || "AITT",
     lake: values.lake,
     tournament_date: inputValueToTimestamp(values.tournamentDate) ?? "",
     description: values.description || null,

@@ -11,6 +11,7 @@ import { databaseTournament } from "@/tests/tournament-db-fixture";
 function validFormData(): FormData {
   const formData = new FormData();
   formData.set("name", "Lake Fork Open");
+  formData.set("presentedBy", " Texas Boat Works ");
   formData.set("lake", "Lake Fork");
   formData.set("tournamentDate", "2026-08-16T06:00");
   formData.set("hours", "Safe Light – 3:00 PM");
@@ -38,6 +39,7 @@ describe("Tournament Information form", () => {
 
     expect(values).toMatchObject({
       name: "Eagle Mountain",
+      presentedBy: "AITT",
       lake: "Eagle Mountain",
       tournamentDate: "2026-11-01T06:00",
       registrationCloses: "2026-10-31T21:00",
@@ -79,6 +81,7 @@ describe("Tournament Information form", () => {
 
     expect(update).toMatchObject({
       name: "Lake Fork Open",
+      presented_by: "Texas Boat Works",
       lake: "Lake Fork",
       status: "Registration Open",
       is_featured: true,
@@ -93,6 +96,15 @@ describe("Tournament Information form", () => {
       updated_by: "AITT Staff",
     });
     expect(update.tournament_date).toBe("2026-08-16T11:00:00.000Z");
+  });
+
+  it("uses AITT when the presenter is cleared", () => {
+    const formData = validFormData();
+    formData.set("presentedBy", "   ");
+
+    expect(tournamentFormToUpdate(tournamentFormData(formData)).presented_by).toBe(
+      "AITT",
+    );
   });
 
   it("trims and persists canonical morning registration times", () => {

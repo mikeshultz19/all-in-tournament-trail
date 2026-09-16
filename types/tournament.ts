@@ -25,6 +25,7 @@ export interface Tournament {
   event_type: TournamentEventType;
   regular_season_number: number | null;
   name: string;
+  presented_by?: string | null;
   slug: string;
   lake: string;
   weather_latitude?: number | null;
@@ -82,6 +83,7 @@ export type TournamentUpdate = Partial<
     | "event_type"
     | "regular_season_number"
     | "name"
+    | "presented_by"
     | "lake"
     | "weather_latitude"
     | "weather_longitude"
@@ -129,6 +131,7 @@ export type TournamentUpdate = Partial<
 
 export interface TournamentFormValues {
   name: string;
+  presentedBy: string;
   lake: string;
   tournamentDate: string;
   description: string;

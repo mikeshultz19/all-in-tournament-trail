@@ -23,6 +23,7 @@ export type TournamentOperationalStatus =
 export interface Tournament {
   slug: string;
   name: string;
+  presentedBy?: string | null;
   season: string;
   lake: string;
   venue: string | null;

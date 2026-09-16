@@ -71,6 +71,24 @@ export default function TournamentInformationForm({
             <FieldError errors={state.errors} field="name" />
           </label>
           <label className={labelClassName}>
+            Presented By
+            <input
+              name="presentedBy"
+              maxLength={120}
+              defaultValue={values.presentedBy}
+              aria-invalid={Boolean(state.errors.presentedBy)}
+              aria-describedby="presentedBy-help presentedBy-error"
+              className={inputClassName}
+            />
+            <p
+              id="presentedBy-help"
+              className="mt-2 text-xs font-normal normal-case tracking-normal text-neutral-500"
+            >
+              Enter the organization or sponsor presenting this tournament. Example: Texas Boat Works
+            </p>
+            <FieldError errors={state.errors} field="presentedBy" />
+          </label>
+          <label className={labelClassName}>
             Lake
             <input
               name="lake"
