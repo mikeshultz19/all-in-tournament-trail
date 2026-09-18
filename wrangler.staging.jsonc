@@ -1,0 +1,20 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "main": ".open-next/worker.js",
+  "name": "all-in-tournament-trail-staging",
+  "compatibility_date": "2026-08-04",
+  "compatibility_flags": ["nodejs_compat"],
+  "workers_dev": true,
+  "preview_urls": true,
+  "vars": {
+    "NEXT_PUBLIC_SUPABASE_URL": "https://vcjhufuklqwvnqmarpqi.supabase.co",
+    "SQUARE_ENVIRONMENT": "sandbox",
+    "AITT_EMAIL_ENVIRONMENT": "staging"
+  },
+  "assets": {
+    "directory": ".open-next/assets",
+    "binding": "ASSETS"
+  },
+  "images": {"binding": "IMAGES"},
+  "observability": {"enabled": true}
+}

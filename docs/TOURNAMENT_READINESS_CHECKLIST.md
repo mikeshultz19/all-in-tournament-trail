@@ -2,6 +2,15 @@
 
 Disaster-recovery continuity is covered by [Tournament Disaster Recovery](TOURNAMENT_DISASTER_RECOVERY.md).
 
+The staging application target is separate from production: use
+`wrangler.staging.jsonc` and `npm run deploy:staging` only after the staging
+Worker, `workers.dev` URL, environment variables, and encrypted secrets have
+been reviewed. Never use the production `wrangler.jsonc` for staging. The
+staging deployment preflight must pass with Supabase project
+`vcjhufuklqwvnqmarpqi` and Square Sandbox mode; no staging deployment is
+considered rehearsed until the authenticated browser and backend layers below
+are completed.
+
 Use this checklist as the authoritative, auditable record for:
 Registration → Payment → Public Entries → Admin Roster → Tournament Morning → WeighFish → Results → Payouts → AOY/Championship → Publishing and Closeout.
 

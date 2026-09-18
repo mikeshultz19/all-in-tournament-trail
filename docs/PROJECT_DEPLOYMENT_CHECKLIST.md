@@ -43,6 +43,32 @@ operations.
 
 - Staging Supabase: `vcjhufuklqwvnqmarpqi` through `.env.local`.
 - Production Supabase: `qrmnglzylrrdhcvashmx` through `.env.production.local`.
+
+## Staging application deployment
+
+The isolated staging application uses `wrangler.staging.jsonc` and the guarded
+`npm run deploy:staging` command. It targets the separate Worker
+`all-in-tournament-trail-staging` with `workers_dev: true` and no custom domain
+or production route. The ordinary `npm run deploy` command remains the guarded
+production OpenNext/Cloudflare deployment and must not be used for staging.
+
+The staging command requires the Supabase project `vcjhufuklqwvnqmarpqi`,
+Square Sandbox mode, an HTTPS `workers.dev` application URL, a callback URL on
+that staging origin, and the named staging variables/secrets documented in the
+deployment preflight script. Secret values belong only in the staging hosting
+provider; they must never be committed or printed. Run
+`npm run deploy:staging:check` before any future deployment. A staging deploy
+has not been performed by this checklist update.
+
+Required public staging variables are `NEXT_PUBLIC_SUPABASE_URL`,
+`NEXT_PUBLIC_SUPABASE_ANON_KEY`, `NEXT_PUBLIC_SQUARE_APPLICATION_ID`,
+`NEXT_PUBLIC_SQUARE_LOCATION_ID`, `SQUARE_ENVIRONMENT=sandbox`,
+`AITT_EMAIL_ENVIRONMENT=staging`, and `AITT_STAGING_APP_URL`. Required
+encrypted staging secrets are `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`,
+`SQUARE_ACCESS_TOKEN`, `SQUARE_WEBHOOK_SIGNATURE_KEY`,
+`SQUARE_WEBHOOK_NOTIFICATION_URL`, `RESEND_API_KEY`, and
+`AITT_STAGING_EMAIL_ALLOWLIST`. Production Supabase, Square, Resend, custom
+domains, and routes are prohibited by the preflight.
 - `npm run dev` is staging. The production wrapper must reject staging config.
 - Never print secrets or mix staging and production data.
 - Before a production migration: back up production, run
