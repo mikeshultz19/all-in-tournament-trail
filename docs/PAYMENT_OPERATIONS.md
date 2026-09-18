@@ -1,5 +1,9 @@
 # Payment Operations Manual
 
+See [Tournament Disaster Recovery](TOURNAMENT_DISASTER_RECOVERY.md) for the
+independent roster backup and outage procedure. Backup failure never rejects a
+valid registration and does not replace payment reconciliation.
+
 > **Reconciliation status (2026-08-25): Supporting financial detail.** The
 > current lifecycle, payout workflow, and public-total rule are controlled by
 > [AITT Tournament Lifecycle and Operations](AITT_LIFECYCLE_OPERATIONS.md).
@@ -138,7 +142,54 @@ totalCharged = cardSubtotal + cardProcessingFee
 
 Application calculations use integer cents, round the 3% component to the nearest cent with half-cent results rounded upward, then add 30 cents once. The fee must be displayed before payment submission as `SQUARE SERVICE FEE (3%)`; do not expose the fixed-component formula.
 
+## Tournament Funds Summary (staging)
+
+The read-only Tournament Funds Summary uses the shared tournament collection
+calculator and the complete active registration roster. It derives face-value
+Base Entry, Big Bass, Bronze, Silver, Gold, Insurance, and joining-membership
+amounts from per-angler classifications, stored line-item snapshots, completed
+payment evidence, and centralized configuration. New Memberships Purchased is
+the individual joining count; Membership Charges Collected preserves every
+supported membership charge, including anomalous charges. A mismatch is shown
+for administrative review rather than silently discarded. Online Square service
+fees are excluded from payout funds and membership revenue.
+
+Collected online registrations require a payment reference, completed online
+payment state, and Square payment ID. Active walk-ups require a payment
+reference and a recorded Cash, Card, or Other method. Cancelled, failed,
+abandoned, duplicate/unpaid, and otherwise uncollected records are excluded.
+Check-In and DQ states do not change collected totals.
+Needs Review does not change a collected payment total, but remains visibly
+flagged for operational resolution.
+
+Walk-up records store payment method and selected registration fields, so the
+summary derives their face-value categories from those fields rather than the
+legacy `walk_up_total` snapshot. Existing walk-up totals may differ from those
+face-value selections; Card snapshots may also show
+`cardProcessingFeeCents: 0`. These are known persistence discrepancies and are
+not rewritten by the summary. Refund and credit treatment remains unresolved and
+must not be inferred from this read-only calculation. Actual Square fees, net
+settlement, and bank deposits are not stored by AITT, so processor and bank
+reconciliation remain untested.
+
 ## 6. Registration Payment Workflow
+
+### Confirmation outbox semantics
+
+Online confirmation deliveries reference the verified Square payment attempt.
+Walk-up confirmation deliveries have no online payment attempt and therefore
+use `NULL` for that outbox field while retaining the registration foreign key,
+unique normalized-recipient constraint, and provider idempotency key. A walk-up
+confirmation reports its recorded Cash, Card, or Other method and authoritative
+stored total; it is not a Square receipt. It must not invent an online Square
+service fee. Itemized membership charges remain per individual participant.
+
+Walk-up queue insertion occurs in the successful registration transaction.
+Blank recipients queue nothing and do not invalidate an otherwise valid
+non-member walk-up. Delivery failure does not reverse registration and remains
+available through the existing retry state. The No Show cleanup migration is
+applied to staging; an authenticated allowlisted staging delivery rehearsal
+remains outstanding.
 
 1. **Registration begins.** The angler selects the tournament, solo or team registration, membership choices, and eligible entry options. Tournament Entry is required. Big Bass is optional; Bronze, Silver, Gold, and Insurance Pot follow the eligibility rules in [Tournament Operations](TOURNAMENT_OPERATIONS_AND_REGISTRATION_PROCESS.md).
 2. **Charges are established.** The registration shows itemized charges and an expected total. Prices and eligibility come from approved business rules.
@@ -215,6 +266,22 @@ Tournament-morning card verification and cash-versus-card tracking remain in the
 Until approved, administrators must not infer a general refund entitlement. Each request remains in Manual Review, retains its evidence and decision history, and follows a documented Product Owner decision. A refund record must identify the original payment, amount returned, reason, approval, method, provider reference when applicable, and completion date.
 
 ## 12. Financial Controls
+
+### Tournament Funds Summary
+
+Registration Review and Financial Summary use the shared server-side collection
+calculator. New memberships are counted per joining angler, never per team or
+registration. Existing active members add no new membership revenue. Membership
+charges collected are reconciled separately so current-member charges and
+unitemized joining charges remain visible for review. Payout funds exclude
+Square service fees. Registration Review is the operational incoming-money view;
+Financial Summary is the central tournament-selection view; Tournament Manager
+compares the same payout-funds total with calculated checks. Check-In and DQ do
+not change collected funds. Existing closeouts provide payout checks
+and completion status, but not a complete immutable collection snapshot, so live
+totals may change if registrations are edited. Square settlement/bank
+reconciliation, walk-up card snapshot discrepancies, and refund/credit policy
+remain separate unresolved capabilities.
 
 - Restrict financial access to authorized administrators using least privilege.
 - Where staffing permits, separate payment verification, payout approval, and final reconciliation. If one administrator performs multiple duties, the audit record must make that visible.
@@ -384,3 +451,12 @@ The Product Owner must approve the following before software or routine operatio
 
 ---
 For an overview of the project, begin with **00_START_HERE.md**.
+
+## Membership review and collected funds
+
+The Financial Summary reports recorded registration funds only. An unverified
+Current Member claim remains in Needs Review but creates no hypothetical
+receivable. Staff verifies status and collects the membership payment before
+selecting Confirm Membership Purchase; only that confirmed $40 collection is
+then included. Confirm Existing Member and Confirm Not Member add no membership
+revenue. Processor and bank reconciliation remain separate operational checks.

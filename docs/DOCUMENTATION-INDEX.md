@@ -26,6 +26,11 @@ different rule.
 > current documentation listed below, the current implementation and current
 > authoritative document control.
 
+## Capability contracts
+
+- [Capability Contracts](CAPABILITY_CONTRACTS.md) - business-capability boundaries, authoritative data, safety rules, tests, and rehearsal gaps.
+- [Tournament Disaster Recovery](TOURNAMENT_DISASTER_RECOVERY.md) - independent roster backup, outage procedure, and rehearsal evidence.
+
 ## Current Technical / Developer
 
 ### Architecture

@@ -26,7 +26,6 @@ An historically eligible Official Result counts when its status is:
 
 The following do not count:
 
-- `no_show`
 - `disqualified`
 - historically ineligible
 

@@ -1,5 +1,8 @@
 # Online Registration Workflow
 
+Disaster-recovery continuity, independent roster backup, and website-outage
+procedures are defined in [Tournament Disaster Recovery](TOURNAMENT_DISASTER_RECOVERY.md).
+
 > **Reconciliation status (2026-08-25): Supporting implementation history.**
 > Current operational behavior is controlled by
 > [AITT Tournament Lifecycle and Operations](AITT_LIFECYCLE_OPERATIONS.md) and
@@ -437,6 +440,22 @@ prominently include this exact tournament-morning line:
 Email failure never reverses successful payment or registration. Cloudflare
 Email Routing only forwards inbound contact email and is not the transactional
 registration-email provider.
+
+The confirmation outbox also supports tournament-day walk-ups. Online delivery
+rows retain their required verified payment-attempt reference. Walk-up delivery
+rows use a nullable payment-attempt reference because they have no online Square
+attempt; the authoritative registration source must be `walk_up`. Walk-up
+confirmations use the stored registration number, participants, itemized
+selection and individual membership charges, payment method, and recorded total.
+They are registration confirmations, not Square receipts.
+
+Online and walk-up recipients use the same trimmed, lowercase, deduplicated
+email selection. The unique registration/recipient constraint and provider
+idempotency key prevent duplicate delivery. A walk-up without a deliverable
+email remains saved and reports `Confirmation not sent — no email provided.`
+Delivery failure preserves the registration and remains visible in the existing
+failed/retry outbox state. The No Show cleanup migration is applied to staging;
+an authenticated, allowlisted delivery rehearsal remains outstanding.
 
 ## 12. Administrative Experience
 

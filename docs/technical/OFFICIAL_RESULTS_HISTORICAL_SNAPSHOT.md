@@ -30,7 +30,6 @@ The supported constitutional states are:
 
 - `participated`
 - `withdrew_after_start`
-- `no_show`
 - `disqualified`
 
 Placement and participation are separate. A normal placed result retains its

@@ -3,6 +3,40 @@ Last Updated: July 27, 2026
 
 # Tournament Operations and Registration Process
 
+The complete website-outage and printed-roster procedure is documented in
+[Tournament Disaster Recovery](TOURNAMENT_DISASTER_RECOVERY.md).
+
+## Registration confirmation variants
+
+Verified online registrations retain the approved online confirmation wording
+and their legitimate Square payment-attempt linkage. Successfully saved
+walk-ups queue the walk-up wording only after the durable save transaction. The
+walk-up message uses the stored registration number, participant names,
+itemized selections and per-person membership charges, recorded Cash/Card/Other
+method, and recorded total. It is a registration confirmation, not a Square
+receipt, and does not invent an online Square service fee.
+
+Recipients are trimmed, lowercased, and deduplicated consistently for online
+and walk-up registrations. Database uniqueness and the provider idempotency key
+prevent resubmission, refresh, editing, attendance, review, export, or printing
+from creating another automatic confirmation. A non-member walk-up without an
+email remains saved, queues nothing, and reports `Confirmation not sent — no
+email provided.` Delivery failure preserves the registration and remains in the
+retry workflow. The No Show cleanup migration is applied to staging; an
+authenticated allowlisted delivery rehearsal remains outstanding.
+
+## Tournament funds review
+
+Registration Review presents the operational incoming-money view. Financial
+Summary provides the central tournament selector and uses the same shared
+calculation: membership counts/revenue reflect purchased line items only,
+payout funds exclude Square service fees, and Check-In and DQ do not
+alter collected totals. Tournament Manager compares the same payout-funds total
+with calculated checks. Totals are live-calculated unless an existing closeout
+supplies payout checks/status; historical collection snapshots are not yet
+immutable. Walk-up card snapshot discrepancies and refund/credit rules remain
+documented gaps.
+
 > **Consolidated 2026-08-25.** Current staff procedure is maintained in
 > [AITT Tournament Lifecycle and Operations](AITT_LIFECYCLE_OPERATIONS.md).
 > This longer document is retained as supporting design/history. Automatic
@@ -115,6 +149,24 @@ Entry options include:
 
 **Tournament Entry** is required for every solo and team registration and includes
 the Main payout. There is no participation-only tournament entry.
+
+**Authoritative pricing:** Tournament Entry/Base Entry is **$60**. Earlier $40
+Base Entry references are obsolete. Membership remains **$40 per angler** and
+Bronze remains **$40**.
+
+The staging Tournament Funds Summary uses the shared collection calculator and
+the complete active roster. It counts new memberships per individual angler,
+separates expected joining revenue from membership charges actually collected,
+and flags classification/payment mismatches without discarding supported money.
+It separates face-value tournament payout funds from membership revenue and excludes Square service fees. Collected
+online rows require completed payment evidence; active walk-ups require a
+payment reference and Cash, Card, or Other method. Checked In, DQ,
+search, filters, pagination, and page size do not change collection totals.
+Cancelled, failed, abandoned, duplicate/unpaid, and unresolved refund/credit
+records are not treated as collected. Existing walk-up totals may differ from
+face-value selections, and Card snapshots retain a known zero-fee persistence
+discrepancy; the summary derives selections without rewriting those records.
+Actual Square fees and bank deposits remain outside the stored application data.
 
 **Big Bass** is optional and is not a standalone tournament entry.
 
@@ -703,3 +755,18 @@ Currently unresolved business decisions are:
 
 ---
 For an overview of the project, begin with **00_START_HERE.md**.
+
+## Membership review and collected funds
+
+Registration may complete before membership verification. If an Existing Member
+claim cannot be verified, it remains in Needs Review and continues to block
+Tournament Preparation, but it adds no hypothetical money to the Financial
+Summary. Staff verifies status and collects payment before selecting Confirm
+Membership Purchase. Only confirmed collected membership money is included;
+Confirm Existing Member and Confirm Not Member add $0. Processor and bank
+reconciliation remain separate. Walk-up snapshots can remain lump-sum and are
+retained as a known auditability limitation.
+
+AITT does not track No Show as a separate application status. Staff handles
+attendance operationally through the ordinary Check-In workflow. No replacement
+automated absence workflow is introduced.
