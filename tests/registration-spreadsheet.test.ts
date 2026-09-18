@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import * as XLSX from "xlsx";
+import JSZip from "jszip";
 
 import { buildRegistrationWorkbook, REGISTRATION_SPREADSHEET_COLUMNS, registrationSpreadsheetRows } from "@/lib/registration-spreadsheet";
 import type { TournamentRegistrationRosterRow } from "@/lib/tournament-registration-roster";
@@ -28,13 +28,19 @@ describe("registration disaster-recovery spreadsheet", () => {
 
   it("writes a readable xlsx workbook with headers, filters, and freeze metadata", async () => {
     const workbook = await buildRegistrationWorkbook([row()], { tournamentName: "Test Tournament", tournamentDate: "2026-09-20", exportedAt: new Date("2026-09-18T12:00:00Z") });
-    const parsed = XLSX.read(workbook, { type: "buffer" });
-    const sheet = parsed.Sheets["Current Registrations"];
-    expect(sheet).toBeDefined();
-    expect(XLSX.utils.sheet_to_json(sheet, { header: 1 })[0]).toEqual([...REGISTRATION_SPREADSHEET_COLUMNS]);
-    expect(sheet["!autofilter"]).toBeDefined();
-    const zip = await import("jszip");
-    const xml = await (await zip.default.loadAsync(workbook)).file("xl/worksheets/sheet1.xml")?.async("string");
-    expect(xml).toContain('state="frozen"');
+    const zip = await JSZip.loadAsync(workbook);
+    const sheet = await zip.file("xl/worksheets/sheet1.xml")?.async("string");
+    const table = await zip.file("xl/tables/table1.xml")?.async("string");
+    const workbookXml = await zip.file("xl/workbook.xml")?.async("string");
+    expect(sheet).toContain('state="frozen"');
+    expect(sheet).toContain('autoFilter ref="A1:AB2"');
+    expect(sheet).toContain('customWidth="1"');
+    expect(sheet).toContain('t="inlineStr"');
+    expect(REGISTRATION_SPREADSHEET_COLUMNS.every((column) => sheet?.includes(`<t xml:space="preserve">${column}</t>`))).toBe(true);
+    expect(table).toContain('name="CurrentRegistrations"');
+    expect(table).toContain('displayName="CurrentRegistrations"');
+    expect(table).toContain('ref="A1:AB2"');
+    expect(workbookXml).toContain('name="Current Registrations"');
+    expect(await zip.file("xl/styles.xml")?.async("string")).toContain('cellXfs count="2"');
   });
 });
