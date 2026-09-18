@@ -36,15 +36,15 @@ describe("unified Registration & Check-In workflow", () => {
     expect(page).not.toContain("row.memberBenefitsEligible");
     expect(page).not.toContain('"Eligible"');
     expect(page).not.toContain('"Not Eligible"');
-    expect(page).toContain("row.angler1.memberStatus");
+    expect(page).toContain("membershipStatusLine(row.angler1)");
     expect(roster).toContain("snapshot?.eligibleForTournament === true");
     expect(roster).toContain('"Member" | "Non-Member" | "Needs Review"');
   });
 
   it("offers All Registrations, Needs Review, and Walk-Ups as independent client filters", () => {
-    const allPosition = toolbar.indexOf('selectFilter("all")}>All Registrations');
-    const reviewPosition = toolbar.indexOf('selectFilter("needs_review")}>Needs Review');
-    const walkUpPosition = toolbar.indexOf('selectFilter("walk_ups")}>Walk-Ups');
+    const allPosition = toolbar.indexOf('onClick={() => selectFilter("all")}');
+    const reviewPosition = toolbar.indexOf('onClick={() => selectFilter("needs_review")}');
+    const walkUpPosition = toolbar.indexOf('onClick={() => selectFilter("walk_ups")}');
     expect(allPosition).toBeGreaterThan(-1);
     expect(reviewPosition).toBeGreaterThan(allPosition);
     expect(walkUpPosition).toBeGreaterThan(reviewPosition);
@@ -54,8 +54,8 @@ describe("unified Registration & Check-In workflow", () => {
 
   it("filters the shared active roster to walk-ups and sorts them by boat number", () => {
     expect(page).toContain('.filter((row) => row.registrationSource === "walk_up")');
-    expect(page).toContain("left.boatNumber ?? Number.MAX_SAFE_INTEGER");
-    expect(page).toContain(': allRows;');
+    expect(roster).toContain("left.boatNumber ?? Number.MAX_SAFE_INTEGER");
+    expect(page).toContain("filterTournamentRegistrationRosterRows(");
     expect(page).not.toMatch(/getTournamentRegistrationRoster[\s\S]{0,200}registrationSource/);
     expect(roster).toContain('.eq("registration_status", "active")');
   });
@@ -81,8 +81,8 @@ describe("unified Registration & Check-In workflow", () => {
     expect(page).toContain("function RosterRow");
     expect(page).toContain("row.angler1.displayName");
     expect(page).toContain("row.angler2.displayName");
-    expect(page).toContain("row.angler1.memberStatus");
-    expect(page).toContain("row.angler2.memberStatus");
+    expect(page).toContain("membershipStatusLine(row.angler1)");
+    expect(page).toContain("membershipStatusLine(row.angler2)");
     expect(page).toContain('row.memberPot ? title(row.memberPot) : "None"');
     expect(page).toContain("yesNo(row.insurance)");
     expect(page).toContain("yesNo(row.bigBass)");
@@ -98,8 +98,9 @@ describe("unified Registration & Check-In workflow", () => {
   it("keeps general registration editing out of the roster and in All Registrations", () => {
     expect(page).not.toContain("RegistrationEditControl");
     expect(page).not.toContain("Edit / Registration Details");
-    expect(allRegistrations).toContain("RegistrationEditControl");
-    expect(allRegistrations).toContain('row.status === "active"');
+    expect(allRegistrations).toContain("RegistrationHistoryList");
+    expect(readFileSync("components/admin/RegistrationHistoryList.tsx", "utf8")).toContain("RegistrationEditControl");
+    expect(allRegistrations).toContain("filterRegistrationHistory");
   });
 
   it("keeps Needs Review independent and preserves check-in actions in every filtered row", () => {
@@ -139,38 +140,37 @@ describe("unified Registration & Check-In workflow", () => {
 
   it("searches the current filtered roster by team, either angler, or exact boat number", () => {
     expect(toolbar).toContain('placeholder="Search name or boat #"');
-    expect(page).toContain("const rows = search ? filteredRows.filter((row) => registrationMatchesSearch(row, search)) : filteredRows");
-    expect(page).toContain('`${row.angler1.displayName} / ${row.angler2?.displayName ?? ""}`');
-    expect(page).toContain('row.angler1.displayName.toLocaleLowerCase("en-US").includes(normalizedSearch)');
-    expect(page).toContain('row.angler2?.displayName.toLocaleLowerCase("en-US").includes(normalizedSearch)');
-    expect(page).toContain('String(row.boatNumber) === search');
+    expect(page).toContain("filterTournamentRegistrationRosterRows(");
+    expect(roster).toContain("registrationMatchesRosterSearch(");
+    expect(roster).toContain('String(row.boatNumber) === search');
   });
 
   it("keeps search case-insensitive, composable with every filter, and clearable", () => {
-    expect(page).toContain('search.toLocaleLowerCase("en-US")');
+    expect(roster).toContain('search.toLocaleLowerCase("en-US")');
     expect(toolbar).toContain('params.set("filter", nextFilter)');
     expect(toolbar).toContain('params.set("search", nextSearch.trim())');
     expect(toolbar).toContain('aria-label="Clear search"');
-    expect(toolbar).toContain('router.replace(href(filter, ""), { scroll: false })');
-    expect(toolbar).toContain('router.replace(href(nextFilter, searchText), { scroll: false })');
-    expect(page).toContain(': filteredRows;');
+    expect(toolbar).toContain('router.replace(href({ nextSearch: "", nextPage: 1 }), { scroll: false })');
+    expect(toolbar).toContain('router.replace(href({ nextFilter, nextPage: 1 }), { scroll: false })');
+    expect(roster).toContain(': [...rows];');
     expect(page).toContain('.filter((row) => row.registrationSource === "walk_up")');
     expect(page).toContain('allRows.filter((row) => row.needsReview || pendingReviewIds.has(row.id))');
     expect(roster).toContain('.eq("registration_status", "active")');
   });
 
   it("wraps the compact search below filters without horizontal scrolling on mobile", () => {
-    expect(toolbar).toContain('className="mt-4 flex flex-col gap-3 sm:flex-row');
+    expect(toolbar).toContain('className="mt-4 flex flex-col gap-3"');
+    expect(toolbar).toContain('className="flex flex-col gap-3 sm:flex-row');
     expect(toolbar).toContain('className="relative min-w-0 flex-1"');
   });
 
   it("refreshes roster server data locally while preserving query and scroll state", () => {
     expect(toolbar).toContain("startRefresh(() => router.refresh())");
     expect(toolbar).not.toContain("useEffect");
-    expect(page).toContain('key={`${filter}:${search}`}');
+    expect(page).toContain('key={`${filter}:${search}:${pageSize}`}');
     expect(toolbar).not.toContain("window.location");
-    expect(toolbar).toContain('{refreshing ? "Refreshing…" : "Refresh"}');
-    expect(toolbar).toContain('{ tournament: tournamentId }');
+    expect(toolbar).toContain('{refreshing ? "Refreshing..." : "Refresh"}');
+    expect(toolbar).toContain('new URLSearchParams({ tournament: tournamentId })');
   });
 
   it("uses mobile cards so Check In is not trapped in the desktop table", () => {

@@ -43,12 +43,15 @@ export function getWalkUpPricing(selections: WalkUpPricingSelections) {
     bigBass: selections.bigBass,
     insurance: selections.insurance,
   });
+  const cardProcessingFeeCents = selections.paymentMethod === "card"
+    ? pricing.cardProcessingFeeCents
+    : 0;
+  const totalCents = pricing.subtotalCents + cardProcessingFeeCents;
   return {
     ...pricing,
-    totalCollectedCents:
-      selections.paymentMethod === "card"
-        ? pricing.totalCents
-        : pricing.subtotalCents,
+    cardProcessingFeeCents,
+    totalCents,
+    totalCollectedCents: totalCents,
   };
 }
 

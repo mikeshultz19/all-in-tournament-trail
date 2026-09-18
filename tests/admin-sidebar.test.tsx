@@ -19,11 +19,13 @@ describe("AdminSidebar", () => {
   it("shows the primary Admin Console destinations", () => {
     const markup = renderToStaticMarkup(<AdminSidebar />);
 
-    expect(markup).toContain("Home");
+    expect(markup).toContain("Dashboard");
     expect(markup).toContain("Tournament Manager");
     expect(markup).toContain("All Members");
     expect(markup).toContain("Website");
     expect(markup).toContain("All Registrations");
+    expect(markup).toContain("Financial Summary");
+    expect(markup).toContain('href="/admin/financial-summary"');
     expect(markup).toContain("Settings");
     expect(markup).not.toContain("Rules");
     expect(markup).not.toContain("FAQ");

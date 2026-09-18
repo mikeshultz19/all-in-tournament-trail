@@ -1,7 +1,8 @@
 import { readFileSync } from "node:fs";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-const { revalidatePath, requireAdminUser, rpc } = vi.hoisted(() => ({
+const { deliverRegistrationConfirmationEmails, revalidatePath, requireAdminUser, rpc } = vi.hoisted(() => ({
+  deliverRegistrationConfirmationEmails: vi.fn(),
   revalidatePath: vi.fn(),
   requireAdminUser: vi.fn(),
   rpc: vi.fn(),
@@ -13,6 +14,10 @@ vi.mock("next/cache", () => ({
 
 vi.mock("@/lib/admin-auth", () => ({
   requireAdminUser,
+}));
+
+vi.mock("@/lib/registration-confirmation-email", () => ({
+  deliverRegistrationConfirmationEmails,
 }));
 
 vi.mock("@/lib/supabase/server", () => ({
@@ -71,6 +76,7 @@ describe("walk-up registration draft preservation", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     requireAdminUser.mockResolvedValue({ id: "admin-1" });
+    deliverRegistrationConfirmationEmails.mockResolvedValue({ sent: 2, failed: 0 });
     rpc.mockReset();
   });
 
@@ -120,7 +126,7 @@ describe("walk-up registration draft preservation", () => {
   });
 
   it("accepts the corrected selection and clears draft state on success", async () => {
-    rpc.mockResolvedValue({ error: null });
+    rpc.mockResolvedValue({ data: { id: "walk-up-registration-1" }, error: null });
 
     const result = await createWalkUpRegistrationAction(
       { status: "idle", message: "" },
@@ -138,10 +144,91 @@ describe("walk-up registration draft preservation", () => {
     });
     expect(rpc).toHaveBeenCalledWith(
       "admin_create_sequential_walkup_registration",
-      expect.objectContaining({ p_total_paid_cents: 8000 }),
+      expect.objectContaining({
+        p_total_paid_cents: 8000,
+        p_options: expect.objectContaining({
+          priceSnapshot: expect.objectContaining({ totalCents: 8000 }),
+        }),
+      }),
     );
+    expect(deliverRegistrationConfirmationEmails).toHaveBeenCalledTimes(1);
+    expect(deliverRegistrationConfirmationEmails).toHaveBeenCalledWith("walk-up-registration-1");
     expect(revalidatePath).toHaveBeenCalledWith("/admin");
     expect(revalidatePath).toHaveBeenCalledWith("/registrations");
+  });
+
+  it("uses normalized deduplicated recipients for Team and Solo delivery counts", async () => {
+    rpc.mockResolvedValue({ data: { id: "walk-up-registration-2" }, error: null });
+    deliverRegistrationConfirmationEmails.mockResolvedValueOnce({ sent: 1, failed: 0 });
+    const team = await createWalkUpRegistrationAction(
+      { status: "idle", message: "" },
+      buildWalkUpFormData({
+        memberPot: "",
+        bigBass: true,
+        insurance: false,
+        totalPaid: "80.00",
+        angler1Email: " SAME@EXAMPLE.COM ",
+        angler2Email: "same@example.com",
+      }),
+    );
+    expect(team.status).toBe("success");
+    expect(deliverRegistrationConfirmationEmails).toHaveBeenCalledTimes(1);
+
+    vi.clearAllMocks();
+    requireAdminUser.mockResolvedValue({ id: "admin-1" });
+    rpc.mockResolvedValue({ data: { id: "walk-up-registration-3" }, error: null });
+    deliverRegistrationConfirmationEmails.mockResolvedValue({ sent: 1, failed: 0 });
+    const solo = await createWalkUpRegistrationAction(
+      { status: "idle", message: "" },
+      buildWalkUpFormData({
+        registrationType: "solo",
+        memberPot: "",
+        bigBass: false,
+        insurance: false,
+        totalPaid: "60.00",
+      }),
+    );
+    expect(solo.status).toBe("success");
+    expect(deliverRegistrationConfirmationEmails).toHaveBeenCalledTimes(1);
+  });
+
+  it("saves without queue processing when no recipient email is provided", async () => {
+    rpc.mockResolvedValue({ data: { id: "walk-up-registration-no-email" }, error: null });
+    const result = await createWalkUpRegistrationAction(
+      { status: "idle", message: "" },
+      buildWalkUpFormData({
+        memberPot: "",
+        bigBass: true,
+        insurance: false,
+        totalPaid: "80.00",
+        angler1Email: "",
+        angler2Email: "",
+      }),
+    );
+    expect(result).toEqual({ status: "success", message: "Confirmation not sent — no email provided." });
+    expect(rpc).toHaveBeenCalledTimes(1);
+    expect(deliverRegistrationConfirmationEmails).not.toHaveBeenCalled();
+  });
+
+  it("preserves a successful save and reports confirmation delivery failure", async () => {
+    rpc.mockResolvedValue({ data: { id: "walk-up-registration-email-failure" }, error: null });
+    deliverRegistrationConfirmationEmails.mockResolvedValue({ sent: 0, failed: 2 });
+    const result = await createWalkUpRegistrationAction(
+      { status: "idle", message: "" },
+      buildWalkUpFormData({ memberPot: "", bigBass: true, insurance: false, totalPaid: "80.00" }),
+    );
+    expect(result).toEqual({ status: "success", message: "Walk-up saved. Confirmation delivery is pending retry." });
+    expect(rpc).toHaveBeenCalledBefore(deliverRegistrationConfirmationEmails);
+  });
+
+  it("queues nothing when durable walk-up persistence fails", async () => {
+    rpc.mockResolvedValue({ data: null, error: { message: "save failed" } });
+    const result = await createWalkUpRegistrationAction(
+      { status: "idle", message: "" },
+      buildWalkUpFormData({ memberPot: "", bigBass: true, insurance: false, totalPaid: "80.00" }),
+    );
+    expect(result.status).toBe("error");
+    expect(deliverRegistrationConfirmationEmails).not.toHaveBeenCalled();
   });
 
   it("rewires the walk-up form so error submissions remount with preserved defaults and success returns to blank defaults", () => {
@@ -164,6 +251,8 @@ describe("walk-up registration draft preservation", () => {
     expect(controls).toContain('name="totalPaid"');
     expect(controls).toContain("formatCurrencyFromCents(totalCollectedCents)");
     expect(controls).toContain('aria-live="polite"');
+    expect(controls).toContain('label="Email (optional for non-members)"');
+    expect(controls).toContain("required={false}");
   });
 
   it("uses the shared authoritative helper for every supported walk-up charge", () => {
@@ -187,6 +276,83 @@ describe("walk-up registration draft preservation", () => {
     expect(price({ ...base, insurance: true })).toBe(8000);
     expect(price({ ...base, memberships: ["joining", "joining"], memberPot: "gold", bigBass: true, insurance: true })).toBe(68000);
     expect(price({ ...base, registrationType: "solo", memberships: ["current"], paymentMethod: "card" })).toBe(6210);
+  });
+
+  it.each([
+    ["cash", 0, 6000],
+    ["other", 0, 6000],
+    ["card", 210, 6210],
+  ] as const)("stores method-specific fee and total values for a $60 %s walk-up", async (paymentMethod, feeCents, totalCents) => {
+    rpc.mockResolvedValue({ data: { id: `walk-up-${paymentMethod}` }, error: null });
+    deliverRegistrationConfirmationEmails.mockResolvedValue({ sent: 1, failed: 0 });
+
+    const result = await createWalkUpRegistrationAction(
+      { status: "idle", message: "" },
+      buildWalkUpFormData({
+        registrationType: "solo",
+        paymentMethod,
+        memberPot: "",
+        bigBass: false,
+        insurance: false,
+        totalPaid: (totalCents / 100).toFixed(2),
+        angler1Membership: "non-member",
+      }),
+    );
+
+    expect(result.status).toBe("success");
+    expect(rpc).toHaveBeenCalledWith(
+      "admin_create_sequential_walkup_registration",
+      expect.objectContaining({
+        p_payment_method: paymentMethod,
+        p_total_paid_cents: totalCents,
+        p_options: expect.objectContaining({
+          priceSnapshot: {
+            lineItems: [{ name: "Tournament Entry", priceCents: 6000 }],
+            subtotalCents: 6000,
+            cardProcessingFeeCents: feeCents,
+            totalCents,
+          },
+        }),
+      }),
+    );
+  });
+
+  it.each([
+    ["cash", 0, 68000],
+    ["other", 0, 68000],
+    ["card", 2070, 70070],
+  ] as const)("calculates multi-item %s snapshots from one authoritative subtotal", (paymentMethod, feeCents, totalCents) => {
+    const pricing = getWalkUpPricing({
+      registrationType: "team",
+      paymentMethod,
+      memberships: ["joining", "joining"],
+      memberPot: "gold",
+      bigBass: true,
+      insurance: true,
+    });
+    expect(pricing.subtotalCents).toBe(68000);
+    expect(pricing.cardProcessingFeeCents).toBe(feeCents);
+    expect(pricing.totalCents).toBe(totalCents);
+    expect(pricing.totalCollectedCents).toBe(totalCents);
+  });
+
+  it("includes one and two individual membership purchases in the authoritative subtotal", () => {
+    expect(getWalkUpPricing({
+      registrationType: "solo",
+      paymentMethod: "cash",
+      memberships: ["joining"],
+      memberPot: null,
+      bigBass: false,
+      insurance: false,
+    }).subtotalCents).toBe(10000);
+    expect(getWalkUpPricing({
+      registrationType: "team",
+      paymentMethod: "other",
+      memberships: ["joining", "joining"],
+      memberPot: null,
+      bigBass: false,
+      insurance: false,
+    }).subtotalCents).toBe(14000);
   });
 
   it("drops disabled member-only selections and replaces rather than stacks pots", () => {
@@ -228,6 +394,7 @@ describe("walk-up registration draft preservation", () => {
     );
     expect(result.draft?.totalPaid).toBe("80.00");
     expect(rpc).not.toHaveBeenCalled();
+    expect(deliverRegistrationConfirmationEmails).not.toHaveBeenCalled();
   });
 
   it("adds an accessible close control that only collapses the walk-up panel", () => {

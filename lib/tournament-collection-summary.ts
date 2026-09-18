@@ -10,7 +10,7 @@ export async function listTournamentCollectionSummaries(tournamentIds: readonly 
   if (!tournamentIds.length) return {};
   const supabase = createSupabaseServerClient();
   const { data, error } = await supabase.from("tournament_registrations")
-    .select("id,tournament_id,registration_type,angler1_name,angler2_name,payment_reference,identity_review_status,member_pot,big_bass,price_snapshot")
+    .select("id,tournament_id,registration_type,angler1_name,angler2_name,angler1_id,angler2_id,payment_reference,identity_review_status,member_pot,big_bass,insurance,membership_snapshot,price_snapshot,registration_source,payment_method,registration_status,online_payment_state,square_payment_id")
     .in("tournament_id", [...tournamentIds])
     .eq("registration_status", "active");
   if (error) throw new Error("Tournament collection records could not be loaded.", { cause: error });

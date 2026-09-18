@@ -42,9 +42,9 @@ describe("authenticated roster exports", () => {
     expect(print).toContain("size: landscape");
     expect(print).toContain(">Type</th>");
     expect(print).toContain("title(row.registrationType)");
-    expect(print).toContain("Check-In / Review");
+    expect(print).toContain("Attendance / Review");
     expect(print).toContain(">Weight</th>");
-    expect(print.indexOf("Check-In / Review")).toBeLessThan(print.indexOf(">Weight</th>"));
+    expect(print.indexOf("Attendance / Review")).toBeLessThan(print.indexOf(">Weight</th>"));
     expect(print).toContain("Blank weight for boat");
     expect(csv).not.toContain('"weight"');
     expect(print).not.toContain("RegistrationEditControl");

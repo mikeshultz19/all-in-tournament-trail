@@ -8,7 +8,6 @@ import {
   type HistoricalResultReviewState,
 } from "@/app/admin/tournament-manager/publish/actions";
 import { adminButtonStyles } from "@/components/admin/admin-button-styles";
-import { formatMembershipSummary } from "@/lib/publish-historical-review";
 
 type RegistrationOption = {
   id: string;
@@ -127,7 +126,6 @@ export default function PublishHistoricalResultReview({
               >
                 <option value="participated">Participated</option>
                 <option value="withdrew_after_start">Withdrew After Start</option>
-                <option value="no_show">No Show</option>
                 <option value="disqualified">Disqualified</option>
               </select>
             </label>

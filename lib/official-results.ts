@@ -127,7 +127,6 @@ export async function correctWorkingResult(input: {
 export type OfficialParticipationStatus =
   | "participated"
   | "withdrew_after_start"
-  | "no_show"
   | "disqualified";
 
 export async function reviewWorkingResultHistory(input: {

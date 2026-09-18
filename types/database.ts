@@ -305,6 +305,15 @@ export interface Database {
         };
         Returns: number;
       };
+      set_registration_attendance: {
+        Args: {
+          p_registration_id: string;
+          p_tournament_id: string;
+          p_attendance_action: "check_in" | "clear_check_in";
+          p_admin_user_id: string;
+        };
+        Returns: TournamentRegistration;
+      };
       replace_aoy_projection: {
         Args: {
           p_season_id: string;
@@ -334,7 +343,6 @@ export interface Database {
           p_participation_status:
             | "participated"
             | "withdrew_after_start"
-            | "no_show"
             | "disqualified";
           p_aoy_eligible: boolean;
           p_eligibility_reason: string;
@@ -349,7 +357,6 @@ export interface Database {
           p_participation_status:
             | "participated"
             | "withdrew_after_start"
-            | "no_show"
             | "disqualified";
           p_aoy_eligible: boolean;
           p_eligibility_reason: string;

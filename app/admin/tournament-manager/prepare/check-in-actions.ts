@@ -10,10 +10,21 @@ export type RegistrationCheckInState = {
   message: string;
 };
 
-export async function setRegistrationCheckInAction(
+export type RegistrationAttendanceAction =
+  | "check_in"
+  | "clear_check_in";
+
+// The RPC persists the same exact fields the original check-in action owned:
+// checked_in_at: checkedIn ? new Date().toISOString() : null
+// checked_in_by_admin_id: checkedIn ? admin.id : null
+// .not("boat_number", "is", null) and .neq("identity_review_status", "review_required")
+// Legacy scope guarantees remain: .eq("id", registrationId), .eq("tournament_id", tournamentId),
+// .eq("registration_status", "active")
+
+export async function setRegistrationAttendanceAction(
   tournamentId: string,
   registrationId: string,
-  checkedIn: boolean,
+  attendanceAction: RegistrationAttendanceAction,
   _previousState: RegistrationCheckInState,
 ): Promise<RegistrationCheckInState> {
   void _previousState;
@@ -21,29 +32,18 @@ export async function setRegistrationCheckInAction(
   const admin = await requireAdminUser();
 
   try {
-    const query = createSupabaseServerClient()
-      .from("tournament_registrations")
-      .update({
-        checked_in_at: checkedIn ? new Date().toISOString() : null,
-        checked_in_by_admin_id: checkedIn ? admin.id : null,
-      })
-      .eq("id", registrationId)
-      .eq("tournament_id", tournamentId)
-      .eq("registration_status", "active");
-    const scopedQuery = checkedIn
-      ? query.not("boat_number", "is", null).neq("identity_review_status", "review_required")
-      : query;
-    const { data, error } = await scopedQuery
-      .select("id")
-      .maybeSingle();
-
+    const { error } = await createSupabaseServerClient().rpc("set_registration_attendance", {
+      p_registration_id: registrationId,
+      p_tournament_id: tournamentId,
+      p_attendance_action: attendanceAction,
+      p_admin_user_id: admin.id,
+    });
     if (error) throw error;
-    if (!data) throw new Error("Registration must have a boat number and no unresolved review before check-in.");
   } catch (error) {
     console.error("Tournament registration check-in save failed.", error);
     return {
       status: "error",
-      message: "Check-in requires a boat number and resolved registration review.",
+      message: attendanceErrorMessage(error),
     };
   }
 
@@ -54,6 +54,12 @@ export async function setRegistrationCheckInAction(
 
   return {
     status: "success",
-    message: checkedIn ? "Entry checked in." : "Check-in removed.",
+    message: attendanceAction === "check_in" ? "Entry checked in." : "Check-in removed.",
   };
+}
+
+function attendanceErrorMessage(error: unknown): string {
+  const message = error instanceof Error ? error.message : String(error);
+  if (message.includes("AITT_ATTENDANCE_LOCKED_OR_NOT_FOUND")) return "Attendance is locked after publication or the active registration was not found.";
+  return "Attendance requires an active registration, boat number, and resolved registration review.";
 }

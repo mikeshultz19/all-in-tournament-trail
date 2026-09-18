@@ -54,7 +54,7 @@ export default async function WeighFishImportPage({
   const roster = await getTournamentRegistrationRoster(tournament.id);
   const reconciliation = reconcileWeighfishResults({
     roster: roster.map((entry) => ({ id: entry.id, boatNumber: entry.boatNumber, registrationType: entry.registrationType, angler1Name: entry.angler1.displayName, angler2Name: entry.angler2?.displayName ?? null })),
-    results: (importedRows ?? []).map((row) => ({ id: row.id, place: row.place, teamName: row.team_name, registrationId: row.registration_id })),
+    results: (importedRows ?? []).map((row) => ({ id: row.id, place: row.place, teamName: row.team_name, registrationId: row.registration_id, participationStatus: row.participation_status })),
   });
   const summary = summarizeTournamentRegistrationRoster(roster);
   const preparationStatus = getTournamentPreparationStatus(tournament, summary);

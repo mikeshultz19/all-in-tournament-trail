@@ -11,6 +11,10 @@ import {
   type MemberPot,
   type RegistrationSelections,
 } from "@/lib/registration";
+import {
+  calculateCardProcessingFeeCents,
+  calculateCardTotalCents,
+} from "@/config/payment-policy";
 import { getTournamentOperationsViewModel } from "@/lib/tournament-view-model";
 
 const baseSelections: RegistrationSelections = {
@@ -50,6 +54,34 @@ describe("required Tournament Entry", () => {
     expect(pricing.lineItems[0]).toEqual({ name: "Tournament Entry", priceCents: REGISTRATION_PRICING.baseEntry * 100 });
     expect(pricing.subtotalCents).toBe((REGISTRATION_PRICING.baseEntry + REGISTRATION_PRICING.bigBass) * 100);
     expect(pricing.totalCents).toBeGreaterThanOrEqual(REGISTRATION_PRICING.baseEntry * 100);
+  });
+
+  it("uses the authoritative $60 Base Entry and Square total", () => {
+    expect(REGISTRATION_PRICING.baseEntry).toBe(60);
+
+    const pricing = getRegistrationPricing(baseSelections);
+    expect(pricing.subtotalCents).toBe(6000);
+    expect(pricing.cardProcessingFeeCents).toBe(210);
+    expect(pricing.totalCents).toBe(6210);
+    expect(calculateCardProcessingFeeCents(6000)).toBe(210);
+    expect(calculateCardTotalCents(6000)).toBe(6210);
+  });
+
+  it("keeps Membership and Bronze Pot at $40 while using $60 Base Entry", () => {
+    expect(REGISTRATION_PRICING.annualMembership).toBe(40);
+    expect(REGISTRATION_PRICING.bronze).toBe(40);
+
+    const pricing = getRegistrationPricing({
+      ...baseSelections,
+      memberships: ["joining"],
+      memberPot: "bronze",
+    });
+    expect(pricing.subtotalCents).toBe(14000);
+    expect(pricing.lineItems).toEqual([
+      { name: "Angler 1 Membership", priceCents: 4000 },
+      { name: "Tournament Entry", priceCents: 6000 },
+      { name: "Bronze Pot", priceCents: 4000 },
+    ]);
   });
 
   it("does not accept Free Entry as an entry type", () => {

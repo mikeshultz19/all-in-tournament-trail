@@ -33,7 +33,7 @@ export default function RegistrationCheckInSummaryStat({
       aria-pressed={filter === "check_ins"}
       className="text-left"
     >
-      <span className="block text-[10px] uppercase text-neutral-500">CHECK-INS</span>
+      <span className="block text-[10px] uppercase text-neutral-500">PENDING CHECK-IN</span>
       <span className="mt-1 block font-black tabular-nums text-white">{count}</span>
     </button>
   );

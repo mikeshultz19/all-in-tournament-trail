@@ -33,4 +33,12 @@ describe("current tournament registration membership purchases", () => {
       { payment_reference: null, price_snapshot: { lineItems: [{ code: "annual_membership" }] } },
     ])).toBe(2);
   });
+
+  it("adds joining anglers from walk-up snapshots to online line-item purchases", () => {
+    expect(countPurchasedRegistrationMemberships([
+      { payment_reference: "paid-online", registration_source: "online", price_snapshot: { lineItems: [{ code: "annual_membership" }, { code: "annual_membership" }] } },
+      { payment_reference: "paid-walk-up", registration_source: "walk_up", membership_snapshot: [{ submittedClassification: "joining" }, { submittedClassification: "joining" }], price_snapshot: { lineItems: [{ code: "walk_up_total" }] } },
+      { payment_reference: "paid-walk-up-solo", registration_source: "walk_up", membership_snapshot: [{ submittedClassification: "joining" }], price_snapshot: { lineItems: [{ code: "walk_up_total" }] } },
+    ])).toBe(5);
+  });
 });

@@ -18,7 +18,6 @@ export interface ChampionshipParticipationRecord {
   countsTowardQualification: boolean;
   exclusionReason:
     | "ineligible"
-    | "no_show"
     | "disqualified"
     | null;
   calculatedAt: string;

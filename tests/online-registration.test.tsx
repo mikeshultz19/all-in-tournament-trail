@@ -60,7 +60,11 @@ describe("server-authoritative registration validation and pricing", () => {
   it("validates required angler fields", () => expect(validateOnlineRegistrationRequest(validRequest({ anglers: [{ ...validRequest().anglers[0], mobilePhone: "" }] }), NOW)).toContain("Angler 1 mobile phone is invalid."));
   it("allows a valid Solo non-member to register without purchasing membership", () => {
     expect(validateOnlineRegistrationRequest(validRequest(), NOW)).toEqual([]);
-    expect(createAuthoritativeRegistrationQuote(validRequest(), NOW).lineItems.map((item) => item.name)).toEqual(["Tournament Entry"]);
+    const quote = createAuthoritativeRegistrationQuote(validRequest(), NOW);
+    expect(quote.lineItems.map((item) => item.name)).toEqual(["Tournament Entry"]);
+    expect(quote.subtotalCents).toBe(6000);
+    expect(quote.cardProcessingFeeCents).toBe(210);
+    expect(quote.totalCents).toBe(6210);
   });
   it("allows a valid Team of non-members to register without purchasing membership", () => {
     const first = validRequest().anglers[0];
@@ -154,7 +158,7 @@ describe("payment idempotency and capacity recovery", () => {
 });
 
 describe("confirmation experience", () => {
-  const confirmation: RegistrationConfirmationView = { boatNumber: 17, tournamentName: "Eagle Mountain Tournament", tournamentDate: "2026-11-01T12:00:00+00:00", lake: "Eagle Mountain", ramp: "Twin Points Park", launchType: "Numbered Start", morningRegistration: "4:30 AM", launchTime: "6:45 AM", officialSunrise: "7:01 AM", scalesClose: "3:00 PM", anglers: ["Taylor Angler"], selectedOptions: ["Tournament Entry"], subtotalCents: 6000, totalCents: 6180, paymentStatus: "paid" };
+  const confirmation: RegistrationConfirmationView = { boatNumber: 17, tournamentName: "Eagle Mountain Tournament", tournamentDate: "2026-11-01T12:00:00+00:00", lake: "Eagle Mountain", ramp: "Twin Points Park", launchType: "Numbered Start", morningRegistration: "4:30 AM", launchTime: "6:45 AM", officialSunrise: "7:01 AM", scalesClose: "3:00 PM", anglers: ["Taylor Angler"], selectedOptions: ["Tournament Entry"], subtotalCents: 6000, totalCents: 6210, paymentStatus: "paid" };
   const html = renderToStaticMarkup(<RegistrationConfirmation confirmation={confirmation} />);
   it("uses one compact success heading", () => {
     expect(html).toContain("You’re Registered");
@@ -199,8 +203,8 @@ describe("confirmation experience", () => {
     expect(unassigned).toContain(">TBA<");
     expect(unassigned).not.toContain("assigned boat number");
   });
-  it("shows the unchanged final amount without a processing-fee breakdown", () => {
-    expect(html).toContain("$61.80");
+  it("shows the authoritative final amount without a processing-fee breakdown", () => {
+    expect(html).toContain("$62.10");
     expect(html).not.toContain("Card Processing Fee");
     expect(html).not.toContain("$1.80");
   });

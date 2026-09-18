@@ -25,7 +25,7 @@ export type WorkingResultRow = {
   registration_id: string | null;
   competitive_record_id: string | null;
   record_type: "team" | "solo" | null;
-  participation_status: "participated" | "withdrew_after_start" | "no_show" | "disqualified";
+  participation_status: "participated" | "withdrew_after_start" | "disqualified";
   aoy_eligible: boolean | null;
   aoy_eligibility_snapshot: Record<string, unknown> | null;
   eligibility_reviewed_at: string | null;
@@ -192,9 +192,14 @@ export function buildTournamentPublishReadinessPlan(input: {
 
   for (const row of input.resultRows) {
     if (duplicateResultIds.has(row.id)) continue;
+    const existingRegistration = row.registration_id
+      ? input.registrations.find((registration) => registration.id === row.registration_id)
+      : null;
     if (isHistoricalSnapshotComplete(row)) continue;
 
-    const registration = selectUnambiguousRegistration(row, input.registrations);
+    const registration = existingRegistration && isHistoricalSnapshotComplete(row)
+      ? existingRegistration
+      : selectUnambiguousRegistration(row, input.registrations);
     if (!registration) {
       manualReviewRows.set(row.id, {
         resultId: row.id,

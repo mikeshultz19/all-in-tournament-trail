@@ -2,9 +2,11 @@ import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 
 const sync = readFileSync("supabase/migrations/202608200001_sync_online_memberships_after_identity_review.sql", "utf8");
+const membershipSync = readFileSync("supabase/migrations/202608220003_make_registration_identity_review_permissive.sql", "utf8");
 const walkup = readFileSync("supabase/migrations/202608200002_add_admin_walkup_registration.sql", "utf8");
 const page = readFileSync("app/admin/registration-review/page.tsx", "utf8");
 const actions = readFileSync("app/admin/registration-review/actions.ts", "utf8");
+const identityReview = readFileSync("lib/registration-identity-review.ts", "utf8");
 const contactReview = readFileSync("components/admin/RegistrationContactReviewForm.tsx", "utf8");
 const historicalMembershipReview = readFileSync("components/admin/HistoricalMembershipReviewForm.tsx", "utf8");
 
@@ -65,6 +67,35 @@ describe("registration contact snapshots and member change review", () => {
     expect(historicalMembershipReview).toContain("Membership status needs review");
     expect(historicalMembershipReview).toContain("Confirm Member");
     expect(historicalMembershipReview).toContain("Confirm Non-Member");
+  });
+
+  it("resolves an existing membership review without requesting payment", () => {
+    expect(actions).toContain("resolveHistoricalMembershipReview({");
+    expect(historicalMembershipReview).not.toContain("Membership payment");
+    expect(historicalMembershipReview).not.toContain("Payment method");
+    expect(historicalMembershipReview).not.toContain("Recorded by");
+    expect(historicalMembershipReview).toContain("Confirm Member");
+    expect(actions).not.toContain("admin_resolve_membership_review_with_payment");
+    expect(actions).not.toContain("supplemental_membership_payments");
+  });
+
+  it("uses the historical RPC and membership sync trigger for Confirm Membership Purchase", () => {
+    expect(membershipSync).toContain("if new.submitted_membership = 'joining' then");
+    expect(membershipSync).toContain("insert into public.memberships");
+    expect(membershipSync).toContain("payment_reference");
+    expect(membershipSync).toContain("admin_resolve_historical_membership_review");
+    expect(membershipSync).toContain("membership_snapshot =");
+    expect(sync).toContain("registration_identity_reviews_sync_membership");
+    expect(actions).toContain('selectedMembership = membership(text(formData, "membership"))');
+    expect(actions).not.toContain("admin_resolve_membership_review_with_payment");
+  });
+
+  it("blocks Confirm Not Member when member-only options remain selected", () => {
+    expect(identityReview).toContain('input.membership === "non-member"');
+    expect(identityReview).toContain('registration:tournament_registrations!inner(member_pot,insurance)');
+    expect(identityReview).toContain("A non-member cannot be confirmed while member-only options remain selected.");
+    expect(identityReview).toContain('supabase.rpc("admin_resolve_historical_membership_review"');
+    expect(identityReview).toContain("A non-member cannot be confirmed while member-only options remain selected.");
   });
 
   it("is repeatable and deduplicates memberships", () => {

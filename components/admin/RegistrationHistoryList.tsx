@@ -67,6 +67,7 @@ export default function RegistrationHistoryList({
                   <AdminStatusBadge tone={row.status === "cancelled" ? "critical" : "positive"}>
                     {row.status}
                   </AdminStatusBadge>
+                  {row.checkedInAt ? <AdminStatusBadge tone="positive">Checked In</AdminStatusBadge> : null}
                   {needsAttention(row) ? <AdminStatusBadge tone="attention">Needs Attention</AdminStatusBadge> : null}
                 </div>
               </SummaryField>
@@ -115,6 +116,7 @@ export default function RegistrationHistoryList({
                   <DetailLine label="Insurance Pot" value={yesNo(row.insurance)} />
                   <DetailLine label="Source" value={row.source === "walk_up" ? "Walk-Up" : "Online"} />
                   <DetailLine label="Status" value={row.status} />
+                  <DetailLine label="Attendance" value={row.checkedInAt ? "Checked In" : "Pending"} />
                   <DetailLine label="Payment Method" value={row.paymentMethod ?? "Not stored"} />
                   <DetailLine label="Payment Reference" value={row.paymentReference ?? "Not recorded"} />
                   <DetailLine label="Online Payment" value={row.onlinePaymentState ?? "Not applicable"} />

@@ -89,16 +89,15 @@ describe("constitutional Championship qualification", () => {
     expect(calculated.participations[0].countsTowardQualification).toBe(true);
   });
 
-  it("does not count no-shows, DQs, or historically ineligible records", () => {
+  it("does not count DQs or historically ineligible records", () => {
     const calculated = calculateChampionshipQualification(SEASON, [
-      result(1, { participationStatus: "no_show" }),
-      result(2, { participationStatus: "disqualified" }),
-      result(3, { aoyEligible: false }),
+      result(1, { participationStatus: "disqualified" }),
+      result(2, { aoyEligible: false }),
     ]);
     expect(calculated.qualifications[0].officialParticipations).toBe(0);
     expect(
       calculated.participations.map((row) => row.exclusionReason),
-    ).toEqual(["no_show", "disqualified", "ineligible"]);
+    ).toEqual(["disqualified", "ineligible"]);
   });
 
   it("uses immutable tournament sequence for postponed events", () => {

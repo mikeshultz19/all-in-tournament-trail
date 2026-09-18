@@ -375,7 +375,19 @@ describe("durable review persistence and Admin workflow", () => {
   });
 
   it("protects all review actions with Admin authorization", () => {
-    expect(actions.match(/requireAdminUser\(\)/g)?.length).toBe(7);
+    for (const actionName of [
+      "searchWalkUpMembersAction",
+      "getWalkUpMemberAction",
+      "createWalkUpRegistrationAction",
+      "updateRegistrationOperationsAction",
+      "cancelWalkUpRegistrationAction",
+      "resolveRegistrationContactReviewAction",
+      "resolveHistoricalMembershipReviewAction",
+      "resolveRegistrationReviewAction",
+      "reopenRegistrationReviewAction",
+    ]) {
+      expect(actions).toMatch(new RegExp(`export async function ${actionName}[\\s\\S]{0,700}requireAdminUser\\(\\)`));
+    }
     expect(migration).toContain("to service_role");
     expect(migration).toContain("from public, anon, authenticated");
   });

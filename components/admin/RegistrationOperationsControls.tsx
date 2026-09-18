@@ -384,11 +384,11 @@ function AnglerFields({
             defaultValue={values.zipCode}
           />
         </Field>
-        <Field label="Email">
+        <Field label="Email (optional for non-members)">
           <input
             name={`${prefix}Email`}
             type="email"
-            required={required}
+            required={false}
             className={input}
             defaultValue={values.email}
           />

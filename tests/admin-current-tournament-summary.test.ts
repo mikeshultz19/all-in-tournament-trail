@@ -25,6 +25,6 @@ describe("Admin Home current tournament summary", () => {
     expect(source).toContain("listTournamentPurchasedMembershipCounts(tournamentIds)");
     expect(source).toContain("official_results_published_at");
     expect(roster).toContain('item.code === "annual_membership"');
-    expect(roster).toContain("!row.payment_reference ? total");
+    expect(roster).toContain("totalPaidCents: validCents(row.price_snapshot?.totalCents)");
   });
 });

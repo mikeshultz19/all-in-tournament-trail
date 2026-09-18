@@ -22,7 +22,6 @@ describe("Official Results historical snapshot foundation", () => {
     for (const status of [
       "participated",
       "withdrew_after_start",
-      "no_show",
       "disqualified",
     ]) {
       expect(migration).toContain(status);

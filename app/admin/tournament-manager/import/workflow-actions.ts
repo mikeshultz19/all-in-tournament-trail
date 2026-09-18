@@ -17,12 +17,12 @@ export async function verifyImportedResultsAction(tournamentId: string) {
   const roster = await getTournamentRegistrationRoster(tournamentId);
   const { data: resultRows, error: resultError } = await supabase
     .from("tournament_result_entries")
-    .select("id,place,team_name,registration_id")
+    .select("id,place,team_name,registration_id,participation_status")
     .eq("tournament_id", tournamentId);
   if (resultError) throw new Error("The imported results could not be reconciled.", { cause: resultError });
   const reconciliation = reconcileWeighfishResults({
     roster: roster.map((entry) => ({ id: entry.id, boatNumber: entry.boatNumber, registrationType: entry.registrationType, angler1Name: entry.angler1.displayName, angler2Name: entry.angler2?.displayName ?? null })),
-    results: (resultRows ?? []).map((row) => ({ id: row.id, place: row.place, teamName: row.team_name, registrationId: row.registration_id })),
+    results: (resultRows ?? []).map((row) => ({ id: row.id, place: row.place, teamName: row.team_name, registrationId: row.registration_id, participationStatus: (row as typeof row & { participation_status?: "participated" | "withdrew_after_start" | "disqualified" }).participation_status })),
   });
   if (reconciliation.unresolvedRows.length || reconciliation.missingResults.length || reconciliation.duplicateRows.length) {
     throw new Error(`Reconciliation incomplete: ${reconciliation.unresolvedRows.length} unresolved import(s), ${reconciliation.missingResults.length} missing roster result(s), and ${reconciliation.duplicateRows.length} duplicate assignment(s).`);

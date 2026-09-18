@@ -3,6 +3,9 @@ import { renderToStaticMarkup } from "react-dom/server";
 import AdminTournamentDashboard from "@/components/admin/AdminTournamentDashboard";
 import { buildWeighfishChecks, sortCloseoutChecks } from "@/lib/on-site-payout-calculator";
 import type { Tournament } from "@/types/tournament";
+import type { ImportedRow } from "@/components/admin/ImportedResultsReview";
+import type { WeighfishResultRow } from "@/lib/weighfishParser";
+import type { OnSiteCloseoutRecord } from "@/types/on-site-closeout";
 
 const tournaments: Tournament[] = [
   {
@@ -182,7 +185,7 @@ export function renderPublishReadyDashboardWithManualReviewFixture(): string {
     gold_payout: 0,
     big_bass_payout: 0,
     participation_status: "participated",
-  } as any;
+  } as unknown as WeighfishResultRow;
   return renderToStaticMarkup(
     <AdminTournamentDashboard
       tournaments={[readyTournament]}
@@ -191,10 +194,10 @@ export function renderPublishReadyDashboardWithManualReviewFixture(): string {
       showTournamentTools
       initialExpandedStage={4}
       importEvidence={{ [readyTournament.id]: { tournamentId: readyTournament.id, persistedRowCount: 1 } }}
-      importedRows={{ [readyTournament.id]: [sourceRow] as any }}
+      importedRows={{ [readyTournament.id]: [sourceRow as unknown as ImportedRow] }}
       resultsRecords={{ [readyTournament.id]: { id: "results-1", tournament_id: readyTournament.id, entries: [], total_payout: 0, bronze_payout: 0, silver_payout: 0, gold_payout: 0, insurance_pot_payout: 0, big_bass_angler: null, big_bass_team: null, big_bass_weight: null, big_bass_payout: null, champion_image_url: null, big_bass_image_url: null, published_at: "2026-08-02T12:15:00Z", created_at: "", updated_at: "" } }}
       insuranceResults={{ [readyTournament.id]: { id: "insurance-zero", tournament_id: readyTournament.id, entry_count: 0, total_pot_cents: 0, places_paid: 0, calculated_payouts: [], winners: [], published: false, published_at: null, created_at: "", updated_at: "" } }}
-      closeouts={{ [readyTournament.id]: { id: "draft", tournament_id: readyTournament.id, source_file_name: "Final Tournament Checks", source_rows: [sourceRow] as any, entry_count: 1, total_collected_cents: 100000, total_paid_cents: 100000, trail_retained_cents: 0, difference_cents: 0, checks: [] as any, status: "complete", completed_at: "2026-08-02T12:10:00Z", completed_by_admin_id: null, created_at: "", updated_at: "" } as any }}
+      closeouts={{ [readyTournament.id]: { id: "draft", tournament_id: readyTournament.id, source_file_name: "Final Tournament Checks", source_rows: [sourceRow], entry_count: 1, total_collected_cents: 100000, total_paid_cents: 100000, trail_retained_cents: 0, difference_cents: 0, checks: [], status: "complete", completed_at: "2026-08-02T12:10:00Z", completed_by_admin_id: null, created_at: "", updated_at: "" } as unknown as OnSiteCloseoutRecord }}
       manualReviewRows={{ [readyTournament.id]: [{ resultId: "row-4", place: 4, teamName: "Joe Johnson / Solo PhoneMatch", reason: "No unique active registration matches \"Joe Johnson / Solo PhoneMatch\" exactly." }] }}
       publishReviewRegistrations={{ [readyTournament.id]: [{ id: "reg-1", tournament_id: readyTournament.id, boat_number: 1, registration_type: "team", angler1_name: "Joe Johnson", angler2_name: "Bill Stephens", competitive_record_id: "record-1", identity_review_status: "verified", membership_snapshot: [{ eligibleForTournament: true }, { eligibleForTournament: true }] }] }}
     />,
@@ -435,6 +438,23 @@ export function renderPayoutReadyDashboardFixture(): string {
           published_at: null,
           created_at: "",
           updated_at: "",
+        },
+      }}
+      collectionSummaries={{
+        [readyTournament.id]: {
+          tournamentId: readyTournament.id,
+          lines: [],
+          totalCollectedCents: 0,
+          totalTournamentPayoutFundsCents: 0,
+          membershipRevenueCents: 0,
+          totalRegistrationFundsCollectedCents: 0,
+          onlineRegistrationFundsCents: 0,
+          walkUpFundsByMethod: { cash: 0, card: 0, other: 0 },
+          paidEntries: 0,
+          confirmedPaidEntries: 0,
+          registrationsNeedingReview: 0,
+          morningCandidates: [],
+          missing: [],
         },
       }}
     />,

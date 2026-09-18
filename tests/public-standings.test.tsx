@@ -34,7 +34,7 @@ describe("public AOY standings navigation and data", () => {
 
   it("uses the live published AOY loader and required empty state", () => {
     const page = readFileSync("app/standings/page.tsx", "utf8");
-    expect(page).toContain("getPublishedAoyStandings");
+    expect(page).toContain("getDetailedPublishedAoyStandings");
     expect(page).toContain(
       "AOY standings will appear after the first tournament results are published.",
     );

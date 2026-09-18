@@ -69,6 +69,8 @@ export default function MembersList({
   const exportParams = new URLSearchParams();
   if (initialSearch) exportParams.set("q", initialSearch);
   if (statusFilter !== "all") exportParams.set("status", statusFilter);
+  const selectedTournament = searchParams.get("tournament");
+  if (selectedTournament) exportParams.set("tournament", selectedTournament);
   const first = total === 0 ? 0 : (page - 1) * pageSize + 1;
   const last = Math.min(page * pageSize, total);
 

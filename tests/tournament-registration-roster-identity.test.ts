@@ -2,6 +2,7 @@ import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 
 import {
+  applyParticipantReviewTruth,
   buildRosterAngler,
   type RegistrationParticipantContactSnapshot,
 } from "@/lib/tournament-registration-roster";
@@ -27,6 +28,21 @@ function submittedContact(overrides: Partial<RegistrationParticipantContactSnaps
 }
 
 describe("tournament registration roster identity presentation", () => {
+  it("keeps mixed-team membership review truth independent in either participant order", () => {
+    const current = { submittedClassification: "current", resolvedClassification: "current", status: "active", eligibleForTournament: true };
+    const unresolved = { participant_position: 2, review_status: "review_required", canonical_angler_id: null, submitted_membership: "current" };
+    expect(applyParticipantReviewTruth(current, undefined)).toMatchObject({ resolvedClassification: "current" });
+    expect(applyParticipantReviewTruth(current, unresolved)).toMatchObject({ submittedClassification: "current", resolvedClassification: undefined });
+    expect(applyParticipantReviewTruth(undefined, { ...unresolved, participant_position: 1 })).toMatchObject({ submittedClassification: "current", resolvedClassification: undefined });
+  });
+
+  it("represents registration #16's resolved existing member separately from its unresolved teammate", () => {
+    const stale = { submittedClassification: "current", eligibleForTournament: false };
+    const resolved = applyParticipantReviewTruth(stale, { participant_position: 1, review_status: "resolved_existing", canonical_angler_id: "existing-1", submitted_membership: "current" });
+    const unresolved = applyParticipantReviewTruth(stale, { participant_position: 2, review_status: "review_required", canonical_angler_id: null, submitted_membership: "current" });
+    expect(resolved).toMatchObject({ resolvedClassification: "current", status: "active" });
+    expect(unresolved).toMatchObject({ resolvedClassification: undefined });
+  });
   it("keeps Boat #23 on the submitted identity while review remains unresolved", () => {
     const angler = buildRosterAngler(
       "bob jagoff",

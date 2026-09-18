@@ -39,7 +39,7 @@ describe("homepage AOY and Winner's Circle visual structure", () => {
     const html = renderToStaticMarkup(<WinnersCircle latestResults={null} />);
     const source = readFileSync("components/WinnersCircle.tsx", "utf8");
 
-    expect(html).toContain("Tournament Results");
+    expect(html).toContain("WINNERS CIRCLE");
     expect(html).toContain("FINAL STANDINGS");
     expect(html).toContain("OVERALL CHAMPION");
     expect(html).toContain("AOY POINTS LEADER");

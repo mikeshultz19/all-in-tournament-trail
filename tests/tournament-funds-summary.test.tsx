@@ -1,0 +1,50 @@
+import { renderToStaticMarkup } from "react-dom/server";
+import { readFileSync } from "node:fs";
+import { describe, expect, it } from "vitest";
+
+import TournamentFundsSummary from "@/components/admin/TournamentFundsSummary";
+import type { TournamentCollectionSummary } from "@/lib/tournament-collection-calculator";
+
+const summary: TournamentCollectionSummary = {
+  tournamentId: "tournament-1",
+  lines: [
+    ...(["Base Entry", "Big Bass", "Bronze Pot", "Silver Pot", "Gold Pot", "Insurance Pot"] as const).map((label, index) => ({ key: (["base", "big_bass", "bronze", "silver", "gold", "insurance"] as const)[index], label, count: 0, onlineCount: 0, inPersonCount: 0, configuredFeeCents: 0, feeCents: 0, totalCents: 0 })),
+    { key: "membership", label: "Memberships Collected", count: 0, onlineCount: 0, inPersonCount: 0, configuredFeeCents: 4000, feeCents: 4000, totalCents: 0 },
+  ],
+  totalCollectedCents: 0,
+  totalTournamentPayoutFundsCents: 0,
+  membershipRevenueCents: 0,
+  totalRegistrationFundsCollectedCents: 0,
+  onlineRegistrationFundsCents: 0,
+  walkUpFundsByMethod: { cash: 0, card: 0, other: 0 },
+  paidEntries: 0,
+  confirmedPaidEntries: 0,
+  registrationsNeedingReview: 0,
+  morningCandidates: [],
+  missing: [],
+};
+
+describe("Tournament Funds Summary", () => {
+  it("keeps zero-dollar categories visible and does not expose service fees", () => {
+    const markup = renderToStaticMarkup(<TournamentFundsSummary summary={summary} />);
+    expect(markup).toContain("Tournament Funds Summary");
+    expect(markup).toContain("Base Entry");
+    expect(markup).toContain("Insurance Pot");
+    expect(markup).toContain("Total Tournament Payout Funds");
+    expect(markup).toContain("Membership Charges Collected");
+    expect(markup).toContain("TOTAL REGISTRATION FUNDS COLLECTED");
+    expect(markup).not.toContain("Shortfall");
+    expect(markup).toContain("$0.00");
+    expect(markup).not.toContain("Square Service Fee");
+  });
+
+  it("enables collapse only on Registration Review", () => {
+    const review = readFileSync("app/admin/registration-review/page.tsx", "utf8");
+    const financial = readFileSync("app/admin/financial-summary/page.tsx", "utf8");
+    const component = readFileSync("components/admin/TournamentFundsSummary.tsx", "utf8");
+    expect(review).toContain("<TournamentFundsSummary summary={collectionSummary} className=\"mt-5\" collapsible />");
+    expect(financial).toContain("<TournamentFundsSummary summary={summary} className=\"mt-5\" />");
+    expect(component).toContain("aria-expanded={expanded}");
+    expect(component).toContain('expanded ? "Collapse" : "Expand"');
+  });
+});

@@ -275,7 +275,21 @@ export async function resolveRegistrationContactReview(input: {
 }
 
 export async function resolveHistoricalMembershipReview(input: { reviewId: string; membership: "current" | "joining" | "non-member"; adminUserId: string; reviewNote?: string | null }): Promise<void> {
-  const { error } = await createSupabaseServerClient().rpc("admin_resolve_historical_membership_review", { p_review_id: input.reviewId, p_submitted_membership: input.membership, p_admin_user_id: input.adminUserId, p_review_note: input.reviewNote ?? null });
+  const supabase = createSupabaseServerClient();
+  if (input.membership === "non-member") {
+    const { data, error } = await supabase
+      .from("registration_identity_reviews")
+      .select("registration:tournament_registrations!inner(member_pot,insurance)")
+      .eq("id", input.reviewId)
+      .eq("review_kind", "membership")
+      .single();
+    if (error) throw new RegistrationIdentityReviewError("The membership review could not be verified.", { cause: error });
+    const registration = data?.registration as { member_pot?: string | null; insurance?: boolean } | null;
+    if (registration?.member_pot || registration?.insurance) {
+      throw new RegistrationIdentityReviewError("A non-member cannot be confirmed while member-only options remain selected.");
+    }
+  }
+  const { error } = await supabase.rpc("admin_resolve_historical_membership_review", { p_review_id: input.reviewId, p_submitted_membership: input.membership, p_admin_user_id: input.adminUserId, p_review_note: input.reviewNote ?? null });
   if (error) throw new RegistrationIdentityReviewError("The historical membership review could not be saved.", { cause: error });
 }
 

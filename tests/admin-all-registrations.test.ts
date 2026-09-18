@@ -125,7 +125,7 @@ function registration(overrides: Partial<AdminRegistrationHistoryRow>): AdminReg
     boatNumber: null,
     contacts: [],
     membershipSnapshot: [],
-    priceSnapshot: { lineItems: [{ name: "Tournament Entry", priceCents: 6000 }], cardProcessingFeeCents: 180, totalCents: 6180 },
+    priceSnapshot: { lineItems: [{ name: "Tournament Entry", priceCents: 6000 }], cardProcessingFeeCents: 210, totalCents: 6210 },
     bigBass: false,
     memberPot: null,
     insurance: false,

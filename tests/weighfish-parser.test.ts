@@ -60,7 +60,6 @@ describe("Weighfish CSV parser", () => {
 
   it.each([
     ["DQ", "disqualified"],
-    ["No Show", "no_show"],
     ["Withdrawn", "withdrew_after_start"],
   ] as const)("preserves the %s participation outcome", (place, status) => {
     const result = parseWeighfishCsv(

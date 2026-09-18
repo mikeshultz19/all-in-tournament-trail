@@ -48,7 +48,7 @@ function row(id: number, overrides: Partial<TournamentRegistrationRosterRow> = {
     boater: `Alex Row${id}`,
     partner: null,
     membershipStatus: "Member",
-    membershipDetails: ["Angler 1: Current Member"],
+      membershipDetails: ["Angler 1: Existing Member — $0 collected here"],
     entryStatus: "Confirmed",
     sidePots: [],
     registrationTotalCents: 0,
@@ -139,5 +139,25 @@ describe("registration review pagination", () => {
     expect(toolbar).toContain('selectFilter("check_ins")');
     expect(filterTournamentRegistrationRosterRows(rows, "check_ins", "")).toHaveLength(1);
     expect(filterTournamentRegistrationRosterRows(rows, "check_ins", "")[0]?.id).toBe("row-1");
+  });
+
+  it("does not expose a separate absence count or filter in the roster page wiring", () => {
+    const page = readFileSync("app/admin/registration-review/page.tsx", "utf8");
+    const toolbar = readFileSync("components/admin/RegistrationRosterToolbar.tsx", "utf8");
+
+    expect(page.toLowerCase()).not.toContain("no_show");
+    expect(toolbar.toLowerCase()).not.toContain("no_show");
+    expect(toolbar.toLowerCase()).not.toContain("no show");
+  });
+
+  it("keeps unchecked registrations pending while preserving other filters", () => {
+    const rows = [
+      row(1, { checkedInAt: null }),
+      row(2, { checkedInAt: "2026-09-16T04:00:00.000Z" }),
+      row(3, { checkedInAt: null }),
+    ];
+
+    expect(filterTournamentRegistrationRosterRows(rows, "check_ins", "").map((item) => item.id)).toEqual(["row-1", "row-3"]);
+    expect(filterTournamentRegistrationRosterRows(rows, "all", "")).toHaveLength(3);
   });
 });

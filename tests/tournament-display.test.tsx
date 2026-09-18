@@ -6,7 +6,9 @@ vi.mock("@/lib/tournaments", async () => {
     "@/tests/tournament-db-fixture"
   );
   return {
-    getActiveSeasonSchedule: vi.fn(async () => [databaseTournament]),
+    getActiveSeasonSchedule: vi.fn(async () => [
+      { ...databaseTournament, name: "King of the Mountain" },
+    ]),
   };
 });
 
@@ -82,5 +84,7 @@ describe("shared tournament display data", () => {
     expect(schedule).toContain('href="/register?tournament=eagle-mountain-2026"');
     expect(schedule).not.toContain("Registration Closed");
     expect(schedule).not.toContain("Register Now");
+    expect(schedule).toContain("Eagle Mountain");
+    expect(schedule).not.toContain("King of the Mountain");
   });
 });

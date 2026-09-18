@@ -3,7 +3,6 @@ import type { CompetitiveRecordType } from "@/types/aoy";
 export type AoyParticipationStatus =
   | "participated"
   | "withdrew_after_start"
-  | "no_show"
   | "disqualified";
 
 export interface AoyOfficialResultInput {

@@ -147,7 +147,6 @@ export function calculateAoyStandings(
     }
     const points =
       !row.aoyEligible ||
-      row.participationStatus === "no_show" ||
       row.participationStatus === "disqualified"
         ? 0
         : row.officialWeight === 0

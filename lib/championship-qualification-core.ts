@@ -31,7 +31,6 @@ function exclusionReason(
   row: AoyOfficialResultInput,
 ): ChampionshipParticipationRecord["exclusionReason"] {
   if (!row.aoyEligible) return "ineligible";
-  if (row.participationStatus === "no_show") return "no_show";
   if (row.participationStatus === "disqualified") return "disqualified";
   return null;
 }

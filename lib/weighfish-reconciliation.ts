@@ -11,6 +11,7 @@ export type WeighfishImportedEntry = {
   place: number | null;
   teamName: string;
   registrationId: string | null;
+  participationStatus?: "participated" | "withdrew_after_start" | "disqualified";
 };
 
 export type WeighfishMatchCandidate = WeighfishRosterEntry & {
@@ -131,7 +132,8 @@ export function reconcileWeighfishResults(input: {
   const rosterById = new Map(input.roster.map((entry) => [entry.id, entry]));
   const rows: WeighfishReconciliationRow[] = input.results.map((result) => {
     if (result.registrationId && rosterById.has(result.registrationId)) {
-      return { resultId: result.id, place: result.place, importedName: result.teamName, outcome: "auto", registrationId: result.registrationId, fuzzy: false, reason: "Roster registration confirmed.", candidates: [asCandidate(rosterById.get(result.registrationId)!)] };
+      const entry = rosterById.get(result.registrationId)!;
+      return { resultId: result.id, place: result.place, importedName: result.teamName, outcome: "auto", registrationId: result.registrationId, fuzzy: false, reason: "Roster registration confirmed.", candidates: [asCandidate(entry)] };
     }
     const scores = input.roster.map((entry) => scoreCandidate(result.teamName, entry));
     const exact = scores.filter((score) => score.exact);

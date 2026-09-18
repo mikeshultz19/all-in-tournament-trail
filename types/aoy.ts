@@ -74,6 +74,8 @@ export interface Membership {
   source: string | null;
   payment_reference: string | null;
   admin_notes: string | null;
+  checked_in_at?: string | null;
+  checked_in_by_admin_id?: string | null;
   created_at: string;
   updated_at: string;
 }

@@ -11,9 +11,16 @@ const root = process.cwd();
 const migration = fs.readFileSync(
   path.join(root, "supabase/migrations/202608220002_add_registration_confirmation_email_outbox.sql"),
   "utf8",
-);
+).replace(/\r\n/g, "\n");
 const completion = fs.readFileSync(path.join(root, "lib/online-payment-attempts.ts"), "utf8");
 const delivery = fs.readFileSync(path.join(root, "lib/registration-confirmation-email.ts"), "utf8");
+const walkUpMigration = fs.readFileSync(
+  path.join(root, "supabase/migrations/202609170001_add_walkup_confirmation_email_delivery.sql"),
+  "utf8",
+);
+const registrationActions = fs.readFileSync(path.join(root, "app/admin/registration-review/actions.ts"), "utf8");
+const attendanceActions = fs.readFileSync(path.join(root, "app/admin/tournament-manager/prepare/check-in-actions.ts"), "utf8");
+const identityReview = fs.readFileSync(path.join(root, "lib/registration-identity-review.ts"), "utf8");
 
 describe("registration confirmation email outbox", () => {
   it("normalizes and deduplicates Team recipients while retaining one Solo recipient", () => {
@@ -45,6 +52,31 @@ describe("registration confirmation email outbox", () => {
     expect(delivery).toContain('online_payment_state !== "completed"');
   });
 
+  it("adds nullable walk-up outbox rows transactionally without weakening online payment-attempt rules", () => {
+    expect(walkUpMigration).toContain("alter column payment_attempt_id drop not null");
+    expect(walkUpMigration.toLowerCase()).not.toMatch(/drop constraint[^;]*payment_attempt|drop[^;]*foreign key/);
+    expect(walkUpMigration).toContain("select * into v_registration");
+    expect(walkUpMigration.indexOf("select * into v_registration")).toBeLessThan(walkUpMigration.indexOf("insert into public.registration_confirmation_email_deliveries"));
+    expect(walkUpMigration).toContain("payment_attempt_id,");
+    expect(walkUpMigration).toContain("v_registration.id,\n      null,");
+    expect(walkUpMigration).toContain("on conflict (registration_id, normalized_recipient_email) do nothing");
+    expect(walkUpMigration).toContain("select distinct lower(btrim(participant ->> 'email'))");
+    expect(walkUpMigration).toContain("where nullif(lower(btrim(participant ->> 'email')), '') is not null");
+    expect(walkUpMigration).toContain("missing-email-");
+    expect(walkUpMigration).toContain("set email = null");
+    expect(migration).toContain("new.id,\n        v_email,");
+  });
+
+  it("limits automatic walk-up delivery processing to successful creation", () => {
+    expect(registrationActions).toContain("await deliverRegistrationConfirmationEmails(registration.id)");
+    expect(attendanceActions).not.toContain("deliverRegistrationConfirmationEmails");
+    expect(identityReview).not.toContain("deliverRegistrationConfirmationEmails");
+    expect(walkUpMigration).not.toMatch(/create trigger|after update/i);
+    expect(delivery).toContain('registration.registration_source === "walk_up"');
+    expect(delivery).toContain('delivery.payment_attempt_id !== null');
+    expect(delivery).toContain('throw new EmailProviderError("WALKUP_CONFIRMATION_DATA_INVALID")');
+  });
+
   it("renders the required content without fee breakdown or raw ISO dates", () => {
     const email = buildRegistrationConfirmationEmail({
       boatNumber: 7,
@@ -62,12 +94,14 @@ describe("registration confirmation email outbox", () => {
       totalCents: 12345,
     });
     expect(email.subject).toBe("AITT Registration Confirmed — Eagle Mountain Tournament");
-    expect(email.html).toContain("Registration / Boat Number");
+    expect(email.html).toContain("REGISTRATION NUMBER");
+    expect(email.html).not.toContain("Registration / Boat Number");
     expect(email.html).toContain("Fish Length Requirements");
     expect(email.html).toContain("Largemouth Bass: 14-inch minimum");
     expect(email.html).toContain("Smallmouth Bass: 14-inch minimum");
     expect(email.html).toContain("Spotted Bass: No minimum length");
     expect(email.html).toContain("#7");
+    expect(email.html).toContain("Your registration is confirmed. Your registration number is #7. You are required to complete check-in before the tournament to receive your boat number, launch time, and stop-fishing time. Check the Announcements section of the AITT website for early check-in times and location. If you do not attend early check-in, you must check in on tournament morning.");
     expect(email.html).not.toContain("Confirmation Number");
     expect(email.html).not.toContain("AITT-ABC123");
     expect(email.html).toContain("$123.45");
@@ -99,7 +133,7 @@ describe("registration confirmation email outbox", () => {
       selectedOptions: ["Tournament Entry"],
       totalCents: 6000,
     });
-    expect(unassigned.html).toContain("Registration / Boat Number");
+    expect(unassigned.html).toContain("REGISTRATION NUMBER");
     expect(unassigned.html).toContain("TBA");
   });
 
@@ -145,6 +179,43 @@ describe("registration confirmation email outbox", () => {
       expect(email.html.indexOf("Tournament Information")).toBeLessThan(email.html.indexOf("AITT TOURNAMENT CONTACT"));
       expect(email.html.indexOf("AITT TOURNAMENT CONTACT")).toBeLessThan(email.html.indexOf("Registered Anglers"));
     }
+  });
+
+  it.each(["cash", "card", "other"] as const)("renders the approved walk-up variant for %s", (paymentMethod) => {
+    const selectedOptions = [
+      "Angler 1 Membership — $40.00",
+      "Angler 2 Membership — $40.00",
+      "Tournament Entry — $60.00",
+      ...(paymentMethod === "card" ? ["Card Processing Fee — $4.50"] : []),
+    ];
+    const email = buildRegistrationConfirmationEmail({
+      variant: "walk_up",
+      boatNumber: 41,
+      tournamentName: "FAKE Walk-Up Tournament",
+      tournamentDate: "2026-11-01T12:00:00+00:00",
+      lake: "Fake Lake",
+      ramp: "Fake Ramp",
+      launchType: "Numbered Takeoff",
+      morningRegistration: "4:30 AM",
+      safeLight: "6:45 AM",
+      officialSunrise: "7:15 AM",
+      scalesClose: "3:00 PM",
+      anglers: ["Fake Angler One", "Fake Angler Two"],
+      selectedOptions,
+      paymentMethod,
+      totalCents: paymentMethod === "card" ? 14450 : 14000,
+    });
+    expect(email.html).toContain("REGISTRATION NUMBER");
+    expect(email.html).toContain("Your tournament-day registration is confirmed. Your registration number is #41. Please follow the launch and stop-fishing times provided by tournament staff.");
+    expect(email.html).toContain(`Payment Method</td><td style="padding:6px 0;color:#111;font-size:14px;font-weight:700">${paymentMethod[0].toUpperCase()}${paymentMethod.slice(1)}`);
+    expect(email.html).toContain("Angler 1 Membership — $40.00");
+    expect(email.html).toContain("Angler 2 Membership — $40.00");
+    expect(email.html).not.toContain("boat number");
+    expect(email.html).not.toContain("random draw");
+    expect(email.html).not.toContain("check in");
+    expect(email.html).not.toContain("Square receipt");
+    if (paymentMethod === "card") expect(email.html).toMatch(/Card Processing Fee[^$]+\$4\.50/);
+    else expect(email.html).not.toContain("Processing Fee");
   });
 
   it("requires explicit staging environment and allowlist configuration", () => {

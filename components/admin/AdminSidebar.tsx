@@ -23,6 +23,16 @@ const navigationItems: NavigationItem[] = [
   { href: "/admin/members", label: "All Members" },
   { href: "/admin/registrations", label: "All Registrations" },
   {
+    href: "/admin/financial-summary",
+    label: "Financial Summary",
+    activePaths: ["/admin/financial-summary"],
+  },
+  {
+    href: "/admin/backups",
+    label: "Backups",
+    activePaths: ["/admin/backups"],
+  },
+  {
     href: "/admin/tournament",
     label: "Tournament Info",
     activePaths: ["/admin/tournament"],

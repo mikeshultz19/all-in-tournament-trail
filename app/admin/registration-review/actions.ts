@@ -7,6 +7,8 @@ import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { getAdminMemberById } from "@/lib/admin-members";
 import { getMembershipForAnglerAndSeason, listMembersForSeason } from "@/lib/memberships";
 import { getTournamentById } from "@/lib/tournaments";
+import { deliverRegistrationConfirmationEmails } from "@/lib/registration-confirmation-email";
+import { uniqueRegistrationRecipients } from "@/lib/registration-confirmation-email-template";
 import {
   createWalkUpRegistrationDraft,
   getWalkUpPricing,
@@ -163,7 +165,7 @@ export async function createWalkUpRegistrationAction(
     !tournamentId || !["solo", "team"].includes(registrationType)
     || !Number.isFinite(submittedTotalPaid) || submittedTotalPaid < 0
     || !["cash", "card", "other"].includes(paymentMethod)
-    || anglers.some((angler) => !angler.firstName || !angler.lastName || !angler.streetAddress || !angler.city || !angler.state || !angler.zipCode || !angler.email || !angler.mobilePhone || !angler.membership)
+    || anglers.some((angler) => !angler.firstName || !angler.lastName || !angler.streetAddress || !angler.city || !angler.state || !angler.zipCode || !angler.mobilePhone || !angler.membership)
   ) {
     return { status: "error", message: "Complete all required walk-up registration fields.", draft };
   }
@@ -188,16 +190,16 @@ export async function createWalkUpRegistrationAction(
     memberPot,
     insurance: formData.get("insurance") === "on",
   };
-  let authoritativeTotalCents: number;
+  let authoritativePricing: ReturnType<typeof getWalkUpPricing>;
   try {
-    authoritativeTotalCents = getWalkUpPricing({
+    authoritativePricing = getWalkUpPricing({
       registrationType: registrationType as "solo" | "team",
       paymentMethod: paymentMethod as "cash" | "card" | "other",
       memberships: anglers.map((angler) =>
         angler.membership as "current" | "joining" | "non-member"
       ),
       ...options,
-    }).totalCollectedCents;
+    });
   } catch (error) {
     return {
       status: "error",
@@ -207,6 +209,7 @@ export async function createWalkUpRegistrationAction(
       draft,
     };
   }
+  const authoritativeTotalCents = authoritativePricing.totalCollectedCents;
   const submittedTotalCents = Math.round(submittedTotalPaid * 100);
   if (submittedTotalCents !== authoritativeTotalCents) {
     return {
@@ -218,13 +221,21 @@ export async function createWalkUpRegistrationAction(
       },
     };
   }
-  const { error } = await createSupabaseServerClient().rpc(
+  const { data: registration, error } = await createSupabaseServerClient().rpc(
     "admin_create_sequential_walkup_registration",
     {
       p_tournament_id: tournamentId,
       p_registration_type: registrationType,
       p_anglers: anglers,
-      p_options: options,
+      p_options: {
+        ...options,
+        priceSnapshot: {
+          lineItems: authoritativePricing.lineItems,
+          subtotalCents: authoritativePricing.subtotalCents,
+          cardProcessingFeeCents: authoritativePricing.cardProcessingFeeCents,
+          totalCents: authoritativeTotalCents,
+        },
+      },
       p_payment_method: paymentMethod,
       p_total_paid_cents: authoritativeTotalCents,
       p_admin_user_id: admin.id,
@@ -234,6 +245,29 @@ export async function createWalkUpRegistrationAction(
   if (error) {
     console.error("Walk-up registration save failed.", error);
     return { status: "error", message: "The walk-up registration could not be saved. Verify the identity and membership selections.", draft };
+  }
+
+  const recipients = uniqueRegistrationRecipients(anglers.map((angler) => angler.email));
+  if (!recipients.length) {
+    revalidateRegistrationOperations();
+    return { status: "success", message: "Confirmation not sent — no email provided." };
+  }
+
+  if (!registration?.id) {
+    revalidateRegistrationOperations();
+    return { status: "success", message: "Walk-up saved. Confirmation delivery is pending retry." };
+  }
+
+  try {
+    const delivery = await deliverRegistrationConfirmationEmails(registration.id);
+    if (delivery.failed > 0 || delivery.sent !== recipients.length) {
+      revalidateRegistrationOperations();
+      return { status: "success", message: "Walk-up saved. Confirmation delivery is pending retry." };
+    }
+  } catch (deliveryError) {
+    console.error("Walk-up registration confirmation email processing is awaiting retry.", deliveryError);
+    revalidateRegistrationOperations();
+    return { status: "success", message: "Walk-up saved. Confirmation delivery is pending retry." };
   }
 
   revalidateRegistrationOperations();

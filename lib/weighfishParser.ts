@@ -16,7 +16,6 @@ export interface WeighfishResultRow {
   participationStatus:
     | "participated"
     | "withdrew_after_start"
-    | "no_show"
     | "disqualified";
   entryName: string;
   fishCount: number;
@@ -217,9 +216,6 @@ function parseParticipationStatus(value: string): {
 
   if (/^(dq|dqd|disqualified)$/.test(normalized)) {
     return { status: "disqualified", place };
-  }
-  if (/^(no show|noshow|dns|did not start)$/.test(normalized)) {
-    return { status: "no_show", place };
   }
   if (/^(withdrawn|withdrew|wd|withdrew after start)$/.test(normalized)) {
     return { status: "withdrew_after_start", place };
@@ -616,43 +612,17 @@ const bigBassPayout = extractBigBassPayout(
   prizeDescription,
 );
 
+    const fishCount = Math.max(0, Math.trunc(parseNumber(getCell(record, headerIndexes, ["# Fish", "Fish", "Fish Count"]))));
+    const totalWeight = Math.max(0, parseNumber(getCell(record, headerIndexes, ["Total Weight (lbs)", "Total Weight", "Weight"])));
+    const bigFishWeight = Math.max(0, parseNumber(getCell(record, headerIndexes, ["Big Fish (lbs)", "Big Fish", "Big Bass"])));
     rows.push({
       place: participation.place,
       sourcePlacement: placeValue,
       participationStatus: participation.status,
       entryName,
-      fishCount: Math.max(
-        0,
-        Math.trunc(
-          parseNumber(
-            getCell(record, headerIndexes, [
-              "# Fish",
-              "Fish",
-              "Fish Count",
-            ]),
-          ),
-        ),
-      ),
-      totalWeight: Math.max(
-        0,
-        parseNumber(
-          getCell(record, headerIndexes, [
-            "Total Weight (lbs)",
-            "Total Weight",
-            "Weight",
-          ]),
-        ),
-      ),
-      bigFishWeight: Math.max(
-        0,
-        parseNumber(
-          getCell(record, headerIndexes, [
-            "Big Fish (lbs)",
-            "Big Fish",
-            "Big Bass",
-          ]),
-        ),
-      ),
+      fishCount,
+      totalWeight,
+      bigFishWeight,
 
       // Per our finalized All-In mapping:
       // WeighFish Cash Payout = Base payout.

@@ -66,4 +66,5 @@ describe("WeighFish roster reconciliation", () => {
     expect(plan.rows[0].registrationId).toBe("r1");
     expect(plan.ready).toBe(true);
   });
+
 });

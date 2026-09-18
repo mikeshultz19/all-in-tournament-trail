@@ -118,7 +118,7 @@ describe("Tournament Recap editorial workflow", () => {
     expect(migration).toContain("char_length(tournament_recap) <= 300");
     expect(desktop).toContain("break-words");
     expect(mobile).toContain("break-words");
-    expect(desktop).toContain("No tournament recap has been added.");
-    expect(mobile).toContain("No tournament recap has been added.");
+    expect(desktop).toContain("Tri-Lakes Recap Coming Soon!");
+    expect(mobile).toContain("Tri-Lakes Recap Coming Soon!");
   });
 });

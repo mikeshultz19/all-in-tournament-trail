@@ -142,7 +142,7 @@ describe("constitutional AOY engine", () => {
     expect(standing.countedTournamentCount).toBe(2);
   });
 
-  it("handles zero weight, withdrawals, no-shows, and DQs constitutionally", () => {
+  it("handles zero weight, withdrawals, and DQs constitutionally", () => {
     const calculated = calculateAoyStandings(SEASON, [
       result({ competitiveRecordId: "zero", officialWeight: 0 }),
       result({
@@ -150,12 +150,6 @@ describe("constitutional AOY engine", () => {
         officialWeight: 0,
         officialPlacement: null,
         participationStatus: "withdrew_after_start",
-      }),
-      result({
-        competitiveRecordId: "noshow",
-        officialWeight: 0,
-        officialPlacement: null,
-        participationStatus: "no_show",
       }),
       result({
         competitiveRecordId: "dq",
@@ -171,7 +165,7 @@ describe("constitutional AOY engine", () => {
           row.points,
         ]),
       ),
-    ).toEqual({ zero: 10, withdrawal: 10, noshow: 0, dq: 0 });
+    ).toEqual({ zero: 10, withdrawal: 10, dq: 0 });
   });
 
   it("is deterministic and date-independent", () => {

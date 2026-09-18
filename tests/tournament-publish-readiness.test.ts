@@ -208,6 +208,20 @@ describe("tournament publish readiness", () => {
     expect(plan.manualReviewRows[0].teamName).toBe("Joe Johnson / Solo PhoneMatch");
   });
 
+  it("keeps a checked-in zero-weight registration AOY eligible", () => {
+    const plan = buildTournamentPublishReadinessPlan({
+      reviewerAdminId: "admin-1",
+      resultRows: [makeResultRow({ team_name: "Checked In Zero" })],
+      registrations: [makeRegistration({
+        id: "reg-1",
+        angler1_name: "Checked In Zero",
+      })],
+    });
+
+    expect(plan.autoResolvedRows).toHaveLength(1);
+    expect(plan.autoResolvedRows[0]?.aoyEligible).toBe(true);
+  });
+
   it("does not auto-resolve or promote before import verification exists", async () => {
     mockSupabase({
       tournament: {

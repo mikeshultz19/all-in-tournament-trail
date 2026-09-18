@@ -37,7 +37,7 @@ export default function MembersTournamentFilter({
         <option value="">All Members</option>
         {tournaments.map((tournament) => (
           <option key={tournament.id} value={tournament.id}>
-            {tournament.name}
+            {tournament.name} — {tournament.lake} — {new Intl.DateTimeFormat("en-US", { month: "short", day: "numeric", year: "numeric", timeZone: "America/Chicago" }).format(new Date(tournament.tournament_date))}
           </option>
         ))}
       </select>

@@ -49,7 +49,7 @@ export async function reviewHistoricalResultAction(
     !tournamentId ||
     !resultEntryId ||
     !registrationId ||
-    !["participated", "withdrew_after_start", "no_show", "disqualified"].includes(participationStatus) ||
+    !["participated", "withdrew_after_start", "disqualified"].includes(participationStatus) ||
     aoyEligible === null ||
     !eligibilityReason
   ) {
