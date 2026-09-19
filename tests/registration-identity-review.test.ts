@@ -380,7 +380,7 @@ describe("durable review persistence and Admin workflow", () => {
       "getWalkUpMemberAction",
       "createWalkUpRegistrationAction",
       "updateRegistrationOperationsAction",
-      "cancelWalkUpRegistrationAction",
+      "cancelRegistrationAction",
       "resolveRegistrationContactReviewAction",
       "resolveHistoricalMembershipReviewAction",
       "resolveRegistrationReviewAction",

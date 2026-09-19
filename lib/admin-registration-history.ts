@@ -64,6 +64,8 @@ export interface AdminRegistrationHistoryRow {
   onlinePaymentState: string | null;
   squarePaymentId: string | null;
   checkedInAt: string | null;
+  cancelledAt?: string | null;
+  cancellationNote?: string | null;
   identityReviewStatus: string;
   reviews: RegistrationHistoryReview[];
 }
@@ -96,6 +98,8 @@ type RegistrationDbRow = {
   online_payment_state: string | null;
   square_payment_id: string | null;
   checked_in_at: string | null;
+  cancelled_at: string | null;
+  admin_notes: string | null;
   identity_review_status: string;
   tournament: { name: string; tournament_date: string };
 };
@@ -173,7 +177,7 @@ export async function listAllRegistrationHistory(): Promise<AdminRegistrationHis
   const registrations = await readAll<RegistrationDbRow>(async (from, to) => {
     const result = await supabase
       .from("tournament_registrations")
-      .select("id,registration_key,tournament_id,registered_at,registration_type,registration_source,registration_status,angler1_name,angler2_name,boat_number,participant_contact_snapshot,membership_snapshot,price_snapshot,big_bass,member_pot,insurance,payment_reference,payment_method,online_payment_state,square_payment_id,checked_in_at,identity_review_status,tournament:tournaments!inner(name,tournament_date)")
+      .select("id,registration_key,tournament_id,registered_at,registration_type,registration_source,registration_status,angler1_name,angler2_name,boat_number,participant_contact_snapshot,membership_snapshot,price_snapshot,big_bass,member_pot,insurance,payment_reference,payment_method,online_payment_state,square_payment_id,checked_in_at,cancelled_at,admin_notes,identity_review_status,tournament:tournaments!inner(name,tournament_date)")
       .order("registered_at", { ascending: false })
       .range(from, to);
     return { data: result.data as unknown as RegistrationDbRow[] | null, error: result.error };
@@ -223,6 +227,8 @@ export async function listAllRegistrationHistory(): Promise<AdminRegistrationHis
     onlinePaymentState: row.online_payment_state,
     squarePaymentId: row.square_payment_id,
     checkedInAt: row.checked_in_at,
+    cancelledAt: row.cancelled_at,
+    cancellationNote: row.admin_notes,
     identityReviewStatus: row.identity_review_status,
     reviews: (reviewsByRegistration.get(row.id) ?? []).map((review) => ({
       id: review.id,

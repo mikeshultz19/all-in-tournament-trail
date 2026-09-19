@@ -4,7 +4,7 @@ import { useActionState, useEffect, useRef, useState, useTransition, type ReactN
 import { useRouter } from "next/navigation";
 
 import {
-  cancelWalkUpRegistrationAction,
+  cancelRegistrationAction,
   createWalkUpRegistrationAction,
   updateRegistrationOperationsAction,
   getWalkUpMemberAction,
@@ -444,11 +444,7 @@ export function RegistrationEditControl({
     updateRegistrationOperationsAction.bind(null, tournamentId, registrationId),
     initialState,
   );
-  const [cancelState, cancelAction, cancelPending] = useActionState(
-    cancelWalkUpRegistrationAction.bind(null, tournamentId, registrationId),
-    initialState,
-  );
-  useRefreshOnSuccess(state.status === "success" ? state : cancelState);
+  useRefreshOnSuccess(state);
 
   if (checkedIn) {
     return (
@@ -557,30 +553,57 @@ export function RegistrationEditControl({
         </button>
         <ActionMessage state={state} />
       </form>
-      {walkUp ? (
-        <form
-          action={cancelAction}
-          onSubmit={(event) => {
-            if (
-              !window.confirm(
-                "Cancel this walk-up? It will leave the active field but remain in the audit record. Permanent anglers, memberships, and review history will be retained.",
-              )
-            ) {
-              event.preventDefault();
-            }
-          }}
-          className="mt-2"
-        >
-          <button
-            disabled={cancelPending}
-            className={adminButtonStyles("destructive", "min-h-10")}
-          >
-            {cancelPending ? "Cancelling..." : "Cancel Walk-Up"}
-          </button>
-          <ActionMessage state={cancelState} />
-        </form>
-      ) : null}
     </details>
+  );
+}
+
+export function CancelRegistrationControl({
+  tournamentId,
+  registrationId,
+  registrationNumber,
+  participantNames,
+  amountCents,
+}: {
+  tournamentId: string;
+  registrationId: string;
+  registrationNumber: string;
+  participantNames: string[];
+  amountCents: number | null;
+}) {
+  const [open, setOpen] = useState(false);
+  const [state, action, pending] = useActionState(
+    cancelRegistrationAction.bind(null, tournamentId, registrationId),
+    initialState,
+  );
+  useRefreshOnSuccess(state);
+
+  return (
+    <div className="mt-3">
+      <button type="button" className={adminButtonStyles("destructive", "min-h-10")} onClick={() => setOpen(true)}>
+        Cancel Registration
+      </button>
+      {open ? (
+        <div role="dialog" aria-modal="true" aria-labelledby={`cancel-title-${registrationId}`} className="mt-3 border border-red-500/30 bg-black/60 p-4">
+          <h3 id={`cancel-title-${registrationId}`} className="text-sm font-black uppercase text-white">Cancel Registration</h3>
+          <dl className="mt-3 grid gap-2 text-xs text-neutral-300">
+            <div><dt className="font-bold text-white">Registration Number</dt><dd>#{registrationNumber}</dd></div>
+            <div><dt className="font-bold text-white">Participants</dt><dd>{participantNames.join(" / ")}</dd></div>
+            <div><dt className="font-bold text-white">Recorded Amount</dt><dd>{formatCurrencyFromCents(amountCents ?? 0)}</dd></div>
+          </dl>
+          <p className="mt-3 text-xs font-bold leading-5 text-red-200">AITT does not issue the refund. Handle any refund separately before confirming cancellation.</p>
+          <form action={action} className="mt-4 grid gap-3">
+            <label className="text-xs font-bold uppercase text-neutral-300">Cancellation Note
+              <textarea name="cancellationNote" required minLength={3} maxLength={500} rows={3} className={`${input} mt-1`} />
+            </label>
+            <div className="flex flex-wrap gap-2">
+              <button type="submit" disabled={pending} className={adminButtonStyles("destructive", "min-h-10")}>{pending ? "Cancelling..." : "Confirm Cancellation"}</button>
+              <button type="button" disabled={pending} onClick={() => setOpen(false)} className={adminButtonStyles("secondary", "min-h-10")}>Keep Registration</button>
+            </div>
+            <ActionMessage state={state} />
+          </form>
+        </div>
+      ) : null}
+    </div>
   );
 }
 

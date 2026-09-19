@@ -5,7 +5,7 @@ import RegistrationContactReviewForm from "@/components/admin/RegistrationContac
 import HistoricalMembershipReviewForm from "@/components/admin/HistoricalMembershipReviewForm";
 import RegistrationCheckInControl from "@/components/admin/RegistrationCheckInControl";
 import RegistrationCheckInSummaryStat from "@/components/admin/RegistrationCheckInSummaryStat";
-import { AddWalkUpControl } from "@/components/admin/RegistrationOperationsControls";
+import { AddWalkUpControl, CancelRegistrationControl } from "@/components/admin/RegistrationOperationsControls";
 import RegistrationRosterToolbar from "@/components/admin/RegistrationRosterToolbar";
 import AdminPanel from "@/components/admin/AdminPanel";
 import AdminStatusBadge from "@/components/admin/AdminStatusBadge";
@@ -191,6 +191,7 @@ function RosterActions({ row, tournamentId, reviews, anglers }: { row: Tournamen
   const needsReview = row.needsReview || pendingReviews.length > 0;
   return <>
     <div className="flex flex-wrap items-start gap-2">{needsReview ? <AdminStatusBadge tone="attention">Needs Review</AdminStatusBadge> : null}<RegistrationCheckInControl tournamentId={tournamentId} registrationId={row.id} checkedInAt={row.checkedInAt} /></div>
+    <CancelRegistrationControl tournamentId={tournamentId} registrationId={row.id} registrationNumber={row.registrationKey} participantNames={[row.angler1.displayName, ...(row.angler2 ? [row.angler2.displayName] : [])]} amountCents={row.totalPaidCents} />
     {pendingReviews.map((review) => {
       const presentation = getRegistrationReviewPresentation(review);
       return <details key={review.id} className="mt-3 border-t border-white/10 pt-3">

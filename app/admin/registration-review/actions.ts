@@ -309,28 +309,50 @@ export async function updateRegistrationOperationsAction(
   return { status: "success", message: "Registration details updated." };
 }
 
-export async function cancelWalkUpRegistrationAction(
+export async function cancelRegistrationAction(
   tournamentId: string,
   registrationId: string,
   _previousState: RegistrationOperationsActionState,
+  formData: FormData,
 ): Promise<RegistrationOperationsActionState> {
   void _previousState;
   const admin = await requireAdminUser();
-  const { error } = await createSupabaseServerClient().rpc(
-    "admin_cancel_walkup_registration",
-    {
-      p_registration_id: registrationId,
-      p_tournament_id: tournamentId,
-      p_admin_user_id: admin.id,
-    },
-  );
-  if (error) {
-    console.error("Walk-up cancellation failed.", error);
-    return { status: "error", message: "Only an active, unchecked walk-up can be cancelled. Reopen check-in first." };
+  const note = text(formData, "cancellationNote");
+  if (note.length < 3 || note.length > 500) {
+    return { status: "error", message: "Enter a cancellation note between 3 and 500 characters." };
+  }
+
+  const supabase = createSupabaseServerClient();
+  const current = await supabase
+    .from("tournament_registrations")
+    .select("id,admin_notes,registration_status")
+    .eq("id", registrationId)
+    .eq("tournament_id", tournamentId)
+    .maybeSingle();
+  if (current.error || !current.data || current.data.registration_status !== "active") {
+    return { status: "error", message: "This registration is no longer active." };
+  }
+
+  const adminNotes = [current.data.admin_notes, `Cancellation note: ${note}`].filter(Boolean).join("\n");
+  const result = await supabase
+    .from("tournament_registrations")
+    .update({
+      registration_status: "cancelled",
+      cancelled_at: new Date().toISOString(),
+      cancelled_by_admin_id: admin.id,
+      admin_notes: adminNotes,
+    })
+    .eq("id", registrationId)
+    .eq("tournament_id", tournamentId)
+    .eq("registration_status", "active")
+    .select("id")
+    .maybeSingle();
+  if (result.error || !result.data) {
+    return { status: "error", message: "This registration could not be cancelled. Refresh and try again." };
   }
 
   revalidateRegistrationOperations();
-  return { status: "success", message: "Walk-up cancelled. Its audit, member, and membership records were retained." };
+  return { status: "success", message: "Registration cancelled. Any refund must be handled separately." };
 }
 
 export async function resolveRegistrationContactReviewAction(

@@ -72,7 +72,7 @@ describe("unified Registration & Check-In workflow", () => {
   it("removes payment and financial summaries from the tournament-morning roster", () => {
     expect(page).not.toContain('Metric label="Payment Recorded"');
     expect(page).not.toContain("row.paymentStatus");
-    expect(page).not.toContain("row.totalPaidCents");
+    expect(page).toContain("row.totalPaidCents"); // Used only in the cancellation confirmation, not as a roster summary.
     expect(page).not.toContain("MoneyLine");
     expect(page).not.toContain("Card Fee");
   });
@@ -228,11 +228,14 @@ describe("unified Registration & Check-In workflow", () => {
     expect(migration).not.toMatch(/v_angler ->> 'membership' = 'non-member'[\s\S]{0,200}insert into public\.memberships/);
   });
 
-  it("requires confirmation to cancel only an unchecked walk-up and retains durable records", () => {
-    expect(controls).toContain("window.confirm");
-    expect(controls).toContain("Cancel Walk-Up");
-    expect(controls).toContain("Permanent anglers, memberships, and review history will be retained");
-    expect(actions).toContain('"admin_cancel_walkup_registration"');
+  it("requires an admin-confirmed cancellation note and retains durable records", () => {
+    expect(controls).toContain("Cancel Registration");
+    expect(controls).toContain("cancellationNote");
+    expect(controls).toContain("AITT does not issue the refund");
+    expect(actions).toContain("cancelRegistrationAction");
+    expect(actions).toContain('registration_status: "cancelled"');
+    expect(actions).toContain("cancelled_by_admin_id: admin.id");
+    expect(actions).toContain("Cancellation note:");
     expect(migration).toContain("registration_source = 'walk_up' and registration_status = 'active'");
     expect(migration).toContain("set registration_status = 'cancelled'");
     expect(migration).toContain("cancelled_by_admin_id = p_admin_user_id");

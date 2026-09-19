@@ -120,6 +120,7 @@ export default function RegistrationHistoryList({
                   <DetailLine label="Payment Method" value={row.paymentMethod ?? "Not stored"} />
                   <DetailLine label="Payment Reference" value={row.paymentReference ?? "Not recorded"} />
                   <DetailLine label="Online Payment" value={row.onlinePaymentState ?? "Not applicable"} />
+                  {row.status === "cancelled" ? <DetailLine label="Cancellation Note" value={row.cancellationNote ?? "Not recorded"} /> : null}
                 </DetailSection>
 
                 <DetailSection title="Payment &amp; Pricing">
