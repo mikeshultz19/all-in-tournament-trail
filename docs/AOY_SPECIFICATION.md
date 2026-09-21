@@ -23,8 +23,10 @@ it does not conflict with the Competition Rules.
 2. Official tournament results and AOY results are separate.
 3. Official results must never be reordered, filtered, or changed because of
    membership or AOY eligibility.
-4. AOY calculations use official results as their source, then independently
-   determine eligibility, rerank eligible teams, and award AOY points.
+4. AOY calculations use official results as their source. Current registrations
+   are membership-qualified, so active calculations do not distinguish current
+   members from non-members. Historical publication snapshots remain supported
+   where an older result was recorded as ineligible.
 
 ## 2. Official Results Workflow
 
@@ -45,24 +47,18 @@ payouts, weights, Big Bass results, or public tournament results.
 
 ## 3. Membership Eligibility
 
-Only current AITT members may earn:
+Every current registered angler has a current or newly purchased seasonal
+membership. Current AOY points, Championship qualification, side-pot access,
+and season awards therefore do not apply a separate member/non-member filter.
+Both anglers on a current two-person team complete the same membership
+requirement independently.
 
-- AOY points
-- Championship qualification credit
-- Member Side Pot eligibility
-- Season-long member awards
-
-Both anglers on a two-person team must be current AITT members for that team to
-be AOY eligible.
-
-Non-member teams:
+Historical non-member teams and other historical ineligible records:
 
 - remain in official tournament results
 - remain eligible for standard tournament payouts
 - remain eligible for Big Bass
-- do not earn AOY points
-- do not earn Championship qualification credit
-- do not receive member-only benefits
+- retain the historical eligibility snapshot stored with their published result
 
 Membership eligibility must be determined using AITT membership records, not
 assumptions based on WeighFish names or registration selections.
@@ -79,7 +75,7 @@ season concludes after the Championship is completed.
 4. Team identity must rely on stable angler records rather than display-name
    strings whenever possible.
 
-Example:
+Historical compatibility example:
 
 - `John Smith / Mike Jones`
 - `Mike Jones / John Smith`
@@ -144,8 +140,10 @@ or Championship qualification credit from either angler's other teams.
 After official results are available:
 
 1. Begin with the complete official finishing order.
-2. Determine each entry's membership and team eligibility.
-3. Remove AOY-ineligible teams from the AOY calculation only.
+2. Use the stored historical eligibility snapshot only for legacy results that
+   predate the mandatory-membership current registration policy.
+3. Do not introduce a current member/non-member distinction into active
+   calculations.
 4. Preserve the official results unchanged.
 5. Rerank the remaining AOY-eligible teams in their original relative finishing
    order.
@@ -182,7 +180,7 @@ awarded.
 
 ## 9. Zero Weight, No-Show, and Disqualification
 
-1. A registered and eligible member team that participates but records zero
+1. A registered current-policy entry that participates but records zero
    tournament weight receives 10 participation points.
 2. A no-show receives 0 points.
 3. A disqualified team receives 0 points.
@@ -192,7 +190,7 @@ awarded.
 
 ## 10. Best Five Rule
 
-1. Every eligible tournament AOY score must be retained in the tournament-level
+1. Every current-policy tournament AOY score must be retained in the tournament-level
    AOY history.
 2. Season AOY standings use only the team's five highest AOY tournament scores.
 3. Scores outside the best five remain visible but do not contribute to the
@@ -236,7 +234,7 @@ A qualifying participation does not include:
 - a no-show
 - a disqualification
 - an entry using a different partner
-- a team that fails membership eligibility requirements
+- a legacy team that fails the stored historical eligibility requirement
 
 A team may:
 
@@ -478,17 +476,16 @@ normally, but the appearance provides no AOY points or Championship
 qualification credit to `John Smith / Mike Jones`. The new pairing may establish
 its own eligible team record when the applicable requirements are satisfied.
 
-### 24.4 A Non-Member Team Wins the Official Tournament
+### 24.4 Official Finish Position Controls AOY Placement
 
-A non-member team finishes first officially. An eligible member team finishes
-second officially. The non-member team remains the official winner and retains
-its standard tournament and Big Bass eligibility. For AOY only, the non-member
-team is removed and the officially second-place eligible team becomes first in
-the reranked AOY field and receives 200 AOY points.
+Official tournament finish position remains authoritative for the published
+result and AOY placement. Historical eligibility snapshots are used only where
+the published result requires them; new registrations require seasonal
+membership.
 
-### 24.5 An Eligible Team Records Zero Weight
+### 24.5 A Current-Policy Team Records Zero Weight
 
-An eligible member team checks in and participates but records zero tournament
+An entry checks in and participates but records zero tournament
 weight. The team receives 10 AOY participation points. If it did not participate,
 or if it was disqualified, it would receive 0 points. Its official result is not
 changed by the AOY award.

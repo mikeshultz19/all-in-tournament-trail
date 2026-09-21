@@ -18,7 +18,7 @@ import {
   type WalkUpRegistrationDraft,
 } from "@/lib/walk-up-registration-form";
 import { formatCurrencyFromCents } from "@/config/payment-policy";
-import { hasFullMembershipEligibility, type Membership } from "@/lib/registration";
+import { type Membership } from "@/lib/registration";
 import type { RegistrationParticipantContactSnapshot } from "@/lib/tournament-registration-roster";
 
 const initialState: RegistrationOperationsActionState = {
@@ -76,10 +76,7 @@ export function AddWalkUpControl({ tournamentId }: { tournamentId: string }) {
   const memberships = registrationType === "team"
     ? [angler1Membership, angler2Membership]
     : [angler1Membership];
-  const memberOptionsEligible = hasFullMembershipEligibility({
-    registrationType,
-    memberships,
-  });
+  const memberOptionsEligible = true;
   const walkUpPricing = getWalkUpDisplayPricing({
     registrationType,
     paymentMethod,
@@ -100,25 +97,12 @@ export function AddWalkUpControl({ tournamentId }: { tournamentId: string }) {
 
   function updateRegistrationType(value: "solo" | "team") {
     setRegistrationType(value);
-    const nextMemberships = value === "team"
-      ? [angler1Membership, angler2Membership]
-      : [angler1Membership];
-    if (!hasFullMembershipEligibility({ registrationType: value, memberships: nextMemberships })) {
-      setMemberPot("");
-      setInsurance(false);
-    }
   }
 
   function updateMembership(position: 1 | 2, value: Membership) {
-    if (position === 1) setAngler1Membership(value);
-    else setAngler2Membership(value);
-    const nextMemberships = registrationType === "team"
-      ? [position === 1 ? value : angler1Membership, position === 2 ? value : angler2Membership]
-      : [position === 1 ? value : angler1Membership];
-    if (!hasFullMembershipEligibility({ registrationType, memberships: nextMemberships })) {
-      setMemberPot("");
-      setInsurance(false);
-    }
+    const activeMembership = value === "current" ? "current" : "joining";
+    if (position === 1) setAngler1Membership(activeMembership);
+    else setAngler2Membership(activeMembership);
   }
 
   return (
@@ -191,7 +175,7 @@ export function AddWalkUpControl({ tournamentId }: { tournamentId: string }) {
             <output className="flex min-h-11 items-center border border-[#D4A017]/50 bg-[#D4A017]/10 px-3 text-lg font-black tabular-nums text-[#D4A017]" aria-live="polite">
               {formatCurrencyFromCents(totalCollectedCents)}
             </output>
-            {paymentMethod === "card" ? <p className="mt-1 text-xs text-neutral-400">SQUARE SERVICE FEE (3%) {formatCurrencyFromCents(walkUpPricing.cardProcessingFeeCents)}</p> : null}
+            {paymentMethod === "card" ? <p className="mt-1 text-xs text-neutral-400">SQUARE SERVICE FEE {formatCurrencyFromCents(walkUpPricing.cardProcessingFeeCents)}</p> : null}
           </Field>
           <Check name="bigBass" label="Big Bass" checked={bigBass} onChange={setBigBass} />
           <Check
@@ -284,7 +268,7 @@ function AnglerFields({
         const input = fieldsetRef.current?.querySelector<HTMLInputElement>(`[name="${name}"]`);
         if (input) { input.value = value; input.dispatchEvent(new Event("input", { bubbles: true })); }
       });
-      onMembershipChange(member.membershipStatus === "active" ? "current" : "non-member");
+      onMembershipChange(member.membershipStatus === "active" ? "current" : "joining");
       setSelectedName(`${member.firstName} ${member.lastName}`);
       setSearch(""); setResults([]); setLookupError(""); onSelectedMember(id);
     });
@@ -384,7 +368,7 @@ function AnglerFields({
             defaultValue={values.zipCode}
           />
         </Field>
-        <Field label="Email (optional for non-members)">
+        <Field label="Email">
           <input
             name={`${prefix}Email`}
             type="email"
@@ -409,7 +393,7 @@ function AnglerFields({
             value={membershipValue}
             onChange={(event) => onMembershipChange(event.target.value as Membership)}
           >
-            <option value="non-member">Non-Member</option>
+
             <option value="current">Current Member</option>
             <option value="joining">Joining / Purchasing</option>
           </select>
@@ -557,46 +541,97 @@ export function RegistrationEditControl({
   );
 }
 
-export function CancelRegistrationControl({
-  tournamentId,
-  registrationId,
-  registrationNumber,
-  participantNames,
-  amountCents,
-}: {
-  tournamentId: string;
-  registrationId: string;
+type CancellationRegistration = {
+  id: string;
+  boatNumber: number | null;
   registrationNumber: string;
   participantNames: string[];
   amountCents: number | null;
+  paymentMethod: "online" | "cash" | "card" | "other" | null;
+  paymentStatus: "Paid" | "Needs Review";
+  lineItems: Array<{ name?: string; priceCents?: number }>;
+  serviceFeeCents: number;
+};
+
+export function CancelRegistrationControl({
+  tournamentId,
+  registrations,
+}: {
+  tournamentId: string;
+  registrations: CancellationRegistration[];
 }) {
   const [open, setOpen] = useState(false);
+  const [selectedId, setSelectedId] = useState("");
+  const router = useRouter();
   const [state, action, pending] = useActionState(
-    cancelRegistrationAction.bind(null, tournamentId, registrationId),
+    async (previousState: RegistrationOperationsActionState, formData: FormData) => {
+      const registrationId = String(formData.get("registrationId") ?? "").trim();
+      if (!registrationId) return { status: "error", message: "Select an active registration." } satisfies RegistrationOperationsActionState;
+      const nextState = await cancelRegistrationAction(tournamentId, registrationId, previousState, formData);
+      if (nextState.status === "success") {
+        setOpen(false);
+        setSelectedId("");
+      }
+      return nextState;
+    },
     initialState,
   );
-  useRefreshOnSuccess(state);
+  useEffect(() => {
+    if (state.status === "success") {
+      router.refresh();
+    }
+  }, [router, state.status]);
+
+  const selected = registrations.find((registration) => registration.id === selectedId) ?? null;
 
   return (
-    <div className="mt-3">
-      <button type="button" className={adminButtonStyles("destructive", "min-h-10")} onClick={() => setOpen(true)}>
+    <div>
+      <button type="button" className={adminButtonStyles("destructive", "min-h-11")} onClick={() => setOpen(true)} disabled={!registrations.length}>
         Cancel Registration
       </button>
       {open ? (
-        <div role="dialog" aria-modal="true" aria-labelledby={`cancel-title-${registrationId}`} className="mt-3 border border-red-500/30 bg-black/60 p-4">
-          <h3 id={`cancel-title-${registrationId}`} className="text-sm font-black uppercase text-white">Cancel Registration</h3>
-          <dl className="mt-3 grid gap-2 text-xs text-neutral-300">
-            <div><dt className="font-bold text-white">Registration Number</dt><dd>#{registrationNumber}</dd></div>
-            <div><dt className="font-bold text-white">Participants</dt><dd>{participantNames.join(" / ")}</dd></div>
-            <div><dt className="font-bold text-white">Recorded Amount</dt><dd>{formatCurrencyFromCents(amountCents ?? 0)}</dd></div>
-          </dl>
-          <p className="mt-3 text-xs font-bold leading-5 text-red-200">AITT does not issue the refund. Handle any refund separately before confirming cancellation.</p>
+        <div role="dialog" aria-modal="true" aria-labelledby="cancel-registration-title" className="mt-3 w-full max-w-2xl border border-red-500/30 bg-black/60 p-4">
+          <h3 id="cancel-registration-title" className="text-sm font-black uppercase text-white">Cancel Registration</h3>
           <form action={action} className="mt-4 grid gap-3">
+            <label className="text-xs font-bold uppercase text-neutral-300">
+              Active Boat / Registration
+              <select name="registrationId" required value={selectedId} onChange={(event) => setSelectedId(event.target.value)} className={`${input} mt-1`}>
+                <option value="">Select an active registration</option>
+                {registrations.map((registration) => (
+                  <option key={registration.id} value={registration.id}>
+                    Boat {registration.boatNumber ?? "—"} · #{registration.registrationNumber} · {registration.participantNames.join(" / ")}
+                  </option>
+                ))}
+              </select>
+            </label>
+            {selected ? <div className="grid gap-3 border border-white/10 bg-[#111] p-3 text-xs text-neutral-300">
+              <dl className="grid gap-2 sm:grid-cols-2">
+              <div><dt className="font-bold text-white">Registration Number</dt><dd>#{selected.registrationNumber}</dd></div>
+              <div><dt className="font-bold text-white">Boat</dt><dd>{selected.boatNumber ?? "Unassigned"}</dd></div>
+              <div><dt className="font-bold text-white">Participants</dt><dd>{selected.participantNames.join(" / ")}</dd></div>
+              <div><dt className="font-bold text-white">Recorded Payment</dt><dd>{formatCurrencyFromCents(selected.amountCents ?? 0)} · {formatPaymentMethod(selected.paymentMethod)} · {selected.paymentStatus}</dd></div>
+              </dl>
+              <div className="border-t border-white/10 pt-2">
+                <p className="font-bold uppercase tracking-[0.08em] text-white">Original Itemized Charges</p>
+                {selected.lineItems.map((item, index) => <p key={`${item.name}-${index}`} className="mt-1 flex justify-between gap-4"><span>{item.name ?? `Line ${index + 1}`}</span><span>{formatCurrencyFromCents(item.priceCents ?? 0)}</span></p>)}
+                <p className="mt-1 flex justify-between gap-4"><span>Square Service Fee</span><span>{formatCurrencyFromCents(selected.serviceFeeCents)}</span></p>
+                <p className="mt-2 flex justify-between gap-4 border-t border-white/10 pt-2 font-bold text-white"><span>Full Recorded Amount Paid</span><span>{formatCurrencyFromCents(selected.amountCents ?? 0)}</span></p>
+              </div>
+            </div> : <p className="text-xs text-neutral-400">Select an active registration to review its participants and recorded payment.</p>}
+          <p className="mt-1 text-xs font-bold leading-5 text-red-200">The approved refund is the full recorded amount, including entry, side pots, membership purchases, and Square service fee. Handle it manually through Chase outside AITT; this action does not initiate a Square refund.</p>
+            <label className="text-xs font-bold uppercase text-neutral-300">
+              Manual Refund Status
+              <select name="manualRefundStatus" required defaultValue="" className={`${input} mt-1`}>
+                <option value="">Select status</option>
+                <option value="pending">Pending — refund not yet completed</option>
+                <option value="completed">Completed — full refund handled through Chase</option>
+              </select>
+            </label>
             <label className="text-xs font-bold uppercase text-neutral-300">Cancellation Note
               <textarea name="cancellationNote" required minLength={3} maxLength={500} rows={3} className={`${input} mt-1`} />
             </label>
             <div className="flex flex-wrap gap-2">
-              <button type="submit" disabled={pending} className={adminButtonStyles("destructive", "min-h-10")}>{pending ? "Cancelling..." : "Confirm Cancellation"}</button>
+              <button type="submit" disabled={pending || !selected} className={adminButtonStyles("destructive", "min-h-10")}>{pending ? "Cancelling..." : "Confirm Cancellation"}</button>
               <button type="button" disabled={pending} onClick={() => setOpen(false)} className={adminButtonStyles("secondary", "min-h-10")}>Keep Registration</button>
             </div>
             <ActionMessage state={state} />
@@ -605,6 +640,10 @@ export function CancelRegistrationControl({
       ) : null}
     </div>
   );
+}
+
+function formatPaymentMethod(method: CancellationRegistration["paymentMethod"]) {
+  return method === "online" ? "Square" : method ? method[0].toUpperCase() + method.slice(1) : "Not recorded";
 }
 
 function Field({

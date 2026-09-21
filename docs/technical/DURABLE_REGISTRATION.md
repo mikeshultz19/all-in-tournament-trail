@@ -46,8 +46,9 @@ twice for one tournament.
 
 ## Membership trust boundary
 
-Browser-submitted `current`, `joining`, and `non-member` selections are pricing
-intent, not proof of eligibility.
+Browser-submitted `current` and `joining` selections are pricing intent, not
+proof of eligibility. Historical non-member snapshots remain readable for
+backward compatibility.
 
 Before returning a quote and again before durable completion, the server checks
 current and joining claims against the selected tournament's season and the

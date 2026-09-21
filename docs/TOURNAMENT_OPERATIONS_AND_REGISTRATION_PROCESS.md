@@ -19,7 +19,7 @@ receipt, and does not invent an online Square service fee.
 Recipients are trimmed, lowercased, and deduplicated consistently for online
 and walk-up registrations. Database uniqueness and the provider idempotency key
 prevent resubmission, refresh, editing, attendance, review, export, or printing
-from creating another automatic confirmation. A non-member walk-up without an
+from creating another automatic confirmation. A walk-up without an
 email remains saved, queues nothing, and reports `Confirmation not sent — no
 email provided.` Delivery failure preserves the registration and remains in the
 retry workflow. The No Show cleanup migration is applied to staging; an
@@ -101,11 +101,10 @@ Membership costs **$40 per angler annually** and is determined independently
 for each angler. Membership choices are:
 
 - Current member
-- Purchase membership
-- Continue as a non-member
+- Purchase the $40 seasonal membership
 
-For a team to receive member benefits, both registered anglers must be
-members. Member benefits include access to:
+Every registered angler may select any available side pot. Membership also
+supports access to:
 
 - Bronze
 - Silver
@@ -113,23 +112,22 @@ members. Member benefits include access to:
 - Insurance Pot
 - AOY points
 - Championship eligibility
-- One official practice day immediately before an event when the current
-  member is registered for that specific tournament
+- One official practice day immediately before an event for each registered
+  team or solo entry
 
-When either team member is a non-member, member-only benefits must be
-unavailable.
+Historical non-member records remain preserved, but new online and walk-up
+registrations require membership.
 
 ### Practice and Off-Limits Policy
 
-Before every tournament event, tournament waters are off-limits to all
-non-member anglers registered to compete in that tournament beginning at
-**12:00 AM midnight on Monday of tournament week**.
-
-A current member who is registered for that specific tournament is eligible
-for one official practice day immediately before the event. The eligible
-member may choose either Friday or Saturday, but may not practice on both
-days. Membership alone does not establish eligibility for the practice
-privilege; registration for the applicable tournament is required.
+Before every tournament event, tournament waters are off-limits to all anglers
+registered to compete in that tournament beginning at **12:00 AM midnight on
+Monday of tournament week**. Each registered team or solo entry receives one
+official practice day immediately before the event and may choose either Friday
+or Saturday, but not both. For a team, both anglers share the single allowance;
+practice by either team member, alone or together, consumes it. Registration
+must be complete before practice begins. Changing boats, anglers, partners, or
+passengers does not create another practice day.
 
 The public Rules page is the controlling public source for this policy. This
 documentation defines the same business rule but does not implement automated
@@ -168,12 +166,25 @@ face-value selections, and Card snapshots retain a known zero-fee persistence
 discrepancy; the summary derives selections without rewriting those records.
 Actual Square fees and bank deposits remain outside the stored application data.
 
+### Registration cancellation
+
+Use the single roster-level Cancel Registration control beside Check-In and
+Add Walk-Up. Select the active boat, review the registration number,
+participants, itemized charges, and total paid, then record a required reason
+and whether the full manual Chase refund is pending or completed. Cancellation
+applies to the whole team or solo registration and does not issue a Square
+refund. Memberships purchased on that registration are revoked from their
+recorded purchase lines; pre-existing memberships are not revoked. Canceled
+registrations remain in the Canceled and All Registrations views for audit, but
+are excluded from active operations, funds/payouts, exports, results, AOY, and
+Championship eligibility.
+
 **Big Bass** is optional and is not a standalone tournament entry.
 
-**Bronze, Silver, and Gold** are members-only, mutually exclusive selections.
+**Bronze, Silver, and Gold** are optional, mutually exclusive selections available to every registered angler.
 Bronze pays 1-in-5. Silver pays 1-in-5. Gold pays 1-in-7.
 
-**Insurance Pot** costs **$20**, requires Tournament Entry, and is members-only.
+**Insurance Pot** costs **$20**, requires Tournament Entry, and is available to every registered angler.
 It uses a true 1-in-5 payout, with a minimum of one paid place whenever there
 are Insurance Pot entries. Payouts begin with the first eligible team outside
 the Tournament Entry payout.
@@ -362,7 +373,7 @@ The table shows:
 - Public display names for Angler 1 and Angler 2, or `Solo`
 - Exact registration timestamp in `America/Chicago`
 - Big Bass selection
-- At most one member Bonus Pot selection: Bronze, Silver, or Gold
+- At most one payout pot selection: Bronze, Silver, or Gold
 - Insurance Pot selection
 
 Entries are sorted by registration timestamp from oldest to newest. Tournament
@@ -568,11 +579,11 @@ The Registration page must display:
 - Entry selections organized as:
   - Tournament Registration: Tournament Entry — Required
   - Optional Side Pots: Big Bass and Insurance Pot
-  - Member Bonus Pots: Bronze, Silver, and Gold
+  - Payout Pots: Bronze, Silver, and Gold
 - Tournament Entry as a mandatory, non-removable line item
 - Member eligibility rules
 - Itemized Registration Summary
-- Registration Subtotal, Square Service Fee (3%), and Total Charged
+- Registration Subtotal, Square Service Fee, and Total Charged
 - Notice that credit or debit card payment through Square is required online
 - Notice that registration is confirmed only after successful payment
 - Notice that cash is accepted only in person through the Tournament Director's
@@ -591,9 +602,8 @@ The Rules page must explain:
 
 - Tournament Entry is required for every registration
 - Big Bass is optional and is not a standalone entry
-- Bronze, Silver, Gold, and Insurance Pot are optional member-only selections
-  that require Tournament Entry; both team members must be current members for
-  team benefits
+- Bronze, Silver, Gold, and Insurance Pot are optional selections available to
+  every registered angler and require Tournament Entry
 
 - Registration availability is controlled by each tournament's lifecycle state;
   any stored deadline is informational unless explicitly enabled by the current
@@ -613,12 +623,13 @@ The Rules page must explain:
   rescheduling
 - The website is the official source for tournament status and instructions
 - The Practice and Off-Limits Policy applies before every event
-- Registered non-member anglers are off-limits beginning at 12:00 AM midnight
-  on Monday of tournament week
-- A current member registered for the specific tournament may use one official
-  practice day, choosing Friday or Saturday immediately before the tournament,
-  but not both
-- Membership alone does not provide the event-specific practice privilege
+- Registered anglers are off-limits beginning at 12:00 AM midnight on Monday of
+  tournament week, except for the one official practice day assigned to each
+  registered entry
+- Each registered team or solo entry may use Friday or Saturday immediately
+  before the tournament, but not both; team members share that single allowance
+- Registration must be complete before practice and changing boats, anglers,
+  partners, or passengers does not create another practice day
 
 Until a dedicated Rules document or page is approved and created, this section
 is the authoritative source for these requirements.
@@ -674,26 +685,20 @@ rescheduled date will be posted when available. Registration transfer, refund,
 or credit instructions will be included in the official announcement. No final
 refund policy applies until it has been approved.
 
-### Do both team members have to be members?
-
-Yes. Both anglers must be members for the team to receive member benefits.
-Those benefits include Bronze, Silver, Gold, Insurance Pot, AOY points, and
-Championship eligibility.
-
 ### When can I practice before a tournament?
 
 Beginning at 12:00 AM on Monday of tournament week, tournament waters are
-off-limits to non-member anglers competing in the event. A current All-In
-Tournament Trail member who is registered for that specific tournament may
-use one official practice day, choosing either Friday or Saturday immediately
-before the tournament. Practice on both days is not permitted.
+off-limits to anglers competing in the event. Each registered team or solo entry
+may use one official practice day, choosing either Friday or Saturday
+immediately before the tournament. Team members share that allowance, and
+practice on both days is not permitted.
 
 ### What entry options are available?
 
 Tournament Entry is required for every solo or team registration. Big Bass is an
-optional add-on. Bronze, Silver, Gold, and Insurance Pot are optional member-only
-selections that require Tournament Entry; Bronze, Silver, and Gold are mutually
-exclusive, and both team members must be current members for team benefits.
+optional add-on. Bronze, Silver, Gold, and Insurance Pot are optional selections
+available to every registered angler and require Tournament Entry; Bronze,
+Silver, and Gold are mutually exclusive.
 
 Until a dedicated FAQ document or page is approved and created, this section
 is the authoritative source for these requirements.
@@ -728,7 +733,7 @@ Future implementation should:
 - Calculate card amounts in integer cents; the Square Service Fee is the
   card-payment subtotal multiplied by 3%, rounded to the nearest cent with
   half-cent results rounded upward, plus $0.30 once per transaction. Show
-  customers `SQUARE SERVICE FEE (3%)` with only the calculated dollar amount;
+  customers `SQUARE SERVICE FEE` with only the calculated dollar amount;
   do not expose the fixed-component formula.
 - Recalculate online amounts on the server, use Square idempotency keys, and
   confirm registration only after a successful Square payment
@@ -763,7 +768,7 @@ claim cannot be verified, it remains in Needs Review and continues to block
 Tournament Preparation, but it adds no hypothetical money to the Financial
 Summary. Staff verifies status and collects payment before selecting Confirm
 Membership Purchase. Only confirmed collected membership money is included;
-Confirm Existing Member and Confirm Not Member add $0. Processor and bank
+Confirm Existing Member add $0. Processor and bank
 reconciliation remain separate. Walk-up snapshots can remain lump-sum and are
 retained as a known auditability limitation.
 

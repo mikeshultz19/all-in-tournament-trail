@@ -20,7 +20,7 @@ import { getTournamentOperationsViewModel } from "@/lib/tournament-view-model";
 const baseSelections: RegistrationSelections = {
   registrationType: "solo",
   baseEntry: true,
-  memberships: ["non-member"],
+  memberships: ["current"],
   memberPot: null,
   bigBass: false,
   insurance: false,
@@ -28,7 +28,7 @@ const baseSelections: RegistrationSelections = {
 
 describe("required Tournament Entry", () => {
   it.each(["solo", "team"] as const)("requires Tournament Entry for %s registrations", (registrationType) => {
-    const memberships = registrationType === "team" ? ["non-member", "non-member"] : ["non-member"];
+    const memberships = registrationType === "team" ? ["current", "current"] : ["current"];
     expect(validateRegistrationSelections({ ...baseSelections, registrationType, memberships, baseEntry: false })).toContain("Tournament Entry is required to register.");
   });
 
@@ -56,7 +56,7 @@ describe("required Tournament Entry", () => {
     expect(pricing.totalCents).toBeGreaterThanOrEqual(REGISTRATION_PRICING.baseEntry * 100);
   });
 
-  it("uses the authoritative $60 Base Entry and Square total", () => {
+  it("uses the authoritative $60 Base Entry and Square total for a current member", () => {
     expect(REGISTRATION_PRICING.baseEntry).toBe(60);
 
     const pricing = getRegistrationPricing(baseSelections);
@@ -67,7 +67,7 @@ describe("required Tournament Entry", () => {
     expect(calculateCardTotalCents(6000)).toBe(6210);
   });
 
-  it("keeps Membership and Bronze Pot at $40 while using $60 Base Entry", () => {
+  it("charges $40 for a new solo member while using $60 Base Entry", () => {
     expect(REGISTRATION_PRICING.annualMembership).toBe(40);
     expect(REGISTRATION_PRICING.bronze).toBe(40);
 
@@ -84,19 +84,36 @@ describe("required Tournament Entry", () => {
     ]);
   });
 
+  it("applies mandatory membership pricing for solo and team entries", () => {
+    const price = (registrationType: "solo" | "team", memberships: RegistrationSelections["memberships"]) =>
+      getRegistrationPricing({ registrationType, baseEntry: true, memberships, memberPot: null, bigBass: false, insurance: false }).subtotalCents;
+    expect(price("solo", ["current"])).toBe(6000);
+    expect(price("solo", ["joining"])).toBe(10000);
+    expect(price("team", ["current", "current"])).toBe(6000);
+    expect(price("team", ["current", "joining"])).toBe(10000);
+    expect(price("team", ["joining", "joining"])).toBe(14000);
+  });
+
   it("does not accept Free Entry as an entry type", () => {
     expect(validateRegistrationSelections({ ...baseSelections, entryType: "free" })).toContain("Free Entry is not a valid registration option.");
   });
 
-  it("allows only one member bonus pot", () => {
-    expect(validateRegistrationSelections({ ...baseSelections, memberships: ["current"], memberPot: ["bronze", "silver"] })).toContain("Choose only one member bonus pot: Bronze, Silver, or Gold.");
+  it("allows only one payout pot", () => {
+    expect(validateRegistrationSelections({ ...baseSelections, memberships: ["current"], memberPot: ["bronze", "silver"] })).toContain("Choose only one payout pot: Bronze, Silver, or Gold.");
   });
 
-  it("keeps member-only eligibility rules for solo and team entries", () => {
+  it("allows every registered angler to select any side pot", () => {
     expect(hasFullMembershipEligibility({ registrationType: "solo", memberships: ["current"] })).toBe(true);
     expect(hasFullMembershipEligibility({ registrationType: "team", memberships: ["current", "joining"] })).toBe(true);
     expect(hasFullMembershipEligibility({ registrationType: "team", memberships: ["current", "non-member"] })).toBe(false);
-    expect(validateRegistrationSelections({ ...baseSelections, memberPot: "bronze" })).toContain("Both anglers must be current members to enter Bronze, Silver, Gold, or the Insurance Pot.");
+    for (const memberPot of ["bronze", "silver", "gold"] as const) {
+      expect(validateRegistrationSelections({ ...baseSelections, memberPot })).toEqual([]);
+    }
+    expect(validateRegistrationSelections({ ...baseSelections, insurance: true })).toEqual([]);
+  });
+
+  it("rejects newly submitted non-member classifications", () => {
+    expect(validateRegistrationSelections({ ...baseSelections, memberships: ["non-member"] }).some((error) => error.includes("Every angler must have an active seasonal membership"))).toBe(true);
   });
 
   it("renders the public terminology and intended registration groups", () => {
@@ -105,7 +122,9 @@ describe("required Tournament Entry", () => {
     expect(html).toContain("Tournament Registration");
     expect(html).toContain("Tournament Entry");
     expect(html).toContain("Optional Side Pots");
-    expect(html).toContain("Member Bonus Pots");
+    expect(html).toContain("Optional Payout Pots");
+    expect(html).toContain("purchase the $40 seasonal membership");
+    expect(html).not.toContain("continue as a non-member");
     expect(html).toContain("Required");
     expect(html).not.toContain("Free Entry");
     expect(html).not.toContain("Base Entry");

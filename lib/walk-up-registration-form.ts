@@ -9,7 +9,7 @@ export type WalkUpRegistrationDraft = {
   angler1ZipCode: string;
   angler1Email: string;
   angler1Phone: string;
-  angler1Membership: "current" | "joining" | "non-member";
+  angler1Membership: "current" | "joining";
   angler2FirstName: string;
   angler2LastName: string;
   angler2StreetAddress: string;
@@ -18,7 +18,7 @@ export type WalkUpRegistrationDraft = {
   angler2ZipCode: string;
   angler2Email: string;
   angler2Phone: string;
-  angler2Membership: "current" | "joining" | "non-member";
+  angler2Membership: "current" | "joining";
   memberPot: "" | "bronze" | "silver" | "gold";
   totalPaid: string;
   bigBass: boolean;
@@ -79,7 +79,7 @@ export function createDefaultWalkUpRegistrationDraft(): WalkUpRegistrationDraft 
     angler1ZipCode: "",
     angler1Email: "",
     angler1Phone: "",
-    angler1Membership: "non-member",
+    angler1Membership: "joining",
     angler2FirstName: "",
     angler2LastName: "",
     angler2StreetAddress: "",
@@ -88,7 +88,7 @@ export function createDefaultWalkUpRegistrationDraft(): WalkUpRegistrationDraft 
     angler2ZipCode: "",
     angler2Email: "",
     angler2Phone: "",
-    angler2Membership: "non-member",
+    angler2Membership: "joining",
     memberPot: "",
     totalPaid: "",
     bigBass: false,
@@ -101,9 +101,9 @@ function text(formData: FormData, name: string) {
 }
 
 function membership(value: string): WalkUpRegistrationDraft["angler1Membership"] {
-  return value === "current" || value === "joining" || value === "non-member"
+  return value === "current" || value === "joining"
     ? value
-    : "non-member";
+    : "joining";
 }
 
 function paymentMethod(value: string): WalkUpRegistrationDraft["paymentMethod"] {

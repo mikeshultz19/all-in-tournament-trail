@@ -9,7 +9,6 @@ export function preserveUnresolvedMembershipReviews(
   anglers: readonly OnlineRegistrationAngler[],
   issues: readonly RegistrationMembershipReviewIssue[],
   unresolvedIdentityPositions: ReadonlySet<number>,
-  hasMemberOnlySelection = false,
 ): RegistrationMembershipReviewIssue[] {
   const result = [...issues];
 
@@ -25,7 +24,7 @@ export function preserveUnresolvedMembershipReviews(
 
     result.push({
       participantPosition,
-      reason: `Membership Needs Review: Angler ${participantPosition} current membership cannot be verified until identity is resolved.${hasMemberOnlySelection ? " Member-only selection requires eligibility review." : ""}`,
+      reason: `Membership Needs Review: Angler ${participantPosition} current membership cannot be verified until identity is resolved.`,
     });
   }
 

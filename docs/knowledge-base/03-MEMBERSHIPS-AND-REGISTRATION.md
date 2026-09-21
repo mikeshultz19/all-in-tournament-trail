@@ -44,9 +44,17 @@ Championship, and history. Review decisions are:
 Tournament-time membership and `aoy_eligible` snapshots control historical
 calculations; a later membership change cannot rewrite an old event.
 
-For teams and Solo entries, apply the membership-dependent pot rules already
-implemented against the relevant tournament-time snapshot. Do not silently
-remove a paid/selected option because identity is uncertain; flag it for review.
+Every current angler selects Current Member or Purchase Membership. Returning
+active members pay $0; new solo anglers pay $40; current/current teams pay $0,
+current/new teams pay $40, and new/new teams pay $80. Bronze, Silver, Gold, and
+Insurance are available to every current registered angler; only one of
+Bronze/Silver/Gold may be selected, while Big Bass and Insurance are independent
+add-ons. An unverified current claim becomes Needs Review. Do not create a
+membership shortfall or hypothetical receivable, and do not silently remove a
+paid/selected option because identity is uncertain; flag it for review.
+
+Historical non-member records remain readable and their stored historical
+eligibility snapshots are not rewritten by current policy.
 
 ## Tournament morning
 

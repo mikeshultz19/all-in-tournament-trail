@@ -5,8 +5,9 @@ import type { FormEvent, ReactNode } from "react";
 import { useRouter } from "next/navigation";
 
 import { adminButtonStyles } from "@/components/admin/admin-button-styles";
+import type { RegistrationRosterFilter } from "@/lib/tournament-registration-roster";
 
-type RosterFilter = "all" | "needs_review" | "walk_ups" | "check_ins";
+type RosterFilter = RegistrationRosterFilter;
 
 export default function RegistrationRosterToolbar({
   tournamentId,
@@ -15,6 +16,7 @@ export default function RegistrationRosterToolbar({
   page,
   pageSize,
   totalRows,
+  cancelledCount,
   totalPages,
   rangeStart,
   rangeEnd,
@@ -25,6 +27,7 @@ export default function RegistrationRosterToolbar({
   page: number;
   pageSize: 25 | 50 | 100;
   totalRows: number;
+  cancelledCount: number;
   totalPages: number;
   rangeStart: number;
   rangeEnd: number;
@@ -127,6 +130,12 @@ export default function RegistrationRosterToolbar({
               onClick={() => selectFilter("check_ins")}
             >
               Check-Ins
+            </FilterButton>
+            <FilterButton
+              active={filter === "cancelled"}
+              onClick={() => selectFilter("cancelled")}
+            >
+              Canceled ({cancelledCount})
             </FilterButton>
           </div>
 

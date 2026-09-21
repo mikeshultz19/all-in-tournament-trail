@@ -71,7 +71,7 @@ describe("unified Registration & Check-In workflow", () => {
 
   it("removes payment and financial summaries from the tournament-morning roster", () => {
     expect(page).not.toContain('Metric label="Payment Recorded"');
-    expect(page).not.toContain("row.paymentStatus");
+    expect(page).toContain("paymentStatus: row.paymentStatus"); // Used only in the cancellation confirmation, not as a roster summary.
     expect(page).toContain("row.totalPaidCents"); // Used only in the cancellation confirmation, not as a roster summary.
     expect(page).not.toContain("MoneyLine");
     expect(page).not.toContain("Card Fee");
@@ -111,12 +111,21 @@ describe("unified Registration & Check-In workflow", () => {
 
   it("shows review UI only while a review is unresolved", () => {
     expect(page).toContain('reviews.filter((review) => review.status === "review_required")');
-    expect(page).toContain("pendingReviews.map((review)");
+    expect(page).toContain("reviews.map((review)");
     expect(page).toContain("RegistrationReviewResolutionForm");
     expect(page).toContain("HistoricalMembershipReviewForm");
     expect(page).not.toContain("Review complete.");
     expect(page).not.toContain("reopenRegistrationReviewAction");
     expect(page).toContain("<details key={review.id}");
+  });
+
+  it("renders expanded review content outside the narrow actions cell responsively", () => {
+    expect(page).toContain('data-testid="expanded-registration-review-row"');
+    expect(page).toContain('colSpan={11}');
+    expect(page).toContain('data-testid="registration-review-panels"');
+    expect(page).toContain('data-testid="mobile-registration-card"');
+    expect(page).toContain("min-w-0");
+    expect(resolutionForm).toContain("Historical selection: Non-Member");
   });
 
   it("uses plain-language review decisions without exposing internal identity terms", () => {
@@ -126,7 +135,7 @@ describe("unified Registration & Check-In workflow", () => {
     expect(resolutionForm).toContain("Optional review note");
     expect(resolutionForm).not.toContain("Confirm Existing");
     expect(membershipForm).toContain("Confirm Member");
-    expect(membershipForm).toContain("Confirm Non-Member");
+    expect(membershipForm).not.toContain("Confirm Non-Member");
     expect(membershipForm).toContain("Confirm Membership Purchase");
     expect(resolutionForm).toContain("Registration Submission");
     expect(resolutionForm).toContain("Existing Angler");
@@ -231,11 +240,14 @@ describe("unified Registration & Check-In workflow", () => {
   it("requires an admin-confirmed cancellation note and retains durable records", () => {
     expect(controls).toContain("Cancel Registration");
     expect(controls).toContain("cancellationNote");
-    expect(controls).toContain("AITT does not issue the refund");
+    expect(controls).toContain("manually through Chase outside AITT");
     expect(actions).toContain("cancelRegistrationAction");
     expect(actions).toContain('registration_status: "cancelled"');
     expect(actions).toContain("cancelled_by_admin_id: admin.id");
-    expect(actions).toContain("Cancellation note:");
+    expect(actions).toContain("Cancellation reason:");
+    expect(actions).toContain("Manual refund status:");
+    expect(page).toContain("registrations={allRows.map");
+    expect(page).not.toContain("<CancelRegistrationControl tournamentId={tournamentId}");
     expect(migration).toContain("registration_source = 'walk_up' and registration_status = 'active'");
     expect(migration).toContain("set registration_status = 'cancelled'");
     expect(migration).toContain("cancelled_by_admin_id = p_admin_user_id");

@@ -27,6 +27,9 @@ The [Official Tournament Rules](../TOURNAMENT_RULES.md) control competition.
    Reconciliation separately.
 5. Confirm the final AITT field and WeighFish field agree. The roster is an
    operational check-in tool, not the accounting ledger.
+6. Before canceling an entry, normally clear any accidental check-in state.
+   Keep the registration canceled and preserve any historical timestamp for
+   audit; canceled entries must not appear as active Checked In records.
 
 ## Weigh-in through publication
 

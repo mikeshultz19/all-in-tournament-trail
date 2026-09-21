@@ -1,6 +1,6 @@
 # Official Tournament Rules
 
-**Version:** 1.7
+**Version:** 1.9
 **Status:** Official
 **Effective Date:** July 26, 2026
 **Last Updated:** August 9, 2026
@@ -83,10 +83,9 @@ tournament payouts.
 
 ### Open Participation
 
-AITT regular-season tournaments are open to eligible members and non-members.
-Membership is not required to purchase the required Tournament Entry, but
-member-only benefits and competitions remain restricted as described in
-[Membership](#membership).
+AITT regular-season tournaments require an active seasonal membership for every
+angler. A returning active member does not pay the membership fee again. A new
+angler purchases the required **$40 seasonal membership** during registration.
 
 AITT may deny or revoke participation when necessary to protect safety,
 competitive integrity, legal compliance, or tournament operations.
@@ -94,9 +93,9 @@ competitive integrity, legal compliance, or tournament operations.
 ### Membership
 
 Membership status is determined independently for each angler. An angler may
-register as a current member, purchase an annual membership during
-registration, or participate as a non-member. Names alone do not establish
-current membership status.
+register as a current member or purchase the **$40 annual membership** during
+registration. Names alone do not establish current membership status; a claimed
+current membership that cannot be verified remains **Needs Review**.
 
 ### Age Requirements
 
@@ -123,16 +122,16 @@ requirement, the stricter legal requirement controls.
 ### Team Eligibility
 
 A team consists of two registered anglers. Both anglers share the team's
-tournament finish, payouts, and season points. Both anglers must be current
-members, or purchase membership during registration, for the team to receive
-member-only benefits.
+tournament finish, payouts, and season points. Both anglers must have a current
+membership or purchase membership during registration. Each angler may select
+any available side pot.
 
 ### Solo Anglers
 
 A solo angler may enter as one registration and competes against the same
 tournament field under the same tournament, safety, and fishing rules. A solo
-member may receive member-only benefits when all applicable eligibility and
-entry requirements are satisfied.
+angler with a current or newly purchased membership may select any available
+side pot.
 
 <a id="registration"></a>
 ## 3. Registration
@@ -195,7 +194,7 @@ registration cutoff will be published with event instructions.
 - **Card and supported digital wallets:** The Square Service Fee is 3% of the
   applicable subtotal plus $0.30 per transaction for online payments and
   in-person payments processed through Square. Customer-facing itemization is
-  labeled `SQUARE SERVICE FEE (3%)`; the $0.30 component is not separately
+labeled `SQUARE SERVICE FEE`; the $0.30 component is not separately
   displayed. Cash has no Square Service Fee.
 
 AITT calculates charges on the server using integer cents. The percentage
@@ -222,20 +221,25 @@ Annual membership is **$40 per angler**.
 
 ### Membership Benefits
 
-Eligible members may receive access to:
+Every registered angler has an active seasonal membership; returning members pay
+no additional membership charge and new anglers purchase the $40 membership.
+Membership is paid once per person per season: a new solo angler pays $40,
+current/current teams pay $0, current/new teams pay $40, and new/new teams pay
+$80. Online and walk-up registration offer only Current Member or Purchase
+Membership. An unverified Current Member claim becomes Needs Review; it does
+not create a non-member registration, shortfall, or hypothetical receivable.
+Membership supports:
 
 - Angler of the Year (AOY) points
 - Championship qualification
-- Bronze, Silver, or Gold member bonus pots
+- Bronze, Silver, or Gold payout pots
 - Insurance Pot
-- One official practice day, either Friday or Saturday immediately before an
-  event, when the current member is registered for that specific tournament
 - Other member opportunities published by AITT
 
 Membership does not replace Tournament Entry. Bronze, Silver, and Gold are
-members-only, mutually exclusive selections; an eligible registration may
-choose no more than one. The Insurance Pot is also members-only. For a team to
-receive any team member benefit, both registered anglers must be members.
+optional, mutually exclusive selections available to every registered angler;
+an eligible registration may choose no more than one. The Insurance Pot is also
+available to every registered angler.
 
 Membership pricing or benefits may not be inferred beyond the current
 published registration choices. Any future member discount must be approved
@@ -248,8 +252,8 @@ and published before it applies.
 - Only entries that joined the Insurance Pot are eligible for its payouts.
 - The Insurance Pot uses a true 1-in-5 payout, with a minimum of one paid place
   whenever there are Insurance Pot entries.
-- Payouts begin with the first eligible team outside the Tournament Entry
-  payout. Entries that did not join the Insurance Pot are skipped.
+- Payouts begin with the first participating entry outside the Tournament Entry
+  payout positions. Entries that did not join the Insurance Pot are skipped.
 - The entire Insurance Pot is distributed. AITT retains none of the Insurance
   Pot, and every winning entry receives an equal payout, subject only to the
   one-cent adjustments required to distribute the exact total.
@@ -327,16 +331,14 @@ allow a prohibited substitution.
 <a id="angler-of-the-year"></a>
 ## 6. Angler of the Year
 
-Angler of the Year (AOY) is a season-long points competition available only to
-eligible AITT member Competitive Records.
+Angler of the Year (AOY) is a season-long points competition for registered
+anglers.
 
 ### AOY Eligibility
 
 To earn AOY points:
 
-- A Solo Competitive Record must belong to a current AITT member.
-- Both anglers associated with a Team Competitive Record must be current AITT
-  members.
+- Every registered angler earns AOY points from official finishing position.
 - The Competitive Record must physically launch and compete in the tournament.
 - Paying an entry fee without physically competing does not earn AOY points.
 - Team and Individual Championship Identities remain separate.
@@ -350,15 +352,14 @@ AOY points are calculated from the official tournament results after all
 penalties, corrections, protests, and disqualifications have been resolved.
 
 Official tournament results remain unchanged when determining AOY points.
-Competitors who are not eligible for AOY points are removed only from the AOY
-calculation. The remaining eligible Competitive Records are then ranked in
-their original relative finishing order for the purpose of awarding AOY points.
+Registered anglers are ranked in their original relative finishing order for
+the purpose of awarding AOY points.
 
 ### Best Five of Eight
 
 The regular season consists of eight scheduled tournaments.
 
-Each eligible Competitive Record's five highest tournament point totals
+Each registered Competitive Record's five highest tournament point totals
 determine its final AOY score.
 
 The three lowest tournament totals, including tournaments not fished, are
@@ -388,14 +389,13 @@ errors discovered in published standings.
 <a id="championship-qualification"></a>
 ## 7. Championship Qualification
 
-Championship qualification is earned by an eligible Competitive Record during
-the eight-tournament regular season.
+Championship qualification is earned by a Competitive Record during the
+eight-tournament regular season.
 
 ### Five of Eight Participation Requirement
 
-An eligible Competitive Record must physically compete in at least five of the
-eight regular-season tournaments to satisfy the Championship participation
-requirement.
+A Competitive Record qualifies by physically competing in at least five of the
+eight regular-season tournaments.
 
 Paying an entry fee, registering, or appearing on a tournament roster without
 physically launching and competing does not count as participation.
@@ -425,15 +425,6 @@ Championship Identity.
 If the remaining angler instead registers as an Individual, participation
 credit from that tournament belongs only to the separate Individual
 Championship Identity.
-
-### Membership Requirement
-
-A Solo Competitive Record must satisfy the applicable membership requirement
-to receive Championship eligibility.
-
-Both anglers associated with a Team Competitive Record must satisfy the
-applicable membership requirement for the Team to receive Championship
-eligibility.
 
 ### Championship Field and Procedures
 
@@ -597,28 +588,23 @@ communications are always permitted.
 <a id="practice-off-limits"></a>
 ## 10. Practice and Off-Limits Policy
 
-### Official Practice and Off-Limits Period
+### OFF-LIMITS PERIOD AND OFFICIAL PRACTICE DAY
 
-Beginning at **12:00 AM midnight on Monday of tournament week**, tournament
-waters are off-limits to all non-member anglers registered to compete in that
-tournament.
+Tournament waters are off-limits beginning at 12:00 a.m. Monday immediately
+before each tournament. Each registered tournament entry—team or solo—is
+allowed one official practice day: either Friday or Saturday immediately
+before the tournament, but not both.
 
-A current All-In Tournament Trail member who is registered for that specific
-tournament is permitted one official practice day immediately before the
-tournament. The member may choose either Friday or Saturday, but may not
-practice on both days.
+For a team entry, both anglers share the same single practice-day allowance.
+Practice by either team member, whether alone or together, counts as the
+team's official practice day. Team members may not divide the allowance by
+practicing on different days. Registration must be completed before the entry
+begins practice.
 
-Membership alone does not provide the practice privilege. The angler must be
-registered for the applicable tournament. This policy applies before every
-AITT tournament event.
-
-### Boats During Practice
-
-Changing boats does not avoid the off-limits rule. The restrictions apply to
-the participant, whether the participant operates, rides in, or fishes from a
-boat owned by the participant or another person. A participant may not direct
-another person to scout tournament waters on the participant's behalf during
-an applicable off-limits period.
+Changing boats, anglers, partners, or passengers does not create an additional
+practice day. A team or solo entry that practices on Friday may not return to
+practice on Saturday in another boat or with a different combination of
+anglers.
 
 <a id="tournament-operations"></a>
 ## 11. Tournament Operations
@@ -712,13 +698,9 @@ required to treat a polygraph as the sole basis for a decision.
 <a id="refund-cancellation-policy"></a>
 ## 14. Refund & Cancellation Policy
 
-Official refund and cancellation policy will be published separately.
-
-Until that policy is approved, no participant should assume that a
-registration will be refunded, credited, or transferred. When an event is
-postponed, cancelled, or rescheduled, AITT will publish the current status and
-instructions on the website. Square remains the system responsible for
-processing any refund that AITT later authorizes for a Square payment.
+Tournament registrations are final. No cancellations or refunds will be
+issued. If you have questions, contact the Tournament Director before the
+tournament date.
 
 <a id="media"></a>
 ## 15. Media
@@ -757,6 +739,7 @@ administrative notes, and internal identifiers must not be displayed publicly.
 
 | Version | Date | Summary |
 | --- | --- | --- |
+| 1.9 | September 21, 2026 | Made seasonal membership mandatory for every angler, set the $40 new-member charge, opened all side pots to registered anglers, and clarified membership review handling. |
 | 1.8 | August 25, 2026 | Aligned registration availability with manual per-tournament lifecycle controls, clarified AITT/WeighFish tournament-morning ownership, and documented species length minimums. |
 | 1.7 | August 9, 2026 | Clarified that disqualified entries receive no AOY points, Championship appearance credit, or tournament payouts. |
 | 1.6 | August 5, 2026 | Added approved participant age, parental-consent, adult-supervision, and applicable-law requirements. |

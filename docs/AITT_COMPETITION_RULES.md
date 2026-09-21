@@ -75,8 +75,8 @@ event operations, safety, fishing conduct, penalties, and related procedures.
    Championship system.
 6. Current registration instructions state that a Solo registration applies
    only to that tournament and does not create a separate season-long division.
-7. The Official Tournament Rules state that a Solo member may receive
-   member-only benefits when all applicable requirements are satisfied.
+7. The Official Tournament Rules state that a Solo angler with current or newly
+   every registered angler may select any available side pot.
 8. A Solo registration creates or uses the angler's Solo Competitive Record.
 9. A Solo Competitive Record is completely independent of every Team
    Competitive Record.
@@ -99,10 +99,10 @@ event operations, safety, fishing conduct, penalties, and related procedures.
 4. AOY uses published Official Results as its source.
 5. Membership and AOY eligibility must never alter official finishing order,
    weights, Big Bass, payouts, or public Official Results.
-6. Only eligible Competitive Records may earn AOY points.
-7. Both anglers on a two-person Team must satisfy the applicable membership
-   requirements for the Team to be AOY eligible, including when one identified
-   partner is unable to fish.
+6. Current registrations require membership for every angler, so every current
+   Competitive Record is membership-qualified for AOY calculation.
+7. Both anglers on a two-person Team complete the membership requirement
+   independently, including when one identified partner is unable to fish.
 8. First Eligible Tournament is the business control for membership
    eligibility. Membership Effective Date is administrative only.
 9. After eligibility is determined:
@@ -111,18 +111,16 @@ event operations, safety, fishing conduct, penalties, and related procedures.
    3. Preserve Official Results unchanged.
    4. Rerank the eligible entries in their original relative finishing order.
    5. Award points from the reranked AOY position.
-10. Ineligible competitors include, but are not limited to:
-   - Non-members
-   - Competitors ineligible for AOY
-   - Competitors ineligible for Championship qualification
-   - Competitors ineligible for Bronze, Silver, Gold, Insurance, or other
-     member-only season awards
+10. Historical ineligible competitors may remain in Official Results and are
+    excluded from historical AOY projections only when the stored publication
+    snapshot requires it. This historical compatibility does not create a
+    current non-member registration path.
 11. The documented AOY schedule is:
    - 1st eligible AOY position: 200 points
    - 2nd eligible AOY position: 199 points
    - 3rd eligible AOY position: 198 points
    - Each following eligible position receives one fewer point.
-12. An eligible entry that participates and records zero tournament weight
+12. A current-policy entry that participates and records zero tournament weight
     receives 10 participation points.
 13. A no-show receives 0 AOY points.
 14. A disqualified entry receives 0 AOY points.
@@ -151,7 +149,10 @@ event operations, safety, fishing conduct, penalties, and related procedures.
     the tournament registration.
 26. AOY credit never transfers between Team and Solo Competitive Records.
 
-### AOY reranking example
+### AOY reranking example (historical compatibility)
+
+This example applies only to a legacy published result whose stored eligibility
+snapshot requires reranking. Current registrations have no non-member pathway.
 
 Official Finish:
 
@@ -184,9 +185,10 @@ changes the published Official Tournament Results.
 10. A disqualification does not count.
 11. An appearance using a different partner does not count for the original
    Team.
-12. An entry that fails the applicable eligibility requirements does not count.
-13. First Eligible Tournament controls membership eligibility; Membership
-    Effective Date is administrative only.
+12. Current registration requires membership; historical eligibility snapshots
+    remain authoritative for legacy Official Results.
+13. First Eligible Tournament controls historical membership eligibility;
+    Membership Effective Date is administrative only.
 14. A new Team inherits no Championship participation credit from either
     angler's other Team.
 15. Championship qualification is locked after the final qualifying

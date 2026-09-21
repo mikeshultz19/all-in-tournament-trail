@@ -45,11 +45,10 @@ export default function RegistrationConfirmation({ confirmation, recoveryMessage
     <section aria-label="Registration identifiers" className="mt-6 border-y border-[#4A3A12] py-5">
       <dl className="min-w-0">
         <div className="min-w-0 bg-[#111] px-4 py-3">
-          <dt className="text-xs font-black uppercase tracking-[0.12em] text-[#D4A017]">Registration / Boat Number</dt>
+          <dt className="text-xs font-black uppercase tracking-[0.12em] text-[#D4A017]">Registration Number</dt>
           <dd className="mt-1 break-words text-2xl font-black text-white">{confirmation.boatNumber ? `#${confirmation.boatNumber}` : "TBA"}</dd>
         </div>
       </dl>
-      {confirmation.boatNumber ? <p className="mt-3 text-sm leading-6 text-neutral-300">Your boat number is your launch-order number. If flights are used, this number will also determine which flight you are in.</p> : null}
     </section>
     <dl className="mt-6 grid gap-5 border-b border-[#4A3A12] pb-6 sm:grid-cols-2">
       <div><dt className="text-xs font-black uppercase text-[#D4A017]">Registered anglers</dt><dd className="mt-1 text-white">{confirmation.anglers.join(" / ")}</dd></div>

@@ -26,17 +26,20 @@ Only `official_result_entries` belonging to tournaments with:
 
 are inputs. Registration UUID, Competitive Record UUID, record type,
 participation state, placement, weight, penalty, and reviewed historical
-eligibility come directly from the Official Result snapshot.
+eligibility come directly from the Official Result snapshot. Current
+registrations already require membership, so current AOY calculations do not
+distinguish members from non-members; the historical field remains for legacy
+published results.
 
 Team and Solo records share one standings list but remain separate UUID-owned
 Competitive Records. Member names are display information only.
 
 ## Scoring and reranking
 
-Ineligible entries remain in Official Results but receive no AOY position or
-points. Eligible participating entries are kept in official relative order and
-reranked. AOY first receives 200, second 199, and each following position one
-less.
+Historical-ineligible entries remain in Official Results but receive no AOY
+position or points in the historical projection. Current-policy participating
+entries are kept in official relative order. AOY first receives 200, second
+199, and each following position one less.
 
 Eligible participating zero-weight and post-start withdrawal entries receive
 10 points. No-shows and disqualified entries receive zero. A positive-weight

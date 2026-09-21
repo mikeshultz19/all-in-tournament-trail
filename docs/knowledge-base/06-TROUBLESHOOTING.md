@@ -39,7 +39,7 @@ Official Results or creating duplicate people.
 
 ## Existing member is not recognized
 
-- **Symptom:** Registration treats a known member as new/non-member.
+- **Symptom:** Registration treats a known member as new/purchasing.
 - **Likely causes:** No current-season membership, inactive/cancelled status,
   spelling/contact mismatch, or unsupported automatic recognition.
 - **Checks:** Search Members by name, email, and phone; verify season and First
@@ -155,8 +155,9 @@ Official Results or creating duplicate people.
 
 ## AOY calculation looks wrong
 
-- **Likely causes:** Unresolved identity/membership eligibility, wrong Official
-  Results set, stale current projection, or incorrect expected worksheet.
+- **Likely causes:** Unresolved identity review, wrong Official Results set,
+  stale current projection, or incorrect expected worksheet. Current
+  registrations are membership-qualified; historical eligibility is separate.
 - **Checks:** Confirm eight Regular Season events, published inputs, stable
   Competitive Records, eligibility, each event score, and the five highest
   totals using the AOY Specification.
@@ -166,11 +167,11 @@ Official Results or creating duplicate people.
 
 ## Championship qualification looks wrong
 
-- **Likely causes:** Unresolved identity/membership eligibility, missing
-  Official Result participation, stale projection, or confusion with AOY rank.
-- **Checks:** List eligible member-team participations from the eight Regular
-  Season events; five are required. Exclude no-show, disqualification, and
-  ineligible appearances according to the Official Rules.
+- **Likely causes:** Unresolved identity review, missing Official Result
+  participation, stale projection, or confusion with AOY rank.
+- **Checks:** List physical Competitive Record participations from the eight
+  Regular Season events; five are required. Exclude no-show, disqualification,
+  and any legacy ineligible appearance according to the Official Rules.
 - **Safe corrective action:** Correct the authorized source issue, rebuild the
   separate qualification projection, and verify it again.
 - **Stop:** Never infer Championship eligibility from AOY points or rank.

@@ -212,7 +212,8 @@ Each required angler supplies:
 - City.
 - Two-letter state code.
 - ZIP Code or ZIP+4.
-- Membership classification: current, purchasing membership, or non-member.
+- Membership classification: current member or purchasing the required $40
+  seasonal membership.
 
 Addresses remain required under the approved tournament operations document
 for tax and payout records. They are private. Emergency-contact fields,
@@ -223,8 +224,9 @@ do not establish them as required registration data.
 Registration does not require an account. There is no current member login or
 profile service, so Phase 1 does not prefill personal information. A claimed
 current membership is a registration-time classification pending stable-ID
-verification or authorized administrative review. Name matching alone is
-never sufficient.
+verification or authorized administrative review; an unverified claim becomes
+Needs Review. Name matching alone is never sufficient. There is no active
+non-member registration path.
 
 ### Step 3: Options
 
@@ -234,17 +236,20 @@ The centralized configuration currently supplies:
 | --- | --- | --- |
 | Tournament Entry | Required | Per registration |
 | Big Bass | Optional | Per registration |
-| Insurance Pot | Optional; members only | Per registration |
-| Bronze Pot | Optional; members only; mutually exclusive | Per registration |
-| Silver Pot | Optional; members only; mutually exclusive | Per registration |
-| Gold Pot | Optional; members only; mutually exclusive | Per registration |
+| Insurance Pot | Optional; every registered angler | Per registration |
+| Bronze Pot | Optional; every registered angler; mutually exclusive | Per registration |
+| Silver Pot | Optional; every registered angler; mutually exclusive | Per registration |
+| Gold Pot | Optional; every registered angler; mutually exclusive | Per registration |
 | Annual Membership | Added for each angler purchasing membership | Per angler |
 
 Only configured option identifiers are accepted. Tournament Entry cannot be
 removed. Optional selections cannot be duplicated. Bronze, Silver, and Gold
-are mutually exclusive. Both team members must be current members or purchase
-membership for the team to receive member-only benefits under the currently
-approved rule.
+are mutually exclusive. Every angler must have a current membership or purchase
+the $40 seasonal membership during registration.
+
+Membership is paid once per person per season: current/current teams pay $0,
+current/new teams pay $40, new/new teams pay $80, and a new solo angler pays
+$40. No membership shortfall or hypothetical receivable is reported.
 
 ### Combined Acknowledgment
 
@@ -321,7 +326,7 @@ transaction not to pay again and to contact AITT for reconciliation.
 
 Current authoritative fee rule: the Square Service Fee is 3% of the
 chargeable subtotal, rounded to cents, plus a fixed $0.30 per card transaction.
-Customer-facing itemization is `SQUARE SERVICE FEE (3%)`; the fixed component
+Customer-facing itemization is `SQUARE SERVICE FEE`; the fixed component
 is internal and is not separately displayed. This supersedes any earlier
 Card Processing Fee-only examples elsewhere in this historical workflow note
 are superseded.
@@ -337,7 +342,7 @@ Total Charged = subtotal cents + Square Service Fee
 JavaScript `Math.round` is used on the non-negative integer-cent calculation,
 so a half-cent rounds upward, then adds 30 cents once per transaction. For
 example, a $60.00 subtotal produces a $2.10 Square Service Fee and a $62.10
-Total Charged. The customer-facing label is always **SQUARE SERVICE FEE (3%)**;
+Total Charged. The customer-facing label is always **SQUARE SERVICE FEE**;
 the fixed component is not separately shown.
 
 Immediately before Square payment creation, the server must revalidate:
@@ -559,7 +564,7 @@ mandatory.
 - Completed: server-side validation and authoritative quote endpoint.
 - Completed: centralized integer-cent pricing and Square Service Fee: 3% of
   the chargeable subtotal plus $0.30 per card transaction. Customer-facing
-  itemization is `SQUARE SERVICE FEE (3%)`; the fixed component is not shown.
+  itemization is `SQUARE SERVICE FEE`; the fixed component is not shown.
 - Completed: review summary and disabled payment boundary.
 - Completed: provider-neutral payment interface.
 - Completed: confirmation and interruption-recovery page structure.

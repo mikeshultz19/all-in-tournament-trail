@@ -21,11 +21,12 @@ duplicate standalone winner-detail row.
 
 ## AOY
 
-Only published Official Results feed AOY. Eligible results are reranked for AOY
-without changing Official Results: AOY first earns 200 points and each next
-eligible position decreases by one. Eligible participating zero-weight entries
-earn 10; ineligible, no-show, excluded, and disqualified entries earn 0 under
-the implemented rules. Historical tournament-time eligibility controls.
+Only published Official Results feed AOY. Current-policy results use official
+finishing position: first earns 200 points and each next position decreases by
+one. Participating zero-weight entries earn 10; no-show and disqualified
+entries earn 0 under the implemented rules. Current calculations do not
+distinguish members from non-members because membership is mandatory. Stored
+historical eligibility controls legacy records only.
 
 All performances remain stored; only the best five of eight count. Team and Solo
 Competitive Records remain separate, and recalculation is deterministic and
@@ -35,12 +36,13 @@ shows Tournament/Lake and Points only, marking scores outside the best five as
 
 ## Championship qualification
 
-Championship qualification is separate from AOY: it requires five eligible
-physical participations in the eight-event Regular Season. Qualification belongs
-to the exact Competitive Record. Solo and Team histories cannot be combined;
+Championship qualification is separate from AOY: it requires five physical
+participations in the eight-event Regular Season. Qualification belongs to the
+exact Competitive Record. Solo and Team histories cannot be combined;
 changing a partner creates a different Team record. Both partners do not need
 five independent personal appearances—the established Team record needs five
-eligible participations, with applicable historical membership requirements.
+participations. Historical eligibility snapshots remain available for legacy
+results.
 
 The implemented authority is `current_championship_qualifications`,
 `current_championship_participations`, and their supporting projection/RPC

@@ -41,15 +41,12 @@ export function validateRegistrationSelections(input: unknown): string[] {
   if (selections.registrationType !== "solo" && selections.registrationType !== "team") errors.push("Select a valid registration type.");
 
   const validPot = selections.memberPot === null || selections.memberPot === "bronze" || selections.memberPot === "silver" || selections.memberPot === "gold";
-  if (!validPot) errors.push("Choose only one member bonus pot: Bronze, Silver, or Gold.");
+  if (!validPot) errors.push("Choose only one payout pot: Bronze, Silver, or Gold.");
 
   const memberships = Array.isArray(selections.memberships) ? selections.memberships : [];
-  const eligibilityInput = {
-    registrationType: selections.registrationType === "team" ? "team" as const : "solo" as const,
-    memberships,
-  };
-  if ((selections.memberPot || selections.insurance) && !hasFullMembershipEligibility(eligibilityInput)) {
-    errors.push("Both anglers must be current members to enter Bronze, Silver, Gold, or the Insurance Pot.");
+  const requiredAnglers = selections.registrationType === "team" ? 2 : 1;
+  if (memberships.length !== requiredAnglers || memberships.some((membership) => membership !== "current" && membership !== "joining")) {
+    errors.push("Every angler must have an active seasonal membership or purchase the $40 seasonal membership.");
   }
 
   return errors;

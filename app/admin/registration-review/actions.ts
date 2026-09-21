@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 
-import { requireAdminUser } from "@/lib/admin-auth";
+import { getAdminDisplayName, requireAdminUser } from "@/lib/admin-auth";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { getAdminMemberById } from "@/lib/admin-members";
 import { getMembershipForAnglerAndSeason, listMembersForSeason } from "@/lib/memberships";
@@ -34,6 +34,18 @@ export interface RegistrationOperationsActionState {
 
 function text(formData: FormData, name: string) {
   return String(formData.get(name) ?? "").trim();
+}
+
+function purchasedMembershipIds(snapshot: unknown, priceSnapshot: unknown) {
+  const lineItems = Array.isArray((priceSnapshot as { lineItems?: unknown[] } | null)?.lineItems)
+    ? (priceSnapshot as { lineItems: Array<{ code?: string; name?: string }> }).lineItems
+    : [];
+  const purchasedCount = lineItems.filter((item) => item.code === "annual_membership" || item.name?.endsWith(" Membership")).length;
+  if (!purchasedCount || !Array.isArray(snapshot)) return [];
+  return snapshot
+    .slice(0, purchasedCount)
+    .map((item) => (item && typeof item === "object" ? (item as { membershipId?: unknown }).membershipId : null))
+    .filter((id): id is string => typeof id === "string" && id.length > 0);
 }
 
 function membership(value: string) {
@@ -318,14 +330,18 @@ export async function cancelRegistrationAction(
   void _previousState;
   const admin = await requireAdminUser();
   const note = text(formData, "cancellationNote");
+  const manualRefundStatus = text(formData, "manualRefundStatus");
   if (note.length < 3 || note.length > 500) {
     return { status: "error", message: "Enter a cancellation note between 3 and 500 characters." };
+  }
+  if (manualRefundStatus !== "pending" && manualRefundStatus !== "completed") {
+    return { status: "error", message: "Record whether the full manual refund is pending or completed." };
   }
 
   const supabase = createSupabaseServerClient();
   const current = await supabase
     .from("tournament_registrations")
-    .select("id,admin_notes,registration_status")
+    .select("id,registration_key,admin_notes,registration_status,payment_reference,price_snapshot,membership_snapshot,angler1_name,angler2_name")
     .eq("id", registrationId)
     .eq("tournament_id", tournamentId)
     .maybeSingle();
@@ -333,7 +349,56 @@ export async function cancelRegistrationAction(
     return { status: "error", message: "This registration is no longer active." };
   }
 
-  const adminNotes = [current.data.admin_notes, `Cancellation note: ${note}`].filter(Boolean).join("\n");
+  const registration = current.data as {
+    id: string;
+    registration_key: string;
+    admin_notes: string | null;
+    registration_status: string;
+    payment_reference: string | null;
+    price_snapshot: unknown;
+    membership_snapshot: unknown;
+    angler1_name: string;
+    angler2_name: string | null;
+  };
+  const membershipIds = purchasedMembershipIds(registration.membership_snapshot, registration.price_snapshot);
+  const membershipsToRevoke = membershipIds.length
+    ? await supabase
+      .from("memberships")
+      .select("id,status,payment_reference")
+      .in("id", membershipIds)
+      .eq("payment_reference", registration.payment_reference)
+    : { data: [], error: null };
+  if (membershipsToRevoke.error || (membershipsToRevoke.data ?? []).length !== membershipIds.length) {
+    return { status: "error", message: "Purchased memberships could not be verified. No cancellation was recorded." };
+  }
+  if ((membershipsToRevoke.data ?? []).some((membershipRecord) => membershipRecord.status !== "active")) {
+    return { status: "error", message: "A purchased membership is no longer active. Review the registration before cancelling." };
+  }
+
+  const revokedLabels = membershipIds.map((id, index) => `${index === 0 ? registration.angler1_name : registration.angler2_name ?? `Angler ${index + 1}`} (${id})`);
+  if (membershipIds.length) {
+    const membershipUpdate = await supabase
+      .from("memberships")
+      .update({
+        status: "cancelled",
+        admin_notes: `Membership revoked with cancelled registration ${registration.registration_key} by ${getAdminDisplayName(admin)} (${admin.id}).`,
+        updated_at: new Date().toISOString(),
+      })
+      .in("id", membershipIds)
+      .eq("status", "active")
+      .eq("payment_reference", registration.payment_reference);
+    if (membershipUpdate.error) {
+      return { status: "error", message: "Purchased memberships could not be revoked. No cancellation was recorded." };
+    }
+  }
+
+  const adminNotes = [
+    registration.admin_notes,
+    `Cancellation reason: ${note}`,
+    `Manual refund status: ${manualRefundStatus}`,
+    `Cancellation admin: ${getAdminDisplayName(admin)} (${admin.id})`,
+    `Memberships revoked through cancellation: ${revokedLabels.length ? revokedLabels.join(", ") : "None"}`,
+  ].filter(Boolean).join("\n");
   const result = await supabase
     .from("tournament_registrations")
     .update({
@@ -348,6 +413,13 @@ export async function cancelRegistrationAction(
     .select("id")
     .maybeSingle();
   if (result.error || !result.data) {
+    if (membershipIds.length) {
+      await supabase
+        .from("memberships")
+        .update({ status: "active", updated_at: new Date().toISOString() })
+        .in("id", membershipIds)
+        .eq("payment_reference", registration.payment_reference);
+    }
     return { status: "error", message: "This registration could not be cancelled. Refresh and try again." };
   }
 

@@ -114,7 +114,7 @@ Tournament Archived
 
 ## 5. Payment Provider Strategy
 
-Version 1 uses **Square** for credit-card, debit-card, and supported digital-wallet payments. Apple Pay is supported through Square on compatible devices and browsers. The **Square Service Fee** is 3% of the applicable card or digital-wallet subtotal, rounded to cents, plus $0.30 per transaction for Early Online Registration and tournament-morning Square-reader payments. Customer-facing itemization is `SQUARE SERVICE FEE (3%)`; the fixed component is not separately displayed. Cash is accepted only during Tournament-Morning Registration and has no Square Service Fee.
+Version 1 uses **Square** for credit-card, debit-card, and supported digital-wallet payments. Apple Pay is supported through Square on compatible devices and browsers. The **Square Service Fee** is 3% of the applicable card or digital-wallet subtotal, rounded to cents, plus $0.30 per transaction for Early Online Registration and tournament-morning Square-reader payments. Customer-facing itemization is `SQUARE SERVICE FEE`; the fixed component is not separately displayed. Cash is accepted only during Tournament-Morning Registration and has no Square Service Fee.
 
 Square is authoritative for card transactions, receipts, transaction history, processing reports, deposits, and supported refunds. The AITT website must remain provider neutral at its business-policy boundary so a future provider could be introduced without changing registration rules.
 
@@ -140,7 +140,7 @@ cardProcessingFee = roundCurrency(cardSubtotal × 0.03)
 totalCharged = cardSubtotal + cardProcessingFee
 ```
 
-Application calculations use integer cents, round the 3% component to the nearest cent with half-cent results rounded upward, then add 30 cents once. The fee must be displayed before payment submission as `SQUARE SERVICE FEE (3%)`; do not expose the fixed-component formula.
+Application calculations use integer cents, round the 3% component to the nearest cent with half-cent results rounded upward, then add 30 cents once. The fee must be displayed before payment submission as `SQUARE SERVICE FEE`; do not expose the fixed-component formula.
 
 ## Tournament Funds Summary (staging)
 
@@ -186,15 +186,15 @@ service fee. Itemized membership charges remain per individual participant.
 
 Walk-up queue insertion occurs in the successful registration transaction.
 Blank recipients queue nothing and do not invalidate an otherwise valid
-non-member walk-up. Delivery failure does not reverse registration and remains
+walk-up registration. Delivery failure does not reverse registration and remains
 available through the existing retry state. The No Show cleanup migration is
 applied to staging; an authenticated allowlisted staging delivery rehearsal
 remains outstanding.
 
-1. **Registration begins.** The angler selects the tournament, solo or team registration, membership choices, and eligible entry options. Tournament Entry is required. Big Bass is optional; Bronze, Silver, Gold, and Insurance Pot follow the eligibility rules in [Tournament Operations](TOURNAMENT_OPERATIONS_AND_REGISTRATION_PROCESS.md).
+1. **Registration begins.** The angler selects the tournament, solo or team registration, Current Member or Purchase Membership for each angler, and entry options. Tournament Entry is required. Big Bass and Insurance are optional; Bronze, Silver, and Gold are optional and mutually exclusive. Current registration requires membership for every angler; historical non-member rows remain readable.
 2. **Charges are established.** The registration shows itemized charges and an expected total. Prices and eligibility come from approved business rules.
 3. **Registration is created.** The record retains the tournament, registration period, trusted submission time, participants, selections, expected total, and a Pending payment state.
-4. **Amounts are disclosed.** The website shows Registration Subtotal, Square Service Fee (3%), and Total Charged before payment.
+4. **Amounts are disclosed.** The website shows Registration Subtotal, Square Service Fee, and Total Charged before payment.
 5. **Payment is submitted.** The angler enters card details only through Square's approved browser controls. AITT never collects raw card data.
 6. **The server validates payment.** AITT recalculates the amount in integer cents and creates the Square payment with an idempotency key. Browser-supplied totals are not trusted.
 7. **Square reports the result.** Declined, cancelled, interrupted, duplicate, and malformed submissions remain unconfirmed.
@@ -236,6 +236,17 @@ The AITT website does not run the live morning registration table, duplicate cas
 
 > **Status discipline:** Registration status and payment status are related but distinct. “Cancelled” does not prove a refund, and “Verified” does not override other eligibility requirements.
 
+Admin registration cancellation is one roster-level action for the entire team
+or solo entry. The dialog records the full original amount paid (entry, side
+pots, membership purchases, and Square service fee), requires a reason and
+manual-refund status, and never initiates a Square refund. Any approved full
+refund is handled manually through Chase. Memberships are revoked only from
+the actual membership purchase lines attached to that registration; memberships
+that predated it are preserved. The cancellation, original payment evidence,
+revoked memberships, admin, date, and note remain available in the Canceled
+view and All Registrations. Canceled entries are excluded from active roster,
+financial, payout, export, results, AOY, and Championship workflows.
+
 If partial payments or partial refunds are later approved, they require explicit states and amount tracking. They must not be represented as fully Verified or fully Refunded.
 
 ## 9. Payment Verification
@@ -261,7 +272,7 @@ Tournament-morning card verification and cash-versus-card tracking remain in the
 
 ## 11. Refunds
 
-> **Open Business Decision:** AITT's refund-versus-credit policy is not finalized. The policy for cancellations, postponements, withdrawals, duplicate payments, incorrect amounts, processing costs, deadlines, approval authority, and partial refunds requires Product Owner approval.
+> **Open Business Decision:** AITT's general refund-versus-credit policy remains pending Product Owner approval for postponements, withdrawals, duplicate payments, incorrect amounts, processing costs, deadlines, approval authority, and partial refunds. For an approved registration cancellation, any refund is handled manually through Chase outside AITT; AITT never initiates a Square refund.
 
 Until approved, administrators must not infer a general refund entitlement. Each request remains in Manual Review, retains its evidence and decision history, and follows a documented Product Owner decision. A refund record must identify the original payment, amount returned, reason, approval, method, provider reference when applicable, and completion date.
 
@@ -323,7 +334,7 @@ After archival, changes require an authorized correction entry. Reopening must p
 
 ## 15. Payout Process
 
-1. **Verify results.** Use the official tournament record and confirm winner identity, placement, Big Bass results, pot participation, membership eligibility, and any Insurance Pot entitlement.
+1. **Verify results.** Use the official tournament record and confirm winner identity, placement, Big Bass results, selected pot participation, and any Insurance Pot entitlement. Current registration already requires membership; historical eligibility snapshots remain available for legacy rows.
 2. **Calculate obligations.** Prepare the Main, Bronze, Silver, Gold, and two Big Bass payouts required by current tournament operations. Document any supported Insurance Pot payout. Do not infer an amount or rule absent from approved documentation.
 3. **Review recipients.** Match each proposed recipient to the official results and registration record, including required payout and tax information.
 4. **Approve payouts.** An authorized approver reviews recipients, calculations, exceptions, and the total payout before funds are distributed.
@@ -458,5 +469,6 @@ The Financial Summary reports recorded registration funds only. An unverified
 Current Member claim remains in Needs Review but creates no hypothetical
 receivable. Staff verifies status and collects the membership payment before
 selecting Confirm Membership Purchase; only that confirmed $40 collection is
-then included. Confirm Existing Member and Confirm Not Member add no membership
-revenue. Processor and bank reconciliation remain separate operational checks.
+then included. Confirm Existing Member adds no membership revenue. Historical
+non-member records remain available for recordkeeping. Processor and bank
+reconciliation remain separate operational checks.

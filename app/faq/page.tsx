@@ -42,35 +42,15 @@ type FaqSection = {
 
 const faqSections: FaqSection[] = [
   {
-    title: "Tournament Entry & Membership",
+    title: "Tournament Entry",
     description:
-      "Basic information about entering an AITT tournament, membership, and member-only benefits.",
+      "Basic information about entering an AITT tournament.",
     icon: Users,
     items: [
-      {
-        question: "Do I have to be an AITT member to fish a tournament?",
-        answer:
-          "No. AITT regular-season tournaments are open to eligible members and non-members. Membership is not required to purchase the required Tournament Entry. Member-only benefits and competitions remain restricted to eligible members.",
-      },
       {
         question: "Is Tournament Entry required?",
         answer:
           "Yes. Tournament Entry is required for every solo or team registration. Optional add-ons cannot be entered without Tournament Entry.",
-      },
-      {
-        question: "How much is an annual AITT membership?",
-        answer:
-          "Annual AITT membership is $40 per angler. Membership status is determined separately for each angler.",
-      },
-      {
-        question: "What benefits are available to eligible members?",
-        answer:
-          "Eligible members may receive access to AOY points, Championship qualification, the Bronze, Silver, or Gold member bonus pots, the Insurance Pot, one official practice day immediately before an event, and other opportunities published by AITT.",
-      },
-      {
-        question: "Do both anglers on a team have to be members?",
-        answer:
-          "Yes. Both registered anglers must be current members, or purchase membership during registration, for the team to receive member-only benefits.",
       },
       {
         question: "Can I register as a solo angler?",
@@ -98,7 +78,12 @@ const faqSections: FaqSection[] = [
       {
         question: "Can I change my Bronze, Silver, or Gold Pot after registration?",
         answer:
-          "No. Once your tournament registration is completed, your Bronze, Silver, or Gold Pot selection is final for that tournament. You cannot upgrade, downgrade, or switch to another member pot after registration.",
+          "No. Once your tournament registration is completed, your Bronze, Silver, or Gold Pot selection is final for that tournament. You cannot upgrade, downgrade, or switch to another payout pot after registration.",
+      },
+      {
+        question: "Can I cancel my registration or receive a refund?",
+        answer:
+          "No. Tournament registrations are final, and no cancellations or refunds will be issued. If you have questions, contact the Tournament Director before the tournament date.",
       },
       {
         question: "Can I register on tournament morning?",
@@ -108,7 +93,7 @@ const faqSections: FaqSection[] = [
       {
         question: "What payment methods are accepted?",
         answer:
-          "Online card and supported digital-wallet payments are processed through Square. Tournament-morning payments may be made by cash or through the Square reader. A SQUARE SERVICE FEE (3%) applies to payments processed through Square; cash payments have no service fee.",
+          "Online card and supported digital-wallet payments are processed through Square. Tournament-morning payments may be made by cash or through the Square reader. A SQUARE SERVICE FEE applies to payments processed through Square; cash payments have no service fee.",
       },
       {
         question: "Does paying an entry fee count as participating?",
@@ -154,7 +139,7 @@ const faqSections: FaqSection[] = [
       {
         question: "How does the Insurance Pot work?",
         answer:
-          "The Insurance Pot is optional and members-only. The Insurance Pot uses a true 1-in-5 payout, with a minimum of one paid place whenever there are Insurance Pot entries. Payouts begin with the first eligible team outside the Tournament Entry payout. Entries that did not join the Insurance Pot are skipped.",
+          "The Insurance Pot is optional and available to every registered angler. It uses a true 1-in-5 payout, with a minimum of one paid place whenever there are Insurance Pot entries. Payouts begin with the first participating entry outside Tournament Entry payout positions. Entries that did not join the Insurance Pot are skipped.",
         link: {
           label: "Learn About the Insurance Pot",
           href: "/insurance-pot",
@@ -168,7 +153,7 @@ const faqSections: FaqSection[] = [
       {
         question: "How many places does the Insurance Pot pay?",
         answer:
-          "The Insurance Pot uses a true 1-in-5 payout. Payouts begin with the first eligible team outside the Tournament Entry payout.",
+          "The Insurance Pot uses a true 1-in-5 payout. Payouts begin with the first participating entry outside Tournament Entry payout positions.",
       },
       {
         question: "How many places does the Big Bass side pot pay?",
@@ -255,19 +240,9 @@ const faqSections: FaqSection[] = [
     icon: Shield,
     items: [
       {
-        question: "When does the off-limits period begin for non-members?",
+        question: "Off-Limits Period and Registered-Angler Practice",
         answer:
-          "Beginning at 12:00 AM midnight on Monday of tournament week, tournament waters are off-limits to non-member anglers registered to compete in that tournament.",
-      },
-      {
-        question: "When may a registered member practice?",
-        answer:
-          "A current AITT member registered for that specific tournament may choose one official practice day immediately before the tournament. The member may practice either Friday or Saturday, but may not practice on both days.",
-      },
-      {
-        question: "Does membership alone provide the practice privilege?",
-        answer:
-          "No. The angler must be both a current member and registered for the applicable tournament.",
+          "Tournament waters are off-limits beginning at 12:00 a.m. Monday immediately before each tournament. Each registered tournament entry—team or solo—is allowed one official practice day: either Friday or Saturday immediately before the tournament, but not both. For a team entry, both anglers share the same single practice-day allowance. Practice by either team member, whether alone or together, counts as the team's official practice day. Team members may not divide the allowance by practicing on different days. Registration must be completed before the entry begins practice. Changing boats, anglers, partners, or passengers does not create an additional practice day. A team or solo entry that practices on Friday may not return to practice on Saturday in another boat or with a different combination of anglers.",
       },
       {
         question: "Can someone scout tournament water for me?",
@@ -345,7 +320,7 @@ const faqSections: FaqSection[] = [
       {
         question: "Who is eligible to earn AOY points?",
         answer:
-          "AOY points are available only to eligible member entries. Both anglers on a team must be members for the team to earn AOY points.",
+          "Every angler who competes in an AITT regular-season tournament earns AOY points based on the official finishing position.",
         link: {
           label: "View AOY Information",
           href: "/aoy-points",
@@ -357,24 +332,19 @@ const faqSections: FaqSection[] = [
           "The regular season contains eight scheduled tournaments. Each Competitive Record's five highest point totals determine its final AOY score. The three lowest totals, including tournaments not fished, are dropped.",
       },
       {
-        question: "How are eligible entries ranked for AOY points?",
+        question: "How are AOY points ranked?",
         answer:
-          "Official tournament results remain unchanged. Ineligible competitors are removed only from the AOY calculation, and eligible Competitive Records are reranked in their original relative finishing order.",
+          "Official tournament results remain unchanged, and AOY points follow each angler's official finishing position.",
       },
       {
         question: "How many tournaments are required for Championship qualification?",
         answer:
-          "An eligible Competitive Record must physically compete in at least five of the eight regular-season tournaments.",
+          "Competing in at least five of the eight regular-season tournaments qualifies an angler for the Championship.",
       },
       {
         question: "Does a paid no-show count toward Championship qualification?",
         answer:
           "No. Payment without physically launching and competing does not count as participation.",
-      },
-      {
-        question: "What membership rules apply to Championship qualification?",
-        answer:
-          "A Solo Competitive Record must satisfy the applicable membership and participation requirements. Both anglers on a Team Competitive Record must satisfy the membership requirements for the Team to receive Championship eligibility.",
       },
       {
         question: "Where can I see published AOY standings?",

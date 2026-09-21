@@ -49,9 +49,11 @@ describe("published Insurance Pot results", () => {
     expect(html).toContain("The AITT Insurance Pot");
     expect(html).not.toContain("Why We Created the Insurance Pot");
     expect(html.indexOf("How It Works")).toBeGreaterThan(html.indexOf("More Teams Get Paid."));
-    expect(html).toContain("Insurance Pot Examples");
-    expect(html).toContain("4 Insurance Pot Entries");
-    expect(html).toContain("20 Insurance Pot Entries");
+    expect(html).toContain("Payout Structure");
+    expect(html).toContain("Insurance Pot Entries");
+    expect(html).not.toContain("Insurance Pot Examples");
+    expect(html).not.toContain("4 Insurance Pot Entries");
+    expect(html).not.toContain("20 Insurance Pot Entries");
     expect(html).toContain('href="/rules#insurance-pot"');
     expect(html).toContain('href="/how-it-works"');
     expect(html).toContain('href="/schedule"');

@@ -108,10 +108,13 @@ case prevents launch.
 - **Test data:** Effective Date before Tournament One; First Eligible =
   Tournament Two.
 - **Steps:** Create member; evaluate Tournament One and Tournament Two
-  registration/member benefits/AOY qualification.
+  registration and preserve the First Eligible Tournament field for historical
+  review. Current AOY and Championship calculations do not add a separate
+  member/non-member filter.
 - **Expected Admin result:** Both dates display accurately.
-- **Expected public result:** No eligibility for Tournament One; eligibility
-  begins Tournament Two.
+- **Expected public result:** The current membership requirement is represented
+  consistently; the stored First Eligible Tournament remains available for
+  historical calculations.
 - **Database or record verification:** Helper decision follows first eligible
   tournament date, not Effective Date.
 - **Pass/Fail:** ___ **Notes:** ___ **Defect ID:** ___
@@ -122,7 +125,7 @@ case prevents launch.
 
 - **Purpose:** Prove confirmed registration persistence and public Entries.
 - **Preconditions:** Tournament One registration open.
-- **Test data:** Team Alpha, solo Beta, member/non-member options.
+- **Test data:** Team Alpha, solo Beta, current/new membership options.
 - **Steps:** Complete each public flow; retry one confirmation URL; refresh
   Entries/Admin.
 - **Expected Admin result:** One durable row per successful payment.
@@ -193,7 +196,7 @@ case prevents launch.
 
 - **Purpose:** Prove complete official field import.
 - **Preconditions:** Registration closed; final WeighFish event complete.
-- **Test data:** Five teams including a walk-in, non-member winner, eligible
+- **Test data:** Five teams including a walk-in, historical membership winner, eligible
   zero-weight team, and Big Bass.
 - **Steps:** Compare early entries to WeighFish; export/import CSV; review rows.
 - **Expected Admin result:** Row count/order/weights/payout categories match.

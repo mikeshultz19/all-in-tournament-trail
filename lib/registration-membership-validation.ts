@@ -109,7 +109,6 @@ export async function validateRegistrationMembershipClaims(
 export async function getRegistrationMembershipReviewIssues(
   anglers: readonly OnlineRegistrationAngler[],
   tournament: Tournament,
-  hasMemberOnlySelection = false,
   unresolvedIdentityPositions: ReadonlySet<number> = new Set(),
 ): Promise<RegistrationMembershipReviewIssue[]> {
   const blockingMessages = await validateRegistrationMembershipClaims(
@@ -122,13 +121,12 @@ export async function getRegistrationMembershipReviewIssues(
     const duplicate = reason.includes("already has a membership");
     return {
       participantPosition,
-      reason: `${duplicate ? "Possible Duplicate Membership Purchase" : "Membership Needs Review"}: ${reason}${hasMemberOnlySelection ? " Member-only selection requires eligibility review." : ""}`,
+      reason: `${duplicate ? "Possible Duplicate Membership Purchase" : "Membership Needs Review"}: ${reason}`,
     };
   });
   return preserveUnresolvedMembershipReviews(
     anglers,
     issues,
     unresolvedIdentityPositions,
-    hasMemberOnlySelection,
   );
 }

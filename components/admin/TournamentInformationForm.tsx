@@ -135,7 +135,7 @@ export default function TournamentInformationForm({
         </legend>
         <p className="mb-5 text-sm leading-6 text-neutral-400">
           Explain all practice and off-limits rules, including any differences
-          between members and non-members.
+            between current members and anglers purchasing the seasonal membership.
         </p>
         <label className={labelClassName}>
           Practice Information

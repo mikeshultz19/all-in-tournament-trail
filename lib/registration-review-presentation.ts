@@ -15,21 +15,18 @@ export function getRegistrationReviewPresentation(
   review: ReviewPresentationInput,
 ): ReviewPresentation {
   const membershipReview = review.reviewKind === "membership"
-    || /Membership Needs Review:|Possible Duplicate Membership Purchase:|Member-only selection requires eligibility review\./i.test(review.reason);
+    || /Membership Needs Review:|Possible Duplicate Membership Purchase:/i.test(review.reason);
   const identityUnresolved = review.reviewKind === "identity" && !review.canonicalAnglerId;
 
   if (membershipReview) {
     const duplicatePurchase = /Possible Duplicate Membership Purchase:/i.test(review.reason);
-    const memberOnlySelection = /Member-only selection requires eligibility review\./i.test(review.reason);
     return {
       heading: duplicatePurchase ? "Possible duplicate membership purchase" : "Membership needs review",
       issue: duplicatePurchase
         ? "This angler selected a new membership, but an existing membership may already be active."
         : review.submittedMembership === "current"
           ? "Angler selected “Current Member,” but we could not verify their membership."
-          : memberOnlySelection
-            ? "Membership must be confirmed before the selected member-only option is eligible."
-            : "Membership status could not be verified.",
+          : "Membership status could not be verified.",
       identityFollowUp: identityUnresolved
         ? "We also need to confirm whether this is an existing angler or a new angler."
         : null,

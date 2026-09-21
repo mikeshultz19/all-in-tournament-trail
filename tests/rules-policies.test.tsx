@@ -70,6 +70,16 @@ describe("approved weigh-in and late check-in policies", () => {
     expect(html).not.toMatch(/weather decisions[^]*Open-Meteo/i);
     expect(html).not.toContain("Major League Fishing logo");
     expect(html).not.toContain("official association");
+    expect(html).toContain("Can I cancel my registration or receive a refund?");
+    expect(html).toContain("No. Tournament registrations are final, and no cancellations or refunds will be issued. If you have questions, contact the Tournament Director before the tournament date.");
+    expect(html).not.toMatch(/\bChase\b|Square refund|automatic refund|discretionary cancellation/i);
+  });
+
+  it("publishes final registration language on the public Rules page", async () => {
+    const html = renderToStaticMarkup(await RulesPage());
+    expect(html).toContain("Tournament registrations are final. No cancellations or refunds will be issued. If you have questions, contact the Tournament Director before the tournament date.");
+    const source = readFileSync(path.join(process.cwd(), "docs", "TOURNAMENT_RULES.md"), "utf8");
+    expect(source).not.toMatch(/Square remains the system responsible|\bChase\b|automatic refund|discretionary cancellation/i);
   });
 
   it("does not retain superseded pending-policy language in active public content", async () => {

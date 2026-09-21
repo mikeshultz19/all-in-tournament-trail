@@ -36,6 +36,14 @@ payout closeout, and AOY and Championship processing. Square registration,
 payment verification/recovery, and durable completion are implemented, but
 production enablement must not be inferred from implementation alone.
 
+Current registration policy requires every angler to have a current $40 AITT
+seasonal membership or purchase it during registration. Membership is paid once
+per person per season; current/current teams pay $0, current/new teams $40,
+new/new teams $80, and a new solo angler $40. Historical non-member records
+remain readable but are not a current registration path. Tournament Entry is
+$60; Bronze/Silver/Gold are optional mutually exclusive pots, and Big Bass and
+Insurance are additional optional selections.
+
 ## Local setup
 
 1. Run `npm install`.

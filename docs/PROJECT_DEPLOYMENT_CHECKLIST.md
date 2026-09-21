@@ -281,7 +281,7 @@ server-side contact submission endpoint.
 - [ ] Verify public rules, fees, payment options, privacy information, and tournament-morning instructions are current.
 - [ ] Confirm online registration remains disabled until persistence and secure Square payment confirmation are production-ready.
 - [ ] Complete a production-like online registration using approved test procedures.
-- [ ] Verify Square checkout displays the correct itemized subtotal, `SQUARE SERVICE FEE (3%)`, and total; the internal $0.30 component is not separately shown.
+- [ ] Verify Square checkout displays the correct itemized subtotal, `SQUARE SERVICE FEE`, and total; the internal $0.30 component is not separately shown.
 - [ ] Test successful, declined, cancelled, duplicate, and interrupted checkout outcomes.
 - [ ] Test Apple Pay on a supported device and browser without implying universal availability.
 - [ ] Verify card and Apple Pay branding uses only approved official assets or approved text fallbacks.
@@ -350,10 +350,10 @@ server-side contact submission endpoint.
 
 - [ ] Train staff on the division of responsibilities among AITT, Square, and WeighFish.
 - [ ] Train staff to register solo anglers and teams in WeighFish.
-- [ ] Train staff to verify membership selections and member-only eligibility without making unsupported exceptions.
+- [ ] Train staff to verify current or newly purchased seasonal membership for every angler.
 - [ ] Train staff to explain required Tournament Entry and optional pot selections.
 - [ ] Train staff to process card and supported contactless-wallet payments through the Square reader.
-- [ ] Train staff to explain the Square Service Fee (3% label; internal $0.30 not itemized) and fee-free morning cash option.
+- [ ] Train staff to explain the Square Service Fee calculation (3% plus internal $0.30; customer-facing label remains `SQUARE SERVICE FEE`) and fee-free morning cash option.
 - [ ] Train staff on cash acceptance, change, custody, counting, transfer, and discrepancy reporting.
 - [ ] Train authorized staff on the approved refund, credit, transfer, and cancellation procedure.
 - [ ] Train staff to identify and escalate duplicate, failed, disputed, partial, or uncertain payments.
@@ -399,7 +399,7 @@ server-side contact submission endpoint.
 - [ ] Explain that online registration is confirmed only after successful Square payment.
 - [ ] Explain Tournament-Morning Registration as a normal in-person option, not late registration.
 - [ ] Explain that morning registration is completed with the Tournament Director in WeighFish.
-- [ ] Explain the `SQUARE SERVICE FEE (3%)` clearly before anglers choose a payment method; do not itemize the internal $0.30 component.
+- [ ] Explain the `SQUARE SERVICE FEE` clearly before anglers choose a payment method; do not itemize the internal $0.30 component.
 - [ ] Explain that tournament-morning cash has no Square Service Fee.
 - [ ] Explain that Apple Pay availability depends on a supported device and browser.
 - [ ] Explain supported contactless-wallet payments at the Square reader without promising unsupported methods.
@@ -484,6 +484,7 @@ server-side contact submission endpoint.
 - [ ] Inspect, update, charge, and test hardware before every tournament.
 - [ ] Restock and inspect the registration kit before every tournament.
 - [ ] Verify tournament data, public information, communication templates, and staff contacts before every event.
+- [ ] Compare every staging lake's stored tournament-information practice text with the approved entry-based rule and mirror Mike's manual production Admin content update before rehearsal.
 - [ ] Back up and securely retain official exports, financial evidence, and operational records.
 - [ ] Review Square deposits, disputes, and account notices on the approved schedule.
 - [ ] Review WeighFish and Square product or policy changes that could affect operations.

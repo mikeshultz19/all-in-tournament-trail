@@ -22,7 +22,7 @@ Anglers. Browser-submitted identity classifications are not trusted.
 A normalized email and phone match to the same canonical Angler is a
 high-confidence automatic match. A single email-only or phone-only match is
 reviewed when the other strong identifier materially conflicts. A completely
-new non-member or joining member with no plausible canonical match also
+new joining member with no plausible canonical match also
 continues through the existing transaction.
 
 Review is required when the server finds:

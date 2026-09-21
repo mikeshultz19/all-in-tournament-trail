@@ -86,7 +86,6 @@ export async function completeDurableRegistration(
   const membershipIssues = await getRegistrationMembershipReviewIssues(
     input.anglers,
     tournament,
-    Boolean(input.options.memberPot || input.options.insurance),
     new Set(
       identityClassification.participants
         .filter((participant) => participant.status === "review_required")

@@ -69,7 +69,7 @@ const request: OnlineRegistrationRequest = {
       city: "Azle",
       state: "TX",
       zipCode: "76020",
-      membership: "non-member",
+      membership: "joining",
     },
   ],
   options: {
@@ -114,7 +114,7 @@ describe("completeDurableRegistration", () => {
     const registration = await completeDurableRegistration(request, {
       status: "authorized",
       paymentReference: "square-payment-1",
-      amountCents: 6210,
+      amountCents: 10330,
     });
 
     expect(registration.id).toBe(
@@ -124,7 +124,6 @@ describe("completeDurableRegistration", () => {
     expect(membershipReviewIssues).toHaveBeenCalledWith(
       request.anglers,
       expect.any(Object),
-      false,
       new Set(),
     );
     expect(rpc).toHaveBeenCalledOnce();
@@ -159,7 +158,7 @@ describe("completeDurableRegistration", () => {
     await completeDurableRegistration(teamRequest, {
       status: "authorized",
       paymentReference: "square-team-payment-1",
-      amountCents: 6210,
+      amountCents: 14450,
     });
 
     expect(rpc).toHaveBeenCalledWith(
@@ -181,7 +180,7 @@ describe("completeDurableRegistration", () => {
       completeDurableRegistration(request, {
         status: "authorized",
         paymentReference: "square-payment-2",
-        amountCents: 6210,
+        amountCents: 10330,
       }),
     ).rejects.toBeInstanceOf(DurableRegistrationError);
   });
@@ -199,6 +198,6 @@ describe("completeDurableRegistration", () => {
       { verifiedPaymentCompletion: true },
     );
 
-    expect(quote.totalCents).toBe(6210);
+    expect(quote.totalCents).toBe(10330);
   });
 });

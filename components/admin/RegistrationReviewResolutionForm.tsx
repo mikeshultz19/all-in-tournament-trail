@@ -121,6 +121,6 @@ export function describeReviewCandidateMatch(submission: { email: string | null;
   if (phone) return "Matched by: Phone";
   return candidateCount > 1 ? "Possible matches were found using different contact fields." : "Suggested from the submitted identity details.";
 }
-function membershipSelection(value: "current" | "joining" | "non-member" | null) { return value === "joining" ? "Purchased / New Membership" : value === "current" ? "Current Member" : value === "non-member" ? "Non-Member" : "Not available"; }
+function membershipSelection(value: "current" | "joining" | "non-member" | null) { return value === "joining" ? "Membership Purchase" : value === "current" ? "Current Member" : value === "non-member" ? "Historical selection: Non-Member" : "Not available"; }
 function membershipStatus(value: "active" | "inactive" | null) { return value === "active" ? "Active Member" : value === "inactive" ? "Inactive Membership" : "No membership found"; }
 function formatDate(value: string) { return new Intl.DateTimeFormat("en-US", { timeZone: "America/Chicago", year: "numeric", month: "short", day: "numeric" }).format(new Date(`${value.slice(0, 10)}T12:00:00-05:00`)); }

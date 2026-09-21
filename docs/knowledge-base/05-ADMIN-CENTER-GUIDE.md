@@ -18,7 +18,7 @@ untrusted device. Server actions recheck Admin status.
 | `/admin/tournament` | Select and edit an active-season tournament or access its Danger Zone. | Chronological selector; name, presenter, lake, date, ramp, hours, stop fishing, launch type, canonical `HH:mm` morning registration, registration/practice text, visibility/status; reset preview/dialog. | Saves are UUID-scoped and return to the selected event. These fields feed Featured Tournament and Schedule. Reset removes selected event activity but preserves configuration/members/seasons. |
 | `/admin/tournament-manager` | Tournament lifecycle workspace. | Prepare, Import/Verify, combined Payout/Closeout (including Insurance), Publish, and AOY. | Primary event workflow. Always verify the selected tournament and complete stages in order. |
 | `/admin/tournament-manager/prepare` | Review the pre-event roster and check-in materials. | Registration roster, payment/review counts, WeighFish export, printed check-in list, membership confirmations. | Blocks import readiness when required registration or membership review remains unresolved. |
-| `/admin/registration-review` | Resolve registrations needing staff review. | Tournament-scoped registrations, identity/payment context, resolution and notes. | Determines which records can be trusted for preparation; never mark an unverified payment as paid. |
+| `/admin/registration-review` | Resolve registrations needing staff review and manage the active roster. | Tournament-scoped registrations, identity/payment context, resolution and notes; the roster-level Cancel Registration control selects an active boat/registration and requires a cancellation note. | Cancellation removes the entire entry from active operations but preserves payment history and memberships. AITT does not issue Square refunds; approved refunds are handled manually through Chase. Cancelled entries remain in All Registrations. |
 | `/admin/announcements` | List/delete homepage announcements. | Existing global announcements. | Homepage news changes after revalidation. Delete is irreversible. |
 | `/admin/announcements/new` | Publish a global announcement. | Title, message, pinned flag. | Adds homepage content. Validate wording before publishing. |
 | `/admin/announcements/[id]/edit` | Correct/delete one announcement. | Existing announcement fields. | Updates/removes homepage content. |
@@ -35,7 +35,7 @@ untrusted device. Server actions recheck Admin status.
 | `/admin/tournament-manager/publish` | Preview and publish verified Official Results. | Results, completed payouts, Insurance Pot, photos, public preview, confirmation. | Publishes website results only after closeout readiness is complete. |
 | `/admin/tournament-manager/publish/success` | Publication confirmation/navigation. | Published tournament context. | Links to public Results and operations. |
 | `/admin/results` | Tournament Results review and approved result-management area. | Result entries, payout fields, Big Bass, and tournament-derived processing. | Use from Tournament Manager's Publish Results stage; do not bypass import verification or closeout. |
-| AOY/Championship processing | Rebuild season projections after Official Results or an authorized correction. | Published Official Results, stable Competitive Records, membership eligibility, AOY points, and qualification participation. | AOY and Championship are separate. Verify best-five AOY and five-of-eight qualification independently. |
+| AOY/Championship processing | Rebuild season projections after Official Results or an authorized correction. | Published Official Results, stable Competitive Records, official participation, AOY points, and qualification participation; historical eligibility snapshots remain available for legacy rows. | AOY and Championship are separate. Verify best-five AOY and five-of-eight qualification independently. |
 | `/admin/analytics` | Website analytics overview. | Page activity and recent registration-interest records. | Read-only operational insight; registration-interest contact data is private. |
 | `/admin/registration-interest` | Review/export registration-interest contacts. | Search/sort, CSV export, and email-copy tools. | Handle email addresses as private information. |
 | `/admin/rules` | Rules administration entry. | Current Rules-management presentation. | The Official Tournament Rules remain the authority; do not casually change them. |
@@ -61,6 +61,10 @@ AOY and Championship projections as appropriate.
   when the source export or intended replacement is uncertain.
 - Payout reset: stronger warnings apply after checks are delivered or public
   results exist; preserve reconciliation evidence.
+- Registration cancellation: select the active entry from the roster-level
+  control, review participants, registration number, and recorded payment, and
+  record the reason. Do not expect AITT to refund Square; use the approved
+  manual Chase process separately.
 - Published-result correction/reset: authorized workflow only; record the
   reason and verify all rebuilt public and season projections.
 

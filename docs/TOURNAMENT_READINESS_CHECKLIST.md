@@ -131,9 +131,9 @@ An unchecked or unavailable layer keeps the result at `Needs Rehearsal`.
 | REG-03 | Individual registration path | Valid solo registration completes | — | Not Tested | — |
 | REG-04 | Required fields and validation | Missing/invalid fields are rejected | — | Not Tested | — |
 | REG-05 | Base Entry pricing | Base Entry (Tournament Entry) is $60 and is calculated consistently | Code Inspection: `data/registration.ts` sets Base Entry to $60; Automated Test: `tests/registration.test.tsx` asserts $60 subtotal and $62.10 card total; live staging payment rehearsal remains outstanding. | Not Tested | — |
-| REG-06 | Membership selection and $40-per-person handling | Membership fees apply per eligible person | — | Not Tested | — |
+| REG-06 | Membership selection and $40-per-person handling | Every angler selects Current Member or Purchase Membership; $40 applies once per new person | — | Not Tested | — |
 | REG-07 | Bronze, Silver, Gold, Insurance pricing | Prices match approved rules | — | Not Tested | — |
-| REG-08 | Membership-required options | Ineligible options cannot be selected | — | Not Tested | — |
+| REG-08 | Membership-required options | Current registrations have no non-member pathway; historical records remain readable | — | Not Tested | — |
 | REG-09 | Ineligible combinations | Invalid combinations are blocked | — | Not Tested | — |
 | REG-10 | Duplicate submission prevention | Duplicate registration is prevented or safely identified | — | Not Tested | — |
 | REG-11 | Registration totals and amount | Displayed total equals selected components | — | Not Tested | — |
@@ -300,7 +300,7 @@ reported as live-delivery Pass.
 |---|---|---|---|---|---|
 | AOY-01 | AOY points | Points match approved finishes | — | Not Tested | — |
 | AOY-02 | Best 5 of 8 | Calculation is correct | — | Not Tested | — |
-| AOY-03 | Membership eligibility | Eligibility is correct | — | Not Tested | — |
+| AOY-03 | Current-policy AOY participation | Official finish points and best 5 of 8 apply without a current member/non-member filter; legacy snapshots remain readable | — | Not Tested | — |
 | AOY-04 | Checked In zero | Participating zero result receives normal treatment | — | Not Tested | — |
 | AOY-08 | DQ | DQ treatment matches approved rules | — | Not Tested | — |
 | AOY-09 | Identity consistency | Individual/team identities remain consistent | — | Not Tested | — |
@@ -331,3 +331,11 @@ These are documented requirements only; do not implement them as part of this ch
 1. Add tournament-level **Total Money Collected** to the roster and reconcile it against payment processor and bank totals.
 3. Update registration-confirmation email text when final wording is supplied.
 4. Complete the authenticated allowlisted staging rehearsal for online and walk-up confirmation delivery; automated tests do not replace that rehearsal.
+
+## Current policy checkpoint
+
+Before the staging rehearsal, verify every staging tournament-information row
+uses the approved entry-based practice rule: each registered team or solo entry
+gets one day, Friday or Saturday but not both, and both team anglers share that
+allowance. Mike's production update for every lake was an Admin content change,
+not a code deployment; staging must be checked and mirrored separately.

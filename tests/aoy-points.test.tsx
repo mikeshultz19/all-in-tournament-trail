@@ -5,14 +5,21 @@ import { describe, expect, it } from "vitest";
 import AoyPointsPage from "@/app/aoy-points/page";
 
 describe("AOY Points information page", () => {
-  it("explains optional membership and member-only AOY calculation", () => {
+  it("explains official-finish AOY calculation and the best five of eight", () => {
     const html = renderToStaticMarkup(<AoyPointsPage />);
     expect(html).toContain("AOY Points Race");
-    expect(html).toContain("Membership Rewards Consistency.");
-    expect(html).toContain("AITT Membership is optional");
-    expect(html).toContain("only AITT Members earn AOY points");
-    expect(html).toContain("Non-members are skipped during the AOY points calculation");
-    expect(html).toContain("1st AOY");
+    expect(html).toContain("Official Finish Position Drives the Race.");
+    expect(html).toContain("official finishing position");
+    expect(html).toContain("best 5 of 8 point totals");
+    expect(html).toContain("three lowest scores are automatically dropped");
+    expect(html).not.toContain("How Points Are Calculated");
+    expect(html).not.toContain("Returning active members");
+    expect(html).not.toContain("eligible member");
+    expect(html).toContain("AOY Points");
+    expect(html).toContain(">200<");
+    expect(html).toContain(">199<");
+    expect(html).toContain(">198<");
+    expect(html).not.toContain("Registered Angler");
     expect(html).toContain('href="/rules#angler-of-the-year"');
     expect(html).toContain('href="/schedule"');
     expect(html).toContain('href="/standings"');

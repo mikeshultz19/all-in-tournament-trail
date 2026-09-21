@@ -65,9 +65,9 @@ export default function RegistrationHistoryList({
                     {row.source === "walk_up" ? "Walk-Up" : "Online"}
                   </AdminStatusBadge>
                   <AdminStatusBadge tone={row.status === "cancelled" ? "critical" : "positive"}>
-                    {row.status}
+                    {row.status === "cancelled" ? "Canceled" : row.status}
                   </AdminStatusBadge>
-                  {row.checkedInAt ? <AdminStatusBadge tone="positive">Checked In</AdminStatusBadge> : null}
+                  {row.status === "active" && row.checkedInAt ? <AdminStatusBadge tone="positive">Checked In</AdminStatusBadge> : null}
                   {needsAttention(row) ? <AdminStatusBadge tone="attention">Needs Attention</AdminStatusBadge> : null}
                 </div>
               </SummaryField>
@@ -116,18 +116,25 @@ export default function RegistrationHistoryList({
                   <DetailLine label="Insurance Pot" value={yesNo(row.insurance)} />
                   <DetailLine label="Source" value={row.source === "walk_up" ? "Walk-Up" : "Online"} />
                   <DetailLine label="Status" value={row.status} />
-                  <DetailLine label="Attendance" value={row.checkedInAt ? "Checked In" : "Pending"} />
+                  <DetailLine label="Attendance" value={row.status === "cancelled" && row.checkedInAt ? `Canceled; historical check-in recorded ${dateTime(row.checkedInAt)}` : row.checkedInAt ? "Checked In" : "Pending"} />
                   <DetailLine label="Payment Method" value={row.paymentMethod ?? "Not stored"} />
                   <DetailLine label="Payment Reference" value={row.paymentReference ?? "Not recorded"} />
                   <DetailLine label="Online Payment" value={row.onlinePaymentState ?? "Not applicable"} />
-                  {row.status === "cancelled" ? <DetailLine label="Cancellation Note" value={row.cancellationNote ?? "Not recorded"} /> : null}
+                  {row.status === "cancelled" ? <>
+                    <DetailLine label="Status" value="Canceled" />
+                    <DetailLine label="Cancellation Note" value={row.cancellationNote ?? "Not recorded"} />
+                    <DetailLine label="Cancellation Date" value={row.cancelledAt ? dateTime(row.cancelledAt) : "Not recorded"} />
+                    <DetailLine label="Canceling Admin" value={row.cancellationAdmin ?? "Not recorded"} />
+                    <DetailLine label="Manual Refund Status" value={row.manualRefundStatus ?? "Not recorded"} />
+                    <DetailLine label="Memberships Revoked" value={row.membershipsRevoked?.length ? row.membershipsRevoked.join("; ") : "None"} />
+                  </> : null}
                 </DetailSection>
 
                 <DetailSection title="Payment &amp; Pricing">
                   {(row.priceSnapshot?.lineItems ?? []).map((item, index) => (
                     <DetailLine key={`${item.name}-${index}`} label={item.name ?? `Line ${index + 1}`} value={money(item.priceCents)} />
                   ))}
-                  <DetailLine label="SQUARE SERVICE FEE (3%)" value={money(row.priceSnapshot?.cardProcessingFeeCents)} />
+                  <DetailLine label="SQUARE SERVICE FEE" value={money(row.priceSnapshot?.cardProcessingFeeCents)} />
                   <DetailLine label="Total Paid" value={money(row.priceSnapshot?.totalCents)} />
                   <DetailLine label="Square Payment ID" value={row.squarePaymentId ?? "Not recorded"} />
                 </DetailSection>

@@ -27,9 +27,12 @@ season standings must describe the same event and competitors.
   determine the final AOY score.
 - A team must compete in five of the eight Regular Season tournaments for
   Championship eligibility.
-- Membership is required for AOY and Championship eligibility.
-- Membership eligibility begins with First Eligible Tournament. Membership
-  Effective Date is administrative recordkeeping.
+- Every current registration angler must have a current $40 seasonal membership
+  or purchase it during registration. Membership is paid once per person per
+  season; historical non-member rows remain readable.
+- Current AOY and Championship calculations do not distinguish members from
+  non-members because membership is mandatory. First Eligible Tournament and
+  `aoy_eligible` remain historical compatibility fields.
 - Active Membership Season is selected only in Admin Settings.
 
 ## Why the Rules Exist

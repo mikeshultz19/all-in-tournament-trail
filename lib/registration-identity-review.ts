@@ -286,7 +286,7 @@ export async function resolveHistoricalMembershipReview(input: { reviewId: strin
     if (error) throw new RegistrationIdentityReviewError("The membership review could not be verified.", { cause: error });
     const registration = data?.registration as { member_pot?: string | null; insurance?: boolean } | null;
     if (registration?.member_pot || registration?.insurance) {
-      throw new RegistrationIdentityReviewError("A non-member cannot be confirmed while member-only options remain selected.");
+      throw new RegistrationIdentityReviewError("A historical non-member cannot be confirmed while a side-pot selection remains selected.");
     }
   }
   const { error } = await supabase.rpc("admin_resolve_historical_membership_review", { p_review_id: input.reviewId, p_submitted_membership: input.membership, p_admin_user_id: input.adminUserId, p_review_note: input.reviewNote ?? null });

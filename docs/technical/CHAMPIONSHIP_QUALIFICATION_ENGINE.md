@@ -9,10 +9,12 @@ AOY points and rank are not inputs.
 
 ## Official Results dependency
 
-The engine reads the immutable Official Results historical snapshot. It uses
-the stored registration, Competitive Record, record type, historical
+The engine reads the immutable Official Results historical snapshot. Current
+registrations require membership, so active qualification depends on physical
+participation rather than a current member/non-member distinction. The engine
+also uses the stored registration, Competitive Record, record type, historical
 eligibility decision, participation status, season, tournament UUID, and
-`regular_season_number`.
+`regular_season_number` for legacy results.
 
 Working Results, Championship events, unnumbered events, and cancelled
 tournaments are excluded. Calendar dates are not read for sequencing.

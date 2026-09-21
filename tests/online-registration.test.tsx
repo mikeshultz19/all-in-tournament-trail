@@ -35,7 +35,7 @@ function validRequest(overrides: Partial<OnlineRegistrationRequest> = {}): Onlin
   return {
     tournamentSlug: tournaments[0].slug,
     registrationType: "solo",
-    anglers: [{ firstName: "Taylor", lastName: "Angler", email: "taylor@example.com", mobilePhone: "817-555-0100", streetAddress: "100 Lake Road", city: "Azle", state: "TX", zipCode: "76020", membership: "non-member" }],
+    anglers: [{ firstName: "Taylor", lastName: "Angler", email: "taylor@example.com", mobilePhone: "817-555-0100", streetAddress: "100 Lake Road", city: "Azle", state: "TX", zipCode: "76020", membership: "current" }],
     options: { bigBass: false, insurance: false, memberPot: null },
     acknowledgment: { ...POLICY_VERSIONS, acknowledgedAt: NOW.toISOString(), acknowledgmentAccepted: true },
     ...overrides,
@@ -58,7 +58,7 @@ describe("online tournament eligibility", () => {
 
 describe("server-authoritative registration validation and pricing", () => {
   it("validates required angler fields", () => expect(validateOnlineRegistrationRequest(validRequest({ anglers: [{ ...validRequest().anglers[0], mobilePhone: "" }] }), NOW)).toContain("Angler 1 mobile phone is invalid."));
-  it("allows a valid Solo non-member to register without purchasing membership", () => {
+  it("allows a valid Solo current member to register without purchasing membership", () => {
     expect(validateOnlineRegistrationRequest(validRequest(), NOW)).toEqual([]);
     const quote = createAuthoritativeRegistrationQuote(validRequest(), NOW);
     expect(quote.lineItems.map((item) => item.name)).toEqual(["Tournament Entry"]);
@@ -66,18 +66,26 @@ describe("server-authoritative registration validation and pricing", () => {
     expect(quote.cardProcessingFeeCents).toBe(210);
     expect(quote.totalCents).toBe(6210);
   });
-  it("allows a valid Team of non-members to register without purchasing membership", () => {
+  it("allows a valid Team with current and new members", () => {
     const first = validRequest().anglers[0];
     const team = validRequest({
       registrationType: "team",
       anglers: [first, { ...first, firstName: "Jordan", email: "jordan@example.com" }],
     });
     expect(validateOnlineRegistrationRequest(team, NOW)).toEqual([]);
-    expect(createAuthoritativeRegistrationQuote(team, NOW).lineItems.map((item) => item.name)).toEqual(["Tournament Entry"]);
+    const quote = createAuthoritativeRegistrationQuote({ ...team, anglers: [first, { ...first, firstName: "Jordan", email: "jordan@example.com", membership: "joining" }] }, NOW);
+    expect(quote.lineItems.map((item) => item.name)).toEqual(["Angler 2 Membership", "Tournament Entry"]);
+    expect(quote.subtotalCents).toBe(10000);
   });
-  it("continues to reject member-only pots for non-members", () => {
-    const request = validRequest({ options: { bigBass: false, insurance: false, memberPot: "bronze" } });
-    expect(validateOnlineRegistrationRequest(request, NOW)).toContain("Both anglers must be current members to enter Bronze, Silver, Gold, or the Insurance Pot.");
+  it("rejects a bypassed non-member classification at the server boundary", () => {
+    const request = validRequest({ anglers: [{ ...validRequest().anglers[0], membership: "non-member" }] });
+    expect(validateOnlineRegistrationRequest(request, NOW)).toContain("Angler 1 seasonal membership is required.");
+    expect(() => createAuthoritativeRegistrationQuote(request, NOW)).toThrow("seasonal membership");
+  });
+  it("allows every side pot for a newly joined member", () => {
+    const request = validRequest({ anglers: [{ ...validRequest().anglers[0], membership: "joining" }], options: { bigBass: true, insurance: true, memberPot: "gold" } });
+    const quote = createAuthoritativeRegistrationQuote(request, NOW);
+    expect(quote.lineItems.map((item) => item.name)).toEqual(["Angler 1 Membership", "Tournament Entry", "Gold Pot", "Big Bass", "Insurance Pot"]);
   });
   it("requires Angler 2 for a team competitive record", () => expect(validateOnlineRegistrationRequest(validRequest({ registrationType: "team" }), NOW)).toContain("Angler 2 is required for Team registration."));
   it("accepts exactly one angler for a solo competitive record", () => expect(validateOnlineRegistrationRequest(validRequest(), NOW)).toEqual([]));
@@ -129,7 +137,7 @@ describe("server-authoritative registration validation and pricing", () => {
     expect(acceptance.registrationId).toBe("draft-123");
     expect(acceptance.acknowledgedAt).toBe(NOW.toISOString());
     expect(acceptance.acknowledgmentAccepted).toBe(true);
-    expect(acceptance.rulesVersion).toBe("1.7");
+    expect(acceptance.rulesVersion).toBe("1.9");
     expect(acceptance.waiverVersion).toBe("1.0");
     expect(Object.keys(acceptance.policyVersions)).toEqual(["rules", "liability_waiver", "refund_policy", "payment_terms"]);
   });
@@ -188,18 +196,18 @@ describe("confirmation experience", () => {
     expect(unavailable.match(/>TBA</g)).toHaveLength(6);
     expect(unavailable).not.toContain("Have your boat in the water and ready to launch before this time.");
   });
-  it("shows one customer-facing registration and boat number with launch-order guidance", () => {
+  it("shows one customer-facing registration number without obsolete launch-order guidance", () => {
     expect(html).not.toContain("Confirmation Number");
     expect(html).not.toContain("AITT-EM-0001");
-    expect(html).toContain("Registration / Boat Number");
+    expect(html).toContain("Registration Number");
     expect(html).toContain("#17");
-    expect(html).toContain("Your boat number is your launch-order number. If flights are used, this number will also determine which flight you are in.");
+    expect(html).not.toContain("Your boat number is your launch-order number");
     expect(html).not.toContain("This is your boat number and will also be your launch-order number");
     expect(html).not.toContain("text-5xl");
   });
   it("shows an unassigned boat number honestly", () => {
     const unassigned = renderToStaticMarkup(<RegistrationConfirmation confirmation={{ ...confirmation, boatNumber: null }} />);
-    expect(unassigned).toContain("Registration / Boat Number");
+    expect(unassigned).toContain("Registration Number");
     expect(unassigned).toContain(">TBA<");
     expect(unassigned).not.toContain("assigned boat number");
   });
@@ -227,7 +235,7 @@ describe("online payment presentation", () => {
     expect(html).toContain("Team Info");
     expect(html).toContain("Continue to Payment");
     expect(html).toContain("Secure payment through Square");
-    expect(html).toContain("Square and Apple Pay accepted at the ramp");
+    expect(html).not.toContain("Square and Apple Pay accepted at the ramp");
     expect(html).not.toMatch(/Visa|Mastercard|American Express|Discover/i);
   });
   it("moves tournament data into one condensed header", () => {
@@ -257,7 +265,7 @@ describe("online payment presentation", () => {
     expect(html).not.toContain('id="acknowledgment-combined" type="checkbox" required="" checked=""');
     expect(html).toContain('aria-describedby="acknowledgment-requirement"');
     expect(html).toContain("Required before continuing to payment");
-    expect(html).toContain("Rules version 1.7; waiver version 1.0");
+    expect(html).toContain("Rules version 1.9; waiver version 1.0");
     expect(html).not.toContain("accurate information");
     expect(html).not.toContain("acknowledgment-rules");
   });
@@ -303,8 +311,8 @@ describe("online payment presentation", () => {
     expect(html).not.toContain("How AITT Works");
   });
   it("shows the membership-benefits notice once beneath the first angler membership choices", () => {
-    const notice = "Memberships unlock Bronze, Silver, Gold, Insurance Pots, AOY, and Championship eligibility.";
-    const noticeMarker = "Memberships unlock";
+    const notice = "Membership is required for every angler.";
+    const noticeMarker = "Membership is required";
     const firstMembership = html.indexOf('id="angler1-membership-label"');
     const noticePosition = html.indexOf(noticeMarker);
     const secondAngler = html.indexOf("Team Details — Angler 2");
@@ -313,10 +321,12 @@ describe("online payment presentation", () => {
 
     expect(html.match(new RegExp(noticeMarker, "g"))).toHaveLength(1);
     expect(visibleText(html)).toContain(notice);
+    expect(visibleText(html)).toContain("All registered anglers may select the optional");
     expect(noticePosition).toBeGreaterThan(firstMembership);
     expect(noticePosition).toBeLessThan(secondAngler);
     expect(soloHtml.match(new RegExp(noticeMarker, "g"))).toHaveLength(1);
     expect(visibleText(soloHtml)).toContain(notice);
+    expect(visibleText(soloHtml)).toContain("All registered anglers may select the optional");
     expect(soloHtml.indexOf(noticeMarker)).toBeGreaterThan(soloHtml.indexOf('id="angler1-membership-label"'));
   });
   it("blocks invalid registration and stale policy versions before payment review", () => {
@@ -330,7 +340,7 @@ describe("online payment presentation", () => {
   });
   it("shows the compact authoritative-price summary without cash", () => {
     expect(html).toContain("Subtotal");
-    expect(html).toContain("SQUARE SERVICE FEE (3%)");
+    expect(html).toContain("SQUARE SERVICE FEE");
     expect(html).not.toContain("+ $0.30");
     expect(html).not.toContain("+ $0.30");
     expect(html).toContain("Final Total");

@@ -5,6 +5,7 @@ const actions = readFileSync("app/admin/registration-review/actions.ts", "utf8")
 const controls = readFileSync("components/admin/RegistrationOperationsControls.tsx", "utf8");
 const reviewPage = readFileSync("app/admin/registration-review/page.tsx", "utf8");
 const history = readFileSync("lib/admin-registration-history.ts", "utf8");
+const historyList = readFileSync("components/admin/RegistrationHistoryList.tsx", "utf8");
 
 describe("manual registration cancellation", () => {
   it("is an admin-only, note-required status transition with no payment or email side effect", () => {
@@ -23,17 +24,26 @@ describe("manual registration cancellation", () => {
     expect(controls).toContain("Cancel Registration");
     expect(controls).toContain("Registration Number");
     expect(controls).toContain("Participants");
-    expect(controls).toContain("Recorded Amount");
-    expect(controls).toContain("AITT does not issue the refund. Handle any refund separately before confirming cancellation.");
+    expect(controls).toContain("Recorded Payment");
+    expect(controls).toContain("Original Itemized Charges");
+    expect(controls).toContain("Full Recorded Amount Paid");
+    expect(controls).toContain("full recorded amount");
+    expect(controls).toContain("manually through Chase outside AITT");
+    expect(controls).toContain('name="manualRefundStatus"');
+    expect(controls).toContain("Active Boat / Registration");
     expect(controls).toContain('name="cancellationNote"');
     expect(controls).toContain("minLength={3}");
     expect(reviewPage).toContain("<CancelRegistrationControl");
+    expect(reviewPage).toContain("registrations={allRows.map");
+    expect(reviewPage).not.toContain("<CancelRegistrationControl tournamentId={tournamentId}");
   });
 
   it("keeps cancelled records historical while active consumers use the active filter", () => {
     expect(history).toContain("registration_status");
     expect(history).toContain("cancelled_at");
     expect(history).toContain("admin_notes");
+    expect(history).toContain("cancelled_by_admin_id");
+    expect(history).toContain("membershipsRevoked");
     expect(readFileSync("lib/tournament-registration-roster.ts", "utf8")).toContain('.eq("registration_status", "active")');
     expect(readFileSync("lib/tournament-collection-summary.ts", "utf8")).toContain('.eq("registration_status", "active")');
     expect(readFileSync("app/admin/registration-review/export/route.ts", "utf8")).toContain("getTournamentRegistrationRoster");
@@ -44,5 +54,10 @@ describe("manual registration cancellation", () => {
     const action = actions.slice(actions.indexOf("export async function cancelRegistrationAction"));
     expect(action).toContain('.eq("registration_status", "active")');
     expect(action).toContain("if (result.error || !result.data)");
+  });
+
+  it("does not present canceled history as actively checked in", () => {
+    expect(historyList).toContain('row.status === "active" && row.checkedInAt');
+    expect(historyList).toContain("historical check-in recorded");
   });
 });

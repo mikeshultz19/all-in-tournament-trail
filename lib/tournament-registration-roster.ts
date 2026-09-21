@@ -73,7 +73,7 @@ export interface TournamentRegistrationRosterSummary {
   needReview: number;
 }
 
-export type RegistrationRosterFilter = "all" | "needs_review" | "walk_ups" | "check_ins";
+export type RegistrationRosterFilter = "all" | "needs_review" | "walk_ups" | "check_ins" | "cancelled";
 
 type PriceLineItem = { code?: string; name?: string; priceCents?: number };
 type PriceSnapshot = {
@@ -360,7 +360,9 @@ export function filterTournamentRegistrationRosterRows(
   search: string,
 ): TournamentRegistrationRosterRow[] {
   const filteredRows =
-    filter === "needs_review"
+    filter === "cancelled"
+      ? []
+      : filter === "needs_review"
       ? rows.filter((row) => row.needsReview)
       : filter === "walk_ups"
         ? rows

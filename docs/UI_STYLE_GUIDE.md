@@ -30,9 +30,9 @@ design system.
 | Registration Closed | Unavailable | State the outcome plainly. |
 | Current Member | Existing Member | Match registration choices. |
 | Purchase Membership | Join | Make the purchase action clear. |
-| Continue as Non-Member | Skip Membership | State the resulting status. |
+| Purchase Seasonal Membership | Add the $40 membership charge for a new angler. |
 | Practice and Off-Limits Policy | Prefishing policy | Controlling public rules terminology. |
-| One official practice day | Practice weekend | Eligible current members registered for the specific tournament choose Friday or Saturday, not both. |
+| One official practice day | Practice weekend | Each registered team or solo entry chooses Friday or Saturday, not both; team members share one allowance. |
 
 Technical identifiers such as `baseEntry`, `registrationPeriod`,
 `safeLightOverride`, and `tournamentStatus` may remain in code.
@@ -44,13 +44,13 @@ Technical identifiers such as `baseEntry`, `registrationPeriod`,
 - Optional Side Pots
   - Big Bass
   - Insurance Pot
-- Member Bonus Pots
+- Optional Payout Pots
   - Bronze
   - Silver
   - Gold
 
 Tournament Entry is automatic and non-removable. Bronze, Silver, and Gold are
-mutually exclusive. Eligibility explanations should appear near member-only
+mutually exclusive. Membership explanations should appear near seasonal
 choices.
 
 ## Buttons
@@ -77,9 +77,9 @@ Examples:
 
 - “Tournament Entry is required to register.”
 - “Big Bass can only be added with Tournament Entry.”
-- “Both anglers must be current members to enter Bronze, Silver, Gold, or the
-  Insurance Pot.”
-- “Choose only one member bonus pot: Bronze, Silver, or Gold.”
+- “Every angler must have a current membership or purchase the $40 seasonal
+  membership during registration.”
+- “Choose only one payout pot: Bronze, Silver, or Gold.”
 
 ## Dates and Times
 
@@ -145,6 +145,25 @@ be ambiguous, following the existing registration and operations conventions.
 - Keep **Latest News & Announcements** visible and visually distinct on mobile
   and desktop as the primary public communication surface.
 - Keep Tournament Conditions compact in the established Safe Light area.
+
+## Approved public-content simplifications
+
+- How AITT Works uses Join the Trail, the $60 Tournament Entry, one optional
+  Bronze/Silver/Gold pot, optional Big Bass and Insurance, Simple Strategy, and
+  Done. Go Fish. The obsolete “One Tournament. Four Ways to Compete” cards and
+  eligibility badges are not active content.
+- AOY and Championship copy describes official finish position, best 5 of 8,
+  automatic dropping of the three lowest scores, and five-of-eight
+  participation without distinguishing current members from non-members.
+- Insurance copy may be concise, but its public 1-in-5 payout table remains the
+  calculator and explanation authority.
+- Registration uses the established public-page header styling. The Square /
+  Apple Pay / Pay at the Ramp graphic is removed. Estimated Safe Light remains
+  functional and aligns with Registration Summary.
+- Confirmation displays `REGISTRATION NUMBER`. The customer-facing fee label is
+  `SQUARE SERVICE FEE`, without appending “3%”.
+- How AITT Works always links Register to `/register`; that page displays the
+  tournament's open or closed state.
 
 ## Scope
 

@@ -59,7 +59,7 @@ function buildWalkUpFormData(overrides: Record<string, string | boolean>) {
     angler2ZipCode: "78702",
     angler2Email: "brooke.diaz@example.com",
     angler2Phone: "512-555-0102",
-    angler2Membership: "non-member",
+    angler2Membership: "current",
     ...overrides,
   })) {
     if (typeof value === "boolean") {
@@ -80,7 +80,7 @@ describe("walk-up registration draft preservation", () => {
     rpc.mockReset();
   });
 
-  it("preserves the submitted walk-up draft when the member-only pot combination is rejected", async () => {
+  it("rejects a bypassed non-member walk-up classification", async () => {
     rpc.mockResolvedValue({
       error: { message: "AITT_REGISTRATION_MEMBER_OPTION_INELIGIBLE" },
     });
@@ -89,12 +89,13 @@ describe("walk-up registration draft preservation", () => {
       { status: "idle", message: "" },
       buildWalkUpFormData({
         insurance: false,
+        angler2Membership: "non-member",
       }),
     );
 
     expect(result.status).toBe("error");
     expect(result.message).toBe(
-      "Both anglers must be current members to enter Bronze, Silver, Gold, or the Insurance Pot.",
+      "Every angler must have an active seasonal membership or purchase the $40 seasonal membership.",
     );
     expect(result.draft).toMatchObject({
       registrationType: "team",
@@ -120,7 +121,7 @@ describe("walk-up registration draft preservation", () => {
       angler2ZipCode: "78702",
       angler2Email: "brooke.diaz@example.com",
       angler2Phone: "512-555-0102",
-      angler2Membership: "non-member",
+      angler2Membership: "joining",
     });
     expect(revalidatePath).not.toHaveBeenCalled();
   });
@@ -166,6 +167,7 @@ describe("walk-up registration draft preservation", () => {
         memberPot: "",
         bigBass: true,
         insurance: false,
+        angler2Membership: "current",
         totalPaid: "80.00",
         angler1Email: " SAME@EXAMPLE.COM ",
         angler2Email: "same@example.com",
@@ -251,7 +253,7 @@ describe("walk-up registration draft preservation", () => {
     expect(controls).toContain('name="totalPaid"');
     expect(controls).toContain("formatCurrencyFromCents(totalCollectedCents)");
     expect(controls).toContain('aria-live="polite"');
-    expect(controls).toContain('label="Email (optional for non-members)"');
+    expect(controls).toContain('label="Email"');
     expect(controls).toContain("required={false}");
   });
 
@@ -295,7 +297,7 @@ describe("walk-up registration draft preservation", () => {
         bigBass: false,
         insurance: false,
         totalPaid: (totalCents / 100).toFixed(2),
-        angler1Membership: "non-member",
+        angler1Membership: "current",
       }),
     );
 
@@ -355,15 +357,15 @@ describe("walk-up registration draft preservation", () => {
     }).subtotalCents).toBe(14000);
   });
 
-  it("drops disabled member-only selections and replaces rather than stacks pots", () => {
+  it("keeps all side pots available and replaces rather than stacks bonus pots", () => {
     expect(getWalkUpDisplayPricing({
       registrationType: "team",
       paymentMethod: "cash",
-      memberships: ["joining", "non-member"],
+      memberships: ["joining", "joining"],
       memberPot: "gold",
       bigBass: false,
       insurance: true,
-    }).totalCollectedCents).toBe(10000);
+    }).totalCollectedCents).toBe(66000);
 
     const selection = {
       registrationType: "team" as const,

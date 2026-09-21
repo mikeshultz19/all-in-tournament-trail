@@ -1,6 +1,6 @@
 # AITT Documentation Index
 
-Last reconciled: 2026-09-15
+Last reconciled: 2026-09-21
 
 This is the canonical entry point for AITT documentation. Use the sections
 below to distinguish current technical guidance, staff operating instructions,
@@ -92,6 +92,19 @@ placed in browser-exposed environment variables.
 
 - [UI Style Guide](UI_STYLE_GUIDE.md)
 
+### Current policy cross-check
+
+For membership, registration, side pots, practice, AOY, Championship, payment,
+and public-content changes, start with [AITT Tournament Lifecycle and
+Operations](AITT_LIFECYCLE_OPERATIONS.md), then cross-check the compact
+[Capability Contracts](CAPABILITY_CONTRACTS.md) and the applicable workflow or
+engine document. [Tournament Operations and Registration Process](TOURNAMENT_OPERATIONS_AND_REGISTRATION_PROCESS.md)
+holds the staff-facing registration/practice/payout explanation; the
+[Official Tournament Rules](TOURNAMENT_RULES.md) remain the public competition
+authority. Historical files under `docs/history/` and historical snapshots
+inside current technical documents preserve prior behavior and must not be read
+as current policy.
+
 ## Current Staff / Operations
 
 Start here for nondeveloper operating instructions:
@@ -112,6 +125,11 @@ Supporting operating references:
 - [Payment Operations Manual](PAYMENT_OPERATIONS.md)
 - [Admin Center Workflow](ADMIN_CENTER_WORKFLOW.md) — abbreviated workflow;
   use the Knowledge Base Admin Center Guide for current route-by-route help.
+
+Registration cancellation ownership: the Registration Review page contains the
+single roster-level action and Canceled historical view. Use the Payment
+Operations Manual and Tournament Operations and Registration Process for the
+manual Chase refund, membership-revocation, and active-operation exclusions.
 
 ## Official Public Documents
 

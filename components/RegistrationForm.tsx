@@ -1,7 +1,6 @@
 "use client";
 
 import { FormEvent, useMemo, useRef, useState } from "react";
-import Image from "next/image";
 import Link from "next/link";
 
 import PaymentOptions from "@/components/PaymentOptions";
@@ -11,7 +10,7 @@ import { REGISTRATION_PRICING } from "@/data/registration";
 import { formatCurrencyFromCents } from "@/config/payment-policy";
 import type { Tournament } from "@/data/tournaments";
 import type { TournamentOperationsViewModel } from "@/lib/tournament-view-model";
-import { getRegistrationPricing, hasFullMembershipEligibility, validateRegistrationSelections, type MemberPot, type Membership, type RegistrationType } from "@/lib/registration";
+import { getRegistrationPricing, validateRegistrationSelections, type MemberPot, type Membership, type RegistrationType } from "@/lib/registration";
 import {
   selectCompetitiveRecordAnglers,
   type RegistrationPriceSnapshot,
@@ -32,17 +31,17 @@ type Angler = {
 type FieldKey = keyof Angler;
 type Errors = Partial<Record<`${AnglerKey}.${FieldKey}`, string>>;
 
-const EMPTY_ANGLER: Angler = { firstName: "", lastName: "", email: "", mobilePhone: "", streetAddress: "", city: "", state: "", zipCode: "", membership: null };
+const EMPTY_ANGLER: Angler = { firstName: "", lastName: "", email: "", mobilePhone: "", streetAddress: "", city: "", state: "", zipCode: "", membership: "joining" };
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const PHONE_PATTERN = /^\+?[\d\s().-]{10,20}$/;
 const STATE_PATTERN = /^[A-Za-z]{2}$/;
 const ZIP_PATTERN = /^\d{5}(?:-\d{4})?$/;
 const OPTIONAL_POTS = [
-  { id: "bronze", name: "Bronze Pot", price: REGISTRATION_PRICING.bronze, description: "Members-only Bronze payout competition. Pays 1 in 5." },
-  { id: "silver", name: "Silver Pot", price: REGISTRATION_PRICING.silver, description: "Members-only Silver payout competition. Pays 1 in 5." },
-  { id: "gold", name: "Gold Pot", price: REGISTRATION_PRICING.gold, description: "Members-only premium Gold payout competition. Pays 1 in 7." },
+  { id: "bronze", name: "Bronze Pot", price: REGISTRATION_PRICING.bronze, description: "Optional Bronze payout competition. Pays 1 in 5." },
+  { id: "silver", name: "Silver Pot", price: REGISTRATION_PRICING.silver, description: "Optional Silver payout competition. Pays 1 in 5." },
+  { id: "gold", name: "Gold Pot", price: REGISTRATION_PRICING.gold, description: "Optional premium Gold payout competition. Pays 1 in 7." },
   { id: "big-bass", name: "Big Bass", price: REGISTRATION_PRICING.bigBass, description: "The optional Big Bass side pot pays two places." },
-  { id: "insurance", name: "Insurance Pot", price: REGISTRATION_PRICING.insurance, description: "Uses a true 1-in-5 payout, with a minimum of one paid place whenever there are Insurance Pot entries. Payouts begin with the first eligible team outside the Tournament Entry payout." },
+  { id: "insurance", name: "Insurance Pot", price: REGISTRATION_PRICING.insurance, description: "Uses a true 1-in-5 payout, with a minimum of one paid place whenever there are Insurance Pot entries. Payouts begin with the first participating entry outside Tournament Entry payout positions." },
 ] as const;
 
 function money(value: number) { return `$${value.toFixed(2)}`; }
@@ -94,11 +93,11 @@ function AnglerSection({ anglerKey, title, angler, errors, onChange, disabled, s
     <div className="mt-6" role="group" aria-labelledby={`${anglerKey}-membership-label`} aria-describedby={membershipError ? `${anglerKey}-membership-error` : undefined}>
       <p id={`${anglerKey}-membership-label`} className="text-xs font-black uppercase tracking-[0.12em] text-[#C6C6C6]">Membership status</p>
       <div className="mt-3 grid gap-3">
-        {([['current', 'Yes, I am a current member'], ['joining', 'No, but I want to join'], ['non-member', 'No, continue as a non-member']] as const).map(([value, label]) => <label key={value} className={`flex min-h-14 items-center gap-4 border border-[#333] bg-[#111] px-4 py-3 has-checked:border-[#D4A017] ${disabled ? "cursor-not-allowed border-neutral-800 bg-neutral-950" : "cursor-pointer"}`}><input id={`${anglerKey}-membership-${value}`} type="radio" name={`${anglerKey}.membership`} value={value} checked={angler.membership === value} disabled={disabled} onChange={() => onChange(anglerKey, "membership", value)} className="size-5 accent-[#D4A017] disabled:cursor-not-allowed" /><span className={disabled ? "font-bold text-neutral-400" : "font-bold text-white"}>{label}</span></label>)}
+        {([['current', 'Yes, I am a current member'], ['joining', 'No, purchase the $40 seasonal membership']] as const).map(([value, label]) => <label key={value} className={`flex min-h-14 items-center gap-4 border border-[#333] bg-[#111] px-4 py-3 has-checked:border-[#D4A017] ${disabled ? "cursor-not-allowed border-neutral-800 bg-neutral-950" : "cursor-pointer"}`}><input id={`${anglerKey}-membership-${value}`} type="radio" name={`${anglerKey}.membership`} value={value} checked={angler.membership === value} disabled={disabled} onChange={() => onChange(anglerKey, "membership", value)} className="size-5 accent-[#D4A017] disabled:cursor-not-allowed" /><span className={disabled ? "font-bold text-neutral-400" : "font-bold text-white"}>{label}</span></label>)}
       </div>
       {membershipError && <p id={`${anglerKey}-membership-error`} className="mt-2 text-sm text-red-400" role="alert">{membershipError}</p>}
     </div>
-    {showMembershipBenefits && <p className="mt-5 border-l-2 border-[#D4A017] pl-4 text-sm leading-6 text-[#B8B8B8]"><strong className="font-semibold text-white">Memberships unlock</strong> <strong className="font-bold text-white">Bronze</strong>, <strong className="font-bold text-white">Silver</strong>, <strong className="font-bold text-white">Gold</strong>, <strong className="font-bold text-white">Insurance Pots</strong>, <strong className="font-bold text-white">AOY</strong>, and <strong className="font-bold text-white">Championship eligibility</strong>.</p>}
+    {showMembershipBenefits && <p className="mt-5 border-l-2 border-[#D4A017] pl-4 text-sm leading-6 text-[#B8B8B8]"><strong className="font-semibold text-white">Membership is required for every angler.</strong> All registered anglers may select the optional <strong className="font-bold text-white">Bronze</strong>, <strong className="font-bold text-white">Silver</strong>, or <strong className="font-bold text-white">Gold</strong> pot, plus optional <strong className="font-bold text-white">Big Bass</strong> and <strong className="font-bold text-white">Insurance</strong>.</p>}
   </fieldset>;
 }
 
@@ -137,10 +136,9 @@ export default function RegistrationForm({
   const registrationUnavailableReason = operations.registrationReason;
   const activeKeys = useMemo<AnglerKey[]>(() => registrationType === "team" ? ["angler1", "angler2"] : ["angler1"], [registrationType]);
   const memberships = activeKeys.map((key) => anglers[key].membership).filter((membership): membership is Membership => membership !== null);
-  const fullMembershipEligibility = hasFullMembershipEligibility({ registrationType, memberships });
-  const memberPotsEnabled = fullMembershipEligibility;
+  const memberPotsEnabled = true;
 
-  const pricing = getRegistrationPricing({ registrationType, baseEntry: true, memberships, memberPot: fullMembershipEligibility ? memberPot : null, bigBass, insurance: fullMembershipEligibility && insurance });
+  const pricing = getRegistrationPricing({ registrationType, baseEntry: true, memberships, memberPot, bigBass, insurance });
   const { lineItems, subtotalCents, cardProcessingFeeCents, totalCents } = pricing;
   const currentErrors = activeKeys.reduce<Errors>((all, key) => ({ ...all, ...validateAngler(key, anglers[key]) }), {});
   const formIsValid = Object.keys(currentErrors).length === 0 && (!(memberPot || insurance) || memberPotsEnabled);
@@ -148,7 +146,6 @@ export default function RegistrationForm({
 
   function updateAngler(key: AnglerKey, field: keyof Angler, value: string) {
     setAnglers((current) => ({ ...current, [key]: { ...current[key], [field]: value } }));
-    if (field === "membership" && value === "non-member") { setMemberPot(null); setInsurance(false); }
     setErrors((current) => { const next = { ...current }; delete next[`${key}.${field as FieldKey}`]; return next; });
     setSubmitMessage("");
     setServerQuote(null);
@@ -157,8 +154,6 @@ export default function RegistrationForm({
   function changeRegistrationType(value: RegistrationType) {
     setRegistrationType(value);
     setErrors((current) => value === "solo" ? Object.fromEntries(Object.entries(current).filter(([key]) => !key.startsWith("angler2."))) : current);
-    const eligible = value === "solo" ? anglers.angler1.membership !== "non-member" && anglers.angler1.membership !== null : [anglers.angler1, anglers.angler2].every((angler) => angler.membership === "current" || angler.membership === "joining");
-    if (!eligible) { setMemberPot(null); setInsurance(false); }
     setSubmitMessage("");
     setServerQuote(null);
   }
@@ -241,26 +236,25 @@ export default function RegistrationForm({
     }
   }
 
-  const disabledReason = registrationType === "team" ? "Both anglers must be members to receive team member benefits." : "Membership is required for this option";
+  const disabledReason = "Membership is required for this registration.";
 
-  return <form ref={formRef} noValidate className={`${PUBLIC_PAGE_CONTAINER} grid gap-8 py-8 lg:grid-cols-[minmax(0,2fr)_minmax(300px,1fr)] lg:items-start lg:gap-10 lg:py-10`} onSubmit={submit}>
-   <header className="grid min-w-0 gap-5 border-b border-amber-500/30 pb-6 sm:grid-cols-2 lg:col-span-2 lg:grid-cols-[minmax(0,1fr)_minmax(250px,auto)_minmax(250px,auto)] lg:items-center">
-  <div className="min-w-0 sm:col-span-2 lg:col-span-1">
-    <h1 className="text-2xl font-semibold tracking-tight text-white sm:text-3xl">
-      Tournament Registration
-    </h1>
-
-    <Image
-      src="/images/payments/pay-at-the-ramp.png"
-      alt="Square and Apple Pay accepted at the ramp"
-      width={460}
-      height={112}
-      className="h-auto w-[190px] object-contain"
-    />
-  </div>
-
-  <SafeLightCard safeLight={operations.safeLight} compact />
-</header>
+  return <>
+   <section className="pb-3 pt-6 md:pb-5 md:pt-10">
+    <div className={PUBLIC_PAGE_CONTAINER}>
+     <header className="grid gap-6 border-b border-[#D4A017]/30 pb-6 lg:grid-cols-[minmax(0,2fr)_minmax(300px,1fr)] lg:items-start lg:gap-10">
+      <div>
+       <p className="text-xs font-black uppercase tracking-[0.3em] text-red-500">
+        All-In Tournament Trail
+       </p>
+       <h1 className="mt-3 text-4xl font-black uppercase tracking-tight text-white md:text-5xl">
+        Tournament Registration
+       </h1>
+      </div>
+      <SafeLightCard safeLight={operations.safeLight} compact />
+     </header>
+    </div>
+   </section>
+   <form ref={formRef} noValidate className={`${PUBLIC_PAGE_CONTAINER} grid gap-8 pb-8 pt-1 lg:grid-cols-[minmax(0,2fr)_minmax(300px,1fr)] lg:items-start lg:gap-10 lg:pb-10 lg:pt-3`} onSubmit={submit}>
     {registrationClosed && (
       <div className="border-l-2 border-[#D4A017] bg-[#D4A017]/5 px-5 py-4 lg:col-span-2">
         <h2 className="text-sm font-black uppercase tracking-[0.12em] text-[#D4A017]">
@@ -317,14 +311,14 @@ export default function RegistrationForm({
         <h2 id="angler-heading" className="text-xl font-black uppercase tracking-[0.05em] text-[#D4A017]">Angler Information</h2>
         <p className="mt-3 text-sm text-[#B8B8B8]">Annual Membership: <strong className="text-white">$40 per angler</strong></p>
         <div className="mt-6 space-y-8"><AnglerSection anglerKey="angler1" title="Angler 1" angler={anglers.angler1} errors={errors} onChange={updateAngler} disabled={registrationClosed} showMembershipBenefits />{registrationType === "team" && <AnglerSection anglerKey="angler2" title="Team Details — Angler 2" angler={anglers.angler2} errors={errors} onChange={updateAngler} disabled={registrationClosed} />}</div>
-        {registrationType === "team" && !fullMembershipEligibility && <p className="mt-5 border-l-2 border-[#D4A017] pl-4 text-sm font-bold text-[#D4A017]">Both anglers must be members to receive team member benefits.</p>}
+
       </section>
 
       <section aria-labelledby="entry-heading" className="border-t border-[#4A3A12] pt-8"><h2 id="entry-heading" className="text-xl font-black uppercase tracking-[0.05em] text-[#D4A017]">Tournament Registration</h2><div className="mt-5 border border-[#D4A017] bg-[#111] p-5" aria-label="Tournament Entry, required"><span className="flex items-center justify-between gap-4"><strong className="uppercase text-white">Tournament Entry <span className="text-xs text-[#D4A017]">Required</span></strong><strong className="text-[#D4A017]">{money(REGISTRATION_PRICING.baseEntry)}</strong></span><p className="mt-3 text-sm leading-5 text-[#B8B8B8]">Automatically included with every solo and team registration. Optional add-ons cannot be entered without it.</p></div></section>
 
       <section aria-labelledby="side-pots-heading" className="border-t border-[#4A3A12] pt-8"><h2 id="side-pots-heading" className="text-xl font-black uppercase tracking-[0.05em] text-[#D4A017]">Optional Side Pots</h2><div className="mt-5 divide-y divide-[#333] border-y border-[#333]">{OPTIONAL_POTS.filter((option) => option.id === "big-bass" || option.id === "insurance").map((option) => { const isBigBass = option.id === "big-bass"; const disabled = registrationClosed || (!isBigBass && !memberPotsEnabled); const checked = isBigBass ? bigBass : insurance; return <label key={option.id} className={`flex items-start gap-4 py-5 ${disabled ? "cursor-not-allowed" : "cursor-pointer"}`}><input type="checkbox" checked={checked} disabled={disabled} onChange={() => { if (isBigBass) setBigBass(!bigBass); else setInsurance(!insurance); }} className="mt-1 size-5 shrink-0 accent-[#D4A017] disabled:cursor-not-allowed" /><span className="min-w-0 flex-1"><span className={`block font-black uppercase tracking-wide ${disabled ? "text-neutral-400" : "text-white"}`}>{option.name}</span><span className="mt-1 block text-sm leading-5 text-[#8E8E8E]">{option.description}</span>{!registrationClosed && disabled && <span className="mt-2 block text-xs font-bold uppercase tracking-wide text-[#D4A017]">{disabledReason}</span>}</span><span className={disabled ? "font-black text-neutral-500" : "font-black text-[#D4A017]"}>{money(option.price)}</span></label>; })}</div></section>
 
-      <section aria-labelledby="bonus-pots-heading" className="border-t border-[#4A3A12] pt-8"><h2 id="bonus-pots-heading" className="text-xl font-black uppercase tracking-[0.05em] text-[#D4A017]">Member Bonus Pots</h2><div className="mt-5 divide-y divide-[#333] border-y border-[#333]">{OPTIONAL_POTS.filter((option) => option.id === "bronze" || option.id === "silver" || option.id === "gold").map((option) => { const disabled = registrationClosed || !memberPotsEnabled; const checked = memberPot === option.id; return <label key={option.id} className={`flex items-start gap-4 py-5 ${disabled ? "cursor-not-allowed" : "cursor-pointer"}`}><input type="checkbox" checked={checked} disabled={disabled} onChange={() => setMemberPot(memberPot === option.id ? null : option.id)} className="mt-1 size-5 shrink-0 accent-[#D4A017] disabled:cursor-not-allowed" /><span className="min-w-0 flex-1"><span className={`block font-black uppercase tracking-wide ${disabled ? "text-neutral-400" : "text-white"}`}>{option.name}</span><span className="mt-1 block text-sm leading-5 text-[#8E8E8E]">{option.description}</span>{!registrationClosed && disabled && <span className="mt-2 block text-xs font-bold uppercase tracking-wide text-[#D4A017]">{disabledReason}</span>}</span><span className={disabled ? "font-black text-neutral-500" : "font-black text-[#D4A017]"}>{money(option.price)}</span></label>; })}</div><p className="mt-4 text-sm text-[#999]">Choose only one member bonus pot: Bronze, Silver, or Gold.</p></section>
+      <section aria-labelledby="bonus-pots-heading" className="border-t border-[#4A3A12] pt-8"><h2 id="bonus-pots-heading" className="text-xl font-black uppercase tracking-[0.05em] text-[#D4A017]">Optional Payout Pots</h2><div className="mt-5 divide-y divide-[#333] border-y border-[#333]">{OPTIONAL_POTS.filter((option) => option.id === "bronze" || option.id === "silver" || option.id === "gold").map((option) => { const disabled = registrationClosed || !memberPotsEnabled; const checked = memberPot === option.id; return <label key={option.id} className={`flex items-start gap-4 py-5 ${disabled ? "cursor-not-allowed" : "cursor-pointer"}`}><input type="checkbox" checked={checked} disabled={disabled} onChange={() => setMemberPot(memberPot === option.id ? null : option.id)} className="mt-1 size-5 shrink-0 accent-[#D4A017] disabled:cursor-not-allowed" /><span className="min-w-0 flex-1"><span className={`block font-black uppercase tracking-wide ${disabled ? "text-neutral-400" : "text-white"}`}>{option.name}</span><span className="mt-1 block text-sm leading-5 text-[#8E8E8E]">{option.description}</span>{!registrationClosed && disabled && <span className="mt-2 block text-xs font-bold uppercase tracking-wide text-[#D4A017]">{disabledReason}</span>}</span><span className={disabled ? "font-black text-neutral-500" : "font-black text-[#D4A017]"}>{money(option.price)}</span></label>; })}</div><p className="mt-4 text-sm text-[#999]">Choose only one payout pot: Bronze, Silver, or Gold.</p></section>
 
       <section aria-labelledby="acknowledgments-heading" className="border-t border-[#4A3A12] pt-8">
         <h2 id="acknowledgments-heading" className="text-xl font-black uppercase tracking-[0.05em] text-[#D4A017]">Acknowledgment</h2>
@@ -336,6 +330,7 @@ export default function RegistrationForm({
       </section>
     </div>
 
-    <aside aria-labelledby="registration-summary-heading" className="min-w-0 border border-[#4A3A12] bg-[#111] p-5 sm:p-6 lg:sticky lg:top-28 lg:max-h-[calc(100vh-8rem)] lg:overflow-y-auto"><h2 id="registration-summary-heading" className="text-xl font-black uppercase tracking-[0.05em] text-[#D4A017]">Registration Summary</h2><dl className="mt-5 space-y-2 border-b border-[#3A3A3A] pb-5 text-sm"><div><dt className="text-[#999]">Tournament</dt><dd className="font-bold text-white">{tournament.name}</dd></div><div><dt className="text-[#999]">Date</dt><dd className="text-white">{operations.formattedEffectiveDate}</dd></div><div><dt className="text-[#999]">Registration type</dt><dd className="text-white">{registrationType === "team" ? "Team" : "Individual / Solo"}</dd></div>{activeKeys.some((key) => anglers[key].firstName.trim() || anglers[key].lastName.trim()) && <div><dt className="text-[#999]">Anglers</dt><dd className="break-words text-white">{activeKeys.map((key) => `${anglers[key].firstName} ${anglers[key].lastName}`.trim()).filter(Boolean).join(" / ")}</dd></div>}</dl><h3 className="mt-5 text-xs font-black uppercase tracking-[0.12em] text-white">Entry &amp; Options</h3><div className="mt-3 space-y-3 text-sm">{lineItems.map((item) => <div key={item.name} className="flex justify-between gap-4 text-[#B8B8B8]"><span>{item.name}</span><span>{formatCurrencyFromCents(item.priceCents)}</span></div>)}</div><h3 className="mt-6 border-t border-[#3A3A3A] pt-5 text-xs font-black uppercase tracking-[0.12em] text-white">Total</h3><dl className="mt-3 space-y-3 text-sm"><div className="flex justify-between text-[#B8B8B8]"><dt>Subtotal</dt><dd>{formatCurrencyFromCents(subtotalCents)}</dd></div><div className="flex justify-between gap-4 text-[#B8B8B8]"><dt>SQUARE SERVICE FEE (3%)</dt><dd>{formatCurrencyFromCents(cardProcessingFeeCents)}</dd></div><div className="flex justify-between border-t border-[#3A3A3A] pt-4 text-lg font-black uppercase text-white"><dt>Final Total</dt><dd className="text-[#D4A017]">{formatCurrencyFromCents(totalCents)}</dd></div></dl>{serverQuote && <p className="mt-4 border-l-2 border-green-500 pl-3 text-xs leading-5 text-green-300" role="status">Server-verified total: {formatCurrencyFromCents(serverQuote.totalCents)}.</p>}<div className="mt-6"><PaymentOptions key={paymentAttemptId ?? "review"} total={formatCurrencyFromCents(serverQuote?.totalCents ?? totalCents)} canReview={canAttemptReview} reviewComplete={Boolean(serverQuote)} reviewing={reviewing} validationMessage={submitMessage} registrationClosed={registrationClosed} checkoutAvailable={Boolean(paymentAttemptId && squareConfig)} paymentAttemptId={paymentAttemptId} squareConfig={squareConfig} billingContact={{ firstName: anglers.angler1.firstName, lastName: anglers.angler1.lastName, email: anglers.angler1.email, phone: anglers.angler1.mobilePhone, streetAddress: anglers.angler1.streetAddress, city: anglers.angler1.city, state: anglers.angler1.state, zipCode: anglers.angler1.zipCode }} /></div></aside>
-  </form>;
+    <aside aria-labelledby="registration-summary-heading" className="min-w-0 border border-[#4A3A12] bg-[#111] p-5 sm:p-6 lg:sticky lg:top-28 lg:max-h-[calc(100vh-8rem)] lg:overflow-y-auto"><h2 id="registration-summary-heading" className="text-xl font-black uppercase tracking-[0.05em] text-[#D4A017]">Registration Summary</h2><dl className="mt-5 space-y-2 border-b border-[#3A3A3A] pb-5 text-sm"><div><dt className="text-[#999]">Tournament</dt><dd className="font-bold text-white">{tournament.name}</dd></div><div><dt className="text-[#999]">Date</dt><dd className="text-white">{operations.formattedEffectiveDate}</dd></div><div><dt className="text-[#999]">Registration type</dt><dd className="text-white">{registrationType === "team" ? "Team" : "Individual / Solo"}</dd></div>{activeKeys.some((key) => anglers[key].firstName.trim() || anglers[key].lastName.trim()) && <div><dt className="text-[#999]">Anglers</dt><dd className="break-words text-white">{activeKeys.map((key) => `${anglers[key].firstName} ${anglers[key].lastName}`.trim()).filter(Boolean).join(" / ")}</dd></div>}</dl><h3 className="mt-5 text-xs font-black uppercase tracking-[0.12em] text-white">Entry &amp; Options</h3><div className="mt-3 space-y-3 text-sm">{lineItems.map((item) => <div key={item.name} className="flex justify-between gap-4 text-[#B8B8B8]"><span>{item.name}</span><span>{formatCurrencyFromCents(item.priceCents)}</span></div>)}</div><h3 className="mt-6 border-t border-[#3A3A3A] pt-5 text-xs font-black uppercase tracking-[0.12em] text-white">Total</h3><dl className="mt-3 space-y-3 text-sm"><div className="flex justify-between text-[#B8B8B8]"><dt>Subtotal</dt><dd>{formatCurrencyFromCents(subtotalCents)}</dd></div><div className="flex justify-between gap-4 text-[#B8B8B8]"><dt>SQUARE SERVICE FEE</dt><dd>{formatCurrencyFromCents(cardProcessingFeeCents)}</dd></div><div className="flex justify-between border-t border-[#3A3A3A] pt-4 text-lg font-black uppercase text-white"><dt>Final Total</dt><dd className="text-[#D4A017]">{formatCurrencyFromCents(totalCents)}</dd></div></dl>{serverQuote && <p className="mt-4 border-l-2 border-green-500 pl-3 text-xs leading-5 text-green-300" role="status">Server-verified total: {formatCurrencyFromCents(serverQuote.totalCents)}.</p>}<div className="mt-6"><PaymentOptions key={paymentAttemptId ?? "review"} total={formatCurrencyFromCents(serverQuote?.totalCents ?? totalCents)} canReview={canAttemptReview} reviewComplete={Boolean(serverQuote)} reviewing={reviewing} validationMessage={submitMessage} registrationClosed={registrationClosed} checkoutAvailable={Boolean(paymentAttemptId && squareConfig)} paymentAttemptId={paymentAttemptId} squareConfig={squareConfig} billingContact={{ firstName: anglers.angler1.firstName, lastName: anglers.angler1.lastName, email: anglers.angler1.email, phone: anglers.angler1.mobilePhone, streetAddress: anglers.angler1.streetAddress, city: anglers.angler1.city, state: anglers.angler1.state, zipCode: anglers.angler1.zipCode }} /></div></aside>
+   </form>
+  </>;
 }

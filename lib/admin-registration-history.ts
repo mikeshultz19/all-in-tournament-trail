@@ -66,6 +66,9 @@ export interface AdminRegistrationHistoryRow {
   checkedInAt: string | null;
   cancelledAt?: string | null;
   cancellationNote?: string | null;
+  cancellationAdmin?: string | null;
+  manualRefundStatus?: "pending" | "completed" | null;
+  membershipsRevoked?: string[];
   identityReviewStatus: string;
   reviews: RegistrationHistoryReview[];
 }
@@ -100,6 +103,7 @@ type RegistrationDbRow = {
   checked_in_at: string | null;
   cancelled_at: string | null;
   admin_notes: string | null;
+  cancelled_by_admin_id: string | null;
   identity_review_status: string;
   tournament: { name: string; tournament_date: string };
 };
@@ -144,6 +148,24 @@ function searchableText(row: AdminRegistrationHistoryRow): string {
     .toLocaleLowerCase();
 }
 
+function parseCancellationNotes(note: string | null): {
+  reason: string | null;
+  admin: string | null;
+  manualRefundStatus: "pending" | "completed" | null;
+  membershipsRevoked: string[];
+} {
+  const lines = (note ?? "").split("\n");
+  const value = (prefix: string) => lines.find((line) => line.startsWith(prefix))?.slice(prefix.length).trim() || null;
+  const refund = value("Manual refund status:");
+  const revoked = value("Memberships revoked through cancellation:");
+  return {
+    reason: value("Cancellation reason:") ?? value("Cancellation note:"),
+    admin: value("Cancellation admin:"),
+    manualRefundStatus: refund === "pending" || refund === "completed" ? refund : null,
+    membershipsRevoked: revoked && revoked !== "None" ? revoked.split(", ") : [],
+  };
+}
+
 export function filterRegistrationHistory(
   rows: readonly AdminRegistrationHistoryRow[],
   filters: RegistrationHistoryFilters,
@@ -177,7 +199,7 @@ export async function listAllRegistrationHistory(): Promise<AdminRegistrationHis
   const registrations = await readAll<RegistrationDbRow>(async (from, to) => {
     const result = await supabase
       .from("tournament_registrations")
-      .select("id,registration_key,tournament_id,registered_at,registration_type,registration_source,registration_status,angler1_name,angler2_name,boat_number,participant_contact_snapshot,membership_snapshot,price_snapshot,big_bass,member_pot,insurance,payment_reference,payment_method,online_payment_state,square_payment_id,checked_in_at,cancelled_at,admin_notes,identity_review_status,tournament:tournaments!inner(name,tournament_date)")
+      .select("id,registration_key,tournament_id,registered_at,registration_type,registration_source,registration_status,angler1_name,angler2_name,boat_number,participant_contact_snapshot,membership_snapshot,price_snapshot,big_bass,member_pot,insurance,payment_reference,payment_method,online_payment_state,square_payment_id,checked_in_at,cancelled_at,cancelled_by_admin_id,admin_notes,identity_review_status,tournament:tournaments!inner(name,tournament_date)")
       .order("registered_at", { ascending: false })
       .range(from, to);
     return { data: result.data as unknown as RegistrationDbRow[] | null, error: result.error };
@@ -203,7 +225,9 @@ export async function listAllRegistrationHistory(): Promise<AdminRegistrationHis
   const reviewsByRegistration = new Map<string, ReviewDbRow[]>();
   for (const review of reviews) reviewsByRegistration.set(review.registration_id, [...(reviewsByRegistration.get(review.registration_id) ?? []), review]);
 
-  return registrations.map((row) => ({
+  return registrations.map((row) => {
+    const cancellation = parseCancellationNotes(row.admin_notes);
+    return ({
     id: row.id,
     registrationKey: row.registration_key,
     tournamentId: row.tournament_id,
@@ -228,7 +252,10 @@ export async function listAllRegistrationHistory(): Promise<AdminRegistrationHis
     squarePaymentId: row.square_payment_id,
     checkedInAt: row.checked_in_at,
     cancelledAt: row.cancelled_at,
-    cancellationNote: row.admin_notes,
+    cancellationNote: cancellation.reason,
+    cancellationAdmin: cancellation.admin ?? row.cancelled_by_admin_id,
+    manualRefundStatus: cancellation.manualRefundStatus,
+    membershipsRevoked: cancellation.membershipsRevoked,
     identityReviewStatus: row.identity_review_status,
     reviews: (reviewsByRegistration.get(row.id) ?? []).map((review) => ({
       id: review.id,
@@ -248,5 +275,6 @@ export async function listAllRegistrationHistory(): Promise<AdminRegistrationHis
         createdAt: item.created_at,
       })),
     })),
-  }));
+    });
+  });
 }

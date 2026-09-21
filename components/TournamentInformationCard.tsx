@@ -23,11 +23,11 @@ export default function TournamentInformationCard() {
 
           <div>
             <p className="text-[0.65rem] font-black uppercase tracking-[0.12em] text-red-400">
-              Non-Members
+              Practice Policy
             </p>
 
             <p className="mt-1 text-xs leading-5 text-neutral-300">
-              Off limits begin Monday at 12:00 AM before the tournament.
+              Tournament waters are off limits beginning Monday at 12:00 AM before the tournament.
             </p>
           </div>
         </div>
@@ -40,12 +40,12 @@ export default function TournamentInformationCard() {
 
           <div>
             <p className="text-[0.65rem] font-black uppercase tracking-[0.12em] text-[#D4A017]">
-              Members
+              Registered Entries
             </p>
 
             <p className="mt-1 text-xs leading-5 text-neutral-300">
-              Registered members are eligible for one practice day: Friday
-              or Saturday immediately before the tournament.
+              Each registered team or solo entry receives one official practice
+              day: Friday or Saturday immediately before the tournament.
             </p>
 
             <p className="mt-1 text-[0.68rem] leading-4 text-neutral-500">

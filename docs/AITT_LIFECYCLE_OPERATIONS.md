@@ -1,6 +1,6 @@
 # AITT Tournament Lifecycle and Operations
 
-Last reconciled: 2026-09-15
+Last reconciled: 2026-09-21
 
 Status: **Primary human-readable authority for implemented AITT business and
 operational behavior.**
@@ -133,7 +133,7 @@ never be mixed.
 
 Card/online quotes use the centralized Square Service Fee: 3% of the
 chargeable subtotal, rounded to cents, plus a fixed $0.30 per transaction.
-Customer-facing itemization uses `SQUARE SERVICE FEE (3%)` and shows only the
+Customer-facing itemization uses `SQUARE SERVICE FEE` and shows only the
 calculated dollar amount; the fixed component is an internal calculation and
 is not separately displayed. Cash walk-ups have no Square Service Fee.
 
@@ -182,11 +182,32 @@ Historical tournament-time membership and `aoy_eligible` snapshots are
 authoritative for historical calculations. Today's membership state must not
 retroactively rewrite an old tournament's eligibility.
 
-For member-only Bronze, Silver, Gold, and Insurance selections:
+For Bronze, Silver, Gold, and Insurance selections:
 
-- a Team must satisfy the implemented membership requirements for its
-  associated anglers; and
-- a Solo entry uses that angler's tournament-time membership status.
+- every new angler must have a current or newly purchased seasonal membership;
+  and
+- every registered angler may select any side pot.
+
+Membership is paid once per person per active season. Returning active members
+pay $0, a new solo angler pays $40, a current/current team pays $0, a
+current/new team pays $40, and a new/new team pays $80. Online and walk-up
+registration expose only Current Member or Purchase Membership. An unverified
+Current Member claim becomes Needs Review; it does not create a hypothetical
+receivable or membership shortfall. Financial reports include collected money
+only. Active Admin workflows do not offer Confirm Not Member. Historical
+non-member records remain readable for audit and historical calculation.
+
+Current AOY and Championship calculations do not distinguish members from
+non-members because current registration requires membership. The stored
+historical `aoy_eligible` snapshot remains necessary for legacy published
+results and must not be rewritten by today's membership state.
+
+Every registered team or solo entry receives one official practice day. Waters
+become off-limits at 12:00 a.m. Monday immediately before the tournament. The
+entry may practice Friday or Saturday, not both; both team anglers share the
+single allowance, and practice by either member consumes it. Registration must
+be complete before practice. Changing boats, anglers, partners, or passengers
+does not create another practice day.
 
 ## 6. Tournament morning and check-in
 
@@ -208,6 +229,21 @@ The final operational sequence is:
 
 Registration & Check-In is an operational roster, not the financial/accounting
 ledger.
+
+Before cancelling an entry, normally clear any accidental check-in state while
+the registration is still in the active workflow. Cancellation must leave the
+entry canceled and excluded from check-in counts; any retained historical
+check-in timestamp is audit evidence only and must not be displayed as an
+active green Checked In status.
+
+Registration cancellation is a roster-level Admin action beside the walk-up
+control. The administrator selects an active boat/registration, reviews the
+registration number, participants, and recorded payment, enters a required
+note, and confirms cancellation for the entire solo or team entry. Cancellation
+removes the entry from active tournament operations but preserves payment
+history and memberships. AITT does not initiate a Square refund; any approved
+refund is handled manually through Chase outside AITT. Cancelled entries remain
+available in All Registrations for historical review.
 
 ## 7. Tournament Preparation
 
@@ -390,8 +426,8 @@ fingerprints, membership reasoning, or audit metadata.
 
 ## 13. Championship qualification
 
-Championship qualification is separate from AOY scoring. A Competitive Record
-qualifies with five eligible physical participations among the eight numbered
+Championship qualification is separate from AOY scoring. A current-policy
+Competitive Record qualifies with five physical participations among the eight numbered
 regular-season tournaments.
 
 - Solo qualification belongs to the exact Solo Competitive Record.
@@ -399,9 +435,9 @@ regular-season tournaments.
 - Team and Solo histories cannot be combined.
 - A different partner creates a different Team Competitive Record.
 - Both anglers do not independently need five personal appearances; the Team
-  record needs five eligible physical participations.
-- Associated anglers must satisfy applicable membership requirements for the
-  historically credited Team participations.
+  record needs five physical participations.
+- Historical eligibility snapshots remain available for legacy credited
+  participations and are not rewritten by current membership state.
 - One established partner may fish alone while the entry remains registered
   under that Team identity, as allowed by the Official Rules.
 
@@ -464,3 +500,11 @@ Registration-complete emails prominently include:
 
 Every phase requires focused verification before the next. Do not deploy or
 migrate production merely because staging passed.
+
+## 17. Tournament-information content reconciliation
+
+Mike manually updated production tournament-information content for every lake
+to reflect the current entry-based practice rule. This was an Admin content
+change, not a code deployment. Before the staging rehearsal, inspect staging
+tournament content and mirror the approved practice text for every lake; do not
+assume code or seed data has updated those stored fields.

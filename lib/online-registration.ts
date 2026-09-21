@@ -21,7 +21,7 @@ export type OnlineRegistrationState = (typeof REGISTRATION_STATES)[number];
 export type RegistrationPolicyKey = "rules" | "liability_waiver" | "refund_policy" | "payment_terms";
 
 export const REGISTRATION_POLICY_VERSIONS: Record<RegistrationPolicyKey, string> = {
-  rules: "1.7",
+  rules: "1.9",
   liability_waiver: "1.0",
   refund_policy: "pending-approval-2026-07-22",
   payment_terms: "2026-07-22",
@@ -187,7 +187,7 @@ function validateAngler(angler: OnlineRegistrationAngler, position: number): str
   if (angler.city?.trim().length < 2) errors.push(`${prefix} city is required.`);
   if (!STATE_PATTERN.test(angler.state?.trim() ?? "")) errors.push(`${prefix} state must be a 2-letter code.`);
   if (!ZIP_PATTERN.test(angler.zipCode?.trim() ?? "")) errors.push(`${prefix} ZIP Code is invalid.`);
-  if (!(["current", "joining", "non-member"] as const).includes(angler.membership)) errors.push(`${prefix} membership classification is invalid.`);
+  if (angler.membership !== "current" && angler.membership !== "joining") errors.push(`${prefix} seasonal membership is required.`);
   return errors;
 }
 
@@ -259,7 +259,7 @@ function getSelectionErrors(registrationType: RegistrationType, memberships: Mem
 
 function importSelections(registrationType: RegistrationType, memberships: Membership[], options: OnlineRegistrationRequest["options"]): string[] {
   const validPot = options.memberPot === null || ["bronze", "silver", "gold"].includes(options.memberPot);
-  if (!validPot) return ["Choose only a configured member bonus pot."];
+  if (!validPot) return ["Choose only a configured payout pot."];
   const selection = { registrationType, baseEntry: true as const, memberships, memberPot: options.memberPot, bigBass: options.bigBass, insurance: options.insurance };
   return getSafeSelectionErrors(selection);
 }

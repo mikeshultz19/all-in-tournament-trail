@@ -135,6 +135,13 @@ It is generated from the complete active tournament roster and is independent
 of roster pagination, search, and filters. The compatibility CSV remains
 available separately.
 
+Membership status in the workbook is participant-level: current registrations
+show Current Member or Purchased Membership, while an unverified current-member
+claim remains Needs Review. Current registration has no non-member path and no
+hypothetical membership receivable; collected payment snapshots remain the
+financial authority. Historical Non-Member records remain readable for recovery
+and reconciliation.
+
 ## Rehearsal evidence
 
 The permanent four-layer standard in the Tournament Readiness Checklist applies:

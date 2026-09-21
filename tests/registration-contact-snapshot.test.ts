@@ -66,7 +66,7 @@ describe("registration contact snapshots and member change review", () => {
     expect(page).toContain("HistoricalMembershipReviewForm");
     expect(historicalMembershipReview).toContain("Membership status needs review");
     expect(historicalMembershipReview).toContain("Confirm Member");
-    expect(historicalMembershipReview).toContain("Confirm Non-Member");
+    expect(historicalMembershipReview).not.toContain("Confirm Non-Member");
   });
 
   it("resolves an existing membership review without requesting payment", () => {
@@ -90,12 +90,12 @@ describe("registration contact snapshots and member change review", () => {
     expect(actions).not.toContain("admin_resolve_membership_review_with_payment");
   });
 
-  it("blocks Confirm Not Member when member-only options remain selected", () => {
+  it("preserves historical non-member compatibility without exposing a new workflow choice", () => {
     expect(identityReview).toContain('input.membership === "non-member"');
     expect(identityReview).toContain('registration:tournament_registrations!inner(member_pot,insurance)');
-    expect(identityReview).toContain("A non-member cannot be confirmed while member-only options remain selected.");
+    expect(identityReview).toContain("A historical non-member cannot be confirmed while a side-pot selection remains selected.");
     expect(identityReview).toContain('supabase.rpc("admin_resolve_historical_membership_review"');
-    expect(identityReview).toContain("A non-member cannot be confirmed while member-only options remain selected.");
+    expect(identityReview).toContain("A historical non-member cannot be confirmed while a side-pot selection remains selected.");
   });
 
   it("is repeatable and deduplicates memberships", () => {

@@ -18,13 +18,15 @@ import { getActiveSeasonSchedule, getNextUpcomingTournament } from "@/lib/tourna
 import { listTournamentCollectionSummaries } from "@/lib/tournament-collection-summary";
 import { listTournamentInsurancePotResults } from "@/lib/insurance-pot-results";
 import TournamentFundsSummary from "@/components/admin/TournamentFundsSummary";
+import RegistrationHistoryList from "@/components/admin/RegistrationHistoryList";
+import { filterRegistrationHistory, listAllRegistrationHistory } from "@/lib/admin-registration-history";
 
 export const dynamic = "force-dynamic";
 
 export default async function RegistrationReviewPage({ searchParams }: { searchParams: Promise<{ tournament?: string; filter?: string; search?: string; page?: string; pageSize?: string }> }) {
   await requireAdminUser();
   const { tournament, filter: requestedFilter, search: requestedSearch, page: requestedPage, pageSize: requestedPageSize } = await searchParams;
-  const filter: RegistrationRosterFilter = requestedFilter === "needs_review" || requestedFilter === "walk_ups" || requestedFilter === "check_ins" ? requestedFilter : "all";
+  const filter: RegistrationRosterFilter = requestedFilter === "needs_review" || requestedFilter === "walk_ups" || requestedFilter === "check_ins" || requestedFilter === "cancelled" ? requestedFilter : "all";
   const search = requestedSearch?.trim() ?? "";
   const pageSize: 25 | 50 | 100 = requestedPageSize === "50"
     ? 50
@@ -37,24 +39,33 @@ export default async function RegistrationReviewPage({ searchParams }: { searchP
     ?? currentTournament
     ?? tournaments[0]
     ?? null;
-  const [allRows, reviewItems, anglers, collectionSummary] = selectedTournament
+  const [allRows, reviewItems, anglers, collectionSummary, allHistory] = selectedTournament
     ? await Promise.all([
       getTournamentRegistrationRoster(selectedTournament.id),
       listRegistrationReviewItems(selectedTournament.id),
       listReviewAnglerOptions(selectedTournament.id),
       listTournamentInsurancePotResults([selectedTournament.id]).then((results) => listTournamentCollectionSummaries([selectedTournament.id], results).then((summaries) => summaries[selectedTournament.id] ?? null)),
+      listAllRegistrationHistory(),
     ])
-    : [[], [], [], null];
+    : [[], [], [], null, []];
   const reviewsByRegistration = new Map<string, typeof reviewItems>();
   for (const item of reviewItems) reviewsByRegistration.set(item.registrationId, [...(reviewsByRegistration.get(item.registrationId) ?? []), item]);
   const pendingReviewIds = new Set(reviewItems.filter((item) => item.status === "review_required").map((item) => item.registrationId));
   const checkInRemainingCount = allRows.filter((row) => row.checkedInAt === null).length;
+  const cancelledHistory = selectedTournament
+    ? filterRegistrationHistory(allHistory, { tournamentId: selectedTournament.id, search }).filter((row) => row.status === "cancelled")
+    : [];
   const filteredRows = filterTournamentRegistrationRosterRows(
     allRows.filter((row) => filter !== "needs_review" || row.needsReview || pendingReviewIds.has(row.id)),
-    filter === "needs_review" ? "all" : filter,
+    filter === "needs_review" || filter === "cancelled" ? "all" : filter,
     search,
   );
-  const { pageRows: rows, totalRows, totalPages, currentPage, rangeStart, rangeEnd } = paginateTournamentRegistrationRosterRows(filteredRows, requestedPageNumber, pageSize);
+  const { pageRows: rows, totalRows: activeTotalRows, totalPages: activeTotalPages, currentPage, rangeStart: activeRangeStart, rangeEnd: activeRangeEnd } = paginateTournamentRegistrationRosterRows(filteredRows, requestedPageNumber, pageSize);
+  const isCancelledFilter = filter === "cancelled";
+  const totalRows = isCancelledFilter ? cancelledHistory.length : activeTotalRows;
+  const totalPages = isCancelledFilter ? 1 : activeTotalPages;
+  const rangeStart = isCancelledFilter && totalRows ? 1 : activeRangeStart;
+  const rangeEnd = isCancelledFilter ? totalRows : activeRangeEnd;
   const baseSummary = summarizeTournamentRegistrationRoster(allRows);
   const summary = {
     ...baseSummary,
@@ -99,7 +110,7 @@ export default async function RegistrationReviewPage({ searchParams }: { searchP
         <div className="flex flex-wrap items-end justify-between gap-5">
           <div>
             <h2 className="text-sm font-bold uppercase text-white">{selectedTournament.name}</h2>
-            <dl className="mt-3 flex flex-wrap gap-x-8 gap-y-3 text-sm"><Metric label="Registrations" value={summary.total} /><Metric label="Needs Review" value={summary.needReview} /><Metric label="Walk-Ups" value={summary.walkUps} /><RegistrationCheckInSummaryStat tournamentId={selectedTournament.id} filter={filter} search={search} pageSize={pageSize} count={checkInRemainingCount} /></dl>
+            <dl className="mt-3 flex flex-wrap gap-x-8 gap-y-3 text-sm"><Metric label="Registrations" value={summary.total} /><Metric label="Needs Review" value={summary.needReview} /><Metric label="Walk-Ups" value={summary.walkUps} /><RegistrationCheckInSummaryStat tournamentId={selectedTournament.id} filter={filter === "cancelled" ? "all" : filter} search={search} pageSize={pageSize} count={checkInRemainingCount} /></dl>
           </div>
           <div>
             <p className="mb-2 text-[10px] font-black uppercase tracking-[0.14em] text-neutral-500">Export / Share</p>
@@ -113,8 +124,22 @@ export default async function RegistrationReviewPage({ searchParams }: { searchP
       </AdminPanel>
 
       <TournamentFundsSummary summary={collectionSummary} className="mt-5" collapsible />
-      <div className="mt-5">
+      <div className="mt-5 flex flex-wrap items-start gap-3">
         <AddWalkUpControl tournamentId={selectedTournament.id} />
+        <CancelRegistrationControl
+          tournamentId={selectedTournament.id}
+          registrations={allRows.map((row) => ({
+            id: row.id,
+            boatNumber: row.boatNumber,
+            registrationNumber: row.registrationKey,
+            participantNames: [row.angler1.displayName, ...(row.angler2 ? [row.angler2.displayName] : [])],
+            amountCents: row.totalPaidCents,
+            paymentMethod: row.paymentMethod,
+            paymentStatus: row.paymentStatus,
+            lineItems: allHistory.find((historyRow) => historyRow.id === row.id)?.priceSnapshot?.lineItems ?? [],
+            serviceFeeCents: allHistory.find((historyRow) => historyRow.id === row.id)?.priceSnapshot?.cardProcessingFeeCents ?? row.processingFeeCents ?? 0,
+          }))}
+        />
       </div>
 
       <section id="registration-entries" className="mt-5 overflow-hidden rounded-md border border-white/10 bg-[#0f0f0f]">
@@ -126,10 +151,12 @@ export default async function RegistrationReviewPage({ searchParams }: { searchP
           page={currentPage}
           pageSize={pageSize}
           totalRows={totalRows}
+          cancelledCount={cancelledHistory.length}
           totalPages={totalPages}
           rangeStart={rangeStart}
           rangeEnd={rangeEnd}
         />
+      {isCancelledFilter ? <RegistrationHistoryList rows={cancelledHistory} /> : <>
       <div className="grid gap-3 p-3 md:hidden" data-testid="mobile-registration-roster">
         {rows.map((row) => <MobileRosterCard key={row.id} row={row} tournamentId={selectedTournament.id} reviews={reviewsByRegistration.get(row.id) ?? []} anglers={anglers} />)}
         {!rows.length ? <p className="border border-white/10 bg-[#111] px-4 py-10 text-center text-sm text-neutral-500">{emptyRosterMessage(filter)}</p> : null}
@@ -146,29 +173,35 @@ export default async function RegistrationReviewPage({ searchParams }: { searchP
           </tbody>
         </table>
       </div>
+      </>}
       </section>
     </> : <p className="mt-6 border border-white/10 bg-[#111] p-5 text-neutral-400">Select a tournament to load its registration roster and export actions.</p>}
   </>;
 }
 
 function RosterRow({ row, tournamentId, reviews, anglers }: { row: TournamentRegistrationRosterRow; tournamentId: string; reviews: Awaited<ReturnType<typeof listRegistrationReviewItems>>; anglers: Awaited<ReturnType<typeof listReviewAnglerOptions>> }) {
-  return <tr className="align-top transition-colors hover:bg-white/[0.025]">
-    <td className="px-3 py-3 text-lg font-black text-[#D4A017]">#{row.boatNumber ?? "—"}</td>
-    <td className="whitespace-nowrap px-3 py-3 font-bold text-neutral-300">{title(row.registrationType)}</td>
-    <td className="px-3 py-3 font-bold text-white">{row.angler1.displayName}{row.angler2 ? ` / ${row.angler2.displayName}` : ""}</td>
-    <td className="min-w-[8.5rem] px-3 py-3 text-neutral-300"><p className="whitespace-nowrap">{membershipStatusLine(row.angler1)}</p>{row.angler2 ? <p className="whitespace-nowrap">{membershipStatusLine(row.angler2)}</p> : null}</td>
-    <td className="px-3 py-3 font-bold text-white">{membershipFees(row)}</td>
-    <td className="px-3 py-3 font-bold text-white">{row.memberPot ? title(row.memberPot) : "None"}</td>
-    <td className="px-3 py-3 text-neutral-300">{yesNo(row.insurance)}</td>
-    <td className="px-3 py-3 text-neutral-300">{yesNo(row.bigBass)}</td>
-    <td className="whitespace-nowrap px-3 py-3 text-neutral-300">{compactDateTime(row.registeredAt)}</td>
-    <td className="max-w-sm px-3 py-3"><RosterActions row={row} tournamentId={tournamentId} reviews={reviews} anglers={anglers} /></td>
-    <td aria-label={`Blank weight for boat ${row.boatNumber ?? "unassigned"}`} className="w-20 px-3 py-3">&nbsp;</td>
-  </tr>;
+  const pendingReviews = reviews.filter((review) => review.status === "review_required");
+  return <>
+    <tr className="align-top transition-colors hover:bg-white/[0.025]">
+      <td className="px-3 py-3 text-lg font-black text-[#D4A017]">#{row.boatNumber ?? "—"}</td>
+      <td className="whitespace-nowrap px-3 py-3 font-bold text-neutral-300">{title(row.registrationType)}</td>
+      <td className="px-3 py-3 font-bold text-white">{row.angler1.displayName}{row.angler2 ? ` / ${row.angler2.displayName}` : ""}</td>
+      <td className="min-w-[8.5rem] px-3 py-3 text-neutral-300"><p className="whitespace-nowrap">{membershipStatusLine(row.angler1)}</p>{row.angler2 ? <p className="whitespace-nowrap">{membershipStatusLine(row.angler2)}</p> : null}</td>
+      <td className="px-3 py-3 font-bold text-white">{membershipFees(row)}</td>
+      <td className="px-3 py-3 font-bold text-white">{row.memberPot ? title(row.memberPot) : "None"}</td>
+      <td className="px-3 py-3 text-neutral-300">{yesNo(row.insurance)}</td>
+      <td className="px-3 py-3 text-neutral-300">{yesNo(row.bigBass)}</td>
+      <td className="whitespace-nowrap px-3 py-3 text-neutral-300">{compactDateTime(row.registeredAt)}</td>
+      <td className="max-w-sm px-3 py-3"><RosterActions row={row} tournamentId={tournamentId} reviews={reviews} /></td>
+      <td aria-label={`Blank weight for boat ${row.boatNumber ?? "unassigned"}`} className="w-20 px-3 py-3">&nbsp;</td>
+    </tr>
+    {pendingReviews.length ? <tr data-testid="expanded-registration-review-row"><td colSpan={11} className="bg-black/20 px-4 py-4"><RegistrationReviewPanels reviews={pendingReviews} anglers={anglers} /></td></tr> : null}
+  </>;
 }
 
 function MobileRosterCard({ row, tournamentId, reviews, anglers }: { row: TournamentRegistrationRosterRow; tournamentId: string; reviews: Awaited<ReturnType<typeof listRegistrationReviewItems>>; anglers: Awaited<ReturnType<typeof listReviewAnglerOptions>> }) {
-  return <article className="border border-white/10 bg-[#111] p-4" data-testid="mobile-registration-card"><div className="flex items-start justify-between gap-4"><div className="min-w-0"><p className="text-base font-black text-white">{row.angler1.displayName}</p>{row.angler2 ? <p className="mt-1 text-sm font-bold text-neutral-300">{row.angler2.displayName}</p> : null}<p className="mt-2 text-[10px] text-neutral-500">Registered {compactDateTime(row.registeredAt)}</p></div><div className="shrink-0 text-right"><p className="text-[10px] font-black uppercase text-neutral-500">Boat #</p><p className="mt-1 text-2xl font-black text-[#D4A017]">{row.boatNumber ?? "—"}</p></div></div><dl className="mt-4 grid grid-cols-2 gap-3 border-y border-white/10 py-3 text-xs"><div><dt className="uppercase text-neutral-500">Anglers</dt><dd className="mt-1 space-y-1 font-bold text-white"><p className="whitespace-nowrap">{membershipStatusLine(row.angler1)}</p>{row.angler2 ? <p className="whitespace-nowrap">{membershipStatusLine(row.angler2)}</p> : null}</dd></div><div><dt className="uppercase text-neutral-500">Membership Fees</dt><dd className="mt-1 font-bold text-white">{membershipFees(row)}</dd></div><div><dt className="uppercase text-neutral-500">Type</dt><dd className="mt-1 font-bold text-white">{title(row.registrationType)}</dd></div><div><dt className="uppercase text-neutral-500">Member Pots</dt><dd className="mt-1 font-bold text-white">{row.memberPot ? title(row.memberPot) : "None"}</dd></div><div><dt className="uppercase text-neutral-500">Insurance</dt><dd className="mt-1 font-bold text-white">{yesNo(row.insurance)}</dd></div><div><dt className="uppercase text-neutral-500">Big Bass</dt><dd className="mt-1 font-bold text-white">{yesNo(row.bigBass)}</dd></div></dl><div className="mt-4"><RosterActions row={row} tournamentId={tournamentId} reviews={reviews} anglers={anglers} /><div className="mt-3 flex items-center gap-3 border-t border-white/10 pt-3"><span className="text-[10px] font-black uppercase text-neutral-500">Weight</span><span aria-label={`Blank weight for boat ${row.boatNumber ?? "unassigned"}`} className="h-6 min-w-20 flex-1 border-b border-white/25" /></div></div></article>;
+  const pendingReviews = reviews.filter((review) => review.status === "review_required");
+  return <article className="border border-white/10 bg-[#111] p-4" data-testid="mobile-registration-card"><div className="flex items-start justify-between gap-4"><div className="min-w-0"><p className="text-base font-black text-white">{row.angler1.displayName}</p>{row.angler2 ? <p className="mt-1 text-sm font-bold text-neutral-300">{row.angler2.displayName}</p> : null}<p className="mt-2 text-[10px] text-neutral-500">Registered {compactDateTime(row.registeredAt)}</p></div><div className="shrink-0 text-right"><p className="text-[10px] font-black uppercase text-neutral-500">Boat #</p><p className="mt-1 text-2xl font-black text-[#D4A017]">{row.boatNumber ?? "—"}</p></div></div><dl className="mt-4 grid grid-cols-2 gap-3 border-y border-white/10 py-3 text-xs"><div><dt className="uppercase text-neutral-500">Anglers</dt><dd className="mt-1 space-y-1 font-bold text-white"><p className="whitespace-nowrap">{membershipStatusLine(row.angler1)}</p>{row.angler2 ? <p className="whitespace-nowrap">{membershipStatusLine(row.angler2)}</p> : null}</dd></div><div><dt className="uppercase text-neutral-500">Membership Fees</dt><dd className="mt-1 font-bold text-white">{membershipFees(row)}</dd></div><div><dt className="uppercase text-neutral-500">Type</dt><dd className="mt-1 font-bold text-white">{title(row.registrationType)}</dd></div><div><dt className="uppercase text-neutral-500">Member Pots</dt><dd className="mt-1 font-bold text-white">{row.memberPot ? title(row.memberPot) : "None"}</dd></div><div><dt className="uppercase text-neutral-500">Insurance</dt><dd className="mt-1 font-bold text-white">{yesNo(row.insurance)}</dd></div><div><dt className="uppercase text-neutral-500">Big Bass</dt><dd className="mt-1 font-bold text-white">{yesNo(row.bigBass)}</dd></div></dl><div className="mt-4"><RosterActions row={row} tournamentId={tournamentId} reviews={reviews} /><div className="mt-3 flex items-center gap-3 border-t border-white/10 pt-3"><span className="text-[10px] font-black uppercase text-neutral-500">Weight</span><span aria-label={`Blank weight for boat ${row.boatNumber ?? "unassigned"}`} className="h-6 min-w-20 flex-1 border-b border-white/25" /></div></div>{pendingReviews.length ? <div className="mt-4 border-t border-white/10 pt-4"><RegistrationReviewPanels reviews={pendingReviews} anglers={anglers} /></div> : null}</article>;
 }
 
 function membershipStatusLine(angler: TournamentRegistrationRosterRow["angler1"]) {
@@ -186,23 +219,28 @@ function membershipFees(row: TournamentRegistrationRosterRow) {
   return `$${(cents / 100).toFixed(0)}`;
 }
 
-function RosterActions({ row, tournamentId, reviews, anglers }: { row: TournamentRegistrationRosterRow; tournamentId: string; reviews: Awaited<ReturnType<typeof listRegistrationReviewItems>>; anglers: Awaited<ReturnType<typeof listReviewAnglerOptions>> }) {
+function RosterActions({ row, tournamentId, reviews }: { row: TournamentRegistrationRosterRow; tournamentId: string; reviews: Awaited<ReturnType<typeof listRegistrationReviewItems>> }) {
   const pendingReviews = reviews.filter((review) => review.status === "review_required");
   const needsReview = row.needsReview || pendingReviews.length > 0;
   return <>
     <div className="flex flex-wrap items-start gap-2">{needsReview ? <AdminStatusBadge tone="attention">Needs Review</AdminStatusBadge> : null}<RegistrationCheckInControl tournamentId={tournamentId} registrationId={row.id} checkedInAt={row.checkedInAt} /></div>
-    <CancelRegistrationControl tournamentId={tournamentId} registrationId={row.id} registrationNumber={row.registrationKey} participantNames={[row.angler1.displayName, ...(row.angler2 ? [row.angler2.displayName] : [])]} amountCents={row.totalPaidCents} />
-    {pendingReviews.map((review) => {
-      const presentation = getRegistrationReviewPresentation(review);
-      return <details key={review.id} className="mt-3 border-t border-white/10 pt-3">
-      <summary className="cursor-pointer text-xs font-bold text-amber-200">{review.participantName} — {presentation.heading}</summary>
-      {review.reviewKind === "contact" ? null : <div className="mt-2 text-xs text-neutral-300"><p><span className="font-bold text-white">Issue:</span> {presentation.issue}</p>{presentation.identityFollowUp ? <p className="mt-1 text-neutral-400">{presentation.identityFollowUp}</p> : null}</div>}
-      {review.reviewKind === "contact" && review.existingContact && review.submittedContact
-        ? <RegistrationContactReviewForm reviewId={review.id} participantName={review.participantName} reviewReason={review.reason} existing={review.existingContact} submitted={review.submittedContact} differingFields={review.differingFields} />
-        : review.reviewKind === "membership" ? <HistoricalMembershipReviewForm reviewId={review.id} />
-        : <RegistrationReviewResolutionForm reviewId={review.id} anglers={anglers} suggestedAnglerIds={review.suggestedAnglers.map((angler) => angler.id)} submission={{ name: review.participantName, email: review.email, phone: review.phone, membership: review.submittedMembership }} />}
-    </details>})}
   </>;
+}
+
+function RegistrationReviewPanels({ reviews, anglers }: { reviews: Awaited<ReturnType<typeof listRegistrationReviewItems>>; anglers: Awaited<ReturnType<typeof listReviewAnglerOptions>> }) {
+  return <div className="grid min-w-0 gap-3" data-testid="registration-review-panels">
+    {reviews.map((review) => {
+      const presentation = getRegistrationReviewPresentation(review);
+      return <details key={review.id} open className="min-w-0 border border-amber-400/20 bg-[#111] p-3">
+        <summary className="cursor-pointer text-sm font-bold text-amber-200">{review.participantName} — {presentation.heading}</summary>
+        {review.reviewKind === "contact" ? null : <div className="mt-2 text-xs text-neutral-300"><p><span className="font-bold text-white">Issue:</span> {presentation.issue}</p>{presentation.identityFollowUp ? <p className="mt-1 text-neutral-400">{presentation.identityFollowUp}</p> : null}</div>}
+        {review.reviewKind === "contact" && review.existingContact && review.submittedContact
+          ? <RegistrationContactReviewForm reviewId={review.id} participantName={review.participantName} reviewReason={review.reason} existing={review.existingContact} submitted={review.submittedContact} differingFields={review.differingFields} />
+          : review.reviewKind === "membership" ? <HistoricalMembershipReviewForm reviewId={review.id} />
+          : <RegistrationReviewResolutionForm reviewId={review.id} anglers={anglers} suggestedAnglerIds={review.suggestedAnglers.map((angler) => angler.id)} submission={{ name: review.participantName, email: review.email, phone: review.phone, membership: review.submittedMembership }} />}
+      </details>;
+    })}
+  </div>;
 }
 
 function Metric({ label, value }: { label: string; value: number }) { return <div><dt className="text-[10px] uppercase text-neutral-500">{label}</dt><dd className="mt-1 font-black tabular-nums text-white">{value}</dd></div>; }

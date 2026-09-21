@@ -32,9 +32,9 @@
 - **Registration Review:** Admin workflow for resolving registrations whose
   identity, membership, payment, or other evidence needs staff confirmation.
 - **Side-pot options:** Tournament Entry is $60. Big Bass is optional. Bronze
-  +$40, Silver +$100, and Gold +$500 are optional member pots, and an entry may
-  choose only one of those three. The Insurance Pot is optional and
-  members-only.
+  +$40, Silver +$100, and Gold +$500 are optional pots available to every
+  registered angler, and an entry may choose only one of those three. The
+  Insurance Pot is optional and available to every registered angler.
 - **Published Results:** Official Results made public and thereafter immutable.
 - **Stable Team Identity:** A season team identified by stable anglers,
   independent of partner display order. A different partner combination is a
