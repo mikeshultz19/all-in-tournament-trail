@@ -31,6 +31,22 @@ describe("Admin authentication session behavior", () => {
     expect(loginSource).toContain('`${normalizedUsername}@aitt.local`');
   });
 
+  it("uses accessible named fields and safe login error classifications", () => {
+    expect(loginSource).toContain('id="admin-username"');
+    expect(loginSource).toContain('name="username"');
+    expect(loginSource).toContain('autoComplete="username"');
+    expect(loginSource).toContain('id="admin-password"');
+    expect(loginSource).toContain('name="password"');
+    expect(loginSource).toContain('autoComplete="current-password"');
+    expect(loginSource).toContain("onSubmit={handleSubmit}");
+    expect(loginSource).toContain('type="submit"');
+    expect(loginSource).toContain("Invalid credentials");
+    expect(loginSource).toContain("Authentication service unavailable");
+    expect(loginSource).toContain("Application authentication configuration error");
+    expect(loginSource).toContain("Network request failed");
+    expect(loginSource).not.toContain("signInError.message");
+  });
+
   it("requires an active Admin role at login and at the Admin boundary", () => {
     for (const source of [loginSource, middlewareSource]) {
       expect(source).toMatch(/role\s*[!=]==?\s*"admin"/);

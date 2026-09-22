@@ -5,6 +5,42 @@ import { useRouter } from "next/navigation";
 
 import { createSupabaseBrowserClient } from "@/lib/supabase/client";
 
+type LoginErrorLike = {
+  code?: unknown;
+  name?: unknown;
+  status?: unknown;
+};
+
+function classifyLoginError(error: unknown): string {
+  if (error && typeof error === "object") {
+    const authError = error as LoginErrorLike;
+    const code = typeof authError.code === "string" ? authError.code : "";
+    const status =
+      typeof authError.status === "number" ? authError.status : undefined;
+
+    if (code === "invalid_credentials" || status === 400) {
+      return "Invalid credentials";
+    }
+
+    if (
+      authError.name === "AuthRetryableFetchError" ||
+      status === 0
+    ) {
+      return "Network request failed";
+    }
+
+    if (status !== undefined && (status === 429 || status >= 500)) {
+      return "Authentication service unavailable";
+    }
+  }
+
+  if (error instanceof TypeError) {
+    return "Network request failed";
+  }
+
+  return "Authentication service unavailable";
+}
+
 export default function AdminLoginForm({
   nextPath = "/admin",
   unauthorized = false,
@@ -42,7 +78,7 @@ export default function AdminLoginForm({
         await supabase.auth.signInWithPassword({ email, password });
 
       if (signInError || !data.user) {
-        setError("Email or password is incorrect.");
+        setError(classifyLoginError(signInError));
         return;
       }
 
@@ -62,8 +98,15 @@ export default function AdminLoginForm({
           : "/admin";
       router.replace(destination);
       router.refresh();
-    } catch {
-      setError("Admin login is temporarily unavailable.");
+    } catch (error) {
+      if (
+        error instanceof Error &&
+        error.message === "Supabase browser environment variables are missing."
+      ) {
+        setError("Application authentication configuration error");
+      } else {
+        setError(classifyLoginError(error));
+      }
     } finally {
       setSubmitting(false);
     }
@@ -77,6 +120,8 @@ export default function AdminLoginForm({
       <label className="block text-xs font-black uppercase tracking-[0.12em] text-neutral-300">
         Email or Username
         <input
+          id="admin-username"
+          name="username"
           type="text"
           required
           autoComplete="username"
@@ -94,6 +139,8 @@ export default function AdminLoginForm({
       <label className="block text-xs font-black uppercase tracking-[0.12em] text-neutral-300">
         Password
         <input
+          id="admin-password"
+          name="password"
           type="password"
           required
           autoComplete="current-password"
