@@ -1,7 +1,9 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import {
+  buildRosterAngler,
   countPurchasedRegistrationMemberships,
+  deriveRegistrationMemberStatus,
   summarizeTournamentRegistrationRoster,
 } from "@/lib/tournament-registration-roster";
 
@@ -26,6 +28,35 @@ describe("tournament registration roster summary", () => {
 });
 
 describe("current tournament registration membership purchases", () => {
+  it("classifies a normalized historical non-member as current when active membership is verified", () => {
+    const angler = buildRosterAngler(
+      "Historical Angler",
+      "angler-1",
+      { submittedClassification: "non-member", resolvedClassification: "current", status: "active" },
+      new Map(),
+      null,
+      false,
+      true,
+    );
+    expect(angler.membership).toBe("Current Member");
+    expect(angler.memberStatus).toBe("Member");
+    expect(deriveRegistrationMemberStatus({ submittedClassification: "non-member", resolvedClassification: "non-member" }, { currentRoster: true })).toBe("Needs Review");
+  });
+
+  it("preserves the New Member label for a collected membership line", () => {
+    const angler = buildRosterAngler(
+      "New Angler",
+      null,
+      { submittedClassification: "non-member", resolvedClassification: "joining" },
+      new Map(),
+      null,
+      false,
+      true,
+    );
+    expect(angler.membership).toBe("Purchased Membership / Joining");
+    expect(angler.memberStatus).toBe("Member");
+  });
+
   it("counts individual paid annual-membership line items only", () => {
     expect(countPurchasedRegistrationMemberships([
       { payment_reference: "paid-team", price_snapshot: { lineItems: [{ code: "annual_membership" }, { code: "annual_membership" }, { code: "base_entry" }] } },

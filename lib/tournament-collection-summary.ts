@@ -14,6 +14,16 @@ export async function listTournamentCollectionSummaries(tournamentIds: readonly 
     .in("tournament_id", [...tournamentIds])
     .eq("registration_status", "active");
   if (error) throw new Error("Tournament collection records could not be loaded.", { cause: error });
+  const { data: tournaments, error: tournamentError } = await supabase
+    .from("tournaments")
+    .select("id,season_id")
+    .in("id", [...tournamentIds]);
+  if (tournamentError) throw new Error("Tournament seasons could not be loaded.", { cause: tournamentError });
+  const seasonIds = [...new Set((tournaments ?? []).map((tournament) => tournament.season_id).filter((seasonId): seasonId is string => Boolean(seasonId)))];
+  const { data: memberships, error: membershipError } = seasonIds.length
+    ? await supabase.from("memberships").select("angler_id,season_id,status").in("season_id", seasonIds)
+    : { data: [], error: null };
+  if (membershipError) throw new Error("Tournament memberships could not be loaded.", { cause: membershipError });
   const { data: imported, error: importedError } = await supabase.from("tournament_result_entries")
     .select("id,tournament_id,registration_id,team_name,participation_status")
     .in("tournament_id", [...tournamentIds]);
@@ -23,5 +33,10 @@ export async function listTournamentCollectionSummaries(tournamentIds: readonly 
     (data ?? []).filter((row) => row.tournament_id === tournamentId) as RegistrationCollectionRow[],
     insuranceResults[tournamentId],
     (imported ?? []).filter((row) => row.tournament_id === tournamentId) as ImportedCollectionRow[],
+    new Set(
+      (memberships ?? [])
+        .filter((membership) => membership.status === "active" && membership.season_id === tournaments?.find((tournament) => tournament.id === tournamentId)?.season_id)
+        .map((membership) => membership.angler_id),
+    ),
   )]));
 }

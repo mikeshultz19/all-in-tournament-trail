@@ -10,6 +10,40 @@ const snapshot = (...lineItems: Array<[string, number]>) => ({ lineItems: lineIt
 const collectedOnline = (overrides: Record<string, unknown> = {}) => ({ tournament_id: "tournament-1", payment_reference: "paid", identity_review_status: "verified", registration_source: "online" as const, online_payment_state: "completed" as const, square_payment_id: "sq-1", member_pot: null, big_bass: false, insurance: false, price_snapshot: snapshot(["Tournament Entry", 6000]), ...overrides });
 
 describe("automatic tournament collection reconciliation", () => {
+  it("ignores a stale historical non-member classification when active membership is verified", () => {
+    const summary = buildTournamentCollectionSummary("tournament-1", [{
+      id: "normalized-historical",
+      tournament_id: "tournament-1",
+      angler1_id: "angler-1",
+      payment_reference: "paid",
+      identity_review_status: "verified",
+      member_pot: null,
+      big_bass: false,
+      price_snapshot: snapshot(["Tournament Entry", 6000], ["Angler 1 Membership", 4000]),
+      membership_snapshot: [{ submittedClassification: "non-member", resolvedClassification: "non-member" }],
+    }], undefined, [], new Set(["angler-1"]));
+    expect(summary.membershipMismatchCount).toBe(0);
+    expect(summary.membershipReconciliationWarnings).toEqual([]);
+    expect(summary.membershipRevenueCents).toBe(4000);
+  });
+
+  it("retains a genuine membership payment mismatch without an active member", () => {
+    const summary = buildTournamentCollectionSummary("tournament-1", [{
+      id: "unverified-charge",
+      tournament_id: "tournament-1",
+      angler1_id: "angler-1",
+      payment_reference: "paid",
+      identity_review_status: "verified",
+      member_pot: null,
+      big_bass: false,
+      price_snapshot: snapshot(["Tournament Entry", 6000], ["Angler 1 Membership", 4000]),
+      membership_snapshot: [{ submittedClassification: "non-member", resolvedClassification: "non-member" }],
+    }]);
+    expect(summary.membershipMismatchCount).toBe(1);
+    expect(summary.membershipReconciliationWarnings).toHaveLength(1);
+    expect(summary.membershipRevenueCents).toBe(4000);
+  });
+
   it("keeps an unresolved Current Member claim at zero collected membership revenue", () => {
     const summary = buildTournamentCollectionSummary("tournament-1", [{
       id: "reg-review",

@@ -147,7 +147,7 @@ type MembershipReconciliation = {
   mismatch: boolean;
 };
 
-function reconcileMembershipRow(row: RegistrationCollectionRow): MembershipReconciliation {
+function reconcileMembershipRow(row: RegistrationCollectionRow, activeMembershipAnglerIds: ReadonlySet<string> = new Set()): MembershipReconciliation {
   const membershipFeeCents = REGISTRATION_PRICING.annualMembership * 100;
   const joiningItems = row.membership_snapshot?.filter((item) => item.submittedClassification === "joining" || item.resolvedClassification === "joining") ?? [];
   const storedItemizedAmountCents = lineAmount(row.price_snapshot, (item) => item.code === "annual_membership" || Boolean(item.name?.endsWith(" Membership")));
@@ -167,11 +167,17 @@ function reconcileMembershipRow(row: RegistrationCollectionRow): MembershipRecon
   const collectedAmountCents = !collected
     ? 0
     : (itemizedAmountCents ?? 0) + administratorConfirmedMissingAmount;
-  const mismatch =
-    (expectedCount > 0 && !collected) ||
-    (row.registration_source !== "walk_up" && expectedCount > 0 && itemizedAmountCents === 0 && adminConfirmedJoiningCount === 0) ||
-    (row.membership_snapshot !== undefined && expectedCount === 0 && Boolean(itemizedAmountCents && itemizedAmountCents > 0)) ||
-    (itemizedAmountCents !== null && itemizedAmountCents > 0 && itemizedAmountCents !== expectedAmountCents);
+  const activeMembershipCount = [row.angler1_id, row.angler2_id]
+    .filter((anglerId): anglerId is string => Boolean(anglerId && activeMembershipAnglerIds.has(anglerId)))
+    .length;
+  const staleHistoricalClassification = joiningItems.length === 0 && itemizedCount === 0 && activeMembershipCount > 0;
+  const mismatch = staleHistoricalClassification
+    ? false
+    : (expectedCount > 0 && !collected) ||
+      (itemizedCount > 0 && !collected) ||
+      (row.registration_source !== "walk_up" && expectedCount > 0 && itemizedAmountCents === 0 && adminConfirmedJoiningCount === 0) ||
+      (row.membership_snapshot !== undefined && expectedCount === 0 && Boolean(itemizedAmountCents && itemizedAmountCents > 0) && activeMembershipCount < itemizedCount) ||
+      (itemizedAmountCents !== null && itemizedAmountCents > 0 && itemizedAmountCents !== expectedAmountCents && activeMembershipCount < itemizedCount);
   return { expectedCount, expectedAmountCents, collectedAmountCents, mismatch };
 }
 
@@ -208,7 +214,7 @@ function hasMalformedWalkUpPaymentSnapshot(row: RegistrationCollectionRow, faceV
   return storedTotalCents !== expectedTotalCents;
 }
 
-export function buildTournamentCollectionSummary(tournamentId: string, rows: readonly RegistrationCollectionRow[], _insuranceResult?: unknown, importedRows: readonly ImportedCollectionRow[] = []): TournamentCollectionSummary {
+export function buildTournamentCollectionSummary(tournamentId: string, rows: readonly RegistrationCollectionRow[], _insuranceResult?: unknown, importedRows: readonly ImportedCollectionRow[] = [], activeMembershipAnglerIds: ReadonlySet<string> = new Set()): TournamentCollectionSummary {
   const paidRows = rows.filter((row) => row.tournament_id === tournamentId && isCollected(row));
   const scopedRows = rows.filter((row) => row.tournament_id === tournamentId && row.registration_status !== "cancelled");
   const confirmedRows = paidRows.filter((row) => row.identity_review_status !== "review_required");
@@ -220,7 +226,7 @@ export function buildTournamentCollectionSummary(tournamentId: string, rows: rea
   let membershipMismatchCount = 0;
 
   for (const row of scopedRows) {
-    const membershipReconciliation = reconcileMembershipRow(row);
+    const membershipReconciliation = reconcileMembershipRow(row, activeMembershipAnglerIds);
     membershipMismatchCount += Number(membershipReconciliation.mismatch);
   }
 
@@ -233,7 +239,7 @@ export function buildTournamentCollectionSummary(tournamentId: string, rows: rea
     const insuranceAmount = categoryAmount(row, "insurance", REGISTRATION_PRICING.insurance * 100);
     if (insuranceAmount === null) missing.push("Insurance Pot pricing (correct the stored registration price snapshot)");
     else if (insuranceAmount > 0) categoryRows.get("insurance")?.push({ row, amount: insuranceAmount });
-    const membership = reconcileMembershipRow(row).collectedAmountCents;
+    const membership = reconcileMembershipRow(row, activeMembershipAnglerIds).collectedAmountCents;
     if (membership > 0) membershipRows.push({ row, amount: membership });
     if (row.registration_source === "walk_up" && hasMalformedWalkUpPaymentSnapshot(row, rowFunds(row))) missing.push("One or more walk-up payment snapshots differ from face-value selections (review payment records)");
   }
