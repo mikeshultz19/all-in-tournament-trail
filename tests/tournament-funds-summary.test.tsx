@@ -31,11 +31,28 @@ describe("Tournament Funds Summary", () => {
     expect(markup).toContain("Base Entry");
     expect(markup).toContain("Insurance Pot");
     expect(markup).toContain("Total Tournament Payout Funds");
-    expect(markup).toContain("Membership Charges Collected");
+    expect(markup).toContain("New Memberships Purchased");
+    expect(markup).not.toContain("Membership Charges Collected");
     expect(markup).toContain("TOTAL REGISTRATION FUNDS COLLECTED");
     expect(markup).not.toContain("Shortfall");
     expect(markup).toContain("$0.00");
     expect(markup).not.toContain("Square Service Fee");
+  });
+
+  it("combines membership metrics and renders reconciliation issues as separate lines", () => {
+    const markup = renderToStaticMarkup(<TournamentFundsSummary summary={{
+      ...summary,
+      lines: summary.lines.map((line) => line.key === "membership" ? { ...line, count: 6, totalCents: 24000 } : line),
+      membershipRevenueCents: 24000,
+      missing: ["Walk-up face-value mismatch — Boat #5 (registration reg-5): recorded $700.70 vs expected $680.00; unexplained difference $20.70."],
+      membershipReconciliationWarnings: ["Membership classification/payment mismatch — Boat #16 (registration reg-16), participant position 2."],
+    }} />);
+    expect(markup).toContain("6 — $240.00 collected");
+    expect(markup).not.toContain("Membership Charges Collected");
+    expect(markup).toContain("Boat #5");
+    expect(markup).toContain("Boat #16");
+    expect(markup).toContain("<ul");
+    expect(markup).toContain("<li");
   });
 
   it("enables collapse only on Registration Review", () => {

@@ -27,6 +27,26 @@ describe("automatic tournament collection reconciliation", () => {
     expect(summary.membershipRevenueCents).toBe(4000);
   });
 
+  it("does not treat a resolved joining classification as a payment mismatch when current membership verifies it", () => {
+    const summary = buildTournamentCollectionSummary("tournament-1", [{
+      id: "resolved-current",
+      tournament_id: "tournament-1",
+      angler1_id: "angler-1",
+      angler2_id: "angler-2",
+      payment_reference: "paid",
+      identity_review_status: "verified",
+      member_pot: null,
+      big_bass: false,
+      price_snapshot: snapshot(["Tournament Entry", 6000]),
+      membership_snapshot: [
+        { submittedClassification: "current", resolvedClassification: "current" },
+        { submittedClassification: "joining", resolvedClassification: "current" },
+      ],
+    }], undefined, [], new Set(["angler-1", "angler-2"]));
+    expect(summary.membershipMismatchCount).toBe(0);
+    expect(summary.membershipReconciliationWarnings).toEqual([]);
+  });
+
   it("retains a genuine membership payment mismatch without an active member", () => {
     const summary = buildTournamentCollectionSummary("tournament-1", [{
       id: "unverified-charge",
@@ -217,7 +237,7 @@ describe("automatic tournament collection reconciliation", () => {
     expect(summary.lines.find((line) => line.key === "membership")).toMatchObject({ count: 1, totalCents: 4000 });
     expect(summary.membershipRevenueCents).toBe(4000);
     expect(summary.membershipMismatchCount).toBe(3);
-    expect(summary.membershipReconciliationWarnings).toHaveLength(1);
+    expect(summary.membershipReconciliationWarnings).toHaveLength(3);
   });
 
   it("keeps collection arithmetic out of the simplified payout UI", () => {
@@ -298,11 +318,13 @@ describe("automatic tournament collection reconciliation", () => {
     expect(summary.membershipRevenueCents).toBe(4000);
     expect(summary.totalRegistrationFundsCollectedCents).toBe(10000);
     expect(summary.walkUpFundsByMethod.card).toBe(10000);
-    expect(summary.missing).not.toContain("One or more walk-up payment snapshots differ from face-value selections (review payment records)");
+    expect(summary.missing).not.toContain("Walk-up face-value mismatch");
   });
 
   it("preserves the warning for malformed historical walk-up payment snapshots", () => {
     const summary = buildTournamentCollectionSummary("tournament-1", [collectedOnline({
+      id: "walk-cash-malformed",
+      boat_number: 5,
       registration_source: "walk_up",
       payment_method: "cash",
       payment_reference: "walk-cash-malformed",
@@ -316,7 +338,9 @@ describe("automatic tournament collection reconciliation", () => {
     })]);
     expect(summary.totalTournamentPayoutFundsCents).toBe(6000);
     expect(summary.walkUpFundsByMethod.cash).toBe(6000);
-    expect(summary.missing).toContain("One or more walk-up payment snapshots differ from face-value selections (review payment records)");
+    expect(summary.missing[0]).toContain("Walk-up face-value mismatch");
+    expect(summary.missing[0]).toContain("Boat #5");
+    expect(summary.missing[0]).toContain("registration walk-cash-malformed");
   });
 
   it("classifies walk-up cash, card, and other funds from selections", () => {

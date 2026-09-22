@@ -61,6 +61,7 @@ export type RegistrationCollectionRow = {
   square_payment_id?: string | null;
   angler1_id?: string | null;
   angler2_id?: string | null;
+  boat_number?: number | null;
   registration_status?: "active" | "cancelled";
   member_pot: "bronze" | "silver" | "gold" | null;
   big_bass: boolean;
@@ -170,14 +171,23 @@ function reconcileMembershipRow(row: RegistrationCollectionRow, activeMembership
   const activeMembershipCount = [row.angler1_id, row.angler2_id]
     .filter((anglerId): anglerId is string => Boolean(anglerId && activeMembershipAnglerIds.has(anglerId)))
     .length;
-  const staleHistoricalClassification = joiningItems.length === 0 && itemizedCount === 0 && activeMembershipCount > 0;
+  const activeMembershipAwareExpectedCount = activeMembershipAnglerIds.size
+    ? row.registration_source === "walk_up"
+      ? joiningItems.length
+      : (row.membership_snapshot ?? []).filter((item, index) => {
+        const anglerId = index === 0 ? row.angler1_id : row.angler2_id;
+        const isJoining = item.submittedClassification === "joining" || item.resolvedClassification === "joining";
+        return isJoining && !(anglerId && activeMembershipAnglerIds.has(anglerId));
+      }).length
+    : joiningItems.length;
+  const staleHistoricalClassification = activeMembershipAnglerIds.size > 0 && activeMembershipAwareExpectedCount === 0 && itemizedCount === 0 && activeMembershipCount > 0;
   const mismatch = staleHistoricalClassification
     ? false
-    : (expectedCount > 0 && !collected) ||
+    : (activeMembershipAwareExpectedCount > 0 && !collected) ||
       (itemizedCount > 0 && !collected) ||
-      (row.registration_source !== "walk_up" && expectedCount > 0 && itemizedAmountCents === 0 && adminConfirmedJoiningCount === 0) ||
-      (row.membership_snapshot !== undefined && expectedCount === 0 && Boolean(itemizedAmountCents && itemizedAmountCents > 0) && activeMembershipCount < itemizedCount) ||
-      (itemizedAmountCents !== null && itemizedAmountCents > 0 && itemizedAmountCents !== expectedAmountCents && activeMembershipCount < itemizedCount);
+      (row.registration_source !== "walk_up" && activeMembershipAwareExpectedCount > 0 && itemizedAmountCents === 0 && adminConfirmedJoiningCount === 0) ||
+      (row.membership_snapshot !== undefined && activeMembershipAwareExpectedCount === 0 && Boolean(itemizedAmountCents && itemizedAmountCents > 0) && activeMembershipCount < itemizedCount) ||
+      (itemizedAmountCents !== null && itemizedAmountCents > 0 && itemizedAmountCents !== activeMembershipAwareExpectedCount * membershipFeeCents && activeMembershipCount < itemizedCount);
   return { expectedCount, expectedAmountCents, collectedAmountCents, mismatch };
 }
 
@@ -220,6 +230,7 @@ export function buildTournamentCollectionSummary(tournamentId: string, rows: rea
   const confirmedRows = paidRows.filter((row) => row.identity_review_status !== "review_required");
   const registrationsNeedingReview = paidRows.length - confirmedRows.length;
   const missing: string[] = [];
+  const membershipReconciliationWarnings: string[] = [];
   const categoryRows = new Map<CollectionCategory, { row: RegistrationCollectionRow; amount: number }[]>();
   for (const category of ["base", "bronze", "silver", "gold", "big_bass", "insurance"] as const) categoryRows.set(category, []);
   const membershipRows: { row: RegistrationCollectionRow; amount: number }[] = [];
@@ -227,7 +238,13 @@ export function buildTournamentCollectionSummary(tournamentId: string, rows: rea
 
   for (const row of scopedRows) {
     const membershipReconciliation = reconcileMembershipRow(row, activeMembershipAnglerIds);
-    membershipMismatchCount += Number(membershipReconciliation.mismatch);
+    if (membershipReconciliation.mismatch) {
+      membershipMismatchCount += 1;
+      const participantPositions = [row.angler1_id, row.angler2_id]
+        .map((anglerId, index) => anglerId && !activeMembershipAnglerIds.has(anglerId) ? index + 1 : null)
+        .filter((position): position is number => position !== null);
+      membershipReconciliationWarnings.push(`Membership classification/payment mismatch — Boat #${row.boat_number ?? "unassigned"} (registration ${row.id ?? "unknown"}), participant position${participantPositions.length === 1 ? "" : "s"} ${participantPositions.length ? participantPositions.join(", ") : "requires review"}.`);
+    }
   }
 
   for (const row of paidRows) {
@@ -241,7 +258,12 @@ export function buildTournamentCollectionSummary(tournamentId: string, rows: rea
     else if (insuranceAmount > 0) categoryRows.get("insurance")?.push({ row, amount: insuranceAmount });
     const membership = reconcileMembershipRow(row, activeMembershipAnglerIds).collectedAmountCents;
     if (membership > 0) membershipRows.push({ row, amount: membership });
-    if (row.registration_source === "walk_up" && hasMalformedWalkUpPaymentSnapshot(row, rowFunds(row))) missing.push("One or more walk-up payment snapshots differ from face-value selections (review payment records)");
+    if (row.registration_source === "walk_up" && hasMalformedWalkUpPaymentSnapshot(row, rowFunds(row))) {
+      const recordedTotalCents = validCents(row.price_snapshot?.totalCents) ?? 0;
+      const cardFeeCents = row.payment_method === "card" ? validCents(row.price_snapshot?.cardProcessingFeeCents ?? 0) ?? 0 : 0;
+      const expectedTotalCents = rowFunds(row) + cardFeeCents;
+      missing.push(`Walk-up face-value mismatch — Boat #${row.boat_number ?? "unassigned"} (registration ${row.id ?? "unknown"}): recorded ${formatMoney(recordedTotalCents)} vs expected ${formatMoney(expectedTotalCents)}; unexplained difference ${formatMoney(recordedTotalCents - expectedTotalCents)}.`);
+    }
   }
 
   const lines: TournamentCollectionLine[] = configuredLines.map(([key, label, configuredCents]) => {
@@ -262,9 +284,6 @@ export function buildTournamentCollectionSummary(tournamentId: string, rows: rea
   const walkUpFundsByMethod: WalkUpFundsByMethod = { cash: 0, card: 0, other: 0 };
   for (const row of paidRows.filter((entry) => entry.registration_source === "walk_up")) walkUpFundsByMethod[walkUpMethod(row)] += rowFunds(row);
   const totalRegistrationFundsCollectedCents = totalTournamentPayoutFundsCents + membershipRevenueCents;
-  const membershipReconciliationWarnings = membershipMismatchCount > 0
-    ? [`Membership reconciliation requires review: ${membershipMismatchCount} classification/payment mismatches.`]
-    : [];
   return { tournamentId, lines, totalCollectedCents: totalRegistrationFundsCollectedCents, totalTournamentPayoutFundsCents, membershipRevenueCents, membershipMismatchCount, membershipReconciliationWarnings, totalRegistrationFundsCollectedCents, onlineRegistrationFundsCents, walkUpFundsByMethod, paidEntries: paidRows.length, confirmedPaidEntries: confirmedRows.length, registrationsNeedingReview, morningCandidates: buildMorningCandidates(tournamentId, confirmedRows, importedRows), missing: [...new Set(missing)] };
 
   function rowFunds(row: RegistrationCollectionRow) {
@@ -272,8 +291,12 @@ export function buildTournamentCollectionSummary(tournamentId: string, rows: rea
       const configured = category === "base" ? REGISTRATION_OPTION_CONFIG.tournament_entry.priceCents : category === "big_bass" ? REGISTRATION_OPTION_CONFIG.big_bass.priceCents : category === "insurance" ? REGISTRATION_PRICING.insurance * 100 : REGISTRATION_OPTION_CONFIG[category].priceCents;
       return sum + (categoryAmount(row, category, configured) ?? 0);
     }, 0);
-    return payout + reconcileMembershipRow(row).collectedAmountCents;
+    return payout + reconcileMembershipRow(row, activeMembershipAnglerIds).collectedAmountCents;
   }
+}
+
+function formatMoney(cents: number): string {
+  return `$${(cents / 100).toFixed(2)}`;
 }
 
 function buildMorningCandidates(tournamentId: string, registrations: readonly RegistrationCollectionRow[], importedRows: readonly ImportedCollectionRow[]): MorningCollectionCandidate[] {
