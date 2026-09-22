@@ -2,6 +2,12 @@
 
 Disaster-recovery continuity is covered by [Tournament Disaster Recovery](TOURNAMENT_DISASTER_RECOVERY.md).
 
+Use the [Hosted Staging Rehearsal Playbook](STAGING_REHEARSAL_PLAYBOOK.md) for
+the reusable execution sequence, scenario matrix, baseline capture, evidence
+format, and partner-acceptance signoff. This checklist remains the readiness
+authority: it records what must be ready and whether each evidence layer has
+passed; the playbook records how the checks were performed.
+
 The staging application target is separate from production: use
 `wrangler.staging.jsonc` and `npm run deploy:staging` only after the staging
 Worker, `workers.dev` URL, environment variables, and encrypted secrets have

@@ -30,6 +30,7 @@ different rule.
 
 - [Capability Contracts](CAPABILITY_CONTRACTS.md) - business-capability boundaries, authoritative data, safety rules, tests, and rehearsal gaps.
 - [Tournament Disaster Recovery](TOURNAMENT_DISASTER_RECOVERY.md) - independent roster backup, outage procedure, and rehearsal evidence.
+- [Hosted Staging Rehearsal Playbook](STAGING_REHEARSAL_PLAYBOOK.md) - reusable phase gates, scenario matrix, evidence format, and partner-acceptance procedure.
 
 ## Current Technical / Developer
 
@@ -121,6 +122,7 @@ Start here for nondeveloper operating instructions:
 
 Supporting operating references:
 
+- [Hosted Staging Rehearsal Playbook](STAGING_REHEARSAL_PLAYBOOK.md)
 - [Tournament Operations and Registration Process](TOURNAMENT_OPERATIONS_AND_REGISTRATION_PROCESS.md)
 - [Payment Operations Manual](PAYMENT_OPERATIONS.md)
 - [Admin Center Workflow](ADMIN_CENTER_WORKFLOW.md) — abbreviated workflow;
