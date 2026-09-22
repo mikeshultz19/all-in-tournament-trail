@@ -1,4 +1,5 @@
 import {
+  filterPublicEarlyRegistrationRecords,
   sortPublicEarlyEntries,
   toPublicEarlyEntry,
   type EarlyRegistrationRecord,
@@ -65,8 +66,9 @@ const earlyRegistrationRecords: readonly EarlyRegistrationRecord[] = [
 
 export function getPublicEarlyEntries(tournamentSlug: string) {
   return sortPublicEarlyEntries(
-    earlyRegistrationRecords
-      .filter((registration) => registration.tournamentSlug === tournamentSlug)
+    filterPublicEarlyRegistrationRecords(
+      earlyRegistrationRecords.filter((registration) => registration.tournamentSlug === tournamentSlug),
+    )
       .map(toPublicEarlyEntry),
   );
 }

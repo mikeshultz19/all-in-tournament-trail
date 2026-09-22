@@ -9,7 +9,7 @@ import TournamentEntrySummary from "@/components/TournamentEntrySummary";
 import EarlyRegistrationStats from "@/components/EarlyRegistrationStats";
 import { earlyRegistrationRecords, getPublicEarlyEntries } from "@/data/early-registrations";
 import { tournaments } from "@/data/tournaments";
-import { getTournamentEntrySummary, toPublicEarlyEntry } from "@/lib/public-early-entry";
+import { filterPublicEarlyRegistrationRecords, getTournamentEntrySummary, toPublicEarlyEntry } from "@/lib/public-early-entry";
 import { databaseTournament } from "@/tests/tournament-db-fixture";
 
 const entries = getPublicEarlyEntries("eagle-mountain-2026");
@@ -168,6 +168,33 @@ describe("Tournament Entries", () => {
     expect(html).not.toContain("555-0104");
     expect(html).not.toContain("private-payment-004");
     expect(html).not.toContain("Private fixture note");
+  });
+
+  it("keeps active online and walk-up entries public while excluding canceled entries and counts", () => {
+    const online = { ...earlyRegistrationRecords[0], id: "active-online", registrationStatus: "active" as const, registrationSource: "online" as const };
+    const walkUp = { ...earlyRegistrationRecords[1], id: "active-walk-up", registrationStatus: "active" as const, registrationSource: "walk_up" as const };
+    const canceledOnline = { ...earlyRegistrationRecords[2], id: "canceled-online", registrationStatus: "cancelled" as const, registrationSource: "online" as const };
+    const canceledWalkUp = { ...earlyRegistrationRecords[3], id: "canceled-walk-up", registrationStatus: "cancelled" as const, registrationSource: "walk_up" as const };
+    const publicRecords = filterPublicEarlyRegistrationRecords([online, walkUp, canceledOnline, canceledWalkUp]);
+    const publicEntries = publicRecords.map(toPublicEarlyEntry);
+    const html = renderToStaticMarkup(<EarlyEntriesTable entries={publicEntries} registrationHref="/register" registrationOpen />);
+
+    expect(publicRecords.map((record) => record.id)).toEqual(["active-online", "active-walk-up"]);
+    expect(publicEntries).toHaveLength(2);
+    expect(getTournamentEntrySummary(publicEntries).totalEntries).toBe(2);
+    expect(html).toContain("Marcus Reed");
+    expect(html).toContain("Caleb Brooks");
+    expect(html).not.toContain("Noah Bennett");
+    expect(html).not.toContain("Avery Collins");
+  });
+
+  it("keeps canceled registrations available to Admin history while the public loader is active-only", () => {
+    const publicLoader = readFileSync("lib/tournament-registrations.ts", "utf8");
+    const adminHistory = readFileSync("lib/admin-registration-history.ts", "utf8");
+    expect(publicLoader).toContain('.eq("registration_status", "active")');
+    expect(publicLoader).toContain('.filter((row) => row.registration_status === "active")');
+    expect(adminHistory).toContain("registration_status");
+    expect(adminHistory).not.toContain('.eq("registration_status", "active")');
   });
 
   it("renders an explanatory empty state and registration link when open", () => {

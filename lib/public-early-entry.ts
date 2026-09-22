@@ -3,6 +3,9 @@ import type { MemberPot, RegistrationType } from "@/lib/registration";
 export interface EarlyRegistrationRecord {
   id: string;
   tournamentSlug: string;
+  /** Database-backed public loaders set this explicitly; legacy fixtures default to active. */
+  registrationStatus?: "active" | "cancelled";
+  registrationSource?: "online" | "walk_up";
   registeredAt: string;
   boatNumber: number | null;
   registrationType: RegistrationType;
@@ -13,6 +16,12 @@ export interface EarlyRegistrationRecord {
   insurance: boolean;
   paymentReference: string;
   adminNotes: string | null;
+}
+
+export function filterPublicEarlyRegistrationRecords(
+  registrations: readonly EarlyRegistrationRecord[],
+): EarlyRegistrationRecord[] {
+  return registrations.filter((registration) => registration.registrationStatus !== "cancelled");
 }
 
 export interface PublicEarlyEntry {

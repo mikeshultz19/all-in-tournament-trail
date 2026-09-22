@@ -20,9 +20,11 @@ export class TournamentRegistrationDataError extends Error {
 type TournamentRegistrationRow = {
   registration_key: string;
   tournament_id: string;
+  registration_status: "active" | "cancelled";
   registered_at: string;
   boat_number: number | null;
   registration_type: "solo" | "team";
+  registration_source: "online" | "walk_up";
   angler1_name: string;
   angler2_name: string | null;
   big_bass: boolean;
@@ -63,6 +65,8 @@ function mapRowToPublicEntry(row: TournamentRegistrationRow): PublicEarlyEntry {
   const record: EarlyRegistrationRecord = {
     id: row.registration_key,
     tournamentSlug: row.tournament_id,
+    registrationStatus: row.registration_status,
+    registrationSource: row.registration_source,
     registeredAt: row.registered_at,
     boatNumber: row.boat_number,
     registrationType: row.registration_type,
@@ -95,7 +99,7 @@ export async function getTournamentRegistrationRows(
   const { data, error } = await supabase
     .from("tournament_registrations")
     .select(
-      "registration_key,tournament_id,registered_at,boat_number,registration_type,angler1_name,angler2_name,big_bass,member_pot,insurance,payment_reference,admin_notes",
+      "registration_key,tournament_id,registration_status,registration_source,registered_at,boat_number,registration_type,angler1_name,angler2_name,big_bass,member_pot,insurance,payment_reference,admin_notes",
     )
     .eq("tournament_id", tournamentId)
     .eq("registration_status", "active")
@@ -115,7 +119,11 @@ export async function getPublicEarlyEntriesForTournament(
   tournamentId: string,
 ): Promise<PublicEarlyEntry[]> {
   const rows = await getTournamentRegistrationRows(tournamentId);
-  return sortPublicEarlyEntries(rows.map(mapRowToPublicEntry));
+  return sortPublicEarlyEntries(
+    rows
+      .filter((row) => row.registration_status === "active")
+      .map(mapRowToPublicEntry),
+  );
 }
 
 export async function getTournamentRegistrationSummaryForTournament(
