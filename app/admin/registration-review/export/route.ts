@@ -24,8 +24,8 @@ export async function GET(request: Request) {
     search,
   );
   const generatedAt = formatRosterGeneratedAt(new Date());
-  const header = ["registration_id","boat_number","registration_type","angler_1_name","angler_2_name","angler_1_member_status","angler_2_member_status","member_pots","insurance","big_bass","registered_at","attendance_status","needs_review","roster_generated_at"];
-  const body = rows.map((row) => [row.registrationKey,row.boatNumber,row.registrationType,row.angler1.displayName,row.angler2?.displayName ?? null,registrationMemberStatusLabel(row.angler1.memberStatus),row.angler2 ? registrationMemberStatusLabel(row.angler2.memberStatus) : null,row.memberPot ? title(row.memberPot) : "None",row.insurance ? "Yes" : "No",row.bigBass ? "Yes" : "No",row.registeredAt,row.checkedInAt ? "Checked In" : "Pending",row.needsReview ? "Needs Review" : "",generatedAt].map(csv).join(","));
+  const header = ["registration_id","boat_number","registration_type","angler_1_name","angler_2_name","angler_1_member_status","angler_2_member_status","membership_fees","member_pots","insurance","big_bass","registered_at","attendance_status","needs_review","roster_generated_at"];
+  const body = rows.map((row) => [row.registrationKey,row.boatNumber,row.registrationType,row.angler1.displayName,row.angler2?.displayName ?? null,registrationMemberStatusLabel(row.angler1.memberStatus),row.angler2 ? registrationMemberStatusLabel(row.angler2.memberStatus) : null,(row.membershipAmountCents ?? 0) / 100,row.memberPot ? title(row.memberPot) : "None",row.insurance ? "Yes" : "No",row.bigBass ? "Yes" : "No",row.registeredAt,row.checkedInAt ? "Checked In" : "Pending",row.needsReview ? "Needs Review" : "",generatedAt].map(csv).join(","));
   const date = new Date(tournament.tournament_date).toISOString().slice(0, 10);
   return new Response([header.map(csv).join(","), ...body].join("\r\n"), { headers: { "content-type": "text/csv; charset=utf-8", "content-disposition": `attachment; filename="AITT-${slug(tournament.name)}-Registration-Roster-${date}.csv"`, "cache-control": "private, no-store" } });
 }

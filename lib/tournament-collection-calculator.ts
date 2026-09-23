@@ -14,6 +14,27 @@ export type TournamentCollectionLine = {
 export type CollectionCategory = "base" | "bronze" | "silver" | "gold" | "big_bass" | "membership" | "insurance";
 export type WalkUpFundsByMethod = { cash: number; card: number; other: number };
 
+export const MANUAL_MEMBERSHIP_COLLECTION_MARKER = "Manual $40 membership collected at check-in";
+
+export type ManualMembershipCollectionAudit = {
+  review_id: string | null;
+  registration_id: string | null;
+  review_note: string | null;
+};
+
+export function buildManualMembershipCollectionCounts(
+  history: readonly ManualMembershipCollectionAudit[],
+): Map<string, number> {
+  const counts = new Map<string, number>();
+  const seenReviews = new Set<string>();
+  for (const row of history) {
+    if (!row.registration_id || !row.review_id || !row.review_note?.startsWith(MANUAL_MEMBERSHIP_COLLECTION_MARKER) || seenReviews.has(row.review_id)) continue;
+    seenReviews.add(row.review_id);
+    counts.set(row.registration_id, (counts.get(row.registration_id) ?? 0) + 1);
+  }
+  return counts;
+}
+
 export type TournamentCollectionSummary = {
   tournamentId: string;
   lines: TournamentCollectionLine[];
@@ -224,7 +245,7 @@ function hasMalformedWalkUpPaymentSnapshot(row: RegistrationCollectionRow, faceV
   return storedTotalCents !== expectedTotalCents;
 }
 
-export function buildTournamentCollectionSummary(tournamentId: string, rows: readonly RegistrationCollectionRow[], _insuranceResult?: unknown, importedRows: readonly ImportedCollectionRow[] = [], activeMembershipAnglerIds: ReadonlySet<string> = new Set()): TournamentCollectionSummary {
+export function buildTournamentCollectionSummary(tournamentId: string, rows: readonly RegistrationCollectionRow[], _insuranceResult?: unknown, importedRows: readonly ImportedCollectionRow[] = [], activeMembershipAnglerIds: ReadonlySet<string> = new Set(), manualMembershipCollectionCounts: ReadonlyMap<string, number> = new Map()): TournamentCollectionSummary {
   const paidRows = rows.filter((row) => row.tournament_id === tournamentId && isCollected(row));
   const scopedRows = rows.filter((row) => row.tournament_id === tournamentId && row.registration_status !== "cancelled");
   const confirmedRows = paidRows.filter((row) => row.identity_review_status !== "review_required");
@@ -256,12 +277,12 @@ export function buildTournamentCollectionSummary(tournamentId: string, rows: rea
     const insuranceAmount = categoryAmount(row, "insurance", REGISTRATION_PRICING.insurance * 100);
     if (insuranceAmount === null) missing.push("Insurance Pot pricing (correct the stored registration price snapshot)");
     else if (insuranceAmount > 0) categoryRows.get("insurance")?.push({ row, amount: insuranceAmount });
-    const membership = reconcileMembershipRow(row, activeMembershipAnglerIds).collectedAmountCents;
+    const membership = reconcileMembershipRow(row, activeMembershipAnglerIds).collectedAmountCents + manualMembershipCollectionCents(row);
     if (membership > 0) membershipRows.push({ row, amount: membership });
-    if (row.registration_source === "walk_up" && hasMalformedWalkUpPaymentSnapshot(row, rowFunds(row))) {
+    if (row.registration_source === "walk_up" && hasMalformedWalkUpPaymentSnapshot(row, rowFunds(row, false))) {
       const recordedTotalCents = validCents(row.price_snapshot?.totalCents) ?? 0;
       const cardFeeCents = row.payment_method === "card" ? validCents(row.price_snapshot?.cardProcessingFeeCents ?? 0) ?? 0 : 0;
-      const expectedTotalCents = rowFunds(row) + cardFeeCents;
+      const expectedTotalCents = rowFunds(row, false) + cardFeeCents;
       missing.push(`Walk-up face-value mismatch — Boat #${row.boat_number ?? "unassigned"} (registration ${row.id ?? "unknown"}): recorded ${formatMoney(recordedTotalCents)} vs expected ${formatMoney(expectedTotalCents)}; unexplained difference ${formatMoney(recordedTotalCents - expectedTotalCents)}.`);
     }
   }
@@ -274,24 +295,32 @@ export function buildTournamentCollectionSummary(tournamentId: string, rows: rea
   const membershipOnline = membershipRows.filter(({ row }) => row.registration_source !== "walk_up");
   const membershipRevenueCents = membershipRows.reduce((sum, entry) => sum + entry.amount, 0);
   const collectedMembershipCount = membershipRevenueCents / (REGISTRATION_PRICING.annualMembership * 100);
-  lines.push({ key: "membership", label: "Memberships Collected", count: collectedMembershipCount, onlineCount: membershipOnline.reduce((sum, entry) => sum + membershipCount(entry.row), 0), inPersonCount: membershipRows.filter(({ row }) => row.registration_source === "walk_up").reduce((sum, entry) => sum + membershipCount(entry.row), 0), configuredFeeCents: REGISTRATION_PRICING.annualMembership * 100, feeCents: REGISTRATION_PRICING.annualMembership * 100, totalCents: membershipRevenueCents });
+  lines.push({ key: "membership", label: "Memberships Collected", count: collectedMembershipCount, onlineCount: membershipOnline.reduce((sum, entry) => sum + membershipCount(entry.row) + manualMembershipCollectionCount(entry.row), 0), inPersonCount: membershipRows.filter(({ row }) => row.registration_source === "walk_up").reduce((sum, entry) => sum + membershipCount(entry.row) + manualMembershipCollectionCount(entry.row), 0), configuredFeeCents: REGISTRATION_PRICING.annualMembership * 100, feeCents: REGISTRATION_PRICING.annualMembership * 100, totalCents: membershipRevenueCents });
   const insuranceEntries = categoryRows.get("insurance") ?? [];
   const insuranceOnline = insuranceEntries.filter(({ row }) => row.registration_source !== "walk_up");
   lines.push({ key: "insurance", label: "Insurance Pot", count: insuranceEntries.length, onlineCount: insuranceOnline.length, inPersonCount: insuranceEntries.length - insuranceOnline.length, configuredFeeCents: REGISTRATION_PRICING.insurance * 100, feeCents: REGISTRATION_PRICING.insurance * 100, totalCents: insuranceEntries.reduce((sum, entry) => sum + entry.amount, 0) });
 
   const totalTournamentPayoutFundsCents = lines.filter((line) => line.key !== "membership").reduce((sum, line) => sum + line.totalCents, 0);
-  const onlineRegistrationFundsCents = paidRows.filter((row) => row.registration_source !== "walk_up").reduce((sum, row) => sum + rowFunds(row), 0);
+  const onlineRegistrationFundsCents = paidRows.filter((row) => row.registration_source !== "walk_up").reduce((sum, row) => sum + rowFunds(row, false), 0);
   const walkUpFundsByMethod: WalkUpFundsByMethod = { cash: 0, card: 0, other: 0 };
-  for (const row of paidRows.filter((entry) => entry.registration_source === "walk_up")) walkUpFundsByMethod[walkUpMethod(row)] += rowFunds(row);
+  for (const row of paidRows.filter((entry) => entry.registration_source === "walk_up")) walkUpFundsByMethod[walkUpMethod(row)] += rowFunds(row, false);
   const totalRegistrationFundsCollectedCents = totalTournamentPayoutFundsCents + membershipRevenueCents;
   return { tournamentId, lines, totalCollectedCents: totalRegistrationFundsCollectedCents, totalTournamentPayoutFundsCents, membershipRevenueCents, membershipMismatchCount, membershipReconciliationWarnings, totalRegistrationFundsCollectedCents, onlineRegistrationFundsCents, walkUpFundsByMethod, paidEntries: paidRows.length, confirmedPaidEntries: confirmedRows.length, registrationsNeedingReview, morningCandidates: buildMorningCandidates(tournamentId, confirmedRows, importedRows), missing: [...new Set(missing)] };
 
-  function rowFunds(row: RegistrationCollectionRow) {
+  function rowFunds(row: RegistrationCollectionRow, includeManualMembership = true) {
     const payout = (["base", "bronze", "silver", "gold", "big_bass", "insurance"] as const).reduce((sum, category) => {
       const configured = category === "base" ? REGISTRATION_OPTION_CONFIG.tournament_entry.priceCents : category === "big_bass" ? REGISTRATION_OPTION_CONFIG.big_bass.priceCents : category === "insurance" ? REGISTRATION_PRICING.insurance * 100 : REGISTRATION_OPTION_CONFIG[category].priceCents;
       return sum + (categoryAmount(row, category, configured) ?? 0);
     }, 0);
-    return payout + reconcileMembershipRow(row, activeMembershipAnglerIds).collectedAmountCents;
+    return payout + reconcileMembershipRow(row, activeMembershipAnglerIds).collectedAmountCents + (includeManualMembership ? manualMembershipCollectionCents(row) : 0);
+  }
+
+  function manualMembershipCollectionCount(row: RegistrationCollectionRow) {
+    return row.id ? manualMembershipCollectionCounts.get(row.id) ?? 0 : 0;
+  }
+
+  function manualMembershipCollectionCents(row: RegistrationCollectionRow) {
+    return manualMembershipCollectionCount(row) * REGISTRATION_PRICING.annualMembership * 100;
   }
 }
 

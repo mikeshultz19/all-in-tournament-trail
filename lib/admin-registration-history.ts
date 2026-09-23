@@ -1,6 +1,8 @@
 import "server-only";
 
 import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { REGISTRATION_PRICING } from "@/data/registration";
+import { buildManualMembershipCollectionCounts } from "@/lib/tournament-collection-calculator";
 
 export type RegistrationHistorySource = "online" | "walk_up";
 export type RegistrationHistoryStatus = "active" | "cancelled";
@@ -69,6 +71,7 @@ export interface AdminRegistrationHistoryRow {
   cancellationAdmin?: string | null;
   manualRefundStatus?: "pending" | "completed" | null;
   membershipsRevoked?: string[];
+  manualMembershipAmountCents?: number;
   identityReviewStatus: string;
   reviews: RegistrationHistoryReview[];
 }
@@ -123,6 +126,7 @@ type ReviewDbRow = {
 
 type ReviewHistoryDbRow = {
   review_id: string;
+  registration_id: string;
   previous_status: string;
   new_status: string;
   resolution_method: string;
@@ -215,7 +219,7 @@ export async function listAllRegistrationHistory(): Promise<AdminRegistrationHis
   const history = await readAll<ReviewHistoryDbRow>(async (from, to) => {
     const result = await supabase
       .from("registration_identity_review_history")
-      .select("review_id,previous_status,new_status,resolution_method,review_note,created_at")
+      .select("review_id,registration_id,previous_status,new_status,resolution_method,review_note,created_at")
       .order("created_at", { ascending: true })
       .range(from, to);
     return { data: result.data as ReviewHistoryDbRow[] | null, error: result.error };
@@ -224,6 +228,7 @@ export async function listAllRegistrationHistory(): Promise<AdminRegistrationHis
   for (const item of history) historyByReview.set(item.review_id, [...(historyByReview.get(item.review_id) ?? []), item]);
   const reviewsByRegistration = new Map<string, ReviewDbRow[]>();
   for (const review of reviews) reviewsByRegistration.set(review.registration_id, [...(reviewsByRegistration.get(review.registration_id) ?? []), review]);
+  const manualMembershipCollectionCounts = buildManualMembershipCollectionCounts(history);
 
   return registrations.map((row) => {
     const cancellation = parseCancellationNotes(row.admin_notes);
@@ -256,6 +261,7 @@ export async function listAllRegistrationHistory(): Promise<AdminRegistrationHis
     cancellationAdmin: cancellation.admin ?? row.cancelled_by_admin_id,
     manualRefundStatus: cancellation.manualRefundStatus,
     membershipsRevoked: cancellation.membershipsRevoked,
+    manualMembershipAmountCents: (manualMembershipCollectionCounts.get(row.id) ?? 0) * REGISTRATION_PRICING.annualMembership * 100,
     identityReviewStatus: row.identity_review_status,
     reviews: (reviewsByRegistration.get(row.id) ?? []).map((review) => ({
       id: review.id,

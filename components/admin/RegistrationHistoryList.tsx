@@ -134,6 +134,7 @@ export default function RegistrationHistoryList({
                   {(row.priceSnapshot?.lineItems ?? []).map((item, index) => (
                     <DetailLine key={`${item.name}-${index}`} label={item.name ?? `Line ${index + 1}`} value={money(item.priceCents)} />
                   ))}
+                  {row.manualMembershipAmountCents ? <DetailLine label="Manual Membership Dues" value={money(row.manualMembershipAmountCents)} /> : null}
                   <DetailLine label="SQUARE SERVICE FEE" value={money(row.priceSnapshot?.cardProcessingFeeCents)} />
                   <DetailLine label="Total Paid" value={money(row.priceSnapshot?.totalCents)} />
                   <DetailLine label="Square Payment ID" value={row.squarePaymentId ?? "Not recorded"} />

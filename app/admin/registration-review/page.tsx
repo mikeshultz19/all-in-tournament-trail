@@ -142,10 +142,13 @@ export default async function RegistrationReviewPage({ searchParams }: { searchP
             boatNumber: row.boatNumber,
             registrationNumber: row.registrationKey,
             participantNames: [row.angler1.displayName, ...(row.angler2 ? [row.angler2.displayName] : [])],
-            amountCents: row.totalPaidCents,
+            amountCents: (row.totalPaidCents ?? 0) + (row.manualMembershipAmountCents ?? 0),
             paymentMethod: row.paymentMethod,
             paymentStatus: row.paymentStatus,
-            lineItems: allHistory.find((historyRow) => historyRow.id === row.id)?.priceSnapshot?.lineItems ?? [],
+            lineItems: [
+              ...(allHistory.find((historyRow) => historyRow.id === row.id)?.priceSnapshot?.lineItems ?? []),
+              ...((row.manualMembershipAmountCents ?? 0) > 0 ? [{ name: "Manual Membership Dues", priceCents: row.manualMembershipAmountCents }] : []),
+            ],
             serviceFeeCents: allHistory.find((historyRow) => historyRow.id === row.id)?.priceSnapshot?.cardProcessingFeeCents ?? row.processingFeeCents ?? 0,
           }))}
         />

@@ -2,7 +2,7 @@ import { describe, expect, it, vi } from "vitest";
 
 vi.mock("next/navigation", () => ({ useRouter: () => ({ refresh: vi.fn() }) }));
 
-import { applyMorningCollectionReview, buildTournamentCollectionSummary } from "@/lib/tournament-collection-calculator";
+import { applyMorningCollectionReview, buildManualMembershipCollectionCounts, buildTournamentCollectionSummary } from "@/lib/tournament-collection-calculator";
 import { renderPayoutReadyDashboardFixture } from "@/tests/admin-dashboard-fixture";
 
 const insurance = { id: "insurance", tournament_id: "tournament-1", entry_count: 20, total_pot_cents: 40000, places_paid: 4, calculated_payouts: [10000, 10000, 10000, 10000], winners: [], published: false, published_at: null, created_at: "", updated_at: "" };
@@ -124,6 +124,73 @@ describe("automatic tournament collection reconciliation", () => {
     })]);
     expect(summary.lines.find((line) => line.key === "membership")).toMatchObject({ count: 1, totalCents: 4000 });
     expect(summary.membershipRevenueCents).toBe(4000);
+  });
+
+  it("counts explicit manual membership collection markers without changing payout or online funds", () => {
+    const summary = buildTournamentCollectionSummary("tournament-1", [collectedOnline({
+      id: "manual-dues",
+      membership_snapshot: [{ submittedClassification: "joining", resolvedClassification: "current" }],
+      price_snapshot: snapshot(["Tournament Entry", 6000]),
+    })], undefined, [], new Set(["angler-1"]), new Map([["manual-dues", 1]]));
+    expect(summary.lines.find((line) => line.key === "membership")).toMatchObject({ count: 1, totalCents: 4000 });
+    expect(summary.membershipRevenueCents).toBe(4000);
+    expect(summary.totalRegistrationFundsCollectedCents).toBe(10000);
+    expect(summary.totalTournamentPayoutFundsCents).toBe(6000);
+    expect(summary.onlineRegistrationFundsCents).toBe(6000);
+  });
+
+  it("counts two explicit manual collections as $80 and combines them with an original paid membership", () => {
+    const manualOnly = buildTournamentCollectionSummary("tournament-1", [collectedOnline({
+      id: "manual-dues-only",
+      membership_snapshot: [{ submittedClassification: "current", resolvedClassification: "current" }, { submittedClassification: "current", resolvedClassification: "current" }],
+      price_snapshot: snapshot(["Tournament Entry", 6000]),
+    })], undefined, [], new Set(["angler-1", "angler-2"]), new Map([["manual-dues-only", 2]]));
+    expect(manualOnly.lines.find((line) => line.key === "membership")).toMatchObject({ count: 2, totalCents: 8000 });
+    expect(manualOnly.totalRegistrationFundsCollectedCents).toBe(14000);
+
+    const summary = buildTournamentCollectionSummary("tournament-1", [
+      collectedOnline({
+        id: "manual-dues-team",
+        membership_snapshot: [{ submittedClassification: "current", resolvedClassification: "current" }, { submittedClassification: "current", resolvedClassification: "current" }],
+        price_snapshot: snapshot(["Tournament Entry", 6000], ["Angler 1 Membership", 4000]),
+      }),
+    ], undefined, [], new Set(["angler-1", "angler-2"]), new Map([["manual-dues-team", 2]]));
+    const membership = summary.lines.find((line) => line.key === "membership");
+    expect(membership).toMatchObject({ count: 3, totalCents: 12000 });
+    expect(summary.membershipRevenueCents).toBe(12000);
+    expect(summary.totalRegistrationFundsCollectedCents).toBe(18000);
+    expect(summary.totalTournamentPayoutFundsCents).toBe(6000);
+    expect(summary.onlineRegistrationFundsCents).toBe(10000);
+  });
+
+  it("excludes marker-backed manual dues from canceled active totals", () => {
+    const summary = buildTournamentCollectionSummary("tournament-1", [collectedOnline({
+      id: "canceled-manual-dues",
+      registration_status: "cancelled",
+      membership_snapshot: [{ submittedClassification: "current", resolvedClassification: "current" }],
+      price_snapshot: snapshot(["Tournament Entry", 6000]),
+    })], undefined, [], new Set(["angler-1"]), new Map([["canceled-manual-dues", 1]]));
+    expect(summary.membershipRevenueCents).toBe(0);
+    expect(summary.totalRegistrationFundsCollectedCents).toBe(0);
+    expect(summary.totalTournamentPayoutFundsCents).toBe(0);
+  });
+
+  it("does not count normalization memberships without an explicit manual collection marker", () => {
+    const summary = buildTournamentCollectionSummary("tournament-1", [collectedOnline({
+      id: "admin-normalization",
+      membership_snapshot: [{ submittedClassification: "joining", resolvedClassification: "current" }],
+      price_snapshot: snapshot(["Tournament Entry", 6000]),
+    })], undefined, [], new Set(["angler-1"]));
+    expect(summary.membershipRevenueCents).toBe(0);
+    expect(summary.totalRegistrationFundsCollectedCents).toBe(6000);
+  });
+
+  it("counts a manual collection marker once even when the audit input repeats the same review", () => {
+    const counts = buildManualMembershipCollectionCounts([
+      { review_id: "review-1", registration_id: "manual-dues-once", review_note: "Manual $40 membership collected at check-in by Admin" },
+      { review_id: "review-1", registration_id: "manual-dues-once", review_note: "Manual $40 membership collected at check-in by Admin" },
+    ]);
+    expect(counts).toEqual(new Map([["manual-dues-once", 1]]));
   });
 
   it("counts two individually confirmed joining anglers without double-counting one original line", () => {

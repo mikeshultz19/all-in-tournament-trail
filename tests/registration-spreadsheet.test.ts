@@ -22,6 +22,7 @@ describe("registration disaster-recovery spreadsheet", () => {
     expect(rows).toHaveLength(2);
     expect(rows[1]["Angler 1 Membership Status"]).toBe("Current Member");
     expect(rows[1]["Angler 2 Membership Status"]).toBe("Needs Review");
+    expect(rows[0]["Membership Fees"]).toBe("0.00");
     expect(rows[0]["Payment Reference"]).toBe("square-reference");
     expect(JSON.stringify(rows)).not.toMatch(/card|cvv|token/i);
   });
@@ -33,13 +34,13 @@ describe("registration disaster-recovery spreadsheet", () => {
     const table = await zip.file("xl/tables/table1.xml")?.async("string");
     const workbookXml = await zip.file("xl/workbook.xml")?.async("string");
     expect(sheet).toContain('state="frozen"');
-    expect(sheet).toContain('autoFilter ref="A1:AB2"');
+    expect(sheet).toContain('autoFilter ref="A1:AC2"');
     expect(sheet).toContain('customWidth="1"');
     expect(sheet).toContain('t="inlineStr"');
     expect(REGISTRATION_SPREADSHEET_COLUMNS.every((column) => sheet?.includes(`<t xml:space="preserve">${column}</t>`))).toBe(true);
     expect(table).toContain('name="CurrentRegistrations"');
     expect(table).toContain('displayName="CurrentRegistrations"');
-    expect(table).toContain('ref="A1:AB2"');
+    expect(table).toContain('ref="A1:AC2"');
     expect(workbookXml).toContain('name="Current Registrations"');
     expect(await zip.file("xl/styles.xml")?.async("string")).toContain('cellXfs count="2"');
   });

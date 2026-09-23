@@ -9,7 +9,7 @@ export const REGISTRATION_SPREADSHEET_COLUMNS = [
   "Registration Status", "Source", "Team or Solo", "Angler 1 Name", "Angler 1 Phone",
   "Angler 1 Email", "Angler 1 Membership Status", "Angler 2 Name", "Angler 2 Phone",
   "Angler 2 Email", "Angler 2 Membership Status", "Base Entry", "Bronze", "Silver",
-  "Gold", "Big Bass", "Insurance", "Amount Collected", "Payment Method", "Payment Status",
+  "Gold", "Big Bass", "Insurance", "Membership Fees", "Amount Collected", "Payment Method", "Payment Status",
   "Payment Reference", "Review Status", "Check-In Status", "Last Updated",
 ] as const;
 
@@ -57,6 +57,7 @@ export function registrationSpreadsheetRows(
     Gold: row.memberPot === "gold" ? dollars(row.memberPotAmountCents) : "",
     "Big Bass": row.bigBass ? dollars(row.bigBassAmountCents) : "",
     Insurance: row.insurance ? dollars(row.insuranceAmountCents) : "",
+    "Membership Fees": dollars(row.membershipAmountCents),
     "Amount Collected": dollars(row.totalPaidCents),
     "Payment Method": row.paymentMethod === "online" ? "Online" : row.paymentMethod ? row.paymentMethod[0].toUpperCase() + row.paymentMethod.slice(1) : "",
     "Payment Status": row.paymentStatus,

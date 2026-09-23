@@ -1,7 +1,7 @@
 import "server-only";
 
 import { createSupabaseServerClient } from "@/lib/supabase/server";
-import { buildTournamentCollectionSummary, type ImportedCollectionRow, type RegistrationCollectionRow, type TournamentCollectionSummary } from "@/lib/tournament-collection-calculator";
+import { buildManualMembershipCollectionCounts, buildTournamentCollectionSummary, type ImportedCollectionRow, type RegistrationCollectionRow, type TournamentCollectionSummary } from "@/lib/tournament-collection-calculator";
 import type { TournamentInsurancePotResultRecord } from "@/types/insurance-pot";
 
 export type { TournamentCollectionSummary } from "@/lib/tournament-collection-calculator";
@@ -14,6 +14,12 @@ export async function listTournamentCollectionSummaries(tournamentIds: readonly 
     .in("tournament_id", [...tournamentIds])
     .eq("registration_status", "active");
   if (error) throw new Error("Tournament collection records could not be loaded.", { cause: error });
+  const registrationIds = (data ?? []).map((row) => row.id);
+  const { data: reviewHistory, error: reviewHistoryError } = registrationIds.length
+    ? await supabase.from("registration_identity_review_history").select("review_id,registration_id,review_note").in("registration_id", registrationIds)
+    : { data: [], error: null };
+  if (reviewHistoryError) throw new Error("Membership collection audit records could not be loaded.", { cause: reviewHistoryError });
+  const manualMembershipCollectionCounts = buildManualMembershipCollectionCounts(reviewHistory ?? []);
   const { data: tournaments, error: tournamentError } = await supabase
     .from("tournaments")
     .select("id,season_id")
@@ -38,5 +44,6 @@ export async function listTournamentCollectionSummaries(tournamentIds: readonly 
         .filter((membership) => membership.status === "active" && membership.season_id === tournaments?.find((tournament) => tournament.id === tournamentId)?.season_id)
         .map((membership) => membership.angler_id),
     ),
+    manualMembershipCollectionCounts,
   )]));
 }
