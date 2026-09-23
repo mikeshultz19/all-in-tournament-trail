@@ -132,6 +132,12 @@ describe("unified Registration & Check-In workflow", () => {
     expect(operationsControls).toContain("MEMBERSHIP DUES ({dues.length})");
     expect(operationsControls).toContain("MARK COLLECTED");
     expect(operationsControls).toContain("Collect at check-in");
+    expect(page).toContain('registrationNumber: String(allRows.find((row) => row.id === item.registrationId)?.boatNumber ?? "—")');
+    expect(page).toContain("participantName: item.participantName");
+    expect(operationsControls).toContain("Registration #{due.registrationNumber} · {due.participantName}");
+    expect(operationsControls).toContain("Collect the $40 manually, then mark it collected to activate the membership.");
+    expect(operationsControls).not.toContain("confirm the existing membership review");
+    expect(operationsControls).not.toContain("AITT-");
     expect(operationsControls).not.toContain("admin_resolve_unmatched_current_member_review");
     expect(page).toContain("membershipDue={membershipDue}");
     expect(checkInControl).toContain("disabled={pending || membershipDue}");

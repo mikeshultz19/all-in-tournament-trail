@@ -55,7 +55,7 @@ export default async function RegistrationReviewPage({ searchParams }: { searchP
     .filter((item) => item.status === "review_required" && item.reviewKind === "membership" && item.submittedMembership === "current")
     .map((item) => ({
       reviewId: item.id,
-      registrationNumber: allRows.find((row) => row.id === item.registrationId)?.registrationKey ?? item.registrationId,
+      registrationNumber: String(allRows.find((row) => row.id === item.registrationId)?.boatNumber ?? "—"),
       participantName: item.participantName,
     }));
   const checkInRemainingCount = allRows.filter((row) => row.checkedInAt === null).length;
