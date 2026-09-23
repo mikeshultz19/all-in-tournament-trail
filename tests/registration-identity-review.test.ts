@@ -322,8 +322,8 @@ describe("durable review persistence and Admin workflow", () => {
     expect(actions).toContain("existingAnglerId");
     expect(resolutionForm).toContain("Confirm Match");
     expect(resolutionForm).not.toContain("Confirm Existing");
-    expect(resolutionForm).toContain("APPROVE NEW ANGLER IDENTITY");
-    expect(resolutionForm).toContain("Creates the angler record only. This does not create a membership or record the required $40 membership payment.");
+    expect(resolutionForm).toContain("APPROVE NEW ANGLER");
+    expect(resolutionForm).toContain("You will need to collect the required $40 membership fee.");
     expect(migration).toContain("admin_confirmed_existing");
     expect(migration).toContain("admin_approved_new");
   });

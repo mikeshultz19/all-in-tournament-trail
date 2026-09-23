@@ -152,8 +152,8 @@ describe("unified Registration & Check-In workflow", () => {
   it("uses plain-language review decisions without exposing internal identity terms", () => {
     expect(page).toContain("getRegistrationReviewPresentation(review)");
     expect(resolutionForm).toContain("Confirm Match");
-    expect(resolutionForm).toContain("APPROVE NEW ANGLER IDENTITY");
-    expect(resolutionForm).toContain("Creates the angler record only. This does not create a membership or record the required $40 membership payment.");
+    expect(resolutionForm).toContain("APPROVE NEW ANGLER");
+    expect(resolutionForm).toContain("You will need to collect the required $40 membership fee.");
     expect(resolutionForm).toContain("Optional review note");
     expect(resolutionForm).not.toContain("Confirm Existing");
     expect(membershipForm).toContain("Confirm Member");
