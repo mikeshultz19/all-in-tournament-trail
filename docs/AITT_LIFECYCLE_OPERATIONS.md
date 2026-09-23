@@ -188,9 +188,20 @@ membership review unresolved, so check-in remains blocked. The roster-level
 **MEMBERSHIP DUES** control lists the $40 obligation. The Tournament Director
 collects and tracks it manually, then staff selects **MARK COLLECTED**, which
 uses the existing membership-confirmation operation and records who confirmed
-collection and when. No payment, price-snapshot change, Financial Summary
-increase, or collection email is created. Existing-member matching, contact,
+collection and when. No payment or price-snapshot change is created. The
+explicit collected $40 increases Memberships Collected and Total Registration
+Funds, but not Online Funds or Tournament Payout Funds; no collection email is
+created. Existing-member matching, contact,
 duplicate, and historical membership reviews retain their separate workflows.
+
+For an existing-member Confirm Match, an eligible active current-season
+membership must be re-evaluated after identity linkage. It resolves the
+membership condition automatically, refreshes the registration snapshot to
+Current Member / eligible, keeps Membership Fees at $0, removes Membership
+Dues, and enables check-in. Missing, inactive, or tournament-ineligible
+memberships remain an actionable membership review and continue to block
+check-in. This invariant must be verified in the backend reconciliation, not
+only in the visible roster.
 
 Historical tournament-time membership and `aoy_eligible` snapshots are
 authoritative for historical calculations. Today's membership state must not

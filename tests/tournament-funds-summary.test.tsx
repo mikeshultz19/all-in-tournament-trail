@@ -55,6 +55,15 @@ describe("Tournament Funds Summary", () => {
     expect(markup).toContain("<li");
   });
 
+  it("uses review-neutral singular and plural warning wording", () => {
+    const singular = renderToStaticMarkup(<TournamentFundsSummary summary={{ ...summary, registrationsNeedingReview: 1 }} />);
+    const plural = renderToStaticMarkup(<TournamentFundsSummary summary={{ ...summary, registrationsNeedingReview: 2 }} />);
+    expect(singular).toContain("1 paid registration still needs review.");
+    expect(plural).toContain("2 paid registrations still need review.");
+    expect(singular).not.toContain("still need identity review");
+    expect(plural).not.toContain("still need identity review");
+  });
+
   it("enables collapse only on Registration Review", () => {
     const review = readFileSync("app/admin/registration-review/page.tsx", "utf8");
     const financial = readFileSync("app/admin/financial-summary/page.tsx", "utf8");

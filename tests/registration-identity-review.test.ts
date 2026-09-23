@@ -20,6 +20,10 @@ const highConfidenceMigration = readFileSync(
   "supabase/migrations/202608250002_auto_resolve_high_confidence_registration_identity.sql",
   "utf8",
 );
+const existingMemberCorrectionMigration = readFileSync(
+  "supabase/migrations/202609230001_resolve_existing_member_identity_reviews.sql",
+  "utf8",
+);
 const durableService = readFileSync("lib/durable-registration.ts", "utf8");
 const rosterService = readFileSync(
   "lib/tournament-registrations.ts",
@@ -363,6 +367,25 @@ describe("durable review persistence and Admin workflow", () => {
     expect(permissiveMigration).toContain("public.create_competitive_record");
     expect(permissiveMigration).toContain("set review_kind = 'membership', review_status = 'review_required'");
     expect(permissiveMigration).toContain("Membership Needs Review:");
+  });
+
+  it("re-evaluates eligible existing membership after Confirm Match without fabricating payment", () => {
+    expect(existingMemberCorrectionMigration).toContain("new.submitted_membership <> 'current'");
+    expect(existingMemberCorrectionMigration).toContain("membership.status = 'active'");
+    expect(existingMemberCorrectionMigration).toContain("eligibleForTournament");
+    expect(existingMemberCorrectionMigration).toContain("identity_review_status = 'resolved_existing'");
+    expect(existingMemberCorrectionMigration).toContain("automatic_existing_membership_reconciliation");
+    expect(existingMemberCorrectionMigration).toContain("registration_status = 'active'");
+    expect(existingMemberCorrectionMigration).toContain("Manual $40 membership collected at check-in%");
+    expect(existingMemberCorrectionMigration).not.toContain("insert into public.payments");
+    expect(existingMemberCorrectionMigration).not.toContain("insert into public.square");
+  });
+
+  it("keeps missing, inactive, or ineligible memberships actionable", () => {
+    expect(existingMemberCorrectionMigration).toContain("review_kind = 'membership', review_status = 'review_required'");
+    expect(existingMemberCorrectionMigration).toContain("when v_membership_review_pending then 'review_required'");
+    expect(existingMemberCorrectionMigration).toContain("registration.registration_status = 'active'");
+    expect(existingMemberCorrectionMigration).toContain("not exists (\n        select 1 from public.registration_identity_review_history marker");
   });
 
   it("creates or reuses the validated Team or Solo Competitive Record", () => {

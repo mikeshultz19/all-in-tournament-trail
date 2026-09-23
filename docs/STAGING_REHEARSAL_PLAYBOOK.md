@@ -114,6 +114,15 @@ Save the evidence reference, not a private data export. If a planned data
 correction is needed, create a minimum-field rollback snapshot outside Git
 before changing data and record its path, size, and checksum.
 
+### Mandatory baseline gate
+
+Do not begin a batch until the baseline is frozen and signed by the rehearsal
+operator. Record active, canceled, Needs Review, Membership Dues, and Pending
+Check-In counts; every Financial Summary component and total; the public Early
+Registrations count; and unexplained-warning count. The public active-entry
+count must equal the active registration count, and unexplained warnings must
+be zero. A visual screen check alone is incomplete.
+
 ## 5. Scenario record format
 
 Every scenario gets one record with all fields below. A scenario is not Pass
@@ -144,6 +153,28 @@ For a Square scenario, calculate the face-value subtotal before processing and
 record the exact displayed fee and final Sandbox amount. Do not call a real
 Square refund. For a walk-up, record the selected Cash/Card/Other method and
 the expected zero or configured card fee behavior.
+
+### Scenario validation gate
+
+Before each scenario, record the expected count and dollar deltas. After it,
+validate every applicable layer before starting another scenario:
+
+- registration status and assigned number;
+- participant identity and submitted membership classification;
+- current-season active membership, or the actual $40 registration charge or
+  supported manual-collection evidence;
+- review status and append-only review history;
+- Membership Dues queue membership and count;
+- check-in eligibility and the reason for any block;
+- Tournament Entries roster and All Registrations display;
+- every Financial Summary component and total;
+- public Early Registrations projection/count;
+- confirmation page and email delivery/content, when applicable; and
+- cancellation state, payment history, and membership-revocation behavior,
+  when applicable.
+
+The visible result is not a pass by itself. Authoritative rows, review
+history, financial calculations, and the public projection must agree.
 
 ## 6. Strict phased execution
 
@@ -185,6 +216,15 @@ staging result, and financial/review result where applicable.
     public display, and safe unpublish/review behavior.
 16. **Final staging acceptance.** Complete signoff in Section 12 and preserve
     the evidence index.
+
+### Batch audit gate
+
+After every 3–5 scenarios, pause and run the complete read-only reconciliation
+for the tournament. Reconcile every active and canceled registration
+individually, including membership, payment, review, check-in, public
+projection, and financial fields. Stop the batch for any unexplained
+difference; do not continue while a warning is being informally explained
+away.
 
 ## 7. Ray Hubbard strategic rehearsal matrix
 
@@ -251,8 +291,10 @@ unmatched current-member fail-closed review, and both cancellation variants.
   the money manually, then staff selects **MARK COLLECTED**. This reuses the
   existing membership-confirmation operation, records the confirming Admin and
   timestamp, activates the membership, clears the review, and enables check-in.
-- This manual collection creates no Square request, payment transaction,
-  registration price-snapshot change, Financial Summary increase, or email.
+- This manual collection creates no Square request, payment transaction, or
+  registration price-snapshot change. Its explicit $40 is included in
+  Memberships Collected and Total Registration Funds, but not Online Funds or
+  Tournament Payout Funds; no collection email is sent.
 - No active registration may finish with a Non-Member classification.
 - New-member cancellation revokes only memberships purchased through that
   registration's actual membership purchase lines.
@@ -262,6 +304,57 @@ unmatched current-member fail-closed review, and both cancellation variants.
 - Membership count multiplied by $40 must equal collected membership charges.
 - No hypothetical receivable, shortfall, or fake membership revenue may be
   created during a rehearsal.
+
+### Backend invariants
+
+The read-only reconciliation must prove all of the following before a phase or
+batch can pass:
+
+- Every active participant is either a verified current-season member or is
+  present in an unresolved actionable review/Membership Dues queue.
+- A financially counted New Member has a recorded $40 charge or exactly one
+  qualifying manual **MARK COLLECTED** marker.
+- Manual evidence is deduplicated by `review_id`.
+- A resolved identity review cannot leave an untracked membership problem.
+- Membership Dues count equals unresolved dues records.
+- An unresolved review blocks check-in and states why.
+- Financial totals equal registration-level components, with processing fees
+  excluded from payout funds.
+- Canceled registrations are excluded from every active operational and public
+  projection while their history remains available.
+- Public active-entry count equals active-registration count.
+- No registration disappears from every actionable queue.
+
+Run the reusable read-only command when credentials are safely available:
+
+```powershell
+$env:SUPABASE_URL = $env:NEXT_PUBLIC_SUPABASE_URL
+npx tsx scripts/reconcile-staging.ts --project-ref vcjhufuklqwvnqmarpqi --tournament-id <staging-tournament-id>
+```
+
+It requires the explicit staging project reference, refuses the production
+project, prints no credentials or private participant fields, reports
+per-registration consistency and aggregate totals, and exits nonzero when an
+invariant fails. It does not load an environment file; provide already
+authorized process-scoped `SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY`
+values without writing them to the repository.
+
+### Boat #21 regression gate
+
+Keep a synthetic unmatched-Current-Member case in the permanent regression
+matrix. Identity approval may create or resolve the canonical Angler while the
+membership remains unverified. In that state the registration must remain in
+an actionable Membership Dues/review queue, CHECK IN must remain disabled, and
+the record must not disappear from every actionable queue. Only valid
+membership confirmation or **MARK COLLECTED** with qualifying evidence may
+clear the condition. A resolved identity review alone is not proof of a
+current-season membership.
+
+After Confirm Match, an eligible active current-season membership must resolve
+automatically to Current Member / eligible with $0 membership fees. It must
+not become Membership Dues. If the membership is missing, inactive, or
+ineligible, the membership issue must remain visible in an actionable
+review/dues queue and continue to block check-in.
 
 ## 9. Financial assertions
 
@@ -327,6 +420,14 @@ Do not suppress a warning, alter a historical snapshot, or perform an
 improvised rollback. A data correction requires explicit approval, a targeted
 rollback snapshot, a supported write path, and post-change verification.
 
+### Defect rule
+
+Fixing a defect does not make the failed rehearsal pass. Reestablish a clean
+baseline, then repeat the affected scenario from the beginning. The repeated
+scenario and complete backend reconciliation must pass without a data repair
+or manual backend intervention. Record the failed attempt, correction
+identity, new baseline, and retest evidence separately.
+
 ## 12. Final staging acceptance
 
 The Tournament Director and partner reviewer sign off each applicable item;
@@ -359,3 +460,10 @@ unresolved blocker remains, backup status is recorded, and Mike's acceptance
 is explicit. A failed or unavailable authenticated browser, provider, email,
 import, or backup layer remains **Needs Rehearsal** under the [Readiness
 Checklist](TOURNAMENT_READINESS_CHECKLIST.md).
+
+### Final clean rehearsal gate
+
+Repeat the complete approved scenario matrix without code changes, data repair,
+or manual backend intervention. Run the complete reconciliation afterward.
+Production recommendation requires zero unexplained warnings, mismatches,
+unresolved Membership Dues, or unresolved reviews.

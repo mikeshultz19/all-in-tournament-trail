@@ -76,10 +76,21 @@ resolution, creates the Angler only, and leaves the membership review pending.
 The roster-level Membership Dues control exposes the $40 obligation. After the
 Tournament Director collects it manually, MARK COLLECTED reuses the supported
 membership-confirmation operation, records the Admin and timestamp in review
-history, activates the membership, and clears the review. No payment,
-price-snapshot, Financial Summary, or email behavior is added. The
+history, activates the membership, and clears the review. No payment or
+price-snapshot behavior is added. The explicit collected $40 increases
+Memberships Collected and Total Registration Funds, but not Online Funds or
+Tournament Payout Funds; no email behavior is added. The
 existing-member, contact, duplicate, and historical membership workflows remain
 separate.
+
+When an Admin confirms an existing Angler for a Current Member claim, the
+system must immediately re-evaluate that Angler's current-season membership.
+An eligible active membership resolves the membership condition automatically,
+refreshes the registration snapshot to Current Member / eligible, leaves
+Membership Fees at $0, removes Membership Dues, and enables check-in. Missing,
+inactive, or ineligible memberships remain visible in an actionable membership
+review and keep check-in blocked. The backend reconciliation must verify this;
+the visible Confirm Match result alone is not sufficient.
 
 After all participants are resolved, the existing validated
 `create_competitive_record` function creates or reuses the correct Team or Solo
