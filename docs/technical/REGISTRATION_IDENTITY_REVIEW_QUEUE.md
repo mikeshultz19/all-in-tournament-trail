@@ -66,16 +66,20 @@ An Admin's current decision labels are:
 
 - **SAME PERSON — UPDATE INFO**;
 - **SAME PERSON — KEEP EXISTING INFO**;
-- **APPROVE NEW ANGLER IDENTITY**;
+- **APPROVE NEW ANGLER** for an unmatched Current Member claim;
 - resolve both members of a Team;
 - resolve a Solo participant;
 - reopen a previously resolved review.
 
-New-Angler identity approval uses a transaction lock and rejects an email
-already owned by a canonical Angler. The Admin must select that existing Angler
-instead. It creates the Angler record only; it does not create a membership or
-record the required $40 payment. Leave a new unpaid Current Member claim in
-Needs Review until the payment is received and documented.
+Unmatched Current Member approval uses the existing transaction-safe identity
+resolution, creates the Angler only, and leaves the membership review pending.
+The roster-level Membership Dues control exposes the $40 obligation. After the
+Tournament Director collects it manually, MARK COLLECTED reuses the supported
+membership-confirmation operation, records the Admin and timestamp in review
+history, activates the membership, and clears the review. No payment,
+price-snapshot, Financial Summary, or email behavior is added. The
+existing-member, contact, duplicate, and historical membership workflows remain
+separate.
 
 After all participants are resolved, the existing validated
 `create_competitive_record` function creates or reuses the correct Team or Solo

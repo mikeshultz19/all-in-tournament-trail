@@ -41,6 +41,19 @@ export default function RegistrationReviewResolutionForm({
   const selectedAngler = orderedAnglers.find((angler) => angler.id === selectedAnglerId) ?? null;
   const matchReason = selectedAngler ? describeReviewCandidateMatch(submission, selectedAngler, suggestedAnglerIds.length) : null;
 
+  if (submission.membership === "current" && suggestedAnglerIds.length === 0) {
+    return (
+      <form action={action} className="mt-4 grid gap-3 border border-amber-400/20 bg-black/20 p-3">
+        <input type="hidden" name="reviewId" value={reviewId} />
+        <input type="hidden" name="resolution" value="new" />
+        <p className="text-xs text-neutral-300">This Current Member claim could not be verified against an existing member.</p>
+        <p className="text-xs font-bold text-amber-200">You will need to collect the required $40 membership fee.</p>
+        <button disabled={pending} className={adminButtonStyles("secondary", "mt-1")}>APPROVE NEW ANGLER</button>
+        {state.message ? <p role={state.status === "error" ? "alert" : "status"} className={`text-sm ${state.status === "error" ? "text-red-400" : "text-green-400"}`}>{state.message}</p> : null}
+      </form>
+    );
+  }
+
   return (
     <form action={action} className="mt-4 grid gap-3 sm:grid-cols-2">
       <input type="hidden" name="reviewId" value={reviewId} />

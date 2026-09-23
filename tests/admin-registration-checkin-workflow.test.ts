@@ -8,6 +8,8 @@ const controls = readFileSync("components/admin/RegistrationOperationsControls.t
 const roster = readFileSync("lib/tournament-registration-roster.ts", "utf8");
 const toolbar = readFileSync("components/admin/RegistrationRosterToolbar.tsx", "utf8");
 const resolutionForm = readFileSync("components/admin/RegistrationReviewResolutionForm.tsx", "utf8");
+const operationsControls = readFileSync("components/admin/RegistrationOperationsControls.tsx", "utf8");
+const checkInControl = readFileSync("components/admin/RegistrationCheckInControl.tsx", "utf8");
 const membershipForm = readFileSync("components/admin/HistoricalMembershipReviewForm.tsx", "utf8");
 const allRegistrations = readFileSync("app/admin/registrations/page.tsx", "utf8");
 const migration = readFileSync("supabase/migrations/202608200002_add_admin_walkup_registration.sql", "utf8");
@@ -117,6 +119,25 @@ describe("unified Registration & Check-In workflow", () => {
     expect(page).not.toContain("Review complete.");
     expect(page).not.toContain("reopenRegistrationReviewAction");
     expect(page).toContain("<details key={review.id}");
+  });
+
+  it("uses compact Membership Dues collection and keeps check-in gated until it resolves", () => {
+    expect(resolutionForm).toContain('submission.membership === "current" && suggestedAnglerIds.length === 0');
+    expect(resolutionForm).toContain("APPROVE NEW ANGLER");
+    expect(resolutionForm).toContain("You will need to collect the required $40 membership fee.");
+    expect(page).toContain("MembershipDuesControl");
+    expect(page).toContain('item.status === "review_required" && item.reviewKind === "membership" && item.submittedMembership === "current"');
+    expect(operationsControls).toContain("MembershipDuesControl");
+    expect(operationsControls).toContain("MEMBERSHIP DUES ({dues.length})");
+    expect(operationsControls).toContain("MARK COLLECTED");
+    expect(operationsControls).toContain("Collect at check-in");
+    expect(operationsControls).not.toContain("admin_resolve_unmatched_current_member_review");
+    expect(page).toContain("membershipDue={membershipDue}");
+    expect(checkInControl).toContain("disabled={pending || membershipDue}");
+    expect(checkInControl).toContain("opacity-50 grayscale");
+    expect(checkInControl).toContain("Verify membership dues.");
+    expect(checkInControl).toContain("membershipDue = false");
+    expect(checkIn).toContain("identity_review_status");
   });
 
   it("renders expanded review content outside the narrow actions cell responsively", () => {

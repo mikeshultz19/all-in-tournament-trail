@@ -213,7 +213,7 @@ actual quote before each submission.
 | ID | Setup and path | Entry/options | Method | Face value | Square charge | Expected result |
 |---|---|---|---|---:|---:|---|
 | STRAT-B1 | New solo; approved fresh identity | $60 + Bronze $40 + Big Bass $20 + membership $40 | Online Sandbox | $160.00 | $165.10 | New Member $40; Bronze +1; BB +1 |
-| STRAT-B2 | New/new team; one new identity triggers possible-duplicate review, then Approve New Angler Identity | $60 + Bronze $40 + Insurance $20 + memberships $80 | Online Sandbox | $200.00 | $206.30 | New Member x2; Bronze +1; Insurance +1; review resolved |
+| STRAT-B2 | New/new team; one new identity triggers possible-duplicate review, then approve the new identity | $60 + Bronze $40 + Insurance $20 + memberships $80 | Online Sandbox | $200.00 | $206.30 | New Member x2; Bronze +1; Insurance +1; review resolved |
 | STRAT-S1 | Returning solo with changed contact information | $60 + Silver $100 + BB $20 + Insurance $20 | Walk-up Cash | $200.00 | N/A | Current Member $0; Silver +1; BB/Insurance +1 |
 | STRAT-S2 | Returning team | $60 + Silver $100 | Walk-up Card | $160.00 | Reader fee verified separately | Current Member x2; Silver +1 |
 | STRAT-S3 | Mixed current/new team; unmatched current claim first fails closed | $60 + Silver $100 + BB $20 + new membership $40 | Online Sandbox | $220.00 | $226.90 | Temporary Needs Review; resolve before final gate; Silver +1 |
@@ -243,6 +243,16 @@ unmatched current-member fail-closed review, and both cancellation variants.
   registration collected $0 membership fees.
 - **Needs Review** means the required active membership could not be confidently
   verified. It is not an active Non-Member option.
+- For an unmatched Current Member claim, **APPROVE NEW ANGLER** creates the
+  canonical identity only; the membership review remains unresolved and
+  check-in remains blocked.
+- The roster-level **MEMBERSHIP DUES** control lists the $40 obligation and
+  shows **Collect at check-in**. The Tournament Director collects and tracks
+  the money manually, then staff selects **MARK COLLECTED**. This reuses the
+  existing membership-confirmation operation, records the confirming Admin and
+  timestamp, activates the membership, clears the review, and enables check-in.
+- This manual collection creates no Square request, payment transaction,
+  registration price-snapshot change, Financial Summary increase, or email.
 - No active registration may finish with a Non-Member classification.
 - New-member cancellation revokes only memberships purchased through that
   registration's actual membership purchase lines.

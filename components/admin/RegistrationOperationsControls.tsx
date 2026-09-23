@@ -9,6 +9,7 @@ import {
   updateRegistrationOperationsAction,
   getWalkUpMemberAction,
   searchWalkUpMembersAction,
+  markMembershipCollectedAction,
   type RegistrationOperationsActionState,
 } from "@/app/admin/registration-review/actions";
 import { adminButtonStyles } from "@/components/admin/admin-button-styles";
@@ -639,6 +640,36 @@ export function CancelRegistrationControl({
         </div>
       ) : null}
     </div>
+  );
+}
+
+type MembershipDue = {
+  reviewId: string;
+  registrationNumber: string;
+  participantName: string;
+};
+
+export function MembershipDuesControl({ dues }: { dues: MembershipDue[] }) {
+  const router = useRouter();
+  const [state, action, pending] = useActionState(markMembershipCollectedAction, initialState);
+  useEffect(() => {
+    if (state.status === "success") router.refresh();
+  }, [router, state.status]);
+
+  return (
+    <details className="relative">
+      <summary className={adminButtonStyles("secondary", "min-h-11 cursor-pointer list-none")}>MEMBERSHIP DUES ({dues.length})</summary>
+      <div className="absolute left-0 top-full z-20 mt-2 w-[min(32rem,calc(100vw-2rem))] border border-amber-400/30 bg-[#111] p-3 shadow-2xl">
+        <p className="text-xs text-neutral-400">Collect the $40 manually, then mark it collected to confirm the existing membership review.</p>
+        <div className="mt-3 grid gap-2">
+          {dues.map((due) => <div key={due.reviewId} className="flex flex-wrap items-center justify-between gap-3 border border-white/10 bg-black/20 p-3 text-xs">
+            <div className="min-w-0"><p className="font-bold text-white">#{due.registrationNumber} · {due.participantName}</p><p className="mt-1 text-amber-200">$40 due · Collect at check-in</p></div>
+            <form action={action}><input type="hidden" name="reviewId" value={due.reviewId} /><button disabled={pending} className={adminButtonStyles("primary", "min-h-9")}>{pending ? "Saving..." : "MARK COLLECTED"}</button></form>
+          </div>)}
+        </div>
+        {state.status !== "idle" ? <p role={state.status === "error" ? "alert" : "status"} className={`mt-3 text-xs ${state.status === "error" ? "text-red-300" : "text-emerald-300"}`}>{state.message}</p> : null}
+      </div>
+    </details>
   );
 }
 

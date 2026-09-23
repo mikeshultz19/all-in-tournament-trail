@@ -763,19 +763,19 @@ For an overview of the project, begin with **00_START_HERE.md**.
 
 ## Membership review and collected funds
 
-Registration may complete before membership verification. If an Existing Member
-claim cannot be verified, it remains in Needs Review and continues to block
-Tournament Preparation, but it adds no hypothetical money to the Financial
-Summary. Approve New Angler Identity creates only the Angler record. For a new
-angler who still owes $40, leave the entry in Needs Review, collect the $40
-manually, and record the amount, payment method, date, and collector in the
-review note before selecting Confirm Membership Purchase. Because the original
-registration recorded $0 membership, reconcile the manual collection outside
-the registration Financial Summary. Never create or confirm a membership before
-payment is received. Only confirmed collected membership money is included;
-Confirm Existing Member adds $0. Processor and bank reconciliation remain
-separate. Walk-up snapshots can remain lump-sum and are retained as a known
-auditability limitation.
+Registration may complete before membership verification. If an unmatched
+Current Member claim cannot be verified, **APPROVE NEW ANGLER** creates the
+canonical Angler only and leaves the membership review unresolved. The roster
+level **MEMBERSHIP DUES** control lists the $40 obligation. The Tournament
+Director collects and tracks it manually, then staff selects **MARK COLLECTED**
+to reuse the supported membership-confirmation operation. It records the
+confirming Admin and timestamp, activates the membership, and clears the
+review. It does not process payment, alter the registration price snapshot, add
+$40 to the Financial Summary, or send collection email. Existing member,
+contact, duplicate, and historical membership reviews remain separate. Only
+recorded registration money is included in the Financial Summary.
+Walk-up snapshots can remain lump-sum and are retained as a known auditability
+limitation.
 
 AITT does not track No Show as a separate application status. Staff handles
 attendance operationally through the ordinary Check-In workflow. No replacement

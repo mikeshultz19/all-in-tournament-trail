@@ -328,7 +328,7 @@ describe("durable review persistence and Admin workflow", () => {
     expect(migration).toContain("admin_approved_new");
   });
 
-  it("keeps mandatory membership review and payment separate from identity approval", () => {
+  it("keeps unmatched Current Member identity approval separate from membership collection", () => {
     const identityResolution = permissiveMigration.slice(
       permissiveMigration.indexOf("create or replace function public.admin_resolve_registration_identity"),
       permissiveMigration.indexOf("revoke all on function public.sync_resolved_registration_membership"),
@@ -336,7 +336,10 @@ describe("durable review persistence and Admin workflow", () => {
     expect(identityResolution).toContain("review_kind = 'membership', review_status = 'review_required'");
     expect(identityResolution).toContain("when v_membership_review_pending then 'review_required'");
     expect(identityResolution).not.toContain("insert into public.memberships");
-    expect(actions).not.toContain("createOrUpdateMembership");
+    expect(actions).not.toContain("resolveUnmatchedCurrentMemberReview");
+    expect(actions).toContain("markMembershipCollectedAction");
+    expect(actions).toContain('membership: "joining"');
+    expect(actions).toContain("Manual $40 membership collected at check-in");
     expect(actions).toContain("resolveRegistrationIdentityReview({");
   });
 

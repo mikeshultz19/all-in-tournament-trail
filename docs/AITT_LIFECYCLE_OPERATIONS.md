@@ -181,17 +181,16 @@ Current registration identity-review actions are:
 
 - **SAME PERSON — UPDATE INFO**
 - **SAME PERSON — KEEP EXISTING INFO**
-- **APPROVE NEW ANGLER IDENTITY**
+- **APPROVE NEW ANGLER** for an unmatched Current Member claim.
 
-This identity decision creates the canonical Angler record only. It does not
-create a membership or record the required $40 membership payment. For a new
-angler whose registration selected Current Member without a verified active
-membership, approve the identity, leave the registration in Needs Review,
-collect the required $40 manually, record the amount, payment method, date,
-and collector in a review note, and select Confirm Membership Purchase only
-after payment is actually received. Because the original registration has a
-$0 membership charge, reconcile that manual $40 outside the registration
-Financial Summary. Never create or confirm the membership before payment.
+This action creates the canonical Angler only and leaves the required
+membership review unresolved, so check-in remains blocked. The roster-level
+**MEMBERSHIP DUES** control lists the $40 obligation. The Tournament Director
+collects and tracks it manually, then staff selects **MARK COLLECTED**, which
+uses the existing membership-confirmation operation and records who confirmed
+collection and when. No payment, price-snapshot change, Financial Summary
+increase, or collection email is created. Existing-member matching, contact,
+duplicate, and historical membership reviews retain their separate workflows.
 
 Historical tournament-time membership and `aoy_eligible` snapshots are
 authoritative for historical calculations. Today's membership state must not

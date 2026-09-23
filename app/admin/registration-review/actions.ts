@@ -492,6 +492,26 @@ export async function resolveHistoricalMembershipReviewAction(_previousState: Re
   }
 }
 
+export async function markMembershipCollectedAction(_previousState: RegistrationOperationsActionState, formData: FormData): Promise<RegistrationOperationsActionState> {
+  void _previousState;
+  const admin = await requireAdminUser();
+  const reviewId = text(formData, "reviewId");
+  if (!reviewId) return { status: "error", message: "Select a membership due." };
+  try {
+    await resolveHistoricalMembershipReview({
+      reviewId,
+      membership: "joining",
+      adminUserId: admin.id,
+      reviewNote: `Manual $40 membership collected at check-in by ${getAdminDisplayName(admin)} (${admin.id}).`,
+    });
+    revalidateRegistrationOperations();
+    return { status: "success", message: "Membership collected and confirmed." };
+  } catch (error) {
+    console.error("Membership due confirmation failed.", error);
+    return { status: "error", message: "The membership due could not be confirmed." };
+  }
+}
+
 export async function resolveRegistrationReviewAction(
   _previousState: RegistrationReviewActionState,
   formData: FormData,

@@ -5,7 +5,7 @@ import RegistrationContactReviewForm from "@/components/admin/RegistrationContac
 import HistoricalMembershipReviewForm from "@/components/admin/HistoricalMembershipReviewForm";
 import RegistrationCheckInControl from "@/components/admin/RegistrationCheckInControl";
 import RegistrationCheckInSummaryStat from "@/components/admin/RegistrationCheckInSummaryStat";
-import { AddWalkUpControl, CancelRegistrationControl } from "@/components/admin/RegistrationOperationsControls";
+import { AddWalkUpControl, CancelRegistrationControl, MembershipDuesControl } from "@/components/admin/RegistrationOperationsControls";
 import RegistrationRosterToolbar from "@/components/admin/RegistrationRosterToolbar";
 import AdminPanel from "@/components/admin/AdminPanel";
 import AdminStatusBadge from "@/components/admin/AdminStatusBadge";
@@ -51,6 +51,13 @@ export default async function RegistrationReviewPage({ searchParams }: { searchP
   const reviewsByRegistration = new Map<string, typeof reviewItems>();
   for (const item of reviewItems) reviewsByRegistration.set(item.registrationId, [...(reviewsByRegistration.get(item.registrationId) ?? []), item]);
   const pendingReviewIds = new Set(reviewItems.filter((item) => item.status === "review_required").map((item) => item.registrationId));
+  const membershipDues = reviewItems
+    .filter((item) => item.status === "review_required" && item.reviewKind === "membership" && item.submittedMembership === "current")
+    .map((item) => ({
+      reviewId: item.id,
+      registrationNumber: allRows.find((row) => row.id === item.registrationId)?.registrationKey ?? item.registrationId,
+      participantName: item.participantName,
+    }));
   const checkInRemainingCount = allRows.filter((row) => row.checkedInAt === null).length;
   const cancelledHistory = selectedTournament
     ? filterRegistrationHistory(allHistory, { tournamentId: selectedTournament.id, search }).filter((row) => row.status === "cancelled")
@@ -126,6 +133,7 @@ export default async function RegistrationReviewPage({ searchParams }: { searchP
       <TournamentFundsSummary summary={collectionSummary} className="mt-5" collapsible />
       <div className="mt-5 flex flex-wrap items-start gap-3">
         <AddWalkUpControl tournamentId={selectedTournament.id} />
+        <MembershipDuesControl dues={membershipDues} />
         <CancelRegistrationControl
           tournamentId={selectedTournament.id}
           registrations={allRows.map((row) => ({
@@ -180,7 +188,7 @@ export default async function RegistrationReviewPage({ searchParams }: { searchP
 }
 
 function RosterRow({ row, tournamentId, reviews, anglers }: { row: TournamentRegistrationRosterRow; tournamentId: string; reviews: Awaited<ReturnType<typeof listRegistrationReviewItems>>; anglers: Awaited<ReturnType<typeof listReviewAnglerOptions>> }) {
-  const pendingReviews = reviews.filter((review) => review.status === "review_required");
+  const pendingReviews = reviews.filter((review) => review.status === "review_required" && !(review.reviewKind === "membership" && review.submittedMembership === "current"));
   return <>
     <tr className="align-top transition-colors hover:bg-white/[0.025]">
       <td className="px-3 py-3 text-lg font-black text-[#D4A017]">#{row.boatNumber ?? "—"}</td>
@@ -200,7 +208,7 @@ function RosterRow({ row, tournamentId, reviews, anglers }: { row: TournamentReg
 }
 
 function MobileRosterCard({ row, tournamentId, reviews, anglers }: { row: TournamentRegistrationRosterRow; tournamentId: string; reviews: Awaited<ReturnType<typeof listRegistrationReviewItems>>; anglers: Awaited<ReturnType<typeof listReviewAnglerOptions>> }) {
-  const pendingReviews = reviews.filter((review) => review.status === "review_required");
+  const pendingReviews = reviews.filter((review) => review.status === "review_required" && !(review.reviewKind === "membership" && review.submittedMembership === "current"));
   return <article className="border border-white/10 bg-[#111] p-4" data-testid="mobile-registration-card"><div className="flex items-start justify-between gap-4"><div className="min-w-0"><p className="text-base font-black text-white">{row.angler1.displayName}</p>{row.angler2 ? <p className="mt-1 text-sm font-bold text-neutral-300">{row.angler2.displayName}</p> : null}<p className="mt-2 text-[10px] text-neutral-500">Registered {compactDateTime(row.registeredAt)}</p></div><div className="shrink-0 text-right"><p className="text-[10px] font-black uppercase text-neutral-500">Boat #</p><p className="mt-1 text-2xl font-black text-[#D4A017]">{row.boatNumber ?? "—"}</p></div></div><dl className="mt-4 grid grid-cols-2 gap-3 border-y border-white/10 py-3 text-xs"><div><dt className="uppercase text-neutral-500">Anglers</dt><dd className="mt-1 space-y-1 font-bold text-white"><p className="whitespace-nowrap">{membershipStatusLine(row.angler1)}</p>{row.angler2 ? <p className="whitespace-nowrap">{membershipStatusLine(row.angler2)}</p> : null}</dd></div><div><dt className="uppercase text-neutral-500">Membership Fees</dt><dd className="mt-1 font-bold text-white">{membershipFees(row)}</dd></div><div><dt className="uppercase text-neutral-500">Type</dt><dd className="mt-1 font-bold text-white">{title(row.registrationType)}</dd></div><div><dt className="uppercase text-neutral-500">Member Pots</dt><dd className="mt-1 font-bold text-white">{row.memberPot ? title(row.memberPot) : "None"}</dd></div><div><dt className="uppercase text-neutral-500">Insurance</dt><dd className="mt-1 font-bold text-white">{yesNo(row.insurance)}</dd></div><div><dt className="uppercase text-neutral-500">Big Bass</dt><dd className="mt-1 font-bold text-white">{yesNo(row.bigBass)}</dd></div></dl><div className="mt-4"><RosterActions row={row} tournamentId={tournamentId} reviews={reviews} /><div className="mt-3 flex items-center gap-3 border-t border-white/10 pt-3"><span className="text-[10px] font-black uppercase text-neutral-500">Weight</span><span aria-label={`Blank weight for boat ${row.boatNumber ?? "unassigned"}`} className="h-6 min-w-20 flex-1 border-b border-white/25" /></div></div>{pendingReviews.length ? <div className="mt-4 border-t border-white/10 pt-4"><RegistrationReviewPanels reviews={pendingReviews} anglers={anglers} /></div> : null}</article>;
 }
 
@@ -222,8 +230,9 @@ function membershipFees(row: TournamentRegistrationRosterRow) {
 function RosterActions({ row, tournamentId, reviews }: { row: TournamentRegistrationRosterRow; tournamentId: string; reviews: Awaited<ReturnType<typeof listRegistrationReviewItems>> }) {
   const pendingReviews = reviews.filter((review) => review.status === "review_required");
   const needsReview = row.needsReview || pendingReviews.length > 0;
+  const membershipDue = pendingReviews.some((review) => review.reviewKind === "membership" && review.submittedMembership === "current");
   return <>
-    <div className="flex flex-wrap items-start gap-2">{needsReview ? <AdminStatusBadge tone="attention">Needs Review</AdminStatusBadge> : null}<RegistrationCheckInControl tournamentId={tournamentId} registrationId={row.id} checkedInAt={row.checkedInAt} /></div>
+    <div className="flex flex-wrap items-start gap-2">{needsReview ? <AdminStatusBadge tone="attention">Needs Review</AdminStatusBadge> : null}<RegistrationCheckInControl tournamentId={tournamentId} registrationId={row.id} checkedInAt={row.checkedInAt} membershipDue={membershipDue} /></div>
   </>;
 }
 

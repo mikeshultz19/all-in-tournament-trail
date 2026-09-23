@@ -41,16 +41,17 @@ Championship, and history. Review decisions are:
 
 - **SAME PERSON — UPDATE INFO**
 - **SAME PERSON — KEEP EXISTING INFO**
-- **APPROVE NEW ANGLER IDENTITY**
+- **APPROVE NEW ANGLER** for an unmatched Current Member claim.
 
-This creates the Angler record only. It does not create a membership or record
-the required $40 membership payment. For a new participant who claimed Current
-Member without a verified membership, approve the identity, leave the entry in
-Needs Review, collect $40 manually, and record the amount, payment method,
-date, and collector in the review note. Use Confirm Membership Purchase only
-after the payment is received. Since the original registration recorded $0 for
-membership, reconcile the manual $40 outside the registration Financial
-Summary. Never create or confirm a membership before payment.
+This creates the Angler only and leaves the membership review unresolved, so
+check-in remains blocked. A roster-level **MEMBERSHIP DUES** control lists the
+$40 obligation. The Tournament Director collects and tracks it manually, then
+staff selects **MARK COLLECTED** to reuse the existing membership-confirmation
+operation. That action records who confirmed collection and when, activates the
+membership, and clears the review. It does not process Square payment, change
+the price snapshot, increase Financial Summary totals, or send email.
+Existing-member, contact, duplicate, and historical membership reviews are
+unchanged.
 
 Tournament-time membership and `aoy_eligible` snapshots control historical
 calculations; a later membership change cannot rewrite an old event.
