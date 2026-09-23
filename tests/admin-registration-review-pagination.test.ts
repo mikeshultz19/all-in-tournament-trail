@@ -134,8 +134,8 @@ describe("registration review pagination", () => {
     ];
 
     expect(toolbar).toContain("Walk-Ups");
-    expect(toolbar).toContain("Check-Ins");
-    expect(toolbar.indexOf("Walk-Ups")).toBeLessThan(toolbar.indexOf("Check-Ins"));
+    expect(toolbar).toContain("CHECK-INS (");
+    expect(toolbar.indexOf("Walk-Ups")).toBeLessThan(toolbar.indexOf("CHECK-INS ("));
     expect(toolbar).toContain('selectFilter("check_ins")');
     expect(filterTournamentRegistrationRosterRows(rows, "check_ins", "")).toHaveLength(1);
     expect(filterTournamentRegistrationRosterRows(rows, "check_ins", "")[0]?.id).toBe("row-1");

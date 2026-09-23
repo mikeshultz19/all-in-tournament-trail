@@ -17,6 +17,7 @@ export default function RegistrationRosterToolbar({
   pageSize,
   totalRows,
   needReviewCount,
+  checkInCount,
   cancelledCount,
   totalPages,
   rangeStart,
@@ -29,6 +30,7 @@ export default function RegistrationRosterToolbar({
   pageSize: 25 | 50 | 100;
   totalRows: number;
   needReviewCount: number;
+  checkInCount: number;
   cancelledCount: number;
   totalPages: number;
   rangeStart: number;
@@ -131,7 +133,7 @@ export default function RegistrationRosterToolbar({
               active={filter === "check_ins"}
               onClick={() => selectFilter("check_ins")}
             >
-              Check-Ins
+              {formatCheckInsFilterLabel(checkInCount)}
             </FilterButton>
             <FilterButton
               active={filter === "cancelled"}
@@ -224,6 +226,10 @@ export default function RegistrationRosterToolbar({
 
 export function formatNeedsReviewFilterLabel(count: number) {
   return `Needs Review (${count})`;
+}
+
+export function formatCheckInsFilterLabel(count: number) {
+  return `CHECK-INS (${count})`;
 }
 
 function FilterButton({
