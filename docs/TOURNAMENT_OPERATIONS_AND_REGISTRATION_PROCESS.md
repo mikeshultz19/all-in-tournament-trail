@@ -766,11 +766,16 @@ For an overview of the project, begin with **00_START_HERE.md**.
 Registration may complete before membership verification. If an Existing Member
 claim cannot be verified, it remains in Needs Review and continues to block
 Tournament Preparation, but it adds no hypothetical money to the Financial
-Summary. Staff verifies status and collects payment before selecting Confirm
-Membership Purchase. Only confirmed collected membership money is included;
-Confirm Existing Member add $0. Processor and bank
-reconciliation remain separate. Walk-up snapshots can remain lump-sum and are
-retained as a known auditability limitation.
+Summary. Approve New Angler Identity creates only the Angler record. For a new
+angler who still owes $40, leave the entry in Needs Review, collect the $40
+manually, and record the amount, payment method, date, and collector in the
+review note before selecting Confirm Membership Purchase. Because the original
+registration recorded $0 membership, reconcile the manual collection outside
+the registration Financial Summary. Never create or confirm a membership before
+payment is received. Only confirmed collected membership money is included;
+Confirm Existing Member adds $0. Processor and bank reconciliation remain
+separate. Walk-up snapshots can remain lump-sum and are retained as a known
+auditability limitation.
 
 AITT does not track No Show as a separate application status. Staff handles
 attendance operationally through the ordinary Check-In workflow. No replacement

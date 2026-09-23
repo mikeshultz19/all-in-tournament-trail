@@ -322,9 +322,22 @@ describe("durable review persistence and Admin workflow", () => {
     expect(actions).toContain("existingAnglerId");
     expect(resolutionForm).toContain("Confirm Match");
     expect(resolutionForm).not.toContain("Confirm Existing");
-    expect(resolutionForm).toContain("Approve New Angler");
+    expect(resolutionForm).toContain("APPROVE NEW ANGLER IDENTITY");
+    expect(resolutionForm).toContain("Creates the angler record only. This does not create a membership or record the required $40 membership payment.");
     expect(migration).toContain("admin_confirmed_existing");
     expect(migration).toContain("admin_approved_new");
+  });
+
+  it("keeps mandatory membership review and payment separate from identity approval", () => {
+    const identityResolution = permissiveMigration.slice(
+      permissiveMigration.indexOf("create or replace function public.admin_resolve_registration_identity"),
+      permissiveMigration.indexOf("revoke all on function public.sync_resolved_registration_membership"),
+    );
+    expect(identityResolution).toContain("review_kind = 'membership', review_status = 'review_required'");
+    expect(identityResolution).toContain("when v_membership_review_pending then 'review_required'");
+    expect(identityResolution).not.toContain("insert into public.memberships");
+    expect(actions).not.toContain("createOrUpdateMembership");
+    expect(actions).toContain("resolveRegistrationIdentityReview({");
   });
 
   it("prevents duplicate new Anglers", () => {

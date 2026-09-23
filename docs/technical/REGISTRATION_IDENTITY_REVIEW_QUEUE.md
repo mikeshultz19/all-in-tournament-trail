@@ -66,13 +66,16 @@ An Admin's current decision labels are:
 
 - **SAME PERSON — UPDATE INFO**;
 - **SAME PERSON — KEEP EXISTING INFO**;
-- **DIFFERENT PERSON — APPROVE NEW MEMBER**;
+- **APPROVE NEW ANGLER IDENTITY**;
 - resolve both members of a Team;
 - resolve a Solo participant;
 - reopen a previously resolved review.
 
-New-Angler approval uses a transaction lock and rejects an email already owned
-by a canonical Angler. The Admin must select that existing Angler instead.
+New-Angler identity approval uses a transaction lock and rejects an email
+already owned by a canonical Angler. The Admin must select that existing Angler
+instead. It creates the Angler record only; it does not create a membership or
+record the required $40 payment. Leave a new unpaid Current Member claim in
+Needs Review until the payment is received and documented.
 
 After all participants are resolved, the existing validated
 `create_competitive_record` function creates or reuses the correct Team or Solo

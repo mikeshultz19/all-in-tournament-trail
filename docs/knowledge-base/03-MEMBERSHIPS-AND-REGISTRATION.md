@@ -41,7 +41,16 @@ Championship, and history. Review decisions are:
 
 - **SAME PERSON — UPDATE INFO**
 - **SAME PERSON — KEEP EXISTING INFO**
-- **DIFFERENT PERSON — APPROVE NEW MEMBER**
+- **APPROVE NEW ANGLER IDENTITY**
+
+This creates the Angler record only. It does not create a membership or record
+the required $40 membership payment. For a new participant who claimed Current
+Member without a verified membership, approve the identity, leave the entry in
+Needs Review, collect $40 manually, and record the amount, payment method,
+date, and collector in the review note. Use Confirm Membership Purchase only
+after the payment is received. Since the original registration recorded $0 for
+membership, reconcile the manual $40 outside the registration Financial
+Summary. Never create or confirm a membership before payment.
 
 Tournament-time membership and `aoy_eligible` snapshots control historical
 calculations; a later membership change cannot rewrite an old event.

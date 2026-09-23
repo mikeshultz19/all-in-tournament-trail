@@ -80,13 +80,14 @@ export default function RegistrationReviewResolutionForm({
       <div className="border border-white/10 bg-black/20 p-3">
         <p className="text-xs font-black uppercase text-neutral-300">New angler</p>
         <p className="mt-2 text-xs text-neutral-500">Use this when the submitted person is not the existing angler.</p>
+        <p className="mt-2 text-xs font-bold text-amber-200">Creates the angler record only. This does not create a membership or record the required $40 membership payment.</p>
         <button
           name="resolution"
           value="new"
           disabled={pending}
           className={adminButtonStyles("secondary", "mt-3")}
         >
-          Approve New Angler
+          APPROVE NEW ANGLER IDENTITY
         </button>
       </div>
       <label className="text-xs text-neutral-500 sm:col-span-2">

@@ -467,8 +467,13 @@ For an overview of the project, begin with **00_START_HERE.md**.
 
 The Financial Summary reports recorded registration funds only. An unverified
 Current Member claim remains in Needs Review but creates no hypothetical
-receivable. Staff verifies status and collects the membership payment before
-selecting Confirm Membership Purchase; only that confirmed $40 collection is
-then included. Confirm Existing Member adds no membership revenue. Historical
-non-member records remain available for recordkeeping. Processor and bank
-reconciliation remain separate operational checks.
+receivable. Approve New Angler Identity creates the Angler record only; it does
+not create a membership or record payment. For the rare new-angler correction,
+leave the registration in Needs Review, collect the required $40 manually,
+record the amount, payment method, date, and collector in a review note, then
+select Confirm Membership Purchase only after payment is received. Because the
+original registration recorded a $0 membership charge, reconcile that manual
+$40 outside the registration Financial Summary. Never create or confirm the
+membership before payment. Confirm Existing Member adds no membership revenue.
+Historical non-member records remain available for recordkeeping. Processor and
+bank reconciliation remain separate operational checks.
