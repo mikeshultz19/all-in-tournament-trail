@@ -16,6 +16,7 @@ export default function RegistrationRosterToolbar({
   page,
   pageSize,
   totalRows,
+  needReviewCount,
   cancelledCount,
   totalPages,
   rangeStart,
@@ -27,6 +28,7 @@ export default function RegistrationRosterToolbar({
   page: number;
   pageSize: 25 | 50 | 100;
   totalRows: number;
+  needReviewCount: number;
   cancelledCount: number;
   totalPages: number;
   rangeStart: number;
@@ -117,7 +119,7 @@ export default function RegistrationRosterToolbar({
               active={filter === "needs_review"}
               onClick={() => selectFilter("needs_review")}
             >
-              Needs Review
+              {formatNeedsReviewFilterLabel(needReviewCount)}
             </FilterButton>
             <FilterButton
               active={filter === "walk_ups"}
@@ -218,6 +220,10 @@ export default function RegistrationRosterToolbar({
       </div>
     </div>
   );
+}
+
+export function formatNeedsReviewFilterLabel(count: number) {
+  return `Needs Review (${count})`;
 }
 
 function FilterButton({

@@ -159,6 +159,7 @@ export default async function RegistrationReviewPage({ searchParams }: { searchP
           page={currentPage}
           pageSize={pageSize}
           totalRows={totalRows}
+          needReviewCount={summary.needReview}
           cancelledCount={cancelledHistory.length}
           totalPages={totalPages}
           rangeStart={rangeStart}

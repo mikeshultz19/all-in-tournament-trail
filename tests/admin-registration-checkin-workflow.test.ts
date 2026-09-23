@@ -67,6 +67,7 @@ describe("unified Registration & Check-In workflow", () => {
     expect(page).toContain('Metric label="Walk-Ups" value={summary.walkUps}');
     expect(page).toContain("const baseSummary = summarizeTournamentRegistrationRoster(allRows)");
     expect(page).toContain("needReview: allRows.filter((row) => row.needsReview || pendingReviewIds.has(row.id)).length");
+    expect(page).toContain("needReviewCount={summary.needReview}");
     expect(roster).toContain('.eq("registration_status", "active")');
     expect(page).toContain('className="mt-3 flex flex-wrap gap-x-8 gap-y-3 text-sm"');
   });
