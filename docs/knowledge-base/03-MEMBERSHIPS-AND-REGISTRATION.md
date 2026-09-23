@@ -28,10 +28,12 @@ tournament's registrations.
 
 ## Numbers and identity
 
-Boat Number, Registration Number, and launch order are the same number. It is
-assigned only after verified successful completion. Cancelled numbers are not
-reused, and walkups continue the sequence. A separate customer confirmation
-reference is not the boat number.
+Online registration assigns a registration number only after verified
+successful completion. Boat number, launch time, and stop-fishing time are
+provided during check-in. Cancelled registration numbers are not reused, and
+walkups continue the sequence. The online confirmation page and email use the
+`REGISTRATION NUMBER` contract; the walk-up email intentionally has a separate
+introduction.
 
 The submitted tournament identity snapshot remains the historical evidence for
 that event. Canonical members and Competitive Records support membership, AOY,
@@ -58,10 +60,11 @@ eligibility snapshots are not rewritten by current policy.
 
 ## Tournament morning
 
-Use the Registration & Check-In roster, confirm online boat numbers, add walkups
-sequentially, reconcile paper memberships, perform Membership Reconciliation,
-and make the AITT field agree with WeighFish. Insurance participation is
-reconciled in AITT because WeighFish is not its authoritative workflow.
+Use the Registration & Check-In roster, provide boat numbers during check-in,
+add walkups sequentially, reconcile paper memberships, perform Membership
+Reconciliation, and make the AITT field agree with WeighFish. Insurance
+participation is reconciled in AITT because WeighFish is not its authoritative
+workflow.
 
 ## Related documents
 

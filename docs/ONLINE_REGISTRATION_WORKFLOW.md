@@ -307,8 +307,18 @@ only. Production and sandbox credentials remain separate.
 
 After verified payment, the confirmation page displays:
 
-- **You're registered.**
-- Human-readable confirmation number.
+- **YOU’RE REGISTERED**
+- **REGISTRATION NUMBER** and the assigned number.
+- The exact online opening:
+
+  > Your registration is confirmed. Your registration number is #[NUMBER]. You
+  > are required to complete check-in before the tournament to receive your boat
+  > number, launch time, and stop-fishing time. Check the Announcements section
+  > of the AITT website for early check-in times and location. If you do not
+  > attend early check-in, you must check in on tournament morning.
+
+- Online registration assigns a registration number. Boat number, launch time,
+  and stop-fishing time are provided during check-in.
 - Tournament, date, and venue.
 - Registered anglers.
 - Selected options.
@@ -434,11 +444,20 @@ atomicity or equivalent concurrency protection.
 
 ## 11. Confirmation Email
 
-After verified payment, send a confirmation email containing the confirmation
+After verified payment, send a confirmation email containing the registration
 number, tournament, date, venue, anglers, selected options, Total Paid, Card
 Processing Fee, registration status, tournament-morning instructions, current
-policy link, fish-length rules, and correction contact. Team and Solo emails
-prominently include this exact tournament-morning line:
+policy link, fish-length rules, and correction contact. The online email opening
+is exactly the same as the online confirmation-page opening above. The walk-up
+email intentionally uses this different opening:
+
+> Your tournament-day registration is confirmed. Your registration number is
+> #[NUMBER]. Please follow the launch and stop-fishing times provided by
+> tournament staff.
+
+Online and walk-up introductions must remain separate contracts; do not merge
+them into one generic confirmation message. Team and Solo emails prominently
+include this exact tournament-morning line:
 
 > AITT TOURNAMENT CONTACT: 817-841-9120 - PLEASE SAVE THIS NUMBER IN YOUR PHONE
 

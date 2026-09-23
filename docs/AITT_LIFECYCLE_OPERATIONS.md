@@ -128,7 +128,7 @@ never be mixed.
 3. Tokenize and submit payment through Square.
 4. Verify a `COMPLETED` Square payment.
 5. Create the durable active tournament registration.
-6. Assign the next Boat/Registration Number.
+6. Assign the next registration number.
 7. Queue and deliver the confirmation email.
 
 Card/online quotes use the centralized Square Service Fee: 3% of the
@@ -141,17 +141,22 @@ Payment failure does not create an active registration or consume a boat
 number. Attempt and provider history remain available for recovery. Email
 failure does not invalidate a successful registration; delivery can be retried.
 
-### Boat and registration numbering
+### Registration number and tournament-day boat assignment
 
-Boat Number = Registration Number = launch order.
+Online registration assigns a registration number after verified successful
+completion. The online confirmation page and online confirmation email use the
+same `REGISTRATION NUMBER` opening. Boat number, launch time, and stop-fishing
+time are provided during check-in.
 
-- Assign the number only after verified successful completion.
-- Failed attempts consume no number.
-- Cancelled numbers are preserved and never reused.
+- Assign the registration number only after verified successful completion.
+- Failed attempts consume no registration number.
+- Cancelled registration numbers are preserved and never reused.
 - Walkups continue sequentially after online registrations.
 - Historical cancelled registrations remain preserved.
-- A separate customer confirmation/reference number is not the launch number
-  and remains a distinct concern if implemented later.
+- The walk-up confirmation email intentionally uses its own introduction:
+  “Your tournament-day registration is confirmed. Your registration number is
+  #[NUMBER]. Please follow the launch and stop-fishing times provided by
+  tournament staff.”
 
 ### Capacity and lifecycle rechecks
 

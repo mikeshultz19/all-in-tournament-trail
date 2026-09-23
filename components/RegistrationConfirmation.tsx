@@ -49,6 +49,7 @@ export default function RegistrationConfirmation({ confirmation, recoveryMessage
           <dd className="mt-1 break-words text-2xl font-black text-white">{confirmation.boatNumber ? `#${confirmation.boatNumber}` : "TBA"}</dd>
         </div>
       </dl>
+      <p className="mt-4 leading-7 text-neutral-300">Your registration is confirmed. Your registration number is {confirmation.boatNumber ? `#${confirmation.boatNumber}` : "#___"}. You are required to complete check-in before the tournament to receive your boat number, launch time, and stop-fishing time. Check the Announcements section of the AITT website for early check-in times and location. If you do not attend early check-in, you must check in on tournament morning.</p>
     </section>
     <dl className="mt-6 grid gap-5 border-b border-[#4A3A12] pb-6 sm:grid-cols-2">
       <div><dt className="text-xs font-black uppercase text-[#D4A017]">Registered anglers</dt><dd className="mt-1 text-white">{confirmation.anglers.join(" / ")}</dd></div>
@@ -56,7 +57,6 @@ export default function RegistrationConfirmation({ confirmation, recoveryMessage
       <div><dt className="text-xs font-black uppercase text-[#D4A017]">Amount paid</dt><dd className="mt-1 font-black text-[#D4A017]">{formatCurrencyFromCents(confirmation.totalCents)}</dd></div>
       <div><dt className="text-xs font-black uppercase text-[#D4A017]">Payment status</dt><dd className="mt-1 capitalize text-white">{confirmation.paymentStatus}</dd></div>
     </dl>
-    <p className="mt-6 leading-7 text-neutral-300">Bring any required identification and complete tournament-morning check-in as directed. Online registration does not replace check-in.</p>
     <section aria-labelledby="confirmation-tournament-information" className="mt-8 border border-[#4A3A12] bg-[#111] px-5 py-5 sm:px-6">
       <h2 id="confirmation-tournament-information" className="text-lg font-black uppercase tracking-[0.05em] text-white">Tournament Information</h2>
       <dl className="mt-5 grid min-w-0 gap-x-6 gap-y-4 sm:grid-cols-2">

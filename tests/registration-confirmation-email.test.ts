@@ -102,6 +102,8 @@ describe("registration confirmation email outbox", () => {
     expect(email.html).toContain("Spotted Bass: No minimum length");
     expect(email.html).toContain("#7");
     expect(email.html).toContain("Your registration is confirmed. Your registration number is #7. You are required to complete check-in before the tournament to receive your boat number, launch time, and stop-fishing time. Check the Announcements section of the AITT website for early check-in times and location. If you do not attend early check-in, you must check in on tournament morning.");
+    expect(email.html).not.toContain("Registration / Boat Number");
+    expect(email.html).not.toContain("Your boat number is your launch-order number");
     expect(email.html).not.toContain("Confirmation Number");
     expect(email.html).not.toContain("AITT-ABC123");
     expect(email.html).toContain("$123.45");
@@ -207,6 +209,7 @@ describe("registration confirmation email outbox", () => {
     });
     expect(email.html).toContain("REGISTRATION NUMBER");
     expect(email.html).toContain("Your tournament-day registration is confirmed. Your registration number is #41. Please follow the launch and stop-fishing times provided by tournament staff.");
+    expect(email.html).not.toContain("Your registration is confirmed. Your registration number is #41.");
     expect(email.html).toContain(`Payment Method</td><td style="padding:6px 0;color:#111;font-size:14px;font-weight:700">${paymentMethod[0].toUpperCase()}${paymentMethod.slice(1)}`);
     expect(email.html).toContain("Angler 1 Membership — $40.00");
     expect(email.html).toContain("Angler 2 Membership — $40.00");

@@ -19,7 +19,8 @@ The [Official Tournament Rules](../TOURNAMENT_RULES.md) control competition.
 
 ## Tournament morning
 
-1. Check in every online team and confirm its boat number.
+1. Check in every online team and provide/confirm its boat number, launch time,
+   and stop-fishing time.
 2. Register walkups on site. Assign sequential boat numbers after the online
    registrations; never reuse a cancelled number.
 3. Announce missing preregistered teams, finalize the field, and launch.

@@ -201,8 +201,10 @@ describe("confirmation experience", () => {
     expect(html).not.toContain("AITT-EM-0001");
     expect(html).toContain("Registration Number");
     expect(html).toContain("#17");
+    expect(html).toContain("Your registration is confirmed. Your registration number is #17. You are required to complete check-in before the tournament to receive your boat number, launch time, and stop-fishing time. Check the Announcements section of the AITT website for early check-in times and location. If you do not attend early check-in, you must check in on tournament morning.");
     expect(html).not.toContain("Your boat number is your launch-order number");
     expect(html).not.toContain("This is your boat number and will also be your launch-order number");
+    expect(html).not.toContain("Registration / Boat Number");
     expect(html).not.toContain("text-5xl");
   });
   it("shows an unassigned boat number honestly", () => {
