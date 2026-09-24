@@ -327,7 +327,7 @@ describe("durable review persistence and Admin workflow", () => {
     expect(resolutionForm).toContain("Confirm Match");
     expect(resolutionForm).not.toContain("Confirm Existing");
     expect(resolutionForm).toContain("APPROVE NEW ANGLER");
-    expect(resolutionForm).toContain("You will need to collect the required $40 membership fee.");
+    expect(resolutionForm).toContain("$40 membership due after approval.");
     expect(migration).toContain("admin_confirmed_existing");
     expect(migration).toContain("admin_approved_new");
   });

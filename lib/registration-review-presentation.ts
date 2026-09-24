@@ -25,10 +25,10 @@ export function getRegistrationReviewPresentation(
       issue: duplicatePurchase
         ? "This angler selected a new membership, but an existing membership may already be active."
         : review.submittedMembership === "current"
-          ? "Angler selected “Current Member,” but we could not verify their membership."
+          ? "Current Member selected, but no active membership was verified."
           : "Membership status could not be verified.",
       identityFollowUp: identityUnresolved
-        ? "We also need to confirm whether this is an existing angler or a new angler."
+        ? "Confirm member or approve as new."
         : null,
     };
   }
@@ -37,28 +37,28 @@ export function getRegistrationReviewPresentation(
     return {
       heading: "Identity needs review",
       issue: "The submitted email and phone match different existing anglers.",
-      identityFollowUp: "Confirm the correct existing angler, or approve this as a new angler.",
+      identityFollowUp: "Could not match confidently. Verify details or approve as new.",
     };
   }
   if (/possible duplicate tournament participation/i.test(review.reason)) {
     return {
       heading: "Possible duplicate tournament participation",
       issue: "This angler may already be entered in this tournament.",
-      identityFollowUp: "Confirm whether this is the same angler or a different angler.",
+      identityFollowUp: "Confirm same angler or different person.",
     };
   }
   if (/submitted email is already associated/i.test(review.reason)) {
     return {
       heading: "Identity needs review",
       issue: "The submitted email is already used by another angler.",
-      identityFollowUp: "Confirm whether this is the same angler or a new angler.",
+      identityFollowUp: "Confirm same angler or new person.",
     };
   }
   if (/submitted phone is already associated/i.test(review.reason)) {
     return {
       heading: "Identity needs review",
       issue: "The submitted phone number is already used by another angler.",
-      identityFollowUp: "Confirm whether this is the same angler or a new angler.",
+      identityFollowUp: "Confirm same angler or new person.",
     };
   }
   if (/contact information differs/i.test(review.reason)) {
@@ -72,6 +72,6 @@ export function getRegistrationReviewPresentation(
   return {
     heading: "Identity needs review",
     issue: "The submitted angler could not be matched confidently.",
-    identityFollowUp: "Confirm the correct existing angler, or approve this as a new angler.",
+    identityFollowUp: "Could not match confidently. Verify details or approve as new.",
   };
 }

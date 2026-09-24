@@ -125,7 +125,7 @@ describe("unified Registration & Check-In workflow", () => {
   it("uses compact Membership Dues collection and keeps check-in gated until it resolves", () => {
     expect(resolutionForm).toContain('submission.membership === "current" && suggestedAnglerIds.length === 0');
     expect(resolutionForm).toContain("APPROVE NEW ANGLER");
-    expect(resolutionForm).toContain("You will need to collect the required $40 membership fee.");
+    expect(resolutionForm).toContain("$40 membership due after approval.");
     expect(page).toContain("MembershipDuesControl");
     expect(page).toContain('item.status === "review_required" && item.reviewKind === "membership" && item.submittedMembership === "current"');
     expect(operationsControls).toContain("MembershipDuesControl");
@@ -162,7 +162,7 @@ describe("unified Registration & Check-In workflow", () => {
     expect(page).toContain("getRegistrationReviewPresentation(review)");
     expect(resolutionForm).toContain("Confirm Match");
     expect(resolutionForm).toContain("APPROVE NEW ANGLER");
-    expect(resolutionForm).toContain("You will need to collect the required $40 membership fee.");
+    expect(resolutionForm).toContain("$40 membership due after approval.");
     expect(resolutionForm).toContain("Optional review note");
     expect(resolutionForm).not.toContain("Confirm Existing");
     expect(membershipForm).toContain("Confirm Member");

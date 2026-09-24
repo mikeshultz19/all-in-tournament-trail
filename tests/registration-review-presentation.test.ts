@@ -12,8 +12,8 @@ describe("Admin registration review presentation", () => {
     });
     expect(result).toEqual({
       heading: "Membership needs review",
-      issue: "Angler selected “Current Member,” but we could not verify their membership.",
-      identityFollowUp: "We also need to confirm whether this is an existing angler or a new angler.",
+      issue: "Current Member selected, but no active membership was verified.",
+      identityFollowUp: "Confirm member or approve as new.",
     });
     expect(JSON.stringify(result)).not.toMatch(/canonical|review_kind|classification|transition/i);
   });
@@ -37,7 +37,7 @@ describe("Admin registration review presentation", () => {
     ).toEqual({
       heading: "Possible duplicate tournament participation",
       issue: "This angler may already be entered in this tournament.",
-      identityFollowUp: "Confirm whether this is the same angler or a different angler.",
+      identityFollowUp: "Confirm same angler or different person.",
     });
   });
 

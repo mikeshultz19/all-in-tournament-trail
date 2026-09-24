@@ -47,8 +47,8 @@ export default function RegistrationReviewResolutionForm({
       <form action={action} className="mt-4 grid gap-3 border border-amber-400/20 bg-black/20 p-3">
         <input type="hidden" name="reviewId" value={reviewId} />
         <input type="hidden" name="resolution" value="new" />
-        <p className="text-xs text-neutral-300">This Current Member claim could not be verified against an existing member.</p>
-        <p className="text-xs font-bold text-amber-200">You will need to collect the required $40 membership fee.</p>
+        <p className="text-xs text-neutral-300">Current Member selected, but no active membership was verified.</p>
+        <p className="text-xs font-bold text-amber-200">$40 membership due after approval.</p>
         <button disabled={pending} className={adminButtonStyles("secondary", "mt-1")}>APPROVE NEW ANGLER</button>
         {state.message ? <p role={state.status === "error" ? "alert" : "status"} className={`text-sm ${state.status === "error" ? "text-red-400" : "text-green-400"}`}>{state.message}</p> : null}
       </form>
@@ -94,8 +94,8 @@ export default function RegistrationReviewResolutionForm({
       </div>
       <div className="border border-white/10 bg-black/20 p-3">
         <p className="text-xs font-black uppercase text-neutral-300">New angler</p>
-        <p className="mt-2 text-xs text-neutral-500">Use this when the submitted person is not the existing angler.</p>
-        <p className="mt-2 text-xs font-bold text-amber-200">You will need to collect the required $40 membership fee.</p>
+        <p className="mt-2 text-xs text-neutral-500">Use when this is a different person.</p>
+        {submission.membership === "current" ? <p className="mt-2 text-xs font-bold text-amber-200">$40 membership due after approval.</p> : null}
         <button
           name="resolution"
           value="new"
