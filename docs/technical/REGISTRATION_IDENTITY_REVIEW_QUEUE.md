@@ -92,6 +92,14 @@ inactive, or ineligible memberships remain visible in an actionable membership
 review and keep check-in blocked. The backend reconciliation must verify this;
 the visible Confirm Match result alone is not sufficient.
 
+This is a queue invariant, not merely a display rule: every active participant
+must be either a verified current-season member or present in an actionable
+review/Membership Dues queue. A resolved identity review with an unresolved
+membership condition must remain visible, keep CHECK IN disabled, and identify
+the required next action. Valid membership confirmation or qualifying MARK
+COLLECTED evidence clears the condition; no active participant may disappear
+from all actionable queues.
+
 After all participants are resolved, the existing validated
 `create_competitive_record` function creates or reuses the correct Team or Solo
 record. Team and Solo ownership remain separate.

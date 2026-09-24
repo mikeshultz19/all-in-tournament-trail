@@ -160,7 +160,14 @@ reference and a recorded Cash, Card, or Other method. Cancelled, failed,
 abandoned, duplicate/unpaid, and otherwise uncollected records are excluded.
 Check-In and DQ states do not change collected totals.
 Needs Review does not change a collected payment total, but remains visibly
-flagged for operational resolution.
+flagged for operational resolution. Manual membership revenue is counted only
+when the supported MARK COLLECTED action records exact deduplicated
+registration/review evidence; an active membership or identity normalization
+alone never implies revenue. Each qualifying marker counts once, adds $40 to
+Memberships Collected and Total Registration Funds, and does not change Online
+Funds, Square totals, or Tournament Payout Funds. The same registration-level
+component must be used by the roster, All Registrations, cancellation detail,
+and exports.
 
 Walk-up records store payment method and selected registration fields, so the
 summary derives their face-value categories from those fields rather than the
@@ -187,9 +194,9 @@ service fee. Itemized membership charges remain per individual participant.
 Walk-up queue insertion occurs in the successful registration transaction.
 Blank recipients queue nothing and do not invalidate an otherwise valid
 walk-up registration. Delivery failure does not reverse registration and remains
-available through the existing retry state. The No Show cleanup migration is
-applied to staging; an authenticated allowlisted staging delivery rehearsal
-remains outstanding.
+available through the existing retry state. An authenticated allowlisted staging
+delivery rehearsal remains outstanding; automated tests do not replace that
+rehearsal.
 
 1. **Registration begins.** The angler selects the tournament, solo or team registration, Current Member or Purchase Membership for each angler, and entry options. Tournament Entry is required. Big Bass and Insurance are optional; Bronze, Silver, and Gold are optional and mutually exclusive. Current registration requires membership for every angler; historical non-member rows remain readable.
 2. **Charges are established.** The registration shows itemized charges and an expected total. Prices and eligibility come from approved business rules.
@@ -471,8 +478,10 @@ which creates the canonical Angler only and leaves the membership review
 pending. The roster-level **MEMBERSHIP DUES** control lists the $40 obligation.
 After the Tournament Director collects it manually, **MARK COLLECTED** reuses
 the existing membership-confirmation operation and records the confirming Admin
-and timestamp. It does not process payment, alter the registration price
-snapshot, add $40 to the Financial Summary, or send collection email. Confirm
-Existing Member adds no membership revenue. Historical non-member records remain
+and timestamp. It does not process payment or alter the registration price
+snapshot. The explicit collected $40 increases Memberships Collected and Total
+Registration Funds, but not Online Funds or Tournament Payout Funds; it does
+not send collection email. Confirm Existing Member adds no membership
+revenue. Historical non-member records remain
 available for recordkeeping. Processor and bank reconciliation remain separate
 operational checks.

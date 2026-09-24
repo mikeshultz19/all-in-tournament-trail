@@ -22,8 +22,8 @@ prevent resubmission, refresh, editing, attendance, review, export, or printing
 from creating another automatic confirmation. A walk-up without an
 email remains saved, queues nothing, and reports `Confirmation not sent — no
 email provided.` Delivery failure preserves the registration and remains in the
-retry workflow. The No Show cleanup migration is applied to staging; an
-authenticated allowlisted delivery rehearsal remains outstanding.
+retry workflow. An authenticated allowlisted staging delivery rehearsal remains
+outstanding; automated tests do not replace that rehearsal.
 
 ## Tournament funds review
 
@@ -178,6 +178,12 @@ recorded purchase lines; pre-existing memberships are not revoked. Canceled
 registrations remain in the Canceled and All Registrations views for audit, but
 are excluded from active operations, funds/payouts, exports, results, AOY, and
 Championship eligibility.
+
+After successful confirmation, the cancellation panel closes, resets its
+selection, note, refund status, and local form state, and the roster/summary
+revalidates. KEEP REGISTRATION closes and resets without changing data. A
+failed validation or cancellation leaves the panel open with its entered
+information intact.
 
 **Big Bass** is optional and is not a standalone tournament entry.
 
@@ -376,6 +382,16 @@ The table shows:
 - At most one payout pot selection: Bronze, Silver, or Gold
 - Insurance Pot selection
 
+The public projection contains active customer-visible registrations only;
+canceled entries are retained for Admin history but never contribute to public
+rows or counts. Home and /registrations consume the same complete active
+projection, so the homepage count is not the current table page size. The table
+shows at most 25 visible rows per page, hides controls at 25 or fewer, and
+shows row 26 on page two when there are 26 active rows. Pagination uses the
+visible ordered projection rather than boat or internal registration numbers.
+Selected boolean options render as a checkmark and unselected options as an
+em dash, with accessible Selected/Not selected labels.
+
 Entries are sorted by registration timestamp from oldest to newest. Tournament
 Entry is required and implicit for every valid registration, so it is not shown
 as a redundant column.
@@ -409,6 +425,14 @@ Only the explicit privacy-safe public entry projection may supply homepage
 counts. Names, email addresses, phone numbers, street addresses, payment
 details, administrative notes, internal identifiers, and other private
 registration data must not be passed to or rendered by the homepage.
+
+The Admin Registration Entries toolbar reports Needs Review, Membership Dues,
+Pending Check-Ins/Check-Ins, and Canceled counts from the active operational
+roster. Walk-Ups intentionally has no count. CHECK IN is disabled and grayed
+with the exact helper text `Verify membership dues.` while required dues remain
+unresolved; it becomes available after valid membership confirmation or MARK
+COLLECTED. All Members, All Registrations, and the tournament roster must be
+reconciled against the same authoritative participant and payment projections.
 
 ## 10. Estimated Safe Light
 
@@ -770,10 +794,12 @@ level **MEMBERSHIP DUES** control lists the $40 obligation. The Tournament
 Director collects and tracks it manually, then staff selects **MARK COLLECTED**
 to reuse the supported membership-confirmation operation. It records the
 confirming Admin and timestamp, activates the membership, and clears the
-review. It does not process payment, alter the registration price snapshot, add
-$40 to the Financial Summary, or send collection email. Existing member,
-contact, duplicate, and historical membership reviews remain separate. Only
-recorded registration money is included in the Financial Summary.
+review. It does not process payment or alter the registration price snapshot.
+The explicit collected $40 increases Memberships Collected and Total
+Registration Funds, but not Online Funds or Tournament Payout Funds; no
+collection email is sent. Existing member, contact, duplicate, and historical
+membership reviews remain separate. Only explicitly recorded registration
+money or qualifying manual dues evidence is included in the Financial Summary.
 Walk-up snapshots can remain lump-sum and are retained as a known auditability
 limitation.
 

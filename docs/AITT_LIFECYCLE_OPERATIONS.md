@@ -207,6 +207,14 @@ Historical tournament-time membership and `aoy_eligible` snapshots are
 authoritative for historical calculations. Today's membership state must not
 retroactively rewrite an old tournament's eligibility.
 
+Every active participant must have either an eligible current-season membership
+or an unresolved actionable review/Membership Dues item. A resolved identity
+review must not hide an unresolved membership condition. Confirm Match therefore
+re-evaluates membership after linkage: an eligible membership resolves at $0;
+a missing or ineligible membership remains actionable and blocks check-in. The
+read-only staging reconciliation is the reusable backend check for this
+invariant.
+
 For Bronze, Silver, Gold, and Insurance selections:
 
 - every new angler must have a current or newly purchased seasonal membership;

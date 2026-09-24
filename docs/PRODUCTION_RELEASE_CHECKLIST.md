@@ -121,6 +121,30 @@ AITT example:
 
 ## 6. Validation
 
+### Required future production acceptance rehearsal
+
+This is a required future procedure, not completed production evidence. Keep
+registration closed during validation, take the approved production backup
+first, and use the controlled scenario matrix in the [Staging Rehearsal
+Playbook](STAGING_REHEARSAL_PLAYBOOK.md) as the evidence format. The production
+acceptance set must include:
+
+- one mixed online team: one existing member with a contact change and one new
+  member, Bronze, Big Bass, Insurance, and one real Square charge;
+- one new-member walk-up;
+- confirmation page/email, payment, roster, membership, financial, public,
+  check-in, and export verification;
+- cancellation of both entries, the real Square refund, preservation/revocation
+  verification, and exact return to the pre-test financial baseline;
+- complete production reconciliation before registration is opened;
+- Eagle Mountain (regular-season tournament one): Current Member disabled and
+  New Member required; and Squaw Creek (regular-season tournament two): Current
+  Member available.
+
+Do not treat staging results or automated tests as production acceptance. The
+staging-only manual execution of migration 202609230001 has not been shown in
+the production migration ledger and must not be implied as a production change.
+
 - [ ] Run focused automated tests.
 - [ ] Run `npx tsc --noEmit`.
 - [ ] Run changed-file lint.

@@ -36,6 +36,13 @@ evidence that Square checkout is configured. Verify the deployed binding names
 and run a credential-free quote/configuration smoke check that returns neither
 `missing_configuration` nor HTTP 503 and creates no payment attempt.
 
+Migration bookkeeping is a separate gate: migration 202609230001 was manually
+executed once in the staging SQL Editor, but its Supabase CLI ledger presence
+is unverified. Reconcile that state before any future CLI migration; do not
+imply that production received it. The Windows deployment wrapper's known
+spawnSync npx ENOENT issue and the requirement for a complete runtime binding
+set remain readiness items until a normal deployment proves them.
+
 Use this checklist as the authoritative, auditable record for:
 Registration → Payment → Public Entries → Admin Roster → Tournament Morning → WeighFish → Results → Payouts → AOY/Championship → Publishing and Closeout.
 
@@ -109,10 +116,11 @@ An unchecked or unavailable layer keeps the result at `Needs Rehearsal`.
 - **Automated UI Validated:** focused registration, roster, attendance,
   identity-review, financial, confirmation-rendering, results, AOY, and
   Championship tests and the complete integrated suite passed: 969/969 tests.
-- **Staging Backend Validated:** staging project and the previously authorized
-  No Show cleanup migration were verified read-only; Boat 14 remained active and
-  financially included. Registration #16 did not match the requested fixture
-  state (it was checked in and `resolved_existing`), so no mutation followed.
+- **Staging Backend Validated:** this dated evidence record is historical. It
+  refers to a prior read-only check of the staging project and former No Show
+  migration state; it does not establish current policy or production state.
+  Boat 14 remained active and financially included, and Registration #16 did
+  not match the requested fixture state, so no mutation followed.
 - **Staging Browser Validated:** Not Tested; no authenticated staging browser
   session was available.
 - **Fully Rehearsed:** none. Missing browser/provider evidence keeps every
@@ -213,8 +221,8 @@ Code inspection and automated tests cover the separate approved online and
 walk-up variants, normalized/deduplicated recipients, database/provider
 idempotency, nullable walk-up payment-attempt semantics, itemized individual
 membership fees, Cash/Card/Other display, missing-email handling, and delivery
-failure/retry behavior. The forward-only No Show cleanup migration is applied
-to staging.
+failure/retry behavior. No Show is not a separate active application status;
+attendance remains an ordinary Check-In operation.
 No authenticated allowlisted staging delivery or duplicate/retry rehearsal has
 been performed, so EML-01 through EML-10 remain `Not Tested` and must not be
 reported as live-delivery Pass.

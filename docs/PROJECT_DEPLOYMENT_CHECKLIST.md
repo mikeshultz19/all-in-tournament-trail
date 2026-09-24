@@ -60,6 +60,22 @@ provider; they must never be committed or printed. Run
 `npm run deploy:staging:check` before any future deployment. A staging deploy
 has not been performed by this checklist update.
 
+The deployment is not accepted on route HTTP 200 checks alone. The preflight
+must verify required build-time and Worker-runtime `NEXT_PUBLIC_*` bindings,
+staging Supabase classification, `SQUARE_ENVIRONMENT=sandbox`, hosted secret
+binding names, and a non-mutating checkout quote/configuration health check
+that does not return `missing_configuration` or HTTP 503. The Windows
+deployment wrapper's known `spawnSync npx ENOENT` issue remains an open
+readiness item; a previously validated direct Wrangler method is an incident
+fallback, not a normal production process. Manually restoring a binding or
+secret after deployment is not an acceptable substitute for complete
+deployment configuration.
+
+Migration bookkeeping: staging migration `202609230001` was manually executed
+once in the SQL Editor. CLI migration-ledger presence is unverified. Reconcile
+that state before any future CLI migration, and never infer that production has
+received it.
+
 Required public staging variables are `NEXT_PUBLIC_SUPABASE_URL`,
 `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `NEXT_PUBLIC_SQUARE_APPLICATION_ID`,
 `NEXT_PUBLIC_SQUARE_LOCATION_ID`, `SQUARE_ENVIRONMENT=sandbox`,

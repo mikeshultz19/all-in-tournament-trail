@@ -495,3 +495,21 @@ Repeat the complete approved scenario matrix without code changes, data repair,
 or manual backend intervention. Run the complete reconciliation afterward.
 Production recommendation requires zero unexplained warnings, mismatches,
 unresolved Membership Dues, or unresolved reviews.
+
+### Tournament rollover gate
+
+Before reusing this playbook for the next tournament, capture a new
+tournament-scoped baseline and verify that the selected tournament, active
+season, regular_season_number, registration availability, entry/pot
+configuration, memberships, payment totals, and public projection are isolated
+from the prior tournament. Confirm that active/canceled rows, review queues,
+exports, results, payout inputs, AOY, and Championship participation use the
+selected tournament rather than stale Ray Hubbard data. Run one tournament-one
+check for the disabled online Current Member choice and one tournament-two
+check for the enabled choice. Do not carry a prior tournament's data repair,
+baseline, or approval forward.
+
+The complete rehearsal must also cover final exports and printable roster,
+WeighFish generation/import, normal results and payout calculations, AOY
+best-5-of-8, Championship five-of-eight participation, publication/unpublish,
+and financial/operational isolation before the next tournament is accepted.

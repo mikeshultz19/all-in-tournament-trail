@@ -260,6 +260,13 @@ $40 per angler. Tournament two and later retain the normal Current Member and
 Purchase Membership choices. This rule applies only to online registration;
 Admin walk-up behavior is unchanged.
 
+The authoritative amount is the server quote: each first-tournament angler
+must select Purchase Membership and contributes $40 before the Square Service
+Fee is calculated. A stale or modified Current Member request is rejected
+before payment-attempt creation. The public form does not auto-select New
+Member, and Continue to Payment remains unavailable until every angler makes
+the required selection.
+
 ### Combined Acknowledgment
 
 One required acknowledgment is shown and is never preselected. It links the
@@ -335,6 +342,12 @@ After verified payment, the confirmation page displays:
 - Paid status.
 - Tournament-morning instructions.
 - Tournament details, rules, support, and correction paths.
+
+The online webpage and online email share this opening. The walk-up email is
+intentionally different: it says that the tournament-day registration is
+confirmed and that launch and stop-fishing times are provided by tournament
+staff. Neither variant calls the registration number a boat number or
+launch-order number.
 
 No full card data is displayed. A masked description may appear later only
 when supplied safely by Square and approved for the view model. If confirmation
@@ -487,8 +500,8 @@ email selection. The unique registration/recipient constraint and provider
 idempotency key prevent duplicate delivery. A walk-up without a deliverable
 email remains saved and reports `Confirmation not sent — no email provided.`
 Delivery failure preserves the registration and remains visible in the existing
-failed/retry outbox state. The No Show cleanup migration is applied to staging;
-an authenticated, allowlisted delivery rehearsal remains outstanding.
+failed/retry outbox state. An authenticated, allowlisted staging delivery
+rehearsal remains outstanding; automated tests do not replace that rehearsal.
 
 ## 12. Administrative Experience
 

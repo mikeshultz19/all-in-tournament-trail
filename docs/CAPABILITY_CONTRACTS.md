@@ -72,9 +72,11 @@ provided.` Delivery failure does not roll back the registration.
 
 ## Recovery and release evidence
 
-- The No Show cleanup migration `202609170002_remove_no_show_feature.sql` is
-  applied to staging only; dropped attendance timestamps require a backup for
-  recovery.
+- AITT has no separate active No Show status; attendance is handled through the
+  ordinary Check-In workflow. Historical migration records remain preserved.
+- Migration `202609230001` was manually executed once in the staging SQL Editor;
+  its CLI migration-ledger presence is unverified and must be reconciled before
+  any future CLI migration. This does not imply a production migration.
 - The staging project is `vcjhufuklqwvnqmarpqi`; production is out of scope.
 - Automated tests are evidence of code behavior, not a live authenticated UI,
   Square Sandbox, CSV-import, or email-delivery rehearsal.
