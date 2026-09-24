@@ -238,7 +238,7 @@ function RosterActions({ row, tournamentId, reviews }: { row: TournamentRegistra
   const needsReview = row.needsReview || pendingReviews.length > 0;
   const membershipDue = pendingReviews.some((review) => review.reviewKind === "membership" && review.submittedMembership === "current");
   return <>
-    <div className="flex flex-wrap items-start gap-2">{needsReview ? <AdminStatusBadge tone="attention">Needs Review</AdminStatusBadge> : null}<RegistrationCheckInControl tournamentId={tournamentId} registrationId={row.id} checkedInAt={row.checkedInAt} membershipDue={membershipDue} /></div>
+    <div className="flex flex-wrap items-start gap-2">{needsReview ? <AdminStatusBadge tone="attention">Needs Review</AdminStatusBadge> : null}<RegistrationCheckInControl tournamentId={tournamentId} registrationId={row.id} checkedInAt={row.checkedInAt} membershipDue={membershipDue} reviewBlocked={needsReview} /></div>
   </>;
 }
 

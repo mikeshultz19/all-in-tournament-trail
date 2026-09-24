@@ -140,7 +140,9 @@ describe("unified Registration & Check-In workflow", () => {
     expect(operationsControls).not.toContain("AITT-");
     expect(operationsControls).not.toContain("admin_resolve_unmatched_current_member_review");
     expect(page).toContain("membershipDue={membershipDue}");
-    expect(checkInControl).toContain("disabled={pending || membershipDue}");
+    expect(page).toContain("reviewBlocked={needsReview}");
+    expect(checkInControl).toContain("disabled={pending || checkInBlocked}");
+    expect(checkInControl).toContain("Resolve registration review.");
     expect(checkInControl).toContain("opacity-50 grayscale");
     expect(checkInControl).toContain("Verify membership dues.");
     expect(checkInControl).toContain("membershipDue = false");
