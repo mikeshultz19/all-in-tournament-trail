@@ -50,3 +50,6 @@ next-env.d.ts
 !.dev.vars.example
 
 .obsidian/
+
+# Supabase CLI-generated local linkage and metadata
+supabase/.temp/
