@@ -3,7 +3,7 @@ import { readFileSync } from "node:fs";
 import { describe, expect, it, vi } from "vitest";
 
 import EarlyRegistrationsPage from "@/app/registrations/page";
-import EarlyEntriesTable from "@/components/EarlyEntriesTable";
+import EarlyEntriesTable, { paginatePublicEarlyEntries } from "@/components/EarlyEntriesTable";
 import FeaturedTournament from "@/components/FeaturedTournament";
 import TournamentEntrySummary from "@/components/TournamentEntrySummary";
 import EarlyRegistrationStats from "@/components/EarlyRegistrationStats";
@@ -13,6 +13,12 @@ import { filterPublicEarlyRegistrationRecords, getTournamentEntrySummary, toPubl
 import { databaseTournament } from "@/tests/tournament-db-fixture";
 
 const entries = getPublicEarlyEntries("eagle-mountain-2026");
+const makeEntries = (count: number) => Array.from({ length: count }, (_, index) => ({
+  ...entries[index % entries.length],
+  boatNumber: index + 1,
+  registeredAt: new Date(Date.UTC(2026, 6, 1, 12, index)).toISOString(),
+  angler1DisplayName: `Synthetic Angler ${index + 1}`,
+}));
 const mocks = vi.hoisted(() => ({
   getNextUpcomingTournament: vi.fn(),
   getPublicEarlyEntriesForTournament: vi.fn(),
@@ -177,6 +183,51 @@ describe("Tournament Entries", () => {
     expect(html).not.toContain("Private fixture note");
   });
 
+  it.each([24, 25])("renders %i entries on one page without pagination controls", (count) => {
+    const page = paginatePublicEarlyEntries(makeEntries(count), 1);
+    const html = renderToStaticMarkup(<EarlyEntriesTable entries={makeEntries(count)} registrationHref="/register" registrationOpen />);
+
+    expect(page.entries).toHaveLength(count);
+    expect(page.totalPages).toBe(1);
+    expect(html).not.toContain("Tournament entries pagination");
+    expect(html).not.toContain("Previous");
+    expect(html).not.toContain("Next");
+  });
+
+  it("shows 25 entries on page one and one entry on page two for 26 active entries", () => {
+    const allEntries = makeEntries(26);
+    const firstPage = paginatePublicEarlyEntries(allEntries, 1);
+    const secondPage = paginatePublicEarlyEntries(allEntries, 2);
+    const firstPageHtml = renderToStaticMarkup(<EarlyEntriesTable entries={allEntries} registrationHref="/register" registrationOpen />);
+
+    expect(firstPage.entries).toHaveLength(25);
+    expect(firstPage.entries[0]?.angler1DisplayName).toBe("Synthetic Angler 1");
+    expect(firstPage.entries.at(-1)?.angler1DisplayName).toBe("Synthetic Angler 25");
+    expect(secondPage.entries).toHaveLength(1);
+    expect(secondPage.entries[0]?.angler1DisplayName).toBe("Synthetic Angler 26");
+    expect(firstPageHtml).toContain("1–25 of 26");
+    expect(firstPageHtml).toContain("Previous");
+    expect(firstPageHtml).toContain("Next");
+    expect(firstPageHtml).toContain("Page 1 of 2");
+    expect(firstPageHtml).toContain('aria-label="Previous page"');
+    expect(firstPageHtml).toContain('aria-label="Next page"');
+    expect(firstPageHtml).toContain('aria-current="page"');
+  });
+
+  it("keeps Previous and Next navigation bounded and preserves ordering", () => {
+    const allEntries = makeEntries(26);
+    const firstPage = paginatePublicEarlyEntries(allEntries, 0);
+    const secondPage = paginatePublicEarlyEntries(allEntries, 2);
+    const afterLastPage = paginatePublicEarlyEntries(allEntries, 3);
+
+    expect(firstPage.currentPage).toBe(1);
+    expect(secondPage.currentPage).toBe(2);
+    expect(afterLastPage.currentPage).toBe(2);
+    expect([...firstPage.entries, ...secondPage.entries].map((entry) => entry.boatNumber)).toEqual(
+      allEntries.map((entry) => entry.boatNumber),
+    );
+  });
+
   it("keeps active online and walk-up entries public while excluding canceled entries and counts", () => {
     const online = { ...earlyRegistrationRecords[0], id: "active-online", registrationStatus: "active" as const, registrationSource: "online" as const };
     const walkUp = { ...earlyRegistrationRecords[1], id: "active-walk-up", registrationStatus: "active" as const, registrationSource: "walk_up" as const };
@@ -189,6 +240,7 @@ describe("Tournament Entries", () => {
     expect(publicRecords.map((record) => record.id)).toEqual(["active-online", "active-walk-up"]);
     expect(publicEntries).toHaveLength(2);
     expect(getTournamentEntrySummary(publicEntries).totalEntries).toBe(2);
+    expect(paginatePublicEarlyEntries(publicEntries, 1)).toMatchObject({ totalEntries: 2, totalPages: 1 });
     expect(html).toContain("Marcus Reed");
     expect(html).toContain("Caleb Brooks");
     expect(html).not.toContain("Noah Bennett");

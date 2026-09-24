@@ -1,8 +1,31 @@
+"use client";
+
 import Link from "next/link";
+import { useState } from "react";
 
 import type { PublicEarlyEntry } from "@/lib/public-early-entry";
 
 const bonusPotLabels = { bronze: "Bronze", silver: "Silver", gold: "Gold" } as const;
+export const PUBLIC_EARLY_ENTRIES_PAGE_SIZE = 25;
+
+export function paginatePublicEarlyEntries(
+  entries: readonly PublicEarlyEntry[],
+  requestedPage: number,
+) {
+  const totalEntries = entries.length;
+  const totalPages = Math.max(1, Math.ceil(totalEntries / PUBLIC_EARLY_ENTRIES_PAGE_SIZE));
+  const currentPage = Math.min(Math.max(1, requestedPage), totalPages);
+  const startIndex = (currentPage - 1) * PUBLIC_EARLY_ENTRIES_PAGE_SIZE;
+
+  return {
+    entries: entries.slice(startIndex, startIndex + PUBLIC_EARLY_ENTRIES_PAGE_SIZE),
+    currentPage,
+    totalEntries,
+    totalPages,
+    rangeStart: totalEntries === 0 ? 0 : startIndex + 1,
+    rangeEnd: Math.min(startIndex + PUBLIC_EARLY_ENTRIES_PAGE_SIZE, totalEntries),
+  };
+}
 
 function optionIndicator(label: string, selected: boolean) {
   return (
@@ -25,6 +48,9 @@ export default function EarlyEntriesTable({
   registrationHref: string;
   registrationOpen: boolean;
 }) {
+  const [requestedPage, setRequestedPage] = useState(1);
+  const pagination = paginatePublicEarlyEntries(entries, requestedPage);
+
   if (entries.length === 0) {
     return (
       <div className="border-y border-white/10 py-10 text-center">
@@ -54,8 +80,8 @@ export default function EarlyEntriesTable({
           </tr>
         </thead>
         <tbody className="divide-y divide-white/10 bg-[#0E0E0E] text-neutral-200">
-          {entries.map((entry) => (
-            <tr key={`${entry.registeredAt}-${entry.angler1DisplayName}`} className="hover:bg-white/[0.03]">
+          {pagination.entries.map((entry, index) => (
+            <tr key={`${entry.registeredAt}-${entry.boatNumber ?? "unassigned"}-${entry.angler1DisplayName}-${index}`} className="hover:bg-white/[0.03]">
               <td className="whitespace-nowrap px-4 py-3 font-black text-white">{entry.boatNumber?.toString() ?? "—"}</td>
               <td className="px-4 py-3 font-black uppercase tracking-[0.1em] text-[#D4A017]">
                 {entry.entryMode === "team" ? "Team" : "Solo"}
@@ -69,6 +95,30 @@ export default function EarlyEntriesTable({
           ))}
         </tbody>
       </table>
+      {pagination.totalPages > 1 && (
+        <nav aria-label="Tournament entries pagination" className="flex flex-wrap items-center justify-between gap-3 border-t border-white/10 bg-[#111111] px-4 py-3 text-xs font-black uppercase tracking-[0.1em] text-neutral-300">
+          <button
+            type="button"
+            onClick={() => setRequestedPage(pagination.currentPage - 1)}
+            disabled={pagination.currentPage === 1}
+            aria-label="Previous page"
+            className="border border-white/15 px-3 py-2 enabled:text-[#D4A017] enabled:hover:border-[#D4A017]/60 disabled:cursor-not-allowed disabled:text-neutral-600"
+          >
+            Previous
+          </button>
+          <span aria-live="polite">{pagination.rangeStart}–{pagination.rangeEnd} of {pagination.totalEntries}</span>
+          <span aria-current="page">Page {pagination.currentPage} of {pagination.totalPages}</span>
+          <button
+            type="button"
+            onClick={() => setRequestedPage(pagination.currentPage + 1)}
+            disabled={pagination.currentPage === pagination.totalPages}
+            aria-label="Next page"
+            className="border border-white/15 px-3 py-2 enabled:text-[#D4A017] enabled:hover:border-[#D4A017]/60 disabled:cursor-not-allowed disabled:text-neutral-600"
+          >
+            Next
+          </button>
+        </nav>
+      )}
     </div>
   );
 }
