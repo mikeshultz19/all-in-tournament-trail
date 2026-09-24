@@ -143,7 +143,14 @@ describe("Tournament Entries", () => {
     expect(html).toContain("Silver");
     expect(html).toContain("Gold");
     expect(html).toContain("—");
-    expect(html).toContain(">Yes<");
+    expect(html).toContain('aria-label="Big Bass: Selected"');
+    expect(html).toContain('aria-label="Big Bass: Not selected"');
+    expect(html).toContain('aria-label="Insurance Pot: Selected"');
+    expect(html).toContain('aria-label="Insurance Pot: Not selected"');
+    expect(html).toContain(">✓<");
+    expect(html).toContain(">—<");
+    expect(html).not.toContain(">Yes<");
+    expect(html).not.toContain(">No<");
   });
 
   it("omits the redundant Tournament Entry column", () => {

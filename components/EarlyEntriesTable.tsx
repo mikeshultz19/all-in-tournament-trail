@@ -4,6 +4,18 @@ import type { PublicEarlyEntry } from "@/lib/public-early-entry";
 
 const bonusPotLabels = { bronze: "Bronze", silver: "Silver", gold: "Gold" } as const;
 
+function optionIndicator(label: string, selected: boolean) {
+  return (
+    <span
+      role="img"
+      aria-label={`${label}: ${selected ? "Selected" : "Not selected"}`}
+      className={selected ? "text-white" : "text-neutral-600"}
+    >
+      {selected ? "✓" : "—"}
+    </span>
+  );
+}
+
 export default function EarlyEntriesTable({
   entries,
   registrationHref,
@@ -50,9 +62,9 @@ export default function EarlyEntriesTable({
               </td>
               <td className="px-4 py-3 font-semibold text-white">{entry.angler1DisplayName}</td>
               <td className="px-4 py-3">{entry.entryMode === "solo" ? "Solo" : entry.angler2DisplayName}</td>
-              <td className="px-4 py-3">{entry.bigBassSelected ? "Yes" : <span className="text-neutral-600">—</span>}</td>
+              <td className="px-4 py-3">{optionIndicator("Big Bass", entry.bigBassSelected)}</td>
               <td className="px-4 py-3">{entry.bonusPot ? bonusPotLabels[entry.bonusPot] : <span className="text-neutral-600">—</span>}</td>
-              <td className="px-4 py-3">{entry.insurancePotSelected ? "Yes" : <span className="text-neutral-600">—</span>}</td>
+              <td className="px-4 py-3">{optionIndicator("Insurance Pot", entry.insurancePotSelected)}</td>
             </tr>
           ))}
         </tbody>
