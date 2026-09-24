@@ -251,6 +251,15 @@ Membership is paid once per person per season: current/current teams pay $0,
 current/new teams pay $40, new/new teams pay $80, and a new solo angler pays
 $40. No membership shortfall or hypothetical receivable is reported.
 
+For the first regular-season tournament of a season, identified by the
+authoritative `tournaments.regular_season_number = 1` field, the public online
+form disables Current Member for each angler and requires an explicit Purchase
+Membership selection. The server rejects stale or modified Current Member
+requests before creating a payment attempt, and authoritative pricing includes
+$40 per angler. Tournament two and later retain the normal Current Member and
+Purchase Membership choices. This rule applies only to online registration;
+Admin walk-up behavior is unchanged.
+
 ### Combined Acknowledgment
 
 One required acknowledgment is shown and is never preselected. It links the

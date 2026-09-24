@@ -58,6 +58,20 @@ export type OnlineRegistrationRequest = {
   acknowledgment: RegistrationAcknowledgment;
 };
 
+type TournamentOrderFields =
+  | Pick<Tournament, "eventType" | "regularSeasonNumber">
+  | { event_type: string; regular_season_number: number | null };
+
+export function isFirstRegularSeasonTournament(
+  tournament: TournamentOrderFields,
+): boolean {
+  const eventType = "eventType" in tournament ? tournament.eventType : tournament.event_type;
+  const regularSeasonNumber = "regularSeasonNumber" in tournament
+    ? tournament.regularSeasonNumber
+    : tournament.regular_season_number;
+  return eventType === "regular_season" && regularSeasonNumber === 1;
+}
+
 /**
  * Builds the competitors for the selected Competitive Record.
  * Solo and Team registrations are independent records, so a Solo payload must
@@ -249,6 +263,12 @@ export function validateOnlineRegistrationRequest(
     if (input.acknowledgment.rulesVersion !== REGISTRATION_POLICY_VERSIONS.rules) errors.push("Review and accept the current Official Tournament Rules.");
     if (input.acknowledgment.waiverVersion !== REGISTRATION_POLICY_VERSIONS.liability_waiver) errors.push("Review and accept the current Participant Liability Waiver.");
     if (!input.acknowledgment.acknowledgedAt || Number.isNaN(Date.parse(input.acknowledgment.acknowledgedAt))) errors.push("A valid policy acknowledgment time is required.");
+  }
+  if (
+    isFirstRegularSeasonTournament(tournament) &&
+    memberships.some((membership) => membership === "current")
+  ) {
+    errors.push("All anglers must purchase their season membership for the first tournament.");
   }
   return [...new Set(errors)];
 }

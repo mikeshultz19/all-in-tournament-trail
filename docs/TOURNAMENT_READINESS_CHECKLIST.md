@@ -8,6 +8,16 @@ format, and partner-acceptance signoff. This checklist remains the readiness
 authority: it records what must be ready and whether each evidence layer has
 passed; the playbook records how the checks were performed.
 
+Readiness requires a clean baseline before each rehearsal batch and a complete
+read-only reconciliation after every 3–5 scenarios. A visible resolved identity
+review is not sufficient: every active participant must be a verified
+current-season member or remain in an actionable review/Membership Dues queue.
+Use `npx tsx scripts/reconcile-staging.ts` with the explicit staging project
+reference when credentials are safely available. Any unexplained mismatch,
+unresolved dues, silent queue disappearance, or public-count discrepancy keeps
+the candidate at **Needs Rehearsal** until the affected scenario is repeated
+from a clean baseline.
+
 The staging application target is separate from production: use
 `wrangler.staging.jsonc` and `npm run deploy:staging` only after the staging
 Worker, `workers.dev` URL, environment variables, and encrypted secrets have
@@ -16,6 +26,15 @@ staging deployment preflight must pass with Supabase project
 `vcjhufuklqwvnqmarpqi` and Square Sandbox mode; no staging deployment is
 considered rehearsed until the authenticated browser and backend layers below
 are completed.
+
+For Worker deployments, every `NEXT_PUBLIC_*` value consumed by server/runtime
+code must exist as a deployed runtime binding as well as being available during
+the local build. In particular, staging must expose
+`NEXT_PUBLIC_SQUARE_APPLICATION_ID` and `NEXT_PUBLIC_SQUARE_LOCATION_ID` in
+`wrangler.staging.jsonc`; a successful `/register` page load alone is not
+evidence that Square checkout is configured. Verify the deployed binding names
+and run a credential-free quote/configuration smoke check that returns neither
+`missing_configuration` nor HTTP 503 and creates no payment attempt.
 
 Use this checklist as the authoritative, auditable record for:
 Registration → Payment → Public Entries → Admin Roster → Tournament Morning → WeighFish → Results → Payouts → AOY/Championship → Publishing and Closeout.

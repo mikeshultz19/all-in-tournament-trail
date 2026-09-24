@@ -13,6 +13,7 @@ import type { TournamentOperationsViewModel } from "@/lib/tournament-view-model"
 import { getRegistrationPricing, validateRegistrationSelections, type MemberPot, type Membership, type RegistrationType } from "@/lib/registration";
 import {
   selectCompetitiveRecordAnglers,
+  isFirstRegularSeasonTournament,
   type RegistrationPriceSnapshot,
 } from "@/lib/online-registration";
 
@@ -47,7 +48,7 @@ const OPTIONAL_POTS = [
 function money(value: number) { return `$${value.toFixed(2)}`; }
 function formatDate(date: string) { return new Date(`${date}T12:00:00`).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" }); }
 
-function validateAngler(key: AnglerKey, angler: Angler) {
+function validateAngler(key: AnglerKey, angler: Angler, requiresNewMembership: boolean) {
   const errors: Errors = {};
   const firstName = angler.firstName.trim();
   const lastName = angler.lastName.trim();
@@ -60,10 +61,13 @@ function validateAngler(key: AnglerKey, angler: Angler) {
   if (!STATE_PATTERN.test(angler.state.trim())) errors[`${key}.state`] = "Enter a valid 2-letter state code.";
   if (!ZIP_PATTERN.test(angler.zipCode.trim())) errors[`${key}.zipCode`] = "Enter a valid 5-digit or ZIP+4 code.";
   if (!angler.membership) errors[`${key}.membership`] = "Select a membership status.";
+  if (requiresNewMembership && angler.membership === "current") {
+    errors[`${key}.membership`] = "All anglers must purchase their season membership for the first tournament.";
+  }
   return errors;
 }
 
-function AnglerSection({ anglerKey, title, angler, errors, onChange, disabled, showMembershipBenefits = false }: { anglerKey: AnglerKey; title: string; angler: Angler; errors: Errors; onChange: (key: AnglerKey, field: keyof Angler, value: string) => void; disabled: boolean; showMembershipBenefits?: boolean }) {
+function AnglerSection({ anglerKey, title, angler, errors, onChange, disabled, requiresNewMembership, showMembershipBenefits = false }: { anglerKey: AnglerKey; title: string; angler: Angler; errors: Errors; onChange: (key: AnglerKey, field: keyof Angler, value: string) => void; disabled: boolean; requiresNewMembership: boolean; showMembershipBenefits?: boolean }) {
   const fields = [
     { key: "firstName", label: "First Name", type: "text", autoComplete: anglerKey === "angler1" ? "given-name" : "off" },
     { key: "lastName", label: "Last Name", type: "text", autoComplete: anglerKey === "angler1" ? "family-name" : "off" },
@@ -90,11 +94,12 @@ function AnglerSection({ anglerKey, title, angler, errors, onChange, disabled, s
       })}
     </div>
     <p className="mt-3 text-sm text-[#8E8E8E]">Required for tax and payout records.</p>
-    <div className="mt-6" role="group" aria-labelledby={`${anglerKey}-membership-label`} aria-describedby={membershipError ? `${anglerKey}-membership-error` : undefined}>
+    <div className="mt-6" role="group" aria-labelledby={`${anglerKey}-membership-label`} aria-describedby={[requiresNewMembership ? `${anglerKey}-membership-first-tournament` : "", membershipError ? `${anglerKey}-membership-error` : ""].filter(Boolean).join(" ") || undefined}>
       <p id={`${anglerKey}-membership-label`} className="text-xs font-black uppercase tracking-[0.12em] text-[#C6C6C6]">Membership status</p>
       <div className="mt-3 grid gap-3">
-        {([['current', 'Yes, I am a current member'], ['joining', 'No, purchase the $40 seasonal membership']] as const).map(([value, label]) => <label key={value} className={`flex min-h-14 items-center gap-4 border border-[#333] bg-[#111] px-4 py-3 has-checked:border-[#D4A017] ${disabled ? "cursor-not-allowed border-neutral-800 bg-neutral-950" : "cursor-pointer"}`}><input id={`${anglerKey}-membership-${value}`} type="radio" name={`${anglerKey}.membership`} value={value} checked={angler.membership === value} disabled={disabled} onChange={() => onChange(anglerKey, "membership", value)} className="size-5 accent-[#D4A017] disabled:cursor-not-allowed" /><span className={disabled ? "font-bold text-neutral-400" : "font-bold text-white"}>{label}</span></label>)}
+        {([['current', 'Yes, I am a current member'], ['joining', 'No, purchase the $40 seasonal membership']] as const).map(([value, label]) => { const optionDisabled = disabled || (requiresNewMembership && value === "current"); return <label key={value} className={`flex min-h-14 items-center gap-4 border border-[#333] bg-[#111] px-4 py-3 has-checked:border-[#D4A017] ${optionDisabled ? "cursor-not-allowed border-neutral-800 bg-neutral-950" : "cursor-pointer"}`}><input id={`${anglerKey}-membership-${value}`} type="radio" name={`${anglerKey}.membership`} value={value} checked={angler.membership === value} disabled={optionDisabled} aria-describedby={requiresNewMembership && value === "current" ? `${anglerKey}-membership-first-tournament` : undefined} onChange={() => onChange(anglerKey, "membership", value)} className="size-5 accent-[#D4A017] disabled:cursor-not-allowed" /><span className={optionDisabled ? "font-bold text-neutral-400" : "font-bold text-white"}>{label}</span></label>; })}
       </div>
+      {requiresNewMembership && <p id={`${anglerKey}-membership-first-tournament`} className="mt-3 text-sm font-semibold text-[#D4A017]">All anglers must purchase their season membership for the first tournament.</p>}
       {membershipError && <p id={`${anglerKey}-membership-error`} className="mt-2 text-sm text-red-400" role="alert">{membershipError}</p>}
     </div>
     {showMembershipBenefits && <p className="mt-5 border-l-2 border-[#D4A017] pl-4 text-sm leading-6 text-[#B8B8B8]"><strong className="font-semibold text-white">Membership is required for every angler.</strong> All registered anglers may select the optional <strong className="font-bold text-white">Bronze</strong>, <strong className="font-bold text-white">Silver</strong>, or <strong className="font-bold text-white">Gold</strong> pot, plus optional <strong className="font-bold text-white">Big Bass</strong> and <strong className="font-bold text-white">Insurance</strong>.</p>}
@@ -114,9 +119,14 @@ export default function RegistrationForm({
   policyVersions: { rulesVersion: string; waiverVersion: string };
   initialRegistrationType?: RegistrationType;
 }) {
+  const initialTournament = tournaments.find((item) => item.slug === (initialSlug ?? tournaments[0]?.slug)) ?? tournaments[0];
+  const initialRequiresNewMembership = isFirstRegularSeasonTournament(initialTournament);
   const formRef = useRef<HTMLFormElement>(null);
   const [registrationType, setRegistrationType] = useState<RegistrationType>(initialRegistrationType);
-  const [anglers, setAnglers] = useState<Record<AnglerKey, Angler>>({ angler1: { ...EMPTY_ANGLER }, angler2: { ...EMPTY_ANGLER } });
+  const [anglers, setAnglers] = useState<Record<AnglerKey, Angler>>({
+    angler1: { ...EMPTY_ANGLER, membership: initialRequiresNewMembership ? null : "joining" },
+    angler2: { ...EMPTY_ANGLER, membership: initialRequiresNewMembership ? null : "joining" },
+  });
   const [errors, setErrors] = useState<Errors>({});
   const [slug, setSlug] = useState(initialSlug ?? tournaments[0].slug);
   const [memberPot, setMemberPot] = useState<MemberPot | null>(null);
@@ -131,6 +141,7 @@ export default function RegistrationForm({
   const [squareConfig, setSquareConfig] = useState<{ applicationId: string; locationId: string; environment: "sandbox" | "production" } | null>(null);
   const [reviewing, setReviewing] = useState(false);
   const tournament = tournaments.find((item) => item.slug === slug) ?? tournaments[0];
+  const requiresNewMembership = isFirstRegularSeasonTournament(tournament);
   const operations = operationsBySlug[tournament.slug];
   const registrationClosed = !operations.registrationCanSubmit;
   const registrationUnavailableReason = operations.registrationReason;
@@ -138,9 +149,11 @@ export default function RegistrationForm({
   const memberships = activeKeys.map((key) => anglers[key].membership).filter((membership): membership is Membership => membership !== null);
   const memberPotsEnabled = true;
 
-  const pricing = getRegistrationPricing({ registrationType, baseEntry: true, memberships, memberPot, bigBass, insurance });
+  const pricingMemberships = activeKeys.map((key) => anglers[key].membership ?? "joining");
+  const pricing = getRegistrationPricing({ registrationType, baseEntry: true, memberships: pricingMemberships, memberPot, bigBass, insurance });
   const { lineItems, subtotalCents, cardProcessingFeeCents, totalCents } = pricing;
-  const currentErrors = activeKeys.reduce<Errors>((all, key) => ({ ...all, ...validateAngler(key, anglers[key]) }), {});
+  const currentErrors = activeKeys.reduce<Errors>((all, key) => ({ ...all, ...validateAngler(key, anglers[key], requiresNewMembership) }), {});
+  const membershipSelectionComplete = !requiresNewMembership || activeKeys.every((key) => anglers[key].membership === "joining");
   const formIsValid = Object.keys(currentErrors).length === 0 && (!(memberPot || insurance) || memberPotsEnabled);
   const canAttemptReview = operations.registrationCanSubmit;
 
@@ -164,7 +177,7 @@ export default function RegistrationForm({
       setSubmitMessage(registrationUnavailableReason);
       return;
     }
-    const nextErrors = activeKeys.reduce<Errors>((all, key) => ({ ...all, ...validateAngler(key, anglers[key]) }), {});
+    const nextErrors = activeKeys.reduce<Errors>((all, key) => ({ ...all, ...validateAngler(key, anglers[key], requiresNewMembership) }), {});
     setErrors(nextErrors);
     if (Object.keys(nextErrors).length || !formIsValid) {
       setSubmitMessage("Complete all required angler information before payment.");
@@ -310,7 +323,7 @@ export default function RegistrationForm({
       <section aria-labelledby="angler-heading" className="border-t border-[#4A3A12] pt-8">
         <h2 id="angler-heading" className="text-xl font-black uppercase tracking-[0.05em] text-[#D4A017]">Angler Information</h2>
         <p className="mt-3 text-sm text-[#B8B8B8]">Annual Membership: <strong className="text-white">$40 per angler</strong></p>
-        <div className="mt-6 space-y-8"><AnglerSection anglerKey="angler1" title="Angler 1" angler={anglers.angler1} errors={errors} onChange={updateAngler} disabled={registrationClosed} showMembershipBenefits />{registrationType === "team" && <AnglerSection anglerKey="angler2" title="Team Details — Angler 2" angler={anglers.angler2} errors={errors} onChange={updateAngler} disabled={registrationClosed} />}</div>
+        <div className="mt-6 space-y-8"><AnglerSection anglerKey="angler1" title="Angler 1" angler={anglers.angler1} errors={errors} onChange={updateAngler} disabled={registrationClosed} requiresNewMembership={requiresNewMembership} showMembershipBenefits />{registrationType === "team" && <AnglerSection anglerKey="angler2" title="Team Details — Angler 2" angler={anglers.angler2} errors={errors} onChange={updateAngler} disabled={registrationClosed} requiresNewMembership={requiresNewMembership} />}</div>
 
       </section>
 
@@ -330,7 +343,7 @@ export default function RegistrationForm({
       </section>
     </div>
 
-    <aside aria-labelledby="registration-summary-heading" className="min-w-0 border border-[#4A3A12] bg-[#111] p-5 sm:p-6 lg:sticky lg:top-28 lg:max-h-[calc(100vh-8rem)] lg:overflow-y-auto"><h2 id="registration-summary-heading" className="text-xl font-black uppercase tracking-[0.05em] text-[#D4A017]">Registration Summary</h2><dl className="mt-5 space-y-2 border-b border-[#3A3A3A] pb-5 text-sm"><div><dt className="text-[#999]">Tournament</dt><dd className="font-bold text-white">{tournament.name}</dd></div><div><dt className="text-[#999]">Date</dt><dd className="text-white">{operations.formattedEffectiveDate}</dd></div><div><dt className="text-[#999]">Registration type</dt><dd className="text-white">{registrationType === "team" ? "Team" : "Individual / Solo"}</dd></div>{activeKeys.some((key) => anglers[key].firstName.trim() || anglers[key].lastName.trim()) && <div><dt className="text-[#999]">Anglers</dt><dd className="break-words text-white">{activeKeys.map((key) => `${anglers[key].firstName} ${anglers[key].lastName}`.trim()).filter(Boolean).join(" / ")}</dd></div>}</dl><h3 className="mt-5 text-xs font-black uppercase tracking-[0.12em] text-white">Entry &amp; Options</h3><div className="mt-3 space-y-3 text-sm">{lineItems.map((item) => <div key={item.name} className="flex justify-between gap-4 text-[#B8B8B8]"><span>{item.name}</span><span>{formatCurrencyFromCents(item.priceCents)}</span></div>)}</div><h3 className="mt-6 border-t border-[#3A3A3A] pt-5 text-xs font-black uppercase tracking-[0.12em] text-white">Total</h3><dl className="mt-3 space-y-3 text-sm"><div className="flex justify-between text-[#B8B8B8]"><dt>Subtotal</dt><dd>{formatCurrencyFromCents(subtotalCents)}</dd></div><div className="flex justify-between gap-4 text-[#B8B8B8]"><dt>SQUARE SERVICE FEE</dt><dd>{formatCurrencyFromCents(cardProcessingFeeCents)}</dd></div><div className="flex justify-between border-t border-[#3A3A3A] pt-4 text-lg font-black uppercase text-white"><dt>Final Total</dt><dd className="text-[#D4A017]">{formatCurrencyFromCents(totalCents)}</dd></div></dl>{serverQuote && <p className="mt-4 border-l-2 border-green-500 pl-3 text-xs leading-5 text-green-300" role="status">Server-verified total: {formatCurrencyFromCents(serverQuote.totalCents)}.</p>}<div className="mt-6"><PaymentOptions key={paymentAttemptId ?? "review"} total={formatCurrencyFromCents(serverQuote?.totalCents ?? totalCents)} canReview={canAttemptReview} reviewComplete={Boolean(serverQuote)} reviewing={reviewing} validationMessage={submitMessage} registrationClosed={registrationClosed} checkoutAvailable={Boolean(paymentAttemptId && squareConfig)} paymentAttemptId={paymentAttemptId} squareConfig={squareConfig} billingContact={{ firstName: anglers.angler1.firstName, lastName: anglers.angler1.lastName, email: anglers.angler1.email, phone: anglers.angler1.mobilePhone, streetAddress: anglers.angler1.streetAddress, city: anglers.angler1.city, state: anglers.angler1.state, zipCode: anglers.angler1.zipCode }} /></div></aside>
+    <aside aria-labelledby="registration-summary-heading" className="min-w-0 border border-[#4A3A12] bg-[#111] p-5 sm:p-6 lg:sticky lg:top-28 lg:max-h-[calc(100vh-8rem)] lg:overflow-y-auto"><h2 id="registration-summary-heading" className="text-xl font-black uppercase tracking-[0.05em] text-[#D4A017]">Registration Summary</h2><dl className="mt-5 space-y-2 border-b border-[#3A3A3A] pb-5 text-sm"><div><dt className="text-[#999]">Tournament</dt><dd className="font-bold text-white">{tournament.name}</dd></div><div><dt className="text-[#999]">Date</dt><dd className="text-white">{operations.formattedEffectiveDate}</dd></div><div><dt className="text-[#999]">Registration type</dt><dd className="text-white">{registrationType === "team" ? "Team" : "Individual / Solo"}</dd></div>{activeKeys.some((key) => anglers[key].firstName.trim() || anglers[key].lastName.trim()) && <div><dt className="text-[#999]">Anglers</dt><dd className="break-words text-white">{activeKeys.map((key) => `${anglers[key].firstName} ${anglers[key].lastName}`.trim()).filter(Boolean).join(" / ")}</dd></div>}</dl><h3 className="mt-5 text-xs font-black uppercase tracking-[0.12em] text-white">Entry &amp; Options</h3><div className="mt-3 space-y-3 text-sm">{lineItems.map((item) => <div key={item.name} className="flex justify-between gap-4 text-[#B8B8B8]"><span>{item.name}</span><span>{formatCurrencyFromCents(item.priceCents)}</span></div>)}</div><h3 className="mt-6 border-t border-[#3A3A3A] pt-5 text-xs font-black uppercase tracking-[0.12em] text-white">Total</h3><dl className="mt-3 space-y-3 text-sm"><div className="flex justify-between text-[#B8B8B8]"><dt>Subtotal</dt><dd>{formatCurrencyFromCents(subtotalCents)}</dd></div><div className="flex justify-between gap-4 text-[#B8B8B8]"><dt>SQUARE SERVICE FEE</dt><dd>{formatCurrencyFromCents(cardProcessingFeeCents)}</dd></div><div className="flex justify-between border-t border-[#3A3A3A] pt-4 text-lg font-black uppercase text-white"><dt>Final Total</dt><dd className="text-[#D4A017]">{formatCurrencyFromCents(totalCents)}</dd></div></dl>{serverQuote && <p className="mt-4 border-l-2 border-green-500 pl-3 text-xs leading-5 text-green-300" role="status">Server-verified total: {formatCurrencyFromCents(serverQuote.totalCents)}.</p>}<div className="mt-6"><PaymentOptions key={paymentAttemptId ?? "review"} total={formatCurrencyFromCents(serverQuote?.totalCents ?? totalCents)} canReview={canAttemptReview && membershipSelectionComplete} reviewComplete={Boolean(serverQuote)} reviewing={reviewing} validationMessage={submitMessage} registrationClosed={registrationClosed} checkoutAvailable={Boolean(paymentAttemptId && squareConfig)} paymentAttemptId={paymentAttemptId} squareConfig={squareConfig} billingContact={{ firstName: anglers.angler1.firstName, lastName: anglers.angler1.lastName, email: anglers.angler1.email, phone: anglers.angler1.mobilePhone, streetAddress: anglers.angler1.streetAddress, city: anglers.angler1.city, state: anglers.angler1.state, zipCode: anglers.angler1.zipCode }} /></div></aside>
    </form>
   </>;
 }

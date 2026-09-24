@@ -69,6 +69,23 @@ encrypted staging secrets are `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`,
 `SQUARE_WEBHOOK_NOTIFICATION_URL`, `RESEND_API_KEY`, and
 `AITT_STAGING_EMAIL_ALLOWLIST`. Production Supabase, Square, Resend, custom
 domains, and routes are prohibited by the preflight.
+
+The two Square public identifiers are also required Worker runtime bindings in
+`wrangler.staging.jsonc`; having them only in `.env.local` proves build-time
+configuration but does not configure the server-side quote route. The
+`NEXT_PUBLIC_SUPABASE_ANON_KEY` remains a protected runtime secret alongside
+the server Supabase and Square secrets. A staging deployment is not accepted
+until the deployed binding names include both Square identifiers and the
+read-only registration quote/configuration check succeeds without
+`missing_configuration` or HTTP 503. That check must not create a payment
+attempt, registration, charge, or email.
+
+For encrypted staging secrets, the guarded preflight accepts either an
+authorized local value or the verified presence of the exact secret binding on
+the existing target Worker. It inspects binding names only; it never retrieves,
+prints, fingerprints, replaces, or deletes hosted secret values. The target
+must remain `all-in-tournament-trail-staging`, and a failed or incomplete
+Cloudflare inspection stops the deployment before build or upload.
 - `npm run dev` is staging. The production wrapper must reject staging config.
 - Never print secrets or mix staging and production data.
 - Before a production migration: back up production, run

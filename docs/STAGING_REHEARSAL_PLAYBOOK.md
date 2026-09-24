@@ -80,6 +80,26 @@ Verify both build-time and runtime bindings where applicable. A binding name
 alone is insufficient: classify the target, then perform a safe read-only
 health check. Do not print values. If any target is production, stop.
 
+For registration checkout, verify these runtime bindings by name before any
+mutating scenario: `NEXT_PUBLIC_SUPABASE_URL`,
+`NEXT_PUBLIC_SQUARE_APPLICATION_ID`, `NEXT_PUBLIC_SQUARE_LOCATION_ID`, and
+`SQUARE_ENVIRONMENT=sandbox`. Verify the protected runtime bindings
+`NEXT_PUBLIC_SUPABASE_ANON_KEY`, `SUPABASE_URL`,
+`SUPABASE_SERVICE_ROLE_KEY`, and `SQUARE_ACCESS_TOKEN` without displaying their
+values. The `NEXT_PUBLIC_*` values used by server/runtime code must not exist
+only in the local build environment. A safe quote/configuration smoke check
+must return a configured Sandbox handoff, not `missing_configuration` or HTTP
+503, and must create no payment attempt, registration, charge, or email.
+
+The staging deployment preflight may satisfy an encrypted-secret requirement
+from an authorized local value or from the exact binding name already present
+on `all-in-tournament-trail-staging`. Hosted inspection is name-only: secret
+values are never retrieved, printed, fingerprinted, replaced, or deleted.
+Missing names, an unexpected Worker target, failed inspection, or any operation
+that would remove existing secrets is a hard stop. Public runtime variables,
+including the Supabase and Square identifiers, must remain explicit in
+`wrangler.staging.jsonc`.
+
 ## 4. Baseline capture gate
 
 Capture the complete tournament-scoped baseline before creating a test row.
@@ -238,6 +258,14 @@ away.
 | Bronze / Silver / Gold | $40 / $100 / $500; choose at most one |
 | Big Bass | Optional $20; team or solo; two places |
 | Insurance | Optional $20; independent of Big Bass and selected pot |
+
+For the first regular-season tournament, use `regular_season_number = 1` as
+the authoritative order field. Online scenarios must show Current Member as
+disabled, require each angler to explicitly select Purchase Membership, and
+expect $40 per angler in the server quote. Verify the safe validation response
+for stale Current Member requests before any payment attempt is created.
+Tournament two and later retain normal Current Member behavior; Admin walk-ups
+are not changed by this online-only rule.
 
 Verified starting baseline: 15 active registrations, 2 canceled, 0 Needs
 Review, Bronze 3, Silver 5, Gold 3, payout funds $3,440, 6 new memberships /

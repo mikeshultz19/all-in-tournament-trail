@@ -108,6 +108,8 @@ AITT example:
 - [ ] Search application code for every referenced production field, function, RPC, and schema object.
 - [ ] Confirm each exists in production or has an explicitly approved, already-applied migration.
 - [ ] Confirm staging-only schema and SQL are excluded.
+- [ ] For every `NEXT_PUBLIC_*` value consumed by server/runtime code, confirm it exists as a deployed Worker runtime binding as well as a build-time value; build-time presence alone is insufficient.
+- [ ] For registration checkout, verify the deployed Square application/location bindings, Sandbox/production environment classification, and a safe configuration smoke check before any payment rehearsal.
 
 ## 5. Production backup and migration review
 

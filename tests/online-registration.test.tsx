@@ -13,6 +13,7 @@ import {
   createRegistrationPolicyAcceptance,
   createAuthoritativeRegistrationQuote,
   getOnlineRegistrationEligibility,
+  isFirstRegularSeasonTournament,
   REGISTRATION_POLICY_VERSIONS,
   selectCompetitiveRecordAnglers,
   validateOnlineRegistrationRequest,
@@ -26,14 +27,18 @@ const POLICY_VERSIONS = {
   waiverVersion: REGISTRATION_POLICY_VERSIONS.liability_waiver,
 };
 const registrationFormSource = fs.readFileSync(path.join(process.cwd(), "components/RegistrationForm.tsx"), "utf8");
+const quoteRouteSource = fs.readFileSync(path.join(process.cwd(), "app/api/registrations/quote/route.ts"), "utf8");
 
 function tournament(overrides: Partial<Tournament> = {}): Tournament {
   return { ...tournaments[0], registrationStatus: "open", tournamentStatus: "scheduled", status: "upcoming", ...overrides };
 }
 
+const firstTournament = tournament({ regularSeasonNumber: 1 });
+const laterTournament = tournament({ regularSeasonNumber: 2 });
+
 function validRequest(overrides: Partial<OnlineRegistrationRequest> = {}): OnlineRegistrationRequest {
   return {
-    tournamentSlug: tournaments[0].slug,
+    tournamentSlug: tournaments[1].slug,
     registrationType: "solo",
     anglers: [{ firstName: "Taylor", lastName: "Angler", email: "taylor@example.com", mobilePhone: "817-555-0100", streetAddress: "100 Lake Road", city: "Azle", state: "TX", zipCode: "76020", membership: "current" }],
     options: { bigBass: false, insurance: false, memberPot: null },
@@ -65,6 +70,39 @@ describe("server-authoritative registration validation and pricing", () => {
     expect(quote.subtotalCents).toBe(6000);
     expect(quote.cardProcessingFeeCents).toBe(210);
     expect(quote.totalCents).toBe(6210);
+  });
+  it("requires a new membership for a first-tournament solo", () => {
+    const request = validRequest({ tournamentSlug: firstTournament.slug });
+    expect(validateOnlineRegistrationRequest(request, NOW, {}, firstTournament)).toContain("All anglers must purchase their season membership for the first tournament.");
+    expect(() => createAuthoritativeRegistrationQuote(request, NOW, firstTournament)).toThrow("first tournament");
+  });
+  it("uses the authoritative database tournament-order field", () => {
+    expect(isFirstRegularSeasonTournament({ event_type: "regular_season", regular_season_number: 1 })).toBe(true);
+    expect(isFirstRegularSeasonTournament({ event_type: "regular_season", regular_season_number: 2 })).toBe(false);
+    expect(isFirstRegularSeasonTournament({ event_type: "championship", regular_season_number: null })).toBe(false);
+  });
+  it("requires both new memberships for a first-tournament team and prices both", () => {
+    const first = validRequest().anglers[0];
+    const request = validRequest({
+      tournamentSlug: firstTournament.slug,
+      registrationType: "team",
+      anglers: [first, { ...first, firstName: "Jordan", email: "jordan@example.com", membership: "current" }],
+    });
+    expect(validateOnlineRegistrationRequest(request, NOW, {}, firstTournament)).toContain("All anglers must purchase their season membership for the first tournament.");
+    const joiningRequest = { ...request, anglers: request.anglers.map((angler) => ({ ...angler, membership: "joining" as const })) };
+    const quote = createAuthoritativeRegistrationQuote(joiningRequest, NOW, firstTournament);
+    expect(quote.subtotalCents).toBe(14000);
+    expect(quote.cardProcessingFeeCents).toBe(450);
+    expect(quote.totalCents).toBe(14450);
+  });
+  it("keeps Current Member available for tournament two and later", () => {
+    const request = validRequest({ tournamentSlug: laterTournament.slug });
+    expect(validateOnlineRegistrationRequest(request, NOW, {}, laterTournament)).toEqual([]);
+    expect(createAuthoritativeRegistrationQuote(request, NOW, laterTournament).subtotalCents).toBe(6000);
+  });
+  it("rejects stale tournament-one membership claims before creating a payment attempt", () => {
+    expect(quoteRouteSource.indexOf("validateOnlineRegistrationRequest")).toBeLessThan(quoteRouteSource.indexOf("createOnlinePaymentAttempt"));
+    expect(quoteRouteSource).toContain('return NextResponse.json({ error: "Registration needs attention.", errors }, { status: 400 })');
   });
   it("allows a valid Team with current and new members", () => {
     const first = validRequest().anglers[0];
@@ -231,6 +269,22 @@ describe("online payment presentation", () => {
   const operationsBySlug = Object.fromEntries(tournaments.map((item) => [item.slug, getTournamentOperationsViewModel(item, NOW)]));
   const html = renderToStaticMarkup(<RegistrationForm tournaments={tournaments} operationsBySlug={operationsBySlug} policyVersions={POLICY_VERSIONS} />);
   it("does not offer cash as an online payment control", () => expect(html).not.toMatch(/value="cash"|name="paymentMethod"/i));
+  it("disables Current Member and requires New Member on tournament one", () => {
+    const firstOperations = { [firstTournament.slug]: getTournamentOperationsViewModel(firstTournament, NOW) };
+    const firstHtml = renderToStaticMarkup(<RegistrationForm tournaments={[firstTournament]} operationsBySlug={firstOperations} policyVersions={POLICY_VERSIONS} initialRegistrationType="solo" />);
+    expect(firstHtml).toMatch(/id="angler1-membership-current"[^>]*disabled=""/);
+    expect(firstHtml).toContain("All anglers must purchase their season membership for the first tournament.");
+    expect(firstHtml).toContain('aria-describedby="angler1-membership-first-tournament"');
+    expect(firstHtml).not.toMatch(/id="angler1-membership-joining"[^>]*checked=""/);
+    expect(firstHtml).toMatch(/type="submit"[^>]*disabled=""[^>]*>Continue to Payment/);
+  });
+  it("disables Current Member independently for both tournament-one team anglers", () => {
+    const firstOperations = { [firstTournament.slug]: getTournamentOperationsViewModel(firstTournament, NOW) };
+    const firstHtml = renderToStaticMarkup(<RegistrationForm tournaments={[firstTournament]} operationsBySlug={firstOperations} policyVersions={POLICY_VERSIONS} />);
+    expect(firstHtml).toContain('id="angler1-membership-current"');
+    expect(firstHtml.match(/id="angler[12]-membership-current"[^>]*disabled=""/g) ?? []).toHaveLength(2);
+    expect(firstHtml.match(/membership-first-tournament/g)).toHaveLength(6);
+  });
   it("does not advertise Venmo or Stripe", () => expect(html).not.toMatch(/Venmo|Stripe/i));
   it("provides the approved four-stage progress and clean payment boundary", () => {
     expect(html).toContain("Registration progress");

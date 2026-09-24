@@ -48,8 +48,10 @@ check-in remains blocked. A roster-level **MEMBERSHIP DUES** control lists the
 $40 obligation. The Tournament Director collects and tracks it manually, then
 staff selects **MARK COLLECTED** to reuse the existing membership-confirmation
 operation. That action records who confirmed collection and when, activates the
-membership, and clears the review. It does not process Square payment, change
-the price snapshot, increase Financial Summary totals, or send email.
+membership, and clears the review. It does not process Square payment or change
+the price snapshot. The explicit collected $40 increases Memberships Collected
+and Total Registration Funds, but not Online Funds or Tournament Payout Funds;
+it does not send email.
 Existing-member, contact, duplicate, and historical membership reviews are
 unchanged.
 
@@ -67,6 +69,14 @@ paid/selected option because identity is uncertain; flag it for review.
 
 Historical non-member records remain readable and their stored historical
 eligibility snapshots are not rewritten by current policy.
+
+For online registration, the first regular-season tournament is identified by
+`tournaments.regular_season_number = 1`. Every angler must explicitly choose
+Purchase Membership; Current Member is shown but disabled with the explanation
+“All anglers must purchase their season membership for the first tournament.”
+The quote and submission guards enforce the same rule and charge $40 per
+angler. Tournament two and later allow the normal Current Member selection, and
+Admin walk-ups are unchanged.
 
 ## Tournament morning
 

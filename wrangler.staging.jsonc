@@ -8,6 +8,9 @@
   "preview_urls": true,
   "vars": {
     "NEXT_PUBLIC_SUPABASE_URL": "https://vcjhufuklqwvnqmarpqi.supabase.co",
+    "NEXT_PUBLIC_SUPABASE_ANON_KEY": "sb_publishable_a2TQTmg0RXDXKJAjvX0Txw_B9awY-MP",
+    "NEXT_PUBLIC_SQUARE_APPLICATION_ID": "sandbox-sq0idb-wWO0kOkFc9K3JJuxObC9fA",
+    "NEXT_PUBLIC_SQUARE_LOCATION_ID": "LQZZ43YSC0CKE",
     "SQUARE_ENVIRONMENT": "sandbox",
     "AITT_EMAIL_ENVIRONMENT": "staging"
   },
