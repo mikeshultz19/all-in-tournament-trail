@@ -509,6 +509,17 @@ check for the disabled online Current Member choice and one tournament-two
 check for the enabled choice. Do not carry a prior tournament's data repair,
 baseline, or approval forward.
 
+### Production sequential-opening gate
+
+Before opening production registration, explicitly verify that Tournament 2
+through the Championship are all closed. Results publication or selection of a
+new upcoming tournament must not be treated as permission to accept new
+registrations. The release operator opens tournaments one at a time, only
+after the tournament-specific rollover checks pass and the corresponding
+public opening announcement is approved. Record the closed/open status and
+announcement evidence for every tournament; an unexpected open registration
+state is a production blocker.
+
 The complete rehearsal must also cover final exports and printable roster,
 WeighFish generation/import, normal results and payout calculations, AOY
 best-5-of-8, Championship five-of-eight participation, publication/unpublish,
