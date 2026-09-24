@@ -58,4 +58,7 @@ backup/
 *.bak
 *.sql.gz
 
+# Supabase CLI-generated local linkage and metadata
+supabase/.temp/
+
 .obsidian/
