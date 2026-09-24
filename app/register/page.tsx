@@ -8,6 +8,7 @@ import {
   type PublicTournamentRecord,
 } from "@/lib/tournament-record-adapter";
 import { loadPolicyDocument } from "@/lib/policy-documents";
+import { selectInitialRegistrationSlug } from "@/lib/registration-entry-selection";
 import { getTournamentOperationsViewModel } from "@/lib/tournament-view-model";
 
 export const metadata: Metadata = {
@@ -47,9 +48,6 @@ export default async function RegistrationPage({
       </main>
     );
   }
-  const initialSlug = tournaments.some((tournament) => tournament.slug === requestedSlug)
-    ? requestedSlug
-    : tournaments[0]?.slug;
   const now = new Date();
   const operationsBySlug = Object.fromEntries(
     tournaments.map((tournament) => [
@@ -57,6 +55,7 @@ export default async function RegistrationPage({
       getTournamentOperationsViewModel(tournament, now),
     ]),
   );
+  const initialSlug = selectInitialRegistrationSlug(tournaments, requestedSlug, operationsBySlug);
 
   return (
     <main className="min-h-screen bg-[#0B0B0B] text-[#F2F2F2]">

@@ -50,6 +50,20 @@ describe("manual registration cancellation", () => {
     expect(readFileSync("app/admin/registration-review/print/page.tsx", "utf8")).toContain("getTournamentRegistrationRoster");
   });
 
+  it("closes and resets cancellation only after success, while preserving failures and preventing duplicates", () => {
+    expect(controls).toContain("const resetCancellationForm = useCallback(() =>");
+    expect(controls).toContain("setOpen(false);");
+    expect(controls).toContain('setSelectedId("");');
+    expect(controls).toContain("formRef.current?.reset();");
+    expect(controls).toContain("if (state.status === \"success\")");
+    expect(controls).toContain("resetCancellationForm();");
+    expect(controls).toContain("router.refresh();");
+    expect(controls).toContain('onClick={resetCancellationForm}');
+    expect(controls).toContain("disabled={pending || !selected}");
+    expect(controls).toContain("disabled={pending}");
+    expect(controls).not.toContain("setOpen(false);\n        setSelectedId(\"\");\n      }");
+  });
+
   it("uses an active-row guard so duplicate submission has no second effect", () => {
     const action = actions.slice(actions.indexOf("export async function cancelRegistrationAction"));
     expect(action).toContain('.eq("registration_status", "active")');

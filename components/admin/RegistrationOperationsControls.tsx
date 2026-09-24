@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useEffect, useRef, useState, useTransition, type ReactNode } from "react";
+import { useActionState, useCallback, useEffect, useRef, useState, useTransition, type ReactNode } from "react";
 import { useRouter } from "next/navigation";
 
 import {
@@ -563,16 +563,19 @@ export function CancelRegistrationControl({
 }) {
   const [open, setOpen] = useState(false);
   const [selectedId, setSelectedId] = useState("");
+  const formRef = useRef<HTMLFormElement>(null);
   const router = useRouter();
+  const resetCancellationForm = useCallback(() => {
+    setOpen(false);
+    setSelectedId("");
+    formRef.current?.reset();
+  }, []);
   const [state, action, pending] = useActionState(
     async (previousState: RegistrationOperationsActionState, formData: FormData) => {
       const registrationId = String(formData.get("registrationId") ?? "").trim();
       if (!registrationId) return { status: "error", message: "Select an active registration." } satisfies RegistrationOperationsActionState;
       const nextState = await cancelRegistrationAction(tournamentId, registrationId, previousState, formData);
-      if (nextState.status === "success") {
-        setOpen(false);
-        setSelectedId("");
-      }
+      if (nextState.status === "success") resetCancellationForm();
       return nextState;
     },
     initialState,
@@ -581,7 +584,7 @@ export function CancelRegistrationControl({
     if (state.status === "success") {
       router.refresh();
     }
-  }, [router, state.status]);
+  }, [resetCancellationForm, router, state.status]);
 
   const selected = registrations.find((registration) => registration.id === selectedId) ?? null;
 
@@ -593,7 +596,7 @@ export function CancelRegistrationControl({
       {open ? (
         <div role="dialog" aria-modal="true" aria-labelledby="cancel-registration-title" className="mt-3 w-full max-w-2xl border border-red-500/30 bg-black/60 p-4">
           <h3 id="cancel-registration-title" className="text-sm font-black uppercase text-white">Cancel Registration</h3>
-          <form action={action} className="mt-4 grid gap-3">
+          <form ref={formRef} action={action} className="mt-4 grid gap-3">
             <label className="text-xs font-bold uppercase text-neutral-300">
               Active Boat / Registration
               <select name="registrationId" required value={selectedId} onChange={(event) => setSelectedId(event.target.value)} className={`${input} mt-1`}>
@@ -633,7 +636,7 @@ export function CancelRegistrationControl({
             </label>
             <div className="flex flex-wrap gap-2">
               <button type="submit" disabled={pending || !selected} className={adminButtonStyles("destructive", "min-h-10")}>{pending ? "Cancelling..." : "Confirm Cancellation"}</button>
-              <button type="button" disabled={pending} onClick={() => setOpen(false)} className={adminButtonStyles("secondary", "min-h-10")}>Keep Registration</button>
+              <button type="button" disabled={pending} onClick={resetCancellationForm} className={adminButtonStyles("secondary", "min-h-10")}>Keep Registration</button>
             </div>
             <ActionMessage state={state} />
           </form>

@@ -513,3 +513,15 @@ The complete rehearsal must also cover final exports and printable roster,
 WeighFish generation/import, normal results and payout calculations, AOY
 best-5-of-8, Championship five-of-eight participation, publication/unpublish,
 and financial/operational isolation before the next tournament is accepted.
+
+### Human member-contact verification
+
+When a roster review flags a mismatch, the Tournament Director selects the
+likely existing angler, compares the submitted values with the member record,
+uses **EDIT MEMBER** to correct the canonical contact information, and then
+clears the applicable review with the existing decision. The registration
+snapshot remains unchanged. All Registrations provides the same EDIT MEMBER
+correction for a linked participant when no active review remains. Do not use
+fuzzy matching, merging, uniqueness enforcement, or a new payment/membership
+path. A false Current Member claim still follows APPROVE NEW ANGLER,
+MEMBERSHIP DUES, and MARK COLLECTED.

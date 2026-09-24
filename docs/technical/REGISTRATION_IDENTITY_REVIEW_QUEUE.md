@@ -83,6 +83,16 @@ Tournament Payout Funds; no email behavior is added. The
 existing-member, contact, duplicate, and historical membership workflows remain
 separate.
 
+For a flagged contact mismatch, the Tournament Director selects the specific
+existing angler, uses **EDIT MEMBER** to correct the canonical All Members
+contact record, and then completes the existing review decision. The original
+registration contact snapshot remains the submitted historical evidence. The
+same EDIT MEMBER control is available inside an expanded All Registrations
+record for broader current-member corrections. This practical process does not
+add fuzzy matching, uniqueness enforcement, member merging, or a new audit
+subsystem; ambiguous information remains in Needs Review until staff verifies
+it.
+
 When an Admin confirms an existing Angler for a Current Member claim, the
 system must immediately re-evaluate that Angler's current-season membership.
 An eligible active membership resolves the membership condition automatically,

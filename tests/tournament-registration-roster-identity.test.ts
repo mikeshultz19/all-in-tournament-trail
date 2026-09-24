@@ -43,6 +43,17 @@ describe("tournament registration roster identity presentation", () => {
     expect(resolved).toMatchObject({ resolvedClassification: "current", status: "active" });
     expect(unresolved).toMatchObject({ resolvedClassification: undefined });
   });
+
+  it("keeps a Boat #21-style resolved identity with missing membership actionable", () => {
+    const resolvedIdentity = applyParticipantReviewTruth(
+      { submittedClassification: "current", eligibleForTournament: false },
+      { participant_position: 1, review_status: "resolved_existing", canonical_angler_id: "synthetic-21", submitted_membership: "current" },
+    );
+
+    expect(resolvedIdentity).toMatchObject({ resolvedClassification: "current" });
+    expect(resolvedIdentity?.eligibleForTournament).toBe(true);
+    expect(readFileSync("scripts/staging-reconciliation-core.ts", "utf8")).toContain("no active membership and no actionable review queue item");
+  });
   it("keeps Boat #23 on the submitted identity while review remains unresolved", () => {
     const angler = buildRosterAngler(
       "bob jagoff",

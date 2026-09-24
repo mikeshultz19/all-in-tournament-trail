@@ -36,6 +36,60 @@ function text(formData: FormData, name: string) {
   return String(formData.get(name) ?? "").trim();
 }
 
+const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+export async function updateCanonicalMemberContactAction(
+  _previousState: RegistrationReviewActionState,
+  formData: FormData,
+): Promise<RegistrationReviewActionState> {
+  void _previousState;
+  await requireAdminUser();
+  const memberId = text(formData, "memberId");
+  const firstName = text(formData, "firstName").replace(/\s+/g, " ");
+  const lastName = text(formData, "lastName").replace(/\s+/g, " ");
+  const email = text(formData, "email").toLowerCase();
+  const phone = text(formData, "phone");
+  const streetAddress = text(formData, "streetAddress");
+  const city = text(formData, "city");
+  const state = text(formData, "state").toUpperCase();
+  const zipCode = text(formData, "zipCode");
+
+  if (!memberId || !firstName || !lastName || !streetAddress || !city || !state || !zipCode || !phone) {
+    return { status: "error", message: "Complete the required member contact fields." };
+  }
+  if (state.length !== 2 || (email && !EMAIL_PATTERN.test(email))) {
+    return { status: "error", message: "Enter a valid state and email address." };
+  }
+
+  const { data, error } = await createSupabaseServerClient()
+    .from("anglers")
+    .update({
+      first_name: firstName,
+      last_name: lastName,
+      display_name: `${firstName} ${lastName}`,
+      normalized_name: `${firstName} ${lastName}`.toLowerCase().replace(/\s+/g, " "),
+      email: email || null,
+      phone,
+      street_address: streetAddress,
+      city,
+      state,
+      zip_code: zipCode,
+      updated_at: new Date().toISOString(),
+    })
+    .eq("id", memberId)
+    .eq("is_active", true)
+    .is("merged_into_angler_id", null)
+    .select("id")
+    .maybeSingle();
+
+  if (error || !data) {
+    console.error("Canonical member contact update failed.", error);
+    return { status: "error", message: "The member could not be updated. Verify the selected member and try again." };
+  }
+  revalidateRegistrationOperations();
+  return { status: "success", message: "Member contact updated. Review the registration again to clear any remaining mismatch." };
+}
+
 function purchasedMembershipIds(snapshot: unknown, priceSnapshot: unknown) {
   const lineItems = Array.isArray((priceSnapshot as { lineItems?: unknown[] } | null)?.lineItems)
     ? (priceSnapshot as { lineItems: Array<{ code?: string; name?: string }> }).lineItems

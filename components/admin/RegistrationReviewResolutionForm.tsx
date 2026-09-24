@@ -8,6 +8,7 @@ import {
 } from "@/app/admin/registration-review/actions";
 import type { RegistrationReviewAnglerOption } from "@/lib/registration-identity-review";
 import { adminButtonStyles } from "@/components/admin/admin-button-styles";
+import EditMemberContactForm from "@/components/admin/EditMemberContactForm";
 
 const initialState: RegistrationReviewActionState = {
   status: "idle",
@@ -81,6 +82,7 @@ export default function RegistrationReviewResolutionForm({
         </select>
       </label>
       {selectedAngler ? <section className="mt-3 border-t border-white/10 pt-3"><h3 className="text-[10px] font-black uppercase tracking-[0.12em] text-[#D4A017]">Existing Angler</h3><dl className="mt-2 grid gap-y-1 text-xs text-neutral-300"><Detail label="Name" value={selectedAngler.display_name} /><Detail label="Email" value={selectedAngler.email} /><Detail label="Phone" value={selectedAngler.phone} /><Detail label="Membership Status" value={membershipStatus(selectedAngler.membershipStatus)} />{selectedAngler.membershipEffectiveDate ? <Detail label="Membership Effective" value={formatDate(selectedAngler.membershipEffectiveDate)} /> : null}</dl>{matchReason ? <p className="mt-3 text-xs font-bold text-amber-200">{matchReason}</p> : null}</section> : null}
+      {selectedAngler ? <details className="mt-3 border-t border-white/10 pt-3"><summary className="cursor-pointer text-xs font-bold text-[#D4A017]">EDIT MEMBER</summary><EditMemberContactForm memberId={selectedAngler.id} contact={{ firstName: selectedAngler.first_name, lastName: selectedAngler.last_name, email: selectedAngler.email, phone: selectedAngler.phone, streetAddress: selectedAngler.street_address ?? "", city: selectedAngler.city ?? "", state: selectedAngler.state ?? "", zipCode: selectedAngler.zip_code ?? "" }} compact /></details> : null}
       <button
         name="resolution"
         value="existing"

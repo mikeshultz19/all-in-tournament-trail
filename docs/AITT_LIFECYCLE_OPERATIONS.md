@@ -194,6 +194,15 @@ Funds, but not Online Funds or Tournament Payout Funds; no collection email is
 created. Existing-member matching, contact,
 duplicate, and historical membership reviews retain their separate workflows.
 
+For practical contact corrections, the Tournament Director selects the
+specific existing angler in an unresolved roster review and uses EDIT MEMBER
+to update the canonical All Members record, then completes the existing review
+decision. All Registrations exposes the same correction for a linked participant
+after review resolution. The submitted registration contact snapshot remains
+historical evidence; no fuzzy matching, merging, uniqueness enforcement, or
+new audit subsystem is introduced. Ambiguous information remains actionable in
+Needs Review.
+
 For an existing-member Confirm Match, an eligible active current-season
 membership must be re-evaluated after identity linkage. It resolves the
 membership condition automatically, refreshes the registration snapshot to

@@ -19,6 +19,17 @@ export interface RegistrationHistoryContact {
   membership: "current" | "joining" | "non-member";
 }
 
+export interface RegistrationCanonicalContact {
+  firstName: string;
+  lastName: string;
+  streetAddress: string | null;
+  city: string | null;
+  state: string | null;
+  zipCode: string | null;
+  email: string | null;
+  phone: string | null;
+}
+
 export interface RegistrationHistoryReview {
   id: string;
   participantPosition: number;
@@ -50,8 +61,11 @@ export interface AdminRegistrationHistoryRow {
   status: RegistrationHistoryStatus;
   angler1Name: string;
   angler2Name: string | null;
+  angler1Id?: string | null;
+  angler2Id?: string | null;
   boatNumber: number | null;
   contacts: RegistrationHistoryContact[];
+  canonicalContacts?: Array<RegistrationCanonicalContact | null>;
   membershipSnapshot: Array<Record<string, unknown>>;
   priceSnapshot: {
     lineItems?: Array<{ name?: string; priceCents?: number }>;
@@ -92,6 +106,8 @@ type RegistrationDbRow = {
   registration_status: RegistrationHistoryStatus;
   angler1_name: string;
   angler2_name: string | null;
+  angler1_id: string | null;
+  angler2_id: string | null;
   boat_number: number | null;
   participant_contact_snapshot: RegistrationHistoryContact[] | null;
   membership_snapshot: Array<Record<string, unknown>> | null;
@@ -203,7 +219,7 @@ export async function listAllRegistrationHistory(): Promise<AdminRegistrationHis
   const registrations = await readAll<RegistrationDbRow>(async (from, to) => {
     const result = await supabase
       .from("tournament_registrations")
-      .select("id,registration_key,tournament_id,registered_at,registration_type,registration_source,registration_status,angler1_name,angler2_name,boat_number,participant_contact_snapshot,membership_snapshot,price_snapshot,big_bass,member_pot,insurance,payment_reference,payment_method,online_payment_state,square_payment_id,checked_in_at,cancelled_at,cancelled_by_admin_id,admin_notes,identity_review_status,tournament:tournaments!inner(name,tournament_date)")
+      .select("id,registration_key,tournament_id,registered_at,registration_type,registration_source,registration_status,angler1_id,angler2_id,angler1_name,angler2_name,boat_number,participant_contact_snapshot,membership_snapshot,price_snapshot,big_bass,member_pot,insurance,payment_reference,payment_method,online_payment_state,square_payment_id,checked_in_at,cancelled_at,cancelled_by_admin_id,admin_notes,identity_review_status,tournament:tournaments!inner(name,tournament_date)")
       .order("registered_at", { ascending: false })
       .range(from, to);
     return { data: result.data as unknown as RegistrationDbRow[] | null, error: result.error };
@@ -229,6 +245,23 @@ export async function listAllRegistrationHistory(): Promise<AdminRegistrationHis
   const reviewsByRegistration = new Map<string, ReviewDbRow[]>();
   for (const review of reviews) reviewsByRegistration.set(review.registration_id, [...(reviewsByRegistration.get(review.registration_id) ?? []), review]);
   const manualMembershipCollectionCounts = buildManualMembershipCollectionCounts(history);
+  const anglerIds = registrations.flatMap((row) => [row.angler1_id, row.angler2_id]).filter((id): id is string => Boolean(id));
+  const canonicalResult = anglerIds.length
+    ? await supabase.from("anglers").select("id,first_name,last_name,email,phone,street_address,city,state,zip_code").in("id", [...new Set(anglerIds)])
+    : { data: [], error: null };
+  if (canonicalResult.error) throw canonicalResult.error;
+  const canonicalById = new Map(
+    (canonicalResult.data ?? []).map((angler) => [angler.id, {
+      firstName: angler.first_name,
+      lastName: angler.last_name,
+      streetAddress: angler.street_address,
+      city: angler.city,
+      state: angler.state,
+      zipCode: angler.zip_code,
+      email: angler.email,
+      phone: angler.phone,
+    } satisfies RegistrationCanonicalContact]),
+  );
 
   return registrations.map((row) => {
     const cancellation = parseCancellationNotes(row.admin_notes);
@@ -244,8 +277,12 @@ export async function listAllRegistrationHistory(): Promise<AdminRegistrationHis
     status: row.registration_status,
     angler1Name: row.angler1_name,
     angler2Name: row.angler2_name,
+    angler1Id: row.angler1_id,
+    angler2Id: row.angler2_id,
     boatNumber: row.boat_number,
     contacts: row.participant_contact_snapshot ?? [],
+    canonicalContacts: [row.angler1_id, row.angler2_id]
+      .map((id) => id ? canonicalById.get(id) ?? null : null),
     membershipSnapshot: row.membership_snapshot ?? [],
     priceSnapshot: row.price_snapshot,
     bigBass: row.big_bass,

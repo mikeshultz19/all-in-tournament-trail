@@ -4,7 +4,8 @@ import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
 
 import RegistrationConfirmation, { type RegistrationConfirmationView } from "@/components/RegistrationConfirmation";
-import RegistrationForm from "@/components/RegistrationForm";
+import PaymentOptions from "@/components/PaymentOptions";
+import RegistrationForm, { clearRegistrationQuote, createRegistrationQuoteFingerprint, resetMembershipSelectionsForTournamentChange, type RegistrationQuoteClientState } from "@/components/RegistrationForm";
 import { tournaments, type Tournament } from "@/data/tournaments";
 import {
   applyFailedSquarePayment,
@@ -20,6 +21,7 @@ import {
   type OnlineRegistrationRequest,
 } from "@/lib/online-registration";
 import { getTournamentOperationsViewModel } from "@/lib/tournament-view-model";
+import { selectInitialRegistrationSlug } from "@/lib/registration-entry-selection";
 
 const NOW = new Date("2026-07-22T12:00:00.000Z");
 const POLICY_VERSIONS = {
@@ -61,6 +63,32 @@ describe("online tournament eligibility", () => {
   it("blocks tournaments with online registration disabled", () => expect(getOnlineRegistrationEligibility(tournament(), NOW, { onlineRegistrationEnabled: false }).state).toBe("unavailable"));
 });
 
+describe("registration entry tournament selection", () => {
+  const schedule = [{ slug: "closed-first" }, { slug: "open-second" }, { slug: "open-third" }];
+  const operations = {
+    "closed-first": { registrationCanSubmit: false },
+    "open-second": { registrationCanSubmit: true },
+    "open-third": { registrationCanSubmit: true },
+  };
+
+  it("selects the first available tournament when the first schedule entry is closed", () => {
+    expect(selectInitialRegistrationSlug(schedule, undefined, operations)).toBe("open-second");
+  });
+  it("keeps deterministic active-season ordering when multiple tournaments are open", () => {
+    expect(selectInitialRegistrationSlug(schedule, undefined, operations)).toBe("open-second");
+  });
+  it("preserves an explicit valid tournament even when it is closed", () => {
+    expect(selectInitialRegistrationSlug(schedule, "closed-first", operations)).toBe("closed-first");
+  });
+  it("keeps the existing unavailable fallback when no tournament is open", () => {
+    const closed = Object.fromEntries(schedule.map((item) => [item.slug, { registrationCanSubmit: false }]));
+    expect(selectInitialRegistrationSlug(schedule, undefined, closed)).toBe("closed-first");
+  });
+  it("uses only the supplied active-season schedule, excluding inactive-season candidates", () => {
+    expect(selectInitialRegistrationSlug([{ slug: "active-season-open" }], undefined, { "active-season-open": { registrationCanSubmit: true } })).toBe("active-season-open");
+  });
+});
+
 describe("server-authoritative registration validation and pricing", () => {
   it("validates required angler fields", () => expect(validateOnlineRegistrationRequest(validRequest({ anglers: [{ ...validRequest().anglers[0], mobilePhone: "" }] }), NOW)).toContain("Angler 1 mobile phone is invalid."));
   it("allows a valid Solo current member to register without purchasing membership", () => {
@@ -99,6 +127,12 @@ describe("server-authoritative registration validation and pricing", () => {
     const request = validRequest({ tournamentSlug: laterTournament.slug });
     expect(validateOnlineRegistrationRequest(request, NOW, {}, laterTournament)).toEqual([]);
     expect(createAuthoritativeRegistrationQuote(request, NOW, laterTournament).subtotalCents).toBe(6000);
+  });
+  it("prices only explicit New Member selections", () => {
+    const currentMember = createAuthoritativeRegistrationQuote(validRequest({ anglers: [{ ...validRequest().anglers[0], membership: "current" }] }), NOW);
+    const newMember = createAuthoritativeRegistrationQuote(validRequest({ anglers: [{ ...validRequest().anglers[0], membership: "joining" }] }), NOW);
+    expect(currentMember.subtotalCents).toBe(6000);
+    expect(newMember.subtotalCents).toBe(10000);
   });
   it("rejects stale tournament-one membership claims before creating a payment attempt", () => {
     expect(quoteRouteSource.indexOf("validateOnlineRegistrationRequest")).toBeLessThan(quoteRouteSource.indexOf("createOnlinePaymentAttempt"));
@@ -285,6 +319,29 @@ describe("online payment presentation", () => {
     expect(firstHtml.match(/id="angler[12]-membership-current"[^>]*disabled=""/g) ?? []).toHaveLength(2);
     expect(firstHtml.match(/membership-first-tournament/g)).toHaveLength(6);
   });
+  it("leaves both membership choices enabled but unselected for tournament two", () => {
+    const laterOperations = { [laterTournament.slug]: getTournamentOperationsViewModel(laterTournament, NOW) };
+    const laterHtml = renderToStaticMarkup(<RegistrationForm tournaments={[laterTournament]} operationsBySlug={laterOperations} policyVersions={POLICY_VERSIONS} initialRegistrationType="team" />);
+    expect(laterHtml).not.toMatch(/id="angler[12]-membership-current"[^>]*disabled=""/);
+    expect(laterHtml).not.toMatch(/id="angler[12]-membership-(current|joining)"[^>]*checked=""/);
+    expect(laterHtml).toMatch(/type="submit"[^>]*disabled=""[^>]*>Continue to Payment/);
+  });
+  it("requires an explicit membership selection for every active solo or team participant", () => {
+    const laterOperations = { [laterTournament.slug]: getTournamentOperationsViewModel(laterTournament, NOW) };
+    const teamHtml = renderToStaticMarkup(<RegistrationForm tournaments={[laterTournament]} operationsBySlug={laterOperations} policyVersions={POLICY_VERSIONS} />);
+    const soloHtml = renderToStaticMarkup(<RegistrationForm tournaments={[laterTournament]} operationsBySlug={laterOperations} policyVersions={POLICY_VERSIONS} initialRegistrationType="solo" />);
+    expect(teamHtml).toContain('name="angler2.membership"');
+    expect(soloHtml).not.toContain('name="angler2.membership"');
+    expect(teamHtml).toMatch(/type="submit"[^>]*disabled=""[^>]*>Continue to Payment/);
+    expect(soloHtml).toMatch(/type="submit"[^>]*disabled=""[^>]*>Continue to Payment/);
+  });
+  it("clears membership selections when tournament membership rules change", () => {
+    const angler = { firstName: "Taylor", lastName: "Angler", email: "taylor@example.com", mobilePhone: "817-555-0100", streetAddress: "100 Lake Road", city: "Azle", state: "TX", zipCode: "76020", membership: "joining" as const };
+    const current = { angler1: angler, angler2: { ...angler, membership: "current" as const } };
+    expect(resetMembershipSelectionsForTournamentChange(current, true).angler1.membership).toBeNull();
+    expect(resetMembershipSelectionsForTournamentChange(current, true).angler2.membership).toBeNull();
+    expect(resetMembershipSelectionsForTournamentChange(current, false)).toBe(current);
+  });
   it("does not advertise Venmo or Stripe", () => expect(html).not.toMatch(/Venmo|Stripe/i));
   it("provides the approved four-stage progress and clean payment boundary", () => {
     expect(html).toContain("Registration progress");
@@ -401,5 +458,63 @@ describe("online payment presentation", () => {
     expect(html).not.toContain("+ $0.30");
     expect(html).toContain("Final Total");
     expect(html).not.toMatch(/cash/i);
+  });
+});
+
+describe("registration quote invalidation", () => {
+  const quotedAngler = { firstName: "Taylor", lastName: "Angler", email: "taylor@example.com", mobilePhone: "817-555-0100", streetAddress: "100 Lake Road", city: "Azle", state: "TX", zipCode: "76020", membership: "current" as const };
+  const quotedBillingContact = { firstName: quotedAngler.firstName, lastName: quotedAngler.lastName, email: quotedAngler.email, phone: quotedAngler.mobilePhone, streetAddress: quotedAngler.streetAddress, city: quotedAngler.city, state: quotedAngler.state, zipCode: quotedAngler.zipCode };
+  const quotedInput: Parameters<typeof createRegistrationQuoteFingerprint>[0] = {
+    tournamentSlug: "twin-points-park",
+    registrationType: "solo" as const,
+    anglers: [quotedAngler],
+    options: { memberPot: null, bigBass: false, insurance: false },
+    acknowledgment: { rulesVersion: "1.9", waiverVersion: "1.0", acknowledgedAt: NOW.toISOString(), acknowledgmentAccepted: true },
+  };
+  const quotedState: RegistrationQuoteClientState = {
+    serverQuote: createAuthoritativeRegistrationQuote(validRequest(), NOW),
+    paymentAttemptId: "attempt-1",
+    squareConfig: { applicationId: "sandbox-app", locationId: "sandbox-location", environment: "sandbox" },
+    fingerprint: createRegistrationQuoteFingerprint(quotedInput),
+  };
+
+  it("clears the server quote, attempt, Square configuration, and fingerprint together", () => {
+    expect(clearRegistrationQuote(quotedState)).toEqual({ serverQuote: null, paymentAttemptId: null, squareConfig: null, fingerprint: null });
+  });
+
+  it("keeps a valid quoted attempt payable until a material payload field changes", () => {
+    const checkout = renderToStaticMarkup(<PaymentOptions total="$62.10" canReview reviewComplete checkoutAvailable paymentAttemptId="attempt-1" squareConfig={quotedState.squareConfig} billingContact={quotedBillingContact} />);
+    expect(checkout).toContain("Pay $62.10");
+    expect(clearRegistrationQuote(quotedState).paymentAttemptId).toBeNull();
+  });
+
+  it.each([
+    ["Bronze", { options: { memberPot: "bronze" as const, bigBass: false, insurance: false } }],
+    ["Silver", { options: { memberPot: "silver" as const, bigBass: false, insurance: false } }],
+    ["Gold", { options: { memberPot: "gold" as const, bigBass: false, insurance: false } }],
+    ["Big Bass", { options: { memberPot: null, bigBass: true, insurance: false } }],
+    ["Insurance", { options: { memberPot: null, bigBass: false, insurance: true } }],
+    ["membership selection", { anglers: [{ ...quotedAngler, membership: "joining" as const }] }],
+    ["participant contact information", { anglers: [{ ...quotedAngler, email: "updated@example.com", mobilePhone: "817-555-0111", streetAddress: "200 Lake Road" }] }],
+    ["solo/team structure", { registrationType: "team" as const, anglers: [quotedAngler, { ...quotedAngler, firstName: "Jordan", email: "jordan@example.com" }] }],
+    ["tournament selection", { tournamentSlug: "eagle-mountain" }],
+  ])("changes to %s produce a different quote fingerprint and clear the usable attempt", (_label, change) => {
+    const changeRecord = change as { tournamentSlug?: string; registrationType?: typeof quotedInput.registrationType; anglers?: typeof quotedInput.anglers; options?: Partial<typeof quotedInput.options> };
+    const changed = { ...quotedInput, ...changeRecord, options: { ...quotedInput.options, ...(changeRecord.options ?? {}) }, anglers: changeRecord.anglers ?? quotedInput.anglers };
+    expect(createRegistrationQuoteFingerprint(changed)).not.toBe(quotedState.fingerprint);
+    expect(clearRegistrationQuote(quotedState).paymentAttemptId).toBeNull();
+  });
+
+  it("covers every quoted field through one centralized invalidation path", () => {
+    expect(registrationFormSource).toContain("function invalidateQuote()");
+    expect(registrationFormSource.match(/invalidateQuote\(\)/g)?.length).toBeGreaterThanOrEqual(7);
+    expect(registrationFormSource).toContain("quoteRequestVersionRef.current !== requestVersion");
+  });
+
+  it("recalculates the updated quote total from changed selections", () => {
+    const original = createAuthoritativeRegistrationQuote(validRequest(), NOW);
+    const updated = createAuthoritativeRegistrationQuote(validRequest({ options: { memberPot: "gold", bigBass: true, insurance: true } }), NOW);
+    expect(updated.totalCents).toBeGreaterThan(original.totalCents);
+    expect(updated.cardProcessingFeeCents).toBe(Math.ceil(updated.subtotalCents * 0.03) + 30);
   });
 });
