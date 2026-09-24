@@ -49,4 +49,13 @@ next-env.d.ts
 .dev.vars*
 !.dev.vars.example
 
+# Local database backup script and generated backup artifacts
+BackupScript.ps1
+backups/
+backup/
+*.dump
+*.backup
+*.bak
+*.sql.gz
+
 .obsidian/
