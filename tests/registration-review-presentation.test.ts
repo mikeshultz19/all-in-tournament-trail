@@ -52,4 +52,17 @@ describe("Admin registration review presentation", () => {
       issue: "This angler selected a new membership, but an existing membership may already be active.",
     });
   });
+
+  it("explains that a new paid membership needs one-time approval", () => {
+    expect(getRegistrationReviewPresentation({
+      reviewKind: "identity",
+      reason: "Canonical identity requires administrative approval.",
+      submittedMembership: "joining",
+      canonicalAnglerId: null,
+    })).toEqual({
+      heading: "New membership needs approval",
+      issue: "This is a new membership purchase. Approve once to create the member record.",
+      identityFollowUp: "Approve as new if this is a different person.",
+    });
+  });
 });

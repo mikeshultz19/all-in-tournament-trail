@@ -69,6 +69,14 @@ export function getRegistrationReviewPresentation(
     };
   }
 
+  if (/Canonical identity requires administrative approval/i.test(review.reason) && review.submittedMembership === "joining") {
+    return {
+      heading: "New membership needs approval",
+      issue: "This is a new membership purchase. Approve once to create the member record.",
+      identityFollowUp: "Approve as new if this is a different person.",
+    };
+  }
+
   return {
     heading: "Identity needs review",
     issue: "The submitted angler could not be matched confidently.",
