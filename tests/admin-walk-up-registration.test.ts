@@ -256,6 +256,27 @@ describe("walk-up registration draft preservation", () => {
     }));
   });
 
+  it("explains how to correct an invalid current-member claim", async () => {
+    rpc.mockResolvedValue({
+      data: null,
+      error: { message: "AITT_REGISTRATION_CURRENT_MEMBERSHIP_NOT_FOUND" },
+    });
+
+    const result = await createWalkUpRegistrationAction(
+      { status: "idle", message: "" },
+      buildWalkUpFormData({
+        registrationType: "solo",
+        memberPot: "",
+        bigBass: false,
+        insurance: false,
+        totalPaid: "60.00",
+        angler1Membership: "current",
+      }),
+    );
+
+    expect(result.message).toContain("Use Member Search or select Joining / Purchasing.");
+  });
+
   it("rewires the walk-up form so error submissions remount with preserved defaults and success returns to blank defaults", () => {
     const controls = readFileSync(
       "components/admin/RegistrationOperationsControls.tsx",

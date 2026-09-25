@@ -112,7 +112,7 @@ function walkUpSaveErrorMessage(error: { message?: string } | null) {
   const code = error?.message?.match(/AITT_[A-Z0-9_]+/)?.[0];
   const messages: Record<string, string> = {
     AITT_REGISTRATION_CURRENT_MEMBERSHIP_NOT_FOUND:
-      "The selected member does not have an active membership for this season.",
+      "This angler is marked Current Member, but no active membership was found for this season. Use Member Search or select Joining / Purchasing.",
     AITT_REGISTRATION_NOT_YET_ELIGIBLE:
       "The selected member is not yet eligible for this tournament.",
     AITT_REGISTRATION_MEMBER_OPTION_INELIGIBLE:
