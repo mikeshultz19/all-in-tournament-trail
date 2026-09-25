@@ -119,7 +119,7 @@ export default function RegistrationHistoryList({
                   <DetailLine label="Source" value={row.source === "walk_up" ? "Walk-Up" : "Online"} />
                   <DetailLine label="Status" value={row.status} />
                   <DetailLine label="Attendance" value={row.status === "cancelled" && row.checkedInAt ? `Canceled; historical check-in recorded ${dateTime(row.checkedInAt)}` : row.checkedInAt ? "Checked In" : "Pending"} />
-                  <DetailLine label="Payment Method" value={row.paymentMethod ?? "Not stored"} />
+                  <DetailLine label="Payment Method" value={registrationPaymentMethod(row)} />
                   <DetailLine label="Payment Reference" value={row.paymentReference ?? "Not recorded"} />
                   <DetailLine label="Online Payment" value={row.onlinePaymentState ?? "Not applicable"} />
                   {row.status === "cancelled" ? <>
@@ -275,6 +275,12 @@ function paymentSummary(row: AdminRegistrationHistoryRow) {
       : "Needs Review";
   }
   return row.paymentReference ? "Recorded" : "Needs Review";
+}
+
+function registrationPaymentMethod(row: AdminRegistrationHistoryRow) {
+  return row.source === "online"
+    ? "Online / Square"
+    : row.paymentMethod ?? "Not stored";
 }
 
 function money(value: number | undefined) {

@@ -73,6 +73,8 @@ describe("Admin All Registrations", () => {
     expect(list).toContain("Registration / Status");
     expect(list).toContain("Member Status");
     expect(list).toContain("Payment / Paid");
+    expect(list).toContain('value={registrationPaymentMethod(row)}');
+    expect(list).toContain('"Online / Square"');
     expect(list).toContain("Registered");
     expect(list).toContain("Submitted Participants");
     expect(list).toContain("Payment &amp; Pricing");
