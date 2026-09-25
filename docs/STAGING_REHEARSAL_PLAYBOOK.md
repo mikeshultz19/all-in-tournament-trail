@@ -196,6 +196,28 @@ validate every applicable layer before starting another scenario:
 The visible result is not a pass by itself. Authoritative rows, review
 history, financial calculations, and the public projection must agree.
 
+### Controlled scenario method
+
+Registration rehearsal is intentionally slow and sequential. The operator
+enters one approved scenario, pauses at each gate, and records the expected and
+actual result before another scenario begins. Do not batch registrations or
+advance because a payment succeeded.
+
+For each scenario, the operator validates the public form, waiver gate,
+payment summary, confirmation page, and confirmation email. The verifier then
+checks the admin roster, review or membership-dues state, check-in eligibility,
+All Registrations, All Members, Financial Summary, public Tournament Entries,
+Early Registration counts, and read-only staging reconciliation. Any mismatch
+stops the sequence until it is explained and retested.
+
+After the production correction set is accepted, repeat the same process as a
+training/beta rehearsal with the Tournament Directors and partner staff. Use
+the same scenario records and evidence pattern—including the recently
+completed boats 33 through 37 where applicable—so each person can see the
+registration, review decision, financial effect, roster result, and check-in
+path end to end. Training replay is a fresh rehearsal, not permission to skip
+validation because the first run passed.
+
 ### Required waiver and confirmation checks
 
 For every online registration rehearsal, verify the payment button remains
@@ -550,6 +572,16 @@ The complete rehearsal must also cover final exports and printable roster,
 WeighFish generation/import, normal results and payout calculations, AOY
 best-5-of-8, Championship five-of-eight participation, publication/unpublish,
 and financial/operational isolation before the next tournament is accepted.
+
+### WeighFish handoff follow-up
+
+After registration scenarios are accepted, generate the staging CSV from the
+validated roster and preserve it as rehearsal evidence. Brandon, the other
+Tournament Director, must create the AITT tournament in WeighFish. Then obtain
+the WeighFish output after the tournament/trail setup—not only a single-event
+test—and compare its columns, identifiers, participant rows, and options with
+the staging CSV. Treat any schema or mapping change introduced by tournament
+creation as a separate integration finding.
 
 ### Human member-contact verification
 

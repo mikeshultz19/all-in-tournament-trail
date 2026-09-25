@@ -366,6 +366,8 @@ These are documented requirements only; do not implement them as part of this ch
 4. Complete the authenticated allowlisted staging rehearsal for online and walk-up confirmation delivery; automated tests do not replace that rehearsal.
 5. Before production registration opens, verify Tournament 2 through the Championship are explicitly closed. Open each tournament manually only after its rollover verification passes and the approved public opening announcement is ready.
 6. Low priority: add 25-row pagination to the All Members and All Registrations administrative pages so long histories remain manageable and consistent with other list views.
+7. After registration acceptance, generate a staging CSV from the validated roster. Brandon must create the AITT tournament in WeighFish, followed by a post-creation WeighFish export comparison covering the full tournament/trail setup, not only a single-event test.
+8. Run a fresh training/beta rehearsal with Brandon and partner staff using the same controlled, scenario-by-scenario process. Do not advance until each registration, payment, review, roster, financial, public-count, confirmation, and check-in gate passes.
 
 ## Current policy checkpoint
 
