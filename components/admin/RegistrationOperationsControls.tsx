@@ -126,9 +126,9 @@ export function AddWalkUpControl({ tournamentId }: { tournamentId: string }) {
       data-walk-up-panel
       open={walkUpOpen}
       onToggle={(event) => setWalkUpOpen(event.currentTarget.open)}
-      className="relative border border-[#D4A017]/30 bg-[#111] p-4"
+      className="relative"
     >
-      <summary className="inline-flex min-h-11 cursor-pointer list-none items-center justify-center rounded-sm border border-red-400 bg-red-600 px-5 text-sm font-black uppercase tracking-[0.08em] text-white shadow-lg shadow-red-950/30 transition hover:bg-red-500 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-red-300">
+      <summary className="inline-flex min-h-10 cursor-pointer list-none items-center justify-center rounded-sm border border-red-400 bg-red-600 px-4 text-sm font-black uppercase tracking-[0.08em] text-white shadow-lg shadow-red-950/30 transition hover:bg-red-500 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-red-300">
         + Add Walk-Up
       </summary>
       <button
