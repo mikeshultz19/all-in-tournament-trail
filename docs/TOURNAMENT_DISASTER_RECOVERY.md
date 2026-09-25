@@ -135,6 +135,14 @@ It is generated from the complete active tournament roster and is independent
 of roster pagination, search, and filters. The compatibility CSV remains
 available separately.
 
+During recovery rehearsal, validate one completed online registration from the
+confirmation page and confirmation email. Payment must remain unavailable until
+the required rules and liability-waiver acknowledgment is explicitly accepted.
+The confirmation page/email must match the stored registration and payment
+evidence for registration number, participants, selected options, amount paid,
+and payment status. Staff may use that confirmation as an emergency check-in
+reference, so any mismatch is a rehearsal failure even if the roster row exists.
+
 Membership status in the workbook is participant-level: current registrations
 show Current Member or Purchased Membership, while an unverified current-member
 claim remains Needs Review. Current registration has no non-member path and no

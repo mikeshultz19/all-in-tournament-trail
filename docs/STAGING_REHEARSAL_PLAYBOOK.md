@@ -196,6 +196,19 @@ validate every applicable layer before starting another scenario:
 The visible result is not a pass by itself. Authoritative rows, review
 history, financial calculations, and the public projection must agree.
 
+### Required waiver and confirmation checks
+
+For every online registration rehearsal, verify the payment button remains
+blocked until the registrant explicitly acknowledges the required rules and
+liability waiver. The acknowledgment must not be preselected or bypassable.
+
+After payment, compare the confirmation page and confirmation email against
+the stored registration and Square payment evidence. They must show the exact
+registration number, participants, selected tournament options, amount paid,
+and payment status. The confirmation is an operational reference for an
+emergency check-in, so an incorrect amount or option display is a failed
+rehearsal even when the roster and payment succeeded.
+
 ## 6. Strict phased execution
 
 Proceed only when the preceding phase is Pass or the discrepancy is explicitly
@@ -211,7 +224,8 @@ staging result, and financial/review result where applicable.
    New Member, and fail-closed Needs Review behavior.
 5. **Contact-information update/matching.** Verify a legitimate returning
    member with changed contact details resolves to the same person through the
-   supported matching/review flow.
+   supported matching/review flow. Include address-only and phone-only changes
+   and verify the confirmation still reflects the actual paid options.
 6. **Duplicate/new-angler review.** Trigger possible-duplicate review and
    approve a genuinely new angler through Admin; verify no duplicate identity.
 7. **Walk-up Cash/Card/Other.** Use Admin Add Walk-Up and verify each payment
