@@ -278,6 +278,14 @@ not counted toward the final pot totals.
 Square examples use 3% of the applicable subtotal plus $0.30. Verify the
 actual quote before each submission.
 
+For an online Square registration, a purchased membership is part of the
+customer's Square subtotal and final charge. It is not part of tournament
+payout funds. Reconcile the same payment as: tournament entry and selected
+pots = payout funds; purchased memberships = membership revenue; processing
+fee = Square payment evidence only. Therefore, online registration funds
+include the entry, pots, and purchased memberships, but exclude the processing
+fee.
+
 | ID | Setup and path | Entry/options | Method | Face value | Square charge | Expected result |
 |---|---|---|---|---:|---:|---|
 | STRAT-B1 | New solo; approved fresh identity | $60 + Bronze $40 + Big Bass $20 + membership $40 | Online Sandbox | $160.00 | $165.10 | New Member $40; Bronze +1; BB +1 |
@@ -393,6 +401,10 @@ review/dues queue and continue to block check-in.
 - Recorded payment snapshots reconcile to face-value selections. A warning
   identifies the affected boat/registration and remains actionable.
 - Processing fees are excluded from tournament payout funds.
+- A purchased membership is included in the Square subtotal and customer
+  charge, but excluded from tournament payout funds.
+- Online registration funds include purchased membership revenue and exclude
+  the Square processing fee.
 - Online, Cash, Card, and Other totals reconcile to individual paid rows.
 - Membership revenue is collected money only.
 - Square service fees remain in payment evidence and manual cancellation review,
