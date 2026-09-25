@@ -307,7 +307,7 @@ describe("walk-up registration draft preservation", () => {
     expect(controls).toContain("open={walkUpOpen}");
     expect(controls).toContain("onToggle={(event) => setWalkUpOpen(event.currentTarget.open)}");
     expect(controls).toContain('label="Email"');
-    expect(controls).toContain("required={false}");
+    expect(controls).toContain("required={Boolean(membershipValue)}");
   });
 
   it("uses the shared authoritative helper for every supported walk-up charge", () => {

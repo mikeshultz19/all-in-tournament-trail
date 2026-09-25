@@ -128,7 +128,7 @@ export function AddWalkUpControl({ tournamentId }: { tournamentId: string }) {
       onToggle={(event) => setWalkUpOpen(event.currentTarget.open)}
       className="relative border border-[#D4A017]/30 bg-[#111] p-4"
     >
-      <summary className="cursor-pointer list-none text-sm font-black uppercase text-[#D4A017] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#D4A017]">
+      <summary className="inline-flex min-h-11 cursor-pointer list-none items-center justify-center rounded-sm border border-red-400 bg-red-600 px-5 text-sm font-black uppercase tracking-[0.08em] text-white shadow-lg shadow-red-950/30 transition hover:bg-red-500 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-red-300">
         + Add Walk-Up
       </summary>
       <button
@@ -401,7 +401,7 @@ function AnglerFields({
           <input
             name={`${prefix}Email`}
             type="email"
-            required={false}
+            required={Boolean(membershipValue)}
             className={input}
             defaultValue={values.email}
           />

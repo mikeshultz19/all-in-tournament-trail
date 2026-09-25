@@ -244,6 +244,8 @@ describe("unified Registration & Check-In workflow", () => {
     expect(migration).toContain("registration_source = 'walk_up'");
     expect(migration).toContain("p_payment_method");
     expect(controls).toContain("+ Add Walk-Up");
+    expect(controls).toContain("bg-red-600");
+    expect(controls).toContain("text-white");
     expect(controls).toContain("The next tournament boat number is assigned automatically.");
     expect(controls).not.toContain('name="boatNumber" type="number" min="1" required className={input}');
     for (const field of ["StreetAddress", "City", "State", "ZipCode", "Email", "Phone", "Membership"]) {

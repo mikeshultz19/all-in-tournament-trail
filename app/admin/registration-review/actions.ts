@@ -122,7 +122,7 @@ function walkUpSaveErrorMessage(error: { message?: string } | null) {
     AITT_REGISTRATION_IDENTITY_REVIEW_REQUIRED:
       "This identity matches more than one member record. Resolve the member record before saving the walk-up.",
     AITT_WALKUP_MEMBER_EMAIL_REQUIRED:
-      "An existing member needs an email address before this walk-up can be saved.",
+      "An email address is required for an angler marked Current Member or Joining / Purchasing.",
     AITT_WALKUP_EMAIL_REQUIRED:
       "A new member needs an email address before this walk-up can be saved.",
     AITT_WALKUP_PRICE_SNAPSHOT_INVALID:
