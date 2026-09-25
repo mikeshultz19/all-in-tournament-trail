@@ -301,6 +301,8 @@ describe("walk-up registration draft preservation", () => {
     expect(controls).toContain("onClick={closeWalkUp}");
     expect(controls).toContain("setRegistrationType(initialDraft.registrationType)");
     expect(controls).toContain("setSelectedMembers({ 1: null, 2: null })");
+    expect(controls).toContain("setWalkUpOpen(false)");
+    expect(controls).toContain("setFormWasReset(true)");
     expect(controls).toContain("const draft = formWasReset ? initialDraft : state.draft ?? initialDraft;");
     expect(controls).toContain("open={walkUpOpen}");
     expect(controls).toContain("onToggle={(event) => setWalkUpOpen(event.currentTarget.open)}");

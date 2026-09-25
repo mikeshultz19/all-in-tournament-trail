@@ -66,7 +66,10 @@ export function AddWalkUpControl({ tournamentId }: { tournamentId: string }) {
         setMemberPot(initialDraft.memberPot);
         setBigBass(initialDraft.bigBass);
         setInsurance(initialDraft.insurance);
+        setFormInstance((current) => current + 1);
+        setFormWasReset(true);
         setSelectedMembers({ 1: null, 2: null });
+        setWalkUpOpen(false);
       }
       return nextState;
     },
