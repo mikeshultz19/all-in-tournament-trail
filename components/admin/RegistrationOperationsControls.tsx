@@ -174,7 +174,7 @@ export function AddWalkUpControl({ tournamentId }: { tournamentId: string }) {
         </div>
         <AnglerFields key="angler-1" position={1} required draft={draft} tournamentId={tournamentId} selectedOtherMemberId={selectedMembers[2]} onSelectedMember={(id) => setSelectedMembers((current) => ({ ...current, 1: id }))} membershipValue={angler1Membership} onMembershipChange={(value) => updateMembership(1, value)} />
         <input type="hidden" name="angler1SelectedMemberId" value={selectedMembers[1] ?? ""} />
-        <AnglerFields key="angler-2" position={2} draft={draft} tournamentId={tournamentId} selectedOtherMemberId={selectedMembers[1]} onSelectedMember={(id) => setSelectedMembers((current) => ({ ...current, 2: id }))} membershipValue={angler2Membership} onMembershipChange={(value) => updateMembership(2, value)} />
+        <AnglerFields key="angler-2" position={2} required={registrationType === "team"} draft={draft} tournamentId={tournamentId} selectedOtherMemberId={selectedMembers[1]} onSelectedMember={(id) => setSelectedMembers((current) => ({ ...current, 2: id }))} membershipValue={angler2Membership} onMembershipChange={(value) => updateMembership(2, value)} />
         <input type="hidden" name="angler2SelectedMemberId" value={selectedMembers[2] ?? ""} />
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           <Field label="Member Pot">
@@ -405,7 +405,7 @@ function AnglerFields({
           <input
             name={`${prefix}Email`}
             type="email"
-            required={Boolean(membershipValue)}
+            required={required && Boolean(membershipValue)}
             className={input}
             defaultValue={values.email}
           />

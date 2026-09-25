@@ -307,7 +307,7 @@ describe("walk-up registration draft preservation", () => {
     expect(controls).toContain("open={walkUpOpen}");
     expect(controls).toContain("onToggle={(event) => setWalkUpOpen(event.currentTarget.open)}");
     expect(controls).toContain('label="Email"');
-    expect(controls).toContain("required={Boolean(membershipValue)}");
+    expect(controls).toContain("required={required && Boolean(membershipValue)}");
   });
 
   it("uses the shared authoritative helper for every supported walk-up charge", () => {
@@ -472,6 +472,7 @@ describe("walk-up registration draft preservation", () => {
     );
     expect(controls).toContain('key="angler-1"');
     expect(controls).toContain('key="angler-2"');
+    expect(controls).toContain('required={registrationType === "team"}');
     expect(controls).toContain('const prefix = `angler${position}` as const;');
     expect(controls).toContain('name="angler1SelectedMemberId"');
     expect(controls).toContain('name="angler2SelectedMemberId"');
