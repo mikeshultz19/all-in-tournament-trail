@@ -51,6 +51,7 @@ export function AddWalkUpControl({ tournamentId }: { tournamentId: string }) {
   const [selectedMembers, setSelectedMembers] = useState<{ 1: string | null; 2: string | null }>({ 1: null, 2: null });
   const [formInstance, setFormInstance] = useState(0);
   const [formWasReset, setFormWasReset] = useState(false);
+  const [walkUpOpen, setWalkUpOpen] = useState(false);
   const [displayState, setDisplayState] = useState<RegistrationOperationsActionState>(initialState);
   const [state, action, pending] = useActionState(
     async (previousState: RegistrationOperationsActionState, formData: FormData) => {
@@ -93,6 +94,7 @@ export function AddWalkUpControl({ tournamentId }: { tournamentId: string }) {
   function closeWalkUp() {
     const details = document.querySelector<HTMLDetailsElement>("details[data-walk-up-panel]");
     if (details) details.open = false;
+    setWalkUpOpen(false);
     setRegistrationType(initialDraft.registrationType);
     setPaymentMethod(initialDraft.paymentMethod);
     setAngler1Membership(initialDraft.angler1Membership);
@@ -117,7 +119,12 @@ export function AddWalkUpControl({ tournamentId }: { tournamentId: string }) {
   }
 
   return (
-    <details data-walk-up-panel className="relative border border-[#D4A017]/30 bg-[#111] p-4">
+    <details
+      data-walk-up-panel
+      open={walkUpOpen}
+      onToggle={(event) => setWalkUpOpen(event.currentTarget.open)}
+      className="relative border border-[#D4A017]/30 bg-[#111] p-4"
+    >
       <summary className="cursor-pointer list-none text-sm font-black uppercase text-[#D4A017] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#D4A017]">
         + Add Walk-Up
       </summary>
