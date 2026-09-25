@@ -276,6 +276,8 @@ describe("walk-up registration draft preservation", () => {
     expect(controls).toContain('name="totalPaid"');
     expect(controls).toContain("formatCurrencyFromCents(totalCollectedCents)");
     expect(controls).toContain('aria-live="polite"');
+    expect(controls).toContain("Cancel Walk-Up");
+    expect(controls).toContain("onClick={closeWalkUp}");
     expect(controls).toContain('label="Email"');
     expect(controls).toContain("required={false}");
   });

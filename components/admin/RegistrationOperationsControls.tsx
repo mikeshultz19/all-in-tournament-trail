@@ -199,6 +199,14 @@ export function AddWalkUpControl({ tournamentId }: { tournamentId: string }) {
           >
             {pending ? "Saving..." : "Save Walk-Up"}
           </button>
+          <button
+            type="button"
+            onClick={closeWalkUp}
+            disabled={pending}
+            className={adminButtonStyles("secondary", "min-h-11")}
+          >
+            Cancel Walk-Up
+          </button>
           <span className="min-w-0 flex-1"><ActionMessage state={displayState} /></span>
           <button
             type="button"
