@@ -17,10 +17,7 @@ import {
   getActiveSeasonSchedule,
   getNextUpcomingTournament,
 } from "@/lib/tournaments";
-import {
-  listTournamentPurchasedMembershipCounts,
-  listTournamentRegistrationRosterSummaries,
-} from "@/lib/tournament-registration-roster";
+import { listTournamentRegistrationRosterSummaries } from "@/lib/tournament-registration-roster";
 
 export const dynamic = "force-dynamic";
 
@@ -50,7 +47,6 @@ export default async function AdminHomePage() {
     selectedTournament,
     selectedIdentifier,
     registrationSummary,
-    newMemberships,
     websitePublished,
   } = data;
 
@@ -99,10 +95,6 @@ export default async function AdminHomePage() {
                 detail={`${registrationSummary?.needReview ?? 0} need review`}
                 actionHref={`/admin/registration-review?tournament=${encodeURIComponent(selectedTournament.id)}`}
                 actionLabel="Open Roster"
-              />
-              <StatusCard
-                label="New Memberships"
-                value={String(newMemberships)}
               />
               <StatusCard
                 label="Website Status"
@@ -171,11 +163,7 @@ async function loadAdminHomeData() {
 
   const tournamentIds = tournaments.map((tournament) => tournament.id);
 
-  const [registrationSummaries, purchasedMembershipCounts] =
-    await Promise.all([
-      listTournamentRegistrationRosterSummaries(tournamentIds),
-      listTournamentPurchasedMembershipCounts(tournamentIds),
-    ]);
+  const registrationSummaries = await listTournamentRegistrationRosterSummaries(tournamentIds);
 
   const selectedTournament = nextTournament ?? tournaments[0] ?? null;
   const selectedId = selectedTournament?.id;
@@ -188,7 +176,6 @@ async function loadAdminHomeData() {
     registrationSummary: selectedId
       ? registrationSummaries[selectedId]
       : undefined,
-    newMemberships: selectedId ? purchasedMembershipCounts[selectedId] ?? 0 : 0,
     websitePublished: Boolean(selectedTournament?.official_results_published_at),
   };
 }

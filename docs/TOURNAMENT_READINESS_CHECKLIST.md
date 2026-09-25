@@ -365,6 +365,7 @@ These are documented requirements only; do not implement them as part of this ch
 3. Update registration-confirmation email text when final wording is supplied.
 4. Complete the authenticated allowlisted staging rehearsal for online and walk-up confirmation delivery; automated tests do not replace that rehearsal.
 5. Before production registration opens, verify Tournament 2 through the Championship are explicitly closed. Open each tournament manually only after its rollover verification passes and the approved public opening announcement is ready.
+6. Low priority: add 25-row pagination to the All Members and All Registrations administrative pages so long histories remain manageable and consistent with other list views.
 
 ## Current policy checkpoint
 
