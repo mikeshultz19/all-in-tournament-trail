@@ -212,6 +212,10 @@ export function AddWalkUpControl({ tournamentId }: { tournamentId: string }) {
           required for Team entries. Membership selections are saved with this
           paid walk-up and synchronized to Members automatically.
         </p>
+        <p className="text-xs font-bold leading-5 text-amber-200">
+          Waiver reminder: Confirm each angler has signed the Official Rules &amp;
+          Participant Liability Waiver on the paper form before saving.
+        </p>
         <div className="flex flex-wrap items-center gap-3">
           <button
             disabled={pending}
