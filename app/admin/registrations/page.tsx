@@ -12,7 +12,7 @@ import {
 import { getTournaments } from "@/lib/tournaments";
 
 export const dynamic = "force-dynamic";
-const pageSize = 50;
+const pageSize = 25;
 
 export default async function AllRegistrationsPage({
   searchParams,

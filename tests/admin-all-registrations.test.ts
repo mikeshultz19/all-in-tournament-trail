@@ -83,6 +83,11 @@ describe("Admin All Registrations", () => {
     expect(list).not.toContain("View Full Registration");
   });
 
+  it("uses the shared 25-row administrative list size", () => {
+    const page = readFileSync("app/admin/registrations/page.tsx", "utf8");
+    expect(page).toContain("const pageSize = 25;");
+  });
+
   it("retains resolved review history outside the operational roster", () => {
     const history = readFileSync("lib/admin-registration-history.ts", "utf8");
     const roster = readFileSync("app/admin/registration-review/page.tsx", "utf8");
