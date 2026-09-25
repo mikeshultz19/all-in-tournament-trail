@@ -108,6 +108,32 @@ function membership(value: string) {
     : null;
 }
 
+function walkUpSaveErrorMessage(error: { message?: string } | null) {
+  const code = error?.message?.match(/AITT_[A-Z0-9_]+/)?.[0];
+  const messages: Record<string, string> = {
+    AITT_REGISTRATION_CURRENT_MEMBERSHIP_NOT_FOUND:
+      "The selected member does not have an active membership for this season.",
+    AITT_REGISTRATION_NOT_YET_ELIGIBLE:
+      "The selected member is not yet eligible for this tournament.",
+    AITT_REGISTRATION_MEMBER_OPTION_INELIGIBLE:
+      "One angler's membership selection is not eligible for this walk-up.",
+    AITT_REGISTRATION_DUPLICATE_ANGLER:
+      "The same member cannot be entered twice in one registration.",
+    AITT_REGISTRATION_IDENTITY_REVIEW_REQUIRED:
+      "This identity matches more than one member record. Resolve the member record before saving the walk-up.",
+    AITT_WALKUP_MEMBER_EMAIL_REQUIRED:
+      "An existing member needs an email address before this walk-up can be saved.",
+    AITT_WALKUP_EMAIL_REQUIRED:
+      "A new member needs an email address before this walk-up can be saved.",
+    AITT_WALKUP_PRICE_SNAPSHOT_INVALID:
+      "The walk-up total changed before saving. Review the selections and try again.",
+    AITT_WALKUP_REGISTRATION_NOT_FOUND:
+      "The walk-up was not saved because its registration record could not be finalized.",
+  };
+  return (code && messages[code])
+    || "The walk-up registration could not be saved. Verify the identity and membership selections.";
+}
+
 export type WalkUpMemberSearchResult = {
   anglerId: string;
   displayName: string;
@@ -310,7 +336,7 @@ export async function createWalkUpRegistrationAction(
 
   if (error) {
     console.error("Walk-up registration save failed.", error);
-    return { status: "error", message: "The walk-up registration could not be saved. Verify the identity and membership selections.", draft };
+    return { status: "error", message: walkUpSaveErrorMessage(error), draft };
   }
 
   const recipients = uniqueRegistrationRecipients(anglers.map((angler) => angler.email));

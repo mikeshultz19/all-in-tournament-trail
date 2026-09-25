@@ -233,6 +233,29 @@ describe("walk-up registration draft preservation", () => {
     expect(deliverRegistrationConfirmationEmails).not.toHaveBeenCalled();
   });
 
+  it("shows the actionable database reason when a walk-up save is rejected", async () => {
+    rpc.mockResolvedValue({
+      data: null,
+      error: { message: "AITT_REGISTRATION_NOT_YET_ELIGIBLE" },
+    });
+
+    const result = await createWalkUpRegistrationAction(
+      { status: "idle", message: "" },
+      buildWalkUpFormData({
+        registrationType: "solo",
+        memberPot: "",
+        bigBass: false,
+        insurance: false,
+        totalPaid: "60.00",
+      }),
+    );
+
+    expect(result).toEqual(expect.objectContaining({
+      status: "error",
+      message: "The selected member is not yet eligible for this tournament.",
+    }));
+  });
+
   it("rewires the walk-up form so error submissions remount with preserved defaults and success returns to blank defaults", () => {
     const controls = readFileSync(
       "components/admin/RegistrationOperationsControls.tsx",
