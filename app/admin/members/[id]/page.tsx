@@ -6,6 +6,7 @@ import { getAdminMemberById } from "@/lib/admin-members";
 import { formatMemberDate } from "@/lib/member-list";
 import { redirect } from "next/navigation";
 import MemberLifecycleActions from "@/components/admin/MemberLifecycleActions";
+import EditMemberContactForm from "@/components/admin/EditMemberContactForm";
 
 export const dynamic = "force-dynamic";
 
@@ -106,15 +107,25 @@ export default async function MemberDetailPage({
             {member.firstName} {member.lastName}
           </h1>
         </div>
-        <button
-          type="button"
-          disabled
-          title="Member editing is not available yet."
-          className="inline-flex min-h-11 cursor-not-allowed items-center justify-center gap-2 border border-white/15 px-5 text-xs font-black uppercase tracking-[0.12em] text-neutral-500"
-        >
-          <Pencil aria-hidden="true" className="size-4" />
-          Edit Member
-        </button>
+        <details className="w-full sm:w-auto">
+          <summary className="inline-flex min-h-11 cursor-pointer list-none items-center justify-center gap-2 border border-[#D4A017] px-5 text-xs font-black uppercase tracking-[0.12em] text-[#D4A017] transition-colors hover:bg-[#D4A017]/10 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#D4A017]">
+            <Pencil aria-hidden="true" className="size-4" />
+            Edit Member
+          </summary>
+          <EditMemberContactForm
+            memberId={member.id}
+            contact={{
+              firstName: member.firstName,
+              lastName: member.lastName,
+              email: member.email,
+              phone: member.phone,
+              streetAddress: member.streetAddress,
+              city: member.city,
+              state: member.state,
+              zipCode: member.zipCode,
+            }}
+          />
+        </details>
       </div>
 
       <section className="mt-8 border border-white/10 bg-[#111111] p-5 sm:p-7">

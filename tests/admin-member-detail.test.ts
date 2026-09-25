@@ -13,6 +13,8 @@ describe("Admin Member Detail", () => {
     expect(data).toContain('.from("anglers")');
     expect(data).toContain('.eq("id", memberId)');
     expect(page).toContain("requireAdminUser");
+    expect(page).toContain("EditMemberContactForm");
+    expect(page).not.toContain("Member editing is not available yet.");
 
     for (const label of [
       "First Name",
