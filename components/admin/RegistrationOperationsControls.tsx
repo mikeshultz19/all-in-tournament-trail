@@ -50,9 +50,11 @@ export function AddWalkUpControl({ tournamentId }: { tournamentId: string }) {
   const [insurance, setInsurance] = useState(initialDraft.insurance);
   const [selectedMembers, setSelectedMembers] = useState<{ 1: string | null; 2: string | null }>({ 1: null, 2: null });
   const [formInstance, setFormInstance] = useState(0);
+  const [formWasReset, setFormWasReset] = useState(false);
   const [displayState, setDisplayState] = useState<RegistrationOperationsActionState>(initialState);
   const [state, action, pending] = useActionState(
     async (previousState: RegistrationOperationsActionState, formData: FormData) => {
+      setFormWasReset(false);
       const nextState = await createWalkUpRegistrationAction(previousState, formData);
       setDisplayState(nextState);
       if (nextState.status === "success") {
@@ -71,7 +73,7 @@ export function AddWalkUpControl({ tournamentId }: { tournamentId: string }) {
   );
   useRefreshOnSuccess(state);
 
-  const draft = state.draft ?? initialDraft;
+  const draft = formWasReset ? initialDraft : state.draft ?? initialDraft;
   const formKey =
     state.status === "error" ? `${JSON.stringify(draft)}:${formInstance}` : `walk-up-form-default:${formInstance}`;
   const memberships = registrationType === "team"
@@ -91,7 +93,15 @@ export function AddWalkUpControl({ tournamentId }: { tournamentId: string }) {
   function closeWalkUp() {
     const details = document.querySelector<HTMLDetailsElement>("details[data-walk-up-panel]");
     if (details) details.open = false;
+    setRegistrationType(initialDraft.registrationType);
+    setPaymentMethod(initialDraft.paymentMethod);
+    setAngler1Membership(initialDraft.angler1Membership);
+    setAngler2Membership(initialDraft.angler2Membership);
+    setMemberPot(initialDraft.memberPot);
+    setBigBass(initialDraft.bigBass);
+    setInsurance(initialDraft.insurance);
     setFormInstance((current) => current + 1);
+    setFormWasReset(true);
     setSelectedMembers({ 1: null, 2: null });
     setDisplayState(initialState);
   }
