@@ -246,12 +246,11 @@ Director collects the full calculated amount; staff do not edit the website's
 calculated payment summary. Partial-payment and bank-deposit issues are handled
 outside AITT.
 
-One active registration per angler per tournament is allowed. A canceled online
-registration cannot be re-entered online, but the entrant may return once as a
-tournament-day walk-up. Shared emails and contact differences go to Needs Review
-instead of blocking registration. A paid no-show is handled by the Tournament
-Director as a one-off administrative matter; AITT has no separate No Show
-workflow.
+Duplicate or previously canceled entrants are not blocked from registration.
+The Tournament Director resolves duplicate or re-entry cases after payment.
+Shared emails and contact differences go to Needs Review instead of blocking
+registration. A paid no-show is handled by the Tournament Director as a one-off
+administrative matter; AITT has no separate No Show workflow.
 
 ## 7. Registration Record Requirements
 

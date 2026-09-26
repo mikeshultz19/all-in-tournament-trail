@@ -25,6 +25,21 @@ Last Updated: September 15, 2026
   Future audits should classify these as intentional governance rather than
   missing customer-facing workflows.
 
+### 2026-09-26 — Preserve payment capture for duplicate registrations
+
+- **Status:** Approved; supersedes the earlier duplicate-blocking proposal.
+- **Decision:** Do not block online or walk-up registration because an angler
+  appears to have entered already or previously canceled. Required fields,
+  payment validity, waiver acceptance, tournament availability, and core data
+  validation remain enforced. Duplicate or re-entry cases are preserved and
+  resolved administratively after payment.
+- **Reasoning:** Capturing the customer's registration and payment is more
+  important than preventing a rare duplicate through customer-facing logic.
+  The Tournament Director can cancel the duplicate registration afterward.
+- **Impact:** Duplicate matching is review/reconciliation information, not a
+  payment blocker. Regression coverage must verify that ordinary and duplicate
+  submissions still reach payment preparation.
+
 ## 2026-09-15 — Current production operating decisions
 
 ### Tournament Information owns public tournament display data

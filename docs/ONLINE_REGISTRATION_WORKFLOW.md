@@ -513,9 +513,9 @@ These decisions supersede older walk-up wording elsewhere in this document:
 - Every walk-up contact field, including email, is required for every angler
   regardless of Current Member or Joining / Purchasing selection. Member Search
   identifies a person but does not waive contact collection.
-- Each angler may have one active registration per tournament. A canceled online
-  registration cannot be re-entered online; the only exception is one
-  tournament-day walk-up after cancellation.
+- Duplicate or previously canceled entrants are not blocked from registering.
+  The registration and payment are preserved, and the Tournament Director
+  resolves any duplicate or re-entry administratively afterward.
 - Shared email addresses and contact differences go to Needs Review instead of
   blocking registration. Contact-only review does not block check-in once
   identity and membership are resolved.
