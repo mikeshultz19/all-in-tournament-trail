@@ -1,7 +1,20 @@
 Version: 1.1
-Last Updated: September 15, 2026
+Last Updated: September 26, 2026
 
 # Decision Log
+
+## 2026-09-26 — Mandatory external pre-production backups
+
+- **Status:** Approved pre-production gate.
+- **Decision:** Before any production deployment or production data change,
+  create file-level backups of both the staging and production databases and
+  the application/repository files. Copy the backups to the designated
+  external hard disk and verify that the files are present and readable before
+  touching production.
+- **Reasoning:** Preserve a recoverable point-in-time copy of both data and
+  application files before the first production operation.
+- **Operational rule:** No production deployment proceeds until the backup
+  evidence and external-disk verification are complete.
 
 ## 2026-09-26 — Registration and tournament-closeout governance
 

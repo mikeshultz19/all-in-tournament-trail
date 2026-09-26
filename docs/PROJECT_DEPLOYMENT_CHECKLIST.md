@@ -37,7 +37,21 @@ operations.
 - [Master Site Map](MasterSiteMap.md)
 - [README](../README.md)
 
-**Last Updated:** 2026-09-15
+**Last Updated:** 2026-09-26
+
+## Mandatory external backup gate
+
+Before any production deployment or production data change:
+
+- [ ] Create a file-level backup of the staging database.
+- [ ] Create a file-level backup of the production database.
+- [ ] Create a file-level backup of the application/repository files.
+- [ ] Copy all backup files to the designated external hard disk.
+- [ ] Verify that the external-disk copies are present, readable, and clearly
+      labeled with environment and timestamp.
+- [ ] Record the backup locations and verification result before continuing.
+
+No production work may begin until this gate is complete.
 
 ## Production data and release order
 
