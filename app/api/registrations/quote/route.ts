@@ -9,6 +9,8 @@ import { getTournamentBySlug } from "@/lib/tournaments";
 import type { Tournament } from "@/types/tournament";
 import { createOnlinePaymentAttempt } from "@/lib/online-payment-attempts";
 import { getSquareConfigurationStatus } from "@/lib/square";
+import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { findActiveRegistrationDuplicatePositions } from "@/lib/active-registration-duplicate";
 
 export async function POST(request: Request) {
   let input: OnlineRegistrationRequest;
@@ -39,6 +41,65 @@ export async function POST(request: Request) {
     return NextResponse.json(
       { error: "We could not verify this tournament. Please try again." },
       { status: 503 },
+    );
+  }
+
+  const supabase = createSupabaseServerClient();
+  const [canonicalResult, activeRegistrationsResult] = await Promise.all([
+    supabase
+      .from("anglers")
+      .select("id,first_name,last_name,email,phone")
+      .eq("is_active", true)
+      .is("merged_into_angler_id", null),
+    supabase
+      .from("tournament_registrations")
+      .select("angler1_id,angler2_id,registration_status")
+      .eq("tournament_id", tournamentRecord.id)
+      .in("registration_status", ["active", "cancelled"]),
+  ]);
+  if (canonicalResult.error || activeRegistrationsResult.error) {
+    return NextResponse.json({ error: "Registration identity could not be verified. Please try again." }, { status: 503 });
+  }
+  const activeAnglerIds = new Set(
+    (activeRegistrationsResult.data ?? []).filter((row) => row.registration_status === "active").flatMap((row) => [row.angler1_id, row.angler2_id]).filter(
+      (id): id is string => Boolean(id),
+    ),
+  );
+  const canceledAnglerIds = new Set(
+    (activeRegistrationsResult.data ?? []).filter((row) => row.registration_status === "cancelled").flatMap((row) => [row.angler1_id, row.angler2_id]).filter(
+      (id): id is string => Boolean(id),
+    ),
+  );
+  const duplicatePositions = findActiveRegistrationDuplicatePositions(
+    input.anglers,
+    canonicalResult.data ?? [],
+    activeAnglerIds,
+  );
+  if (duplicatePositions.length) {
+    return NextResponse.json(
+      {
+        error: "Registration needs attention.",
+        errors: [
+          `Angler ${duplicatePositions.join(" and Angler ")} already has an active registration in this tournament. A canceled registration may return only through tournament-day walk-up registration.`,
+        ],
+      },
+      { status: 409 },
+    );
+  }
+  const canceledPositions = findActiveRegistrationDuplicatePositions(
+    input.anglers,
+    canonicalResult.data ?? [],
+    canceledAnglerIds,
+  );
+  if (canceledPositions.length) {
+    return NextResponse.json(
+      {
+        error: "Registration needs attention.",
+        errors: [
+          `Angler ${canceledPositions.join(" and Angler ")} already canceled an online registration for this tournament. Re-entry is available only through tournament-day walk-up registration.`,
+        ],
+      },
+      { status: 409 },
     );
   }
 
