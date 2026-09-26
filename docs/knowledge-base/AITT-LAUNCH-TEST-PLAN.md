@@ -1,6 +1,6 @@
 # AITT Launch Test Plan
 
-> Reconciled 2026-08-25. [AITT Lifecycle and Operations](../AITT_LIFECYCLE_OPERATIONS.md)
+> Reconciled 2026-09-26. [AITT Lifecycle and Operations](../AITT_LIFECYCLE_OPERATIONS.md)
 > controls current business rules. Any older case below that assumes a featured
 > flag controls registration, an automatic 9:00 PM close, standalone Insurance,
 > or unavailable Square completion is superseded and must be executed using the
@@ -299,13 +299,17 @@ case prevents launch.
 
 ### E-01 — Duplicate and invalid registration
 
-- **Purpose:** Ensure duplicate/invalid input does not create partial rows.
+- **Purpose:** Ensure a repeated registration follows the normal payment path
+  while malformed input does not create a partial row.
 - **Preconditions:** Registration open and one existing entry.
 - **Test data:** Same reference/email; malformed angler; missing acceptance.
 - **Steps:** Submit duplicates/invalid requests.
-- **Expected Admin result:** No duplicate/partial registration or member.
-- **Expected public result:** Clear error; existing Entry unchanged.
-- **Database or record verification:** Counts unchanged.
+- **Expected Admin result:** A valid repeated paid registration is recorded as
+  a normal entry; malformed input creates no partial registration or member.
+- **Expected public result:** A valid repeated submission proceeds normally;
+  malformed input receives a clear error.
+- **Database or record verification:** Payment references remain idempotent;
+  each separate paid registration has its own durable record.
 - **Pass/Fail:** ___ **Notes:** ___ **Defect ID:** ___
 
 ### E-02 — Registration after closure

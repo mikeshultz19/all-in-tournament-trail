@@ -1,6 +1,6 @@
 # AITT Documentation Index
 
-Last reconciled: 2026-09-23
+Last reconciled: 2026-09-26
 
 This is the canonical entry point for AITT documentation. Use the sections
 below to distinguish current technical guidance, staff operating instructions,
@@ -63,6 +63,12 @@ different rule.
 - [Identity Reconciliation Foundation](technical/IDENTITY_RECONCILIATION_FOUNDATION.md)
 
 ### Registration
+
+Registration policy: repeated or previously canceled registrations are allowed
+through the normal required-field, membership, waiver, and payment flow. They
+do not create a duplicate-registration Needs Review item. The Tournament
+Director handles any rare duplicate administratively after payment. Entering
+the same person twice within one Team remains invalid.
 
 - [Online Registration Workflow](ONLINE_REGISTRATION_WORKFLOW.md) — detailed
   registration/payment implementation supporting the primary lifecycle.

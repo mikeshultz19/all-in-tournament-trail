@@ -1,6 +1,7 @@
 # Online Payment Readiness Remediation
 
-Updated September 25, 2026 after the AITT Claude audit.
+Updated September 26, 2026 after the AITT Claude audit and duplicate-registration
+policy decision.
 
 ## Closed findings
 
@@ -12,9 +13,9 @@ Updated September 25, 2026 after the AITT Claude audit.
 ## Verification
 
 - Focused payment-readiness tests: passing.
-- Full local test suite: 1,073 tests passing.
 - Next build: passing.
-- Staging deployment: version `28ac04cd-4186-4a80-9258-47e1405f4a77`.
+- Full local test suite: 1,077 tests passing after the final registration-policy changes.
+- Staging deployment: version `12088c2d-41f7-4586-b81b-c802611aae6a`.
 - Production was not changed.
 
 ## Still required before live payments
@@ -27,4 +28,5 @@ Populate `.env.production.local` and the production Worker secrets with the real
 - **H5 decision:** every walk-up contact field remains required, including email for both Current Member and Joining / Purchasing. This preserves identity validation before payment and avoids creating an unverified member record.
 - **H7:** public tournament reads remain available, while anonymous tournament mutations are removed by `202609250001_lock_public_tournament_updates.sql`.
 
-The H7 database change is committed locally but requires the staging Supabase migration to be applied before that behavior can be rehearsed against the hosted database.
+The H7 database change is applied to staging and remains subject to hosted
+permission verification before production rollout.

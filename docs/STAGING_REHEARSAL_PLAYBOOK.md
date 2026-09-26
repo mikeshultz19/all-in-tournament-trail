@@ -162,7 +162,7 @@ until the actual values and evidence are recorded.
 | Expected roster result | Boat/status/filter/review outcome |
 | Expected Financial Summary delta | Each affected count and dollar total |
 | Expected email/confirmation | Content, recipient class, delivery/retry expectation |
-| Expected review state | No review, possible duplicate, or Needs Review |
+| Expected review state | No review or Needs Review; repeated registrations do not create duplicate review |
 | Expected cancellation behavior | Preserve/exclude/revoke behavior, if applicable |
 | Actual result | Recorded immediately after the scenario |
 | Pass/Fail | No blanks after review |
@@ -248,8 +248,10 @@ staging result, and financial/review result where applicable.
    member with changed contact details resolves to the same person through the
    supported matching/review flow. Include address-only and phone-only changes
    and verify the confirmation still reflects the actual paid options.
-6. **Duplicate/new-angler review.** Trigger possible-duplicate review and
-   approve a genuinely new angler through Admin; verify no duplicate identity.
+6. **Repeated-registration acceptance.** Submit a valid repeat registration,
+   including a re-entry after cancellation, and verify it follows the normal
+   membership/payment path without creating duplicate Needs Review. Keep the
+   same-person-twice-within-one-team validation as a separate invalid-team test.
 7. **Walk-up Cash/Card/Other.** Use Admin Add Walk-Up and verify each payment
    method, confirmation, fee, roster, and Financial Summary result.
 8. **Cancellation of a new member.** Use the roster-level control; verify
@@ -325,7 +327,7 @@ fee.
 | ID | Setup and path | Entry/options | Method | Face value | Square charge | Expected result |
 |---|---|---|---|---:|---:|---|
 | STRAT-B1 | New solo; approved fresh identity | $60 + Bronze $40 + Big Bass $20 + membership $40 | Online Sandbox | $160.00 | $165.10 | New Member $40; Bronze +1; BB +1 |
-| STRAT-B2 | New/new team; one new identity triggers possible-duplicate review, then approve the new identity | $60 + Bronze $40 + Insurance $20 + memberships $80 | Online Sandbox | $200.00 | $206.30 | New Member x2; Bronze +1; Insurance +1; review resolved |
+| STRAT-B2 | New/new team; both identities are newly created through the normal path | $60 + Bronze $40 + Insurance $20 + memberships $80 | Online Sandbox | $200.00 | $206.30 | New Member x2; Bronze +1; Insurance +1; no duplicate review |
 | STRAT-S1 | Returning solo with changed contact information | $60 + Silver $100 + BB $20 + Insurance $20 | Walk-up Cash | $200.00 | N/A | Current Member $0; Silver +1; BB/Insurance +1 |
 | STRAT-S2 | Returning team | $60 + Silver $100 | Walk-up Card | $160.00 | Reader fee verified separately | Current Member x2; Silver +1 |
 | STRAT-S3 | Mixed current/new team; unmatched current claim first fails closed | $60 + Silver $100 + BB $20 + new membership $40 | Online Sandbox | $220.00 | $226.90 | Temporary Needs Review; resolve before final gate; Silver +1 |
@@ -344,8 +346,9 @@ supported review action, stop before final reconciliation.
 Expected active result after the non-canceled matrix: Bronze 5, Silver 8,
 Gold 7. The matrix covers new solo, new team, returning solo, returning team,
 mixed team, Big Bass selected/omitted, Insurance selected/omitted, Online
-Sandbox, Cash, Card, Other, changed-contact matching, duplicate review,
-unmatched current-member fail-closed review, and both cancellation variants.
+Sandbox, Cash, Card, Other, changed-contact matching, repeated-registration
+acceptance, unmatched current-member fail-closed review, and both cancellation
+variants.
 
 ## 8. Membership assertions
 

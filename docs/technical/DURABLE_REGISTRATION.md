@@ -41,8 +41,11 @@ The verified payment reference is unique. An advisory transaction lock
 serializes concurrent retries, and a repeated reference returns the existing
 registration.
 
-A separate unique index prevents the same Competitive Record from registering
-twice for one tournament.
+The payment reference is the only registration-level idempotency key. A person
+may have more than one separate registration for the same tournament, including
+after a cancellation; those records remain valid and are handled
+administratively if the Tournament Director later identifies a duplicate.
+Entering the same angler twice within one Team remains invalid.
 
 ## Membership trust boundary
 

@@ -49,14 +49,15 @@ Official Results or creating duplicate people.
 - **Stop:** If identity remains uncertain, leave it in Registration Review or
   imported-result reconciliation and obtain supporting information.
 
-## Duplicate member or registration
+## Repeated registration or duplicate member
 
 - **Symptom:** Same person/team appears twice.
 - **Likely causes:** Repeated submission, alternate spelling/email, or retry
   after uncertain response.
 - **Checks:** Compare UUID/reference, contact identity, tournament, and time.
-- **Safe corrective action:** Do not merge/delete when history exists; retain
-  evidence and seek an approved correction.
+- **Safe corrective action:** Keep both paid registration records and retain
+  the evidence. If one entry must be removed, use the existing cancellation
+  workflow. Do not silently merge/delete historical member records.
 - **Stop:** Silent merge or published-history involvement.
 
 ## Admin Members does not match registration

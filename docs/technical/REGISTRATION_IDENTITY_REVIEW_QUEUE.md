@@ -27,12 +27,16 @@ continues through the existing transaction.
 
 Review is required when the server finds:
 
-- duplicate exact identities;
 - an exact phone or name that conflicts with the submitted email;
 - a possible spelling difference or other uncertain contact match;
 - a possible nickname or abbreviated first name;
 - an unlinked current-membership claim;
 - more than one plausible canonical Angler.
+
+A person who is already in the tournament is not sent to this queue solely for
+that reason. Separate repeated registrations use the ordinary membership and
+payment path and do not create a duplicate-registration review. The same person
+entered twice within one Team remains a structural validation error.
 
 Name-only, nickname, reversed-name, address-only, and partial matches never
 cause automatic merging. Conflicting email and phone identifiers always require
@@ -80,8 +84,9 @@ history, activates the membership, and clears the review. No payment or
 price-snapshot behavior is added. The explicit collected $40 increases
 Memberships Collected and Total Registration Funds, but not Online Funds or
 Tournament Payout Funds; no email behavior is added. The
-existing-member, contact, duplicate, and historical membership workflows remain
-separate.
+existing-member, contact, and historical membership workflows remain separate.
+Repeated tournament registrations are not identity-review cases; the
+Tournament Director handles any rare duplicate administratively after payment.
 
 For a flagged contact mismatch, the Tournament Director selects the specific
 existing angler, uses **EDIT MEMBER** to correct the canonical All Members

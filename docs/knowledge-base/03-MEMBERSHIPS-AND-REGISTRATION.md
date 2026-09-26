@@ -52,8 +52,10 @@ membership, and clears the review. It does not process Square payment or change
 the price snapshot. The explicit collected $40 increases Memberships Collected
 and Total Registration Funds, but not Online Funds or Tournament Payout Funds;
 it does not send email.
-Existing-member, contact, duplicate, and historical membership reviews are
-unchanged.
+Existing-member, contact, and historical membership reviews are unchanged.
+Repeated or previously canceled registrations are allowed through the normal
+membership and payment flow; any rare duplicate is handled administratively
+afterward.
 
 Tournament-time membership and `aoy_eligible` snapshots control historical
 calculations; a later membership change cannot rewrite an old event.

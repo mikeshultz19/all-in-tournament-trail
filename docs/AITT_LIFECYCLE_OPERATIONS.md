@@ -1,6 +1,6 @@
 # AITT Tournament Lifecycle and Operations
 
-Last reconciled: 2026-09-21
+Last reconciled: 2026-09-26
 
 Status: **Primary human-readable authority for implemented AITT business and
 operational behavior.**
@@ -191,8 +191,10 @@ uses the existing membership-confirmation operation and records who confirmed
 collection and when. No payment or price-snapshot change is created. The
 explicit collected $40 increases Memberships Collected and Total Registration
 Funds, but not Online Funds or Tournament Payout Funds; no collection email is
-created. Existing-member matching, contact,
-duplicate, and historical membership reviews retain their separate workflows.
+created. Existing-member matching, contact, and historical membership reviews
+retain their separate workflows. A repeated or previously canceled tournament
+registration is not sent to Needs Review solely because it is repeated; the
+Tournament Director handles any rare duplicate after payment.
 
 For practical contact corrections, the Tournament Director selects the
 specific existing angler in an unresolved roster review and uses EDIT MEMBER
