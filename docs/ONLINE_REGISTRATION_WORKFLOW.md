@@ -607,7 +607,10 @@ mandatory.
 - Final refund, credit, transfer, postponement, and cancellation policy.
 - Registration-number format.
 - Whether and how anglers may edit a paid registration.
-- Duplicate-entry policy for one angler in the same tournament.
+- Repeated registration submissions are intentionally allowed and use the
+  normal membership evaluation path. A rare duplicate is handled by the
+  Tournament Director after payment; entering the same person twice in one
+  team remains invalid.
 - Stable membership identifier and pending-verification review process.
 - Exact authority for verification, overrides, refunds, and reconciliation.
 - Whether current tournaments will use capacity limits and the approved hold duration.

@@ -416,7 +416,9 @@ server-side contact submission endpoint.
 - [ ] Define how paper registrations, cash, and unresolved card attempts are numbered and tracked.
 - [ ] Define how fallback records are entered into WeighFish after service is restored.
 - [ ] Require a second-person review when transferring paper fallback records into official systems.
-- [ ] Define how duplicate registrations or payments caused by recovery are identified and resolved.
+- [x] Define repeated-registration handling: do not block payment; the
+  Tournament Director resolves any rare duplicate administratively after the
+  registration is recorded.
 - [ ] Protect paper forms and devices from rain, heat, loss, theft, and unauthorized viewing.
 - [ ] Maintain offline copies of essential vendor support numbers and escalation contacts.
 - [ ] Document the response to a lost or stolen tablet, reader, cash box, or registration record.

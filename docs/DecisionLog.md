@@ -6,9 +6,10 @@ Last Updated: September 15, 2026
 ## 2026-09-26 — Registration and tournament-closeout governance
 
 - **Status:** Approved business rules; staging verification remains required.
-- **Registration:** One active registration per angler per tournament is
-  allowed. A canceled online registration cannot be re-entered online, but the
-  entrant may return once as a tournament-day walk-up.
+- **Registration:** Separate registrations for the same angler are allowed.
+  A canceled registration may be followed by another registration. Required
+  fields, valid payment, waiver acceptance, and core data validation remain
+  enforced; the Tournament Director handles any rare duplicate administratively.
 - **Review:** Shared email addresses and contact differences go to Needs Review
   instead of blocking registration. Every walk-up contact field, including
   email, is required for every membership choice.
@@ -32,13 +33,13 @@ Last Updated: September 15, 2026
   appears to have entered already or previously canceled. Required fields,
   payment validity, waiver acceptance, tournament availability, and core data
   validation remain enforced. Duplicate or re-entry cases are preserved and
-  resolved administratively after payment.
+  resolved administratively after payment; they do not create Needs Review.
 - **Reasoning:** Capturing the customer's registration and payment is more
   important than preventing a rare duplicate through customer-facing logic.
   The Tournament Director can cancel the duplicate registration afterward.
-- **Impact:** Duplicate matching is review/reconciliation information, not a
-  payment blocker. Regression coverage must verify that ordinary and duplicate
-  submissions still reach payment preparation.
+- **Impact:** Duplicate matching is not part of registration identity review.
+  Regression coverage must verify that ordinary and repeated submissions use
+  the same membership evaluation path and reach payment preparation.
 
 ## 2026-09-15 — Current production operating decisions
 

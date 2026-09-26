@@ -168,7 +168,7 @@ An unchecked or unavailable layer keeps the result at `Needs Rehearsal`.
 | REG-07 | Bronze, Silver, Gold, Insurance pricing | Prices match approved rules | — | Not Tested | — |
 | REG-08 | Membership-required options | Current registrations have no non-member pathway; historical records remain readable | — | Not Tested | — |
 | REG-09 | Ineligible combinations | Invalid combinations are blocked | — | Not Tested | — |
-| REG-10 | Duplicate submission prevention | Duplicate registration is prevented or safely identified | — | Not Tested | — |
+| REG-10 | Repeated submission handling | A repeated registration is accepted through the normal payment and membership path; any rare duplicate is handled administratively afterward | — | Not Tested | — |
 | REG-11 | Registration totals and amount | Displayed total equals selected components | — | Not Tested | — |
 | REG-12 | Desktop registration | Layout and validation work | — | Not Tested | — |
 | REG-13 | Mobile registration | Layout and validation work | — | Not Tested | — |
