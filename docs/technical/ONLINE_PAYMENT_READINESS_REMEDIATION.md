@@ -21,3 +21,10 @@ Updated September 25, 2026 after the AITT Claude audit.
 
 Populate `.env.production.local` and the production Worker secrets with the real production Square, Supabase, webhook, and email values. The production deploy guard is intentionally expected to refuse deployment until those values are present and consistent.
 
+## Follow-up hardening
+
+- **H4:** membership attribution and cancellation now select the angler whose snapshot says `Joining`, including when that is Angler 2. The roster keeps a positional fallback only for older online snapshots that contain no participant classification.
+- **H5:** selected existing Current Members may be saved without an email; Joining / Purchasing still requires one. The walk-up migration preserves the selected member identity while using a transaction-local placeholder only inside the durable identity boundary.
+- **H7:** public tournament reads remain available, while anonymous tournament mutations are removed by `202609250001_lock_public_tournament_updates.sql`.
+
+The H5 and H7 database changes are committed locally but require the staging Supabase migration to be applied before those two behaviors can be rehearsed against the hosted database.
