@@ -53,6 +53,25 @@ Before any production deployment or production data change:
 
 No production work may begin until this gate is complete.
 
+## Post-release local workspace cleanup
+
+After the approved release is committed and pushed, GitHub recovery is
+verified, and the external backup gate is complete:
+
+- [ ] Identify the canonical local repository/worktree to retain.
+- [ ] Confirm every intended change from the extra worktrees is committed and
+      pushed to the appropriate GitHub branch.
+- [ ] Preserve or separately archive any remaining uncommitted changes before
+      cleanup.
+- [ ] Remove redundant local Git worktrees and repositories that are no longer
+      needed, including old release-candidate, staging-release, docs-readiness,
+      and temporary disaster-recovery checkouts.
+- [ ] Verify the canonical repository still opens cleanly and can reproduce
+      the staging build after cleanup.
+
+Do not remove any extra checkout until its branch, commits, and uncommitted
+work have been accounted for.
+
 ## Production data and release order
 
 - Staging Supabase: `vcjhufuklqwvnqmarpqi` through `.env.local`.

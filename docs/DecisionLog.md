@@ -16,6 +16,17 @@ Last Updated: September 26, 2026
 - **Operational rule:** No production deployment proceeds until the backup
   evidence and external-disk verification are complete.
 
+## 2026-09-26 — Post-release local repository cleanup
+
+- **Status:** Approved follow-up task; not to be performed before release.
+- **Decision:** Once the release is committed and pushed, GitHub recovery is
+  verified, and the external backups are complete, retain one canonical local
+  repository and remove redundant local worktrees/checkouts that are no longer
+  needed.
+- **Safety rule:** Account for every branch, commit, and uncommitted change
+  before removing a checkout. This is local workspace cleanup only and does
+  not delete GitHub branches, staging data, production data, or backups.
+
 ## 2026-09-26 — Registration and tournament-closeout governance
 
 - **Status:** Approved business rules; staging verification remains required.
