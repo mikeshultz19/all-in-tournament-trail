@@ -11,9 +11,20 @@ export type ReviewPresentation = {
   identityFollowUp: string | null;
 };
 
+export function isDuplicateParticipationReview(reason: string) {
+  return /possible duplicate tournament participation/i.test(reason);
+}
+
 export function getRegistrationReviewPresentation(
   review: ReviewPresentationInput,
 ): ReviewPresentation {
+  if (isDuplicateParticipationReview(review.reason)) {
+    return {
+      heading: "Possible duplicate registration",
+      issue: "This angler may already be entered in this tournament. No action is required unless the Tournament Director decides to cancel one registration.",
+      identityFollowUp: null,
+    };
+  }
   const membershipReview = review.reviewKind === "membership"
     || /Membership Needs Review:|Possible Duplicate Membership Purchase:/i.test(review.reason);
   const identityUnresolved = review.reviewKind === "identity" && !review.canonicalAnglerId;
@@ -38,13 +49,6 @@ export function getRegistrationReviewPresentation(
       heading: "Identity needs review",
       issue: "The submitted email and phone match different existing anglers.",
       identityFollowUp: "Could not match confidently. Verify details or approve as new.",
-    };
-  }
-  if (/possible duplicate tournament participation/i.test(review.reason)) {
-    return {
-      heading: "Possible duplicate tournament participation",
-      issue: "This angler may already be entered in this tournament.",
-      identityFollowUp: "Confirm same angler or different person.",
     };
   }
   if (/submitted email is already associated/i.test(review.reason)) {

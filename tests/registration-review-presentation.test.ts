@@ -26,7 +26,7 @@ describe("Admin registration review presentation", () => {
     expect(getRegistrationReviewPresentation({ reviewKind: "identity", reason, submittedMembership: "non-member", canonicalAnglerId: null }).issue).toBe(issue);
   });
 
-  it("simplifies duplicate participation review wording", () => {
+  it("presents duplicate participation as an informational warning", () => {
     expect(
       getRegistrationReviewPresentation({
         reviewKind: "identity",
@@ -35,9 +35,9 @@ describe("Admin registration review presentation", () => {
         canonicalAnglerId: null,
       }),
     ).toEqual({
-      heading: "Possible duplicate tournament participation",
-      issue: "This angler may already be entered in this tournament.",
-      identityFollowUp: "Confirm same angler or different person.",
+      heading: "Possible duplicate registration",
+      issue: "This angler may already be entered in this tournament. No action is required unless the Tournament Director decides to cancel one registration.",
+      identityFollowUp: null,
     });
   });
 
