@@ -179,10 +179,16 @@ function membershipFeeCollectedForParticipant(
   position: number,
   snapshot: MembershipSnapshot | undefined,
 ): boolean {
-  if (row.registration_source === "walk_up") {
-    return snapshot?.submittedClassification === "joining" || snapshot?.resolvedClassification === "joining";
+  if (snapshot?.submittedClassification === "joining" || snapshot?.resolvedClassification === "joining") {
+    return true;
   }
-  return membershipLineCount(row.price_snapshot) > position;
+  // Older online snapshots did not preserve which team position purchased
+  // the membership. Keep their positional fallback without applying it to
+  // newer snapshots that identify the participant explicitly.
+  return row.registration_source === "online"
+    && !snapshot?.submittedClassification
+    && !snapshot?.resolvedClassification
+    && membershipLineCount(row.price_snapshot) > position;
 }
 
 function toTitleCase(value: string | null | undefined): string {

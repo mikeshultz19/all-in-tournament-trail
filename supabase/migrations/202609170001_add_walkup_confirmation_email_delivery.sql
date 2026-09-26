@@ -37,6 +37,8 @@ declare
   v_index integer;
   v_expected_count integer;
   v_missing_email boolean[] := array[]::boolean[];
+  v_selected_angler_id uuid;
+  v_synthetic_email text;
 begin
   v_expected_count := case when p_registration_type = 'team' then 2 else 1 end;
   for v_index in 0..(v_expected_count - 1) loop
@@ -45,8 +47,25 @@ begin
       nullif(lower(btrim(p_anglers -> v_index ->> 'email')), '') is null
     );
     if v_missing_email[v_index + 1] then
-      if p_anglers -> v_index ->> 'membership' <> 'non-member' then
+      if p_anglers -> v_index ->> 'membership' = 'joining' then
         raise exception using errcode = '22023', message = 'AITT_WALKUP_MEMBER_EMAIL_REQUIRED';
+      end if;
+      v_selected_angler_id := nullif(p_anglers -> v_index ->> 'selectedMemberId', '')::uuid;
+      if p_anglers -> v_index ->> 'membership' = 'current' and v_selected_angler_id is null then
+        raise exception using errcode = '23514', message = 'AITT_WALKUP_SELECTED_MEMBER_REQUIRED';
+      end if;
+      if v_selected_angler_id is not null then
+        perform 1 from public.anglers
+        where id = v_selected_angler_id
+          and is_active = true
+          and merged_into_angler_id is null;
+        if not found then
+          raise exception using errcode = '23503', message = 'AITT_WALKUP_SELECTED_MEMBER_NOT_FOUND';
+        end if;
+        v_synthetic_email := 'missing-email-' || gen_random_uuid()::text || '@invalid';
+        update public.anglers
+        set email = v_synthetic_email, updated_at = now()
+        where id = v_selected_angler_id;
       end if;
       -- The shared durable identity core requires an email key. Use a unique,
       -- non-routable transaction-local key, then scrub it before commit. It is
@@ -54,8 +73,10 @@ begin
       v_anglers := jsonb_set(
         v_anglers,
         array[v_index::text, 'email'],
-        to_jsonb('missing-email-' || gen_random_uuid()::text || '@invalid')
+        to_jsonb(coalesce(v_synthetic_email, 'missing-email-' || gen_random_uuid()::text || '@invalid'))
       );
+      v_selected_angler_id := null;
+      v_synthetic_email := null;
     end if;
   end loop;
 

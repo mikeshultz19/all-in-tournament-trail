@@ -96,8 +96,13 @@ function purchasedMembershipIds(snapshot: unknown, priceSnapshot: unknown) {
     : [];
   const purchasedCount = lineItems.filter((item) => item.code === "annual_membership" || item.name?.endsWith(" Membership")).length;
   if (!purchasedCount || !Array.isArray(snapshot)) return [];
-  return snapshot
-    .slice(0, purchasedCount)
+  const snapshots = snapshot.filter((item) => {
+    if (!item || typeof item !== "object") return false;
+    const membership = item as { submittedClassification?: unknown; resolvedClassification?: unknown };
+    return membership.submittedClassification === "joining" || membership.resolvedClassification === "joining";
+  });
+  const selectedSnapshots = snapshots.length ? snapshots : snapshot.slice(0, purchasedCount);
+  return selectedSnapshots
     .map((item) => (item && typeof item === "object" ? (item as { membershipId?: unknown }).membershipId : null))
     .filter((id): id is string => typeof id === "string" && id.length > 0);
 }
@@ -122,7 +127,11 @@ function walkUpSaveErrorMessage(error: { message?: string } | null) {
     AITT_REGISTRATION_IDENTITY_REVIEW_REQUIRED:
       "This identity matches more than one member record. Resolve the member record before saving the walk-up.",
     AITT_WALKUP_MEMBER_EMAIL_REQUIRED:
-      "An email address is required for an angler marked Current Member or Joining / Purchasing.",
+      "An email address is required for an angler marked Joining / Purchasing.",
+    AITT_WALKUP_SELECTED_MEMBER_REQUIRED:
+      "Search and select the existing member before saving a Current Member with no email address.",
+    AITT_WALKUP_SELECTED_MEMBER_NOT_FOUND:
+      "The selected member is no longer active. Search again before saving.",
     AITT_WALKUP_EMAIL_REQUIRED:
       "A new member needs an email address before this walk-up can be saved.",
     AITT_WALKUP_PRICE_SNAPSHOT_INVALID:
@@ -237,6 +246,7 @@ export async function createWalkUpRegistrationAction(
       state: text(formData, "angler1State").toUpperCase(),
       zipCode: text(formData, "angler1ZipCode"),
       membership: angler1Membership,
+      selectedMemberId: selectedMemberIds[0],
     },
     ...(registrationType === "team"
       ? [{
@@ -249,6 +259,7 @@ export async function createWalkUpRegistrationAction(
           state: text(formData, "angler2State").toUpperCase(),
           zipCode: text(formData, "angler2ZipCode"),
           membership: angler2Membership,
+          selectedMemberId: selectedMemberIds[1],
         }]
       : []),
   ];
