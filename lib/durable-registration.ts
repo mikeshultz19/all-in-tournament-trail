@@ -61,27 +61,9 @@ export async function completeDurableRegistration(
       { cause: canonicalAnglersResult.error },
     );
   }
-  const sameTournamentAnglersResult = await supabase
-    .from("tournament_registrations")
-    .select("angler1_id,angler2_id")
-    .eq("tournament_id", tournament.id)
-    .eq("registration_status", "active");
-  if (sameTournamentAnglersResult.error) {
-    throw new DurableRegistrationError(
-      "Registration identity could not be evaluated.",
-      { cause: sameTournamentAnglersResult.error },
-    );
-  }
-  const sameTournamentAnglerIds = new Set(
-    (sameTournamentAnglersResult.data ?? []).flatMap((registration) => [
-      registration.angler1_id,
-      registration.angler2_id,
-    ]).filter((anglerId): anglerId is string => Boolean(anglerId)),
-  );
   const identityClassification = classifyRegistrationIdentity(
     input.anglers,
     canonicalAnglersResult.data ?? [],
-    { activeTournamentAnglerIds: sameTournamentAnglerIds },
   );
   const membershipIssues = await getRegistrationMembershipReviewIssues(
     input.anglers,

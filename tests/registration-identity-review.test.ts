@@ -137,14 +137,17 @@ describe("registration identity classification", () => {
     });
   });
 
-  it("flags a same-tournament strong identity overlap as a duplicate participation review", () => {
+  it("keeps a strong identity match verified even when the angler is already registered", () => {
     const result = classifyRegistrationIdentity(
       [submitted({ firstName: "Joe", lastName: "Johnson", email: "allintournamenttrail@gmail.com", mobilePhone: "676-767-6767" })],
       [angler("b02874df-b3d9-4828-a240-12486a404463", "Joe", "Johnson", "allintournamenttrail@gmail.com", "676-767-6767")],
-      { activeTournamentAnglerIds: new Set(["b02874df-b3d9-4828-a240-12486a404463"]) },
     );
-    expect(result.status).toBe("review_required");
-    expect(result.participants[0].reason).toBe("Possible duplicate tournament participation: Joe Johnson is already entered in this tournament.");
+    expect(result.status).toBe("verified");
+    expect(result.participants[0]).toMatchObject({
+      status: "verified",
+      reason: null,
+      suggestedAnglerIds: ["b02874df-b3d9-4828-a240-12486a404463"],
+    });
   });
 
   it("keeps a high-confidence email and phone match despite other submitted snapshot differences", () => {

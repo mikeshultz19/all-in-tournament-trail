@@ -13,7 +13,7 @@ import { adminButtonStyles } from "@/components/admin/admin-button-styles";
 import { requireAdminUser } from "@/lib/admin-auth";
 import { listRegistrationReviewItems, listReviewAnglerOptions } from "@/lib/registration-identity-review";
 import { filterTournamentRegistrationRosterRows, getTournamentRegistrationRoster, paginateTournamentRegistrationRosterRows, summarizeTournamentRegistrationRoster, type RegistrationRosterFilter, type TournamentRegistrationRosterRow } from "@/lib/tournament-registration-roster";
-import { getRegistrationReviewPresentation, isDuplicateParticipationReview } from "@/lib/registration-review-presentation";
+import { getRegistrationReviewPresentation } from "@/lib/registration-review-presentation";
 import { getActiveSeasonSchedule, getNextUpcomingTournament } from "@/lib/tournaments";
 import { listTournamentCollectionSummaries } from "@/lib/tournament-collection-summary";
 import { listTournamentInsurancePotResults } from "@/lib/insurance-pot-results";
@@ -252,7 +252,6 @@ function RegistrationReviewPanels({ reviews, anglers }: { reviews: Awaited<Retur
         {review.reviewKind === "contact" && review.existingContact && review.submittedContact && review.canonicalAnglerId
           ? <RegistrationContactReviewForm reviewId={review.id} participantName={review.participantName} reviewReason={review.reason} existing={review.existingContact} submitted={review.submittedContact} differingFields={review.differingFields} canonicalAnglerId={review.canonicalAnglerId} />
           : review.reviewKind === "membership" ? <HistoricalMembershipReviewForm reviewId={review.id} />
-          : isDuplicateParticipationReview(review.reason) ? <p className="mt-4 border border-amber-400/20 bg-black/20 p-3 text-xs text-amber-100">Leave both registrations in place unless the Tournament Director decides one should be canceled. Use the existing Cancel Registration control for that decision.</p>
           : <RegistrationReviewResolutionForm reviewId={review.id} anglers={anglers} suggestedAnglerIds={review.suggestedAnglers.map((angler) => angler.id)} submission={{ name: review.participantName, email: review.email, phone: review.phone, membership: review.submittedMembership }} />}
       </details>;
     })}

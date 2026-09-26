@@ -26,21 +26,6 @@ describe("Admin registration review presentation", () => {
     expect(getRegistrationReviewPresentation({ reviewKind: "identity", reason, submittedMembership: "non-member", canonicalAnglerId: null }).issue).toBe(issue);
   });
 
-  it("presents duplicate participation as an informational warning", () => {
-    expect(
-      getRegistrationReviewPresentation({
-        reviewKind: "identity",
-        reason: "Possible duplicate tournament participation: Joe Johnson is already entered in this tournament.",
-        submittedMembership: "non-member",
-        canonicalAnglerId: null,
-      }),
-    ).toEqual({
-      heading: "Possible duplicate registration",
-      issue: "This angler may already be entered in this tournament. No action is required unless the Tournament Director decides to cancel one registration.",
-      identityFollowUp: null,
-    });
-  });
-
   it("explains a possible duplicate membership purchase", () => {
     expect(getRegistrationReviewPresentation({
       reviewKind: "membership",

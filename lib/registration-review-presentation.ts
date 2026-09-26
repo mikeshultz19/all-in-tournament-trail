@@ -11,20 +11,9 @@ export type ReviewPresentation = {
   identityFollowUp: string | null;
 };
 
-export function isDuplicateParticipationReview(reason: string) {
-  return /possible duplicate tournament participation/i.test(reason);
-}
-
 export function getRegistrationReviewPresentation(
   review: ReviewPresentationInput,
 ): ReviewPresentation {
-  if (isDuplicateParticipationReview(review.reason)) {
-    return {
-      heading: "Possible duplicate registration",
-      issue: "This angler may already be entered in this tournament. No action is required unless the Tournament Director decides to cancel one registration.",
-      identityFollowUp: null,
-    };
-  }
   const membershipReview = review.reviewKind === "membership"
     || /Membership Needs Review:|Possible Duplicate Membership Purchase:/i.test(review.reason);
   const identityUnresolved = review.reviewKind === "identity" && !review.canonicalAnglerId;

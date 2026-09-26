@@ -20,10 +20,6 @@ export interface RegistrationIdentityClassification {
   participants: ParticipantIdentityClassification[];
 }
 
-export interface RegistrationIdentityClassificationOptions {
-  activeTournamentAnglerIds?: ReadonlySet<string>;
-}
-
 export function summarizeRegistrationReviewStatuses(
   statuses: readonly RegistrationIdentityReviewStatus[],
 ): { total: number; verified: number; pending: number; resolved: number } {
@@ -60,13 +56,10 @@ function normalizeContactText(value: string | null | undefined): string {
 export function classifyRegistrationIdentity(
   submittedAnglers: readonly OnlineRegistrationAngler[],
   canonicalAnglers: readonly Angler[],
-  options: RegistrationIdentityClassificationOptions = {},
 ): RegistrationIdentityClassification {
   const active = canonicalAnglers.filter(
     (angler) => angler.is_active && !angler.merged_into_angler_id,
   );
-  const activeTournamentAnglerIds = options.activeTournamentAnglerIds ?? new Set<string>();
-
   const participants = submittedAnglers.map(
     (submitted, index): ParticipantIdentityClassification => {
       const email = normalizeEmail(submitted.email);
@@ -135,21 +128,6 @@ export function classifyRegistrationIdentity(
         const candidateNames = matchingCandidates
           .map((angler) => angler.display_name)
           .join(" and ");
-        const duplicateTournamentCandidates = matchingCandidates.filter(
-          (angler) => activeTournamentAnglerIds.has(angler.id),
-        );
-        const duplicateTournamentNames = duplicateTournamentCandidates
-          .map((angler) => angler.display_name)
-          .join(" and ");
-        if (duplicateTournamentCandidates.length > 0) {
-          return {
-            participantPosition: (index + 1) as 1 | 2,
-            status: "review_required",
-            reason: `Possible duplicate tournament participation: ${duplicateTournamentNames} is already entered in this tournament.`,
-            suggestedAnglerIds: [...exactCandidates],
-          };
-        }
-
         if (
           soleHighConfidenceCandidate &&
           !emailAndPhoneConflict &&
