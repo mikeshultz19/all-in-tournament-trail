@@ -22,6 +22,7 @@ const navigationItems: NavigationItem[] = [
   },
   { href: "/admin/members", label: "All Members" },
   { href: "/admin/registrations", label: "All Registrations" },
+  { href: "/admin/payment-recovery", label: "Payment Recovery" },
   {
     href: "/admin/financial-summary",
     label: "Financial Summary",

@@ -36,18 +36,28 @@ function configuredSupabaseImagePatterns(): Array<{
   return [...patterns.values()];
 }
 
-const squareSandboxContentSecurityPolicy = [
+const squareEnvironment = process.env.SQUARE_ENVIRONMENT?.trim().toLowerCase() === "production"
+  ? "production"
+  : "sandbox";
+const squareCdnHost = squareEnvironment === "production"
+  ? "https://web.squarecdn.com"
+  : "https://sandbox.web.squarecdn.com";
+const squareConnectHost = squareEnvironment === "production"
+  ? "https://pci-connect.squareup.com"
+  : "https://pci-connect.squareupsandbox.com";
+
+const squareContentSecurityPolicy = [
   "default-src 'self'",
   "base-uri 'self'",
   "object-src 'none'",
   "form-action 'self'",
   "frame-ancestors 'self'",
-  `script-src 'self' 'unsafe-inline'${process.env.NODE_ENV === "development" ? " 'unsafe-eval'" : ""} https://sandbox.web.squarecdn.com`,
-  "frame-src 'self' https://sandbox.web.squarecdn.com",
-  "connect-src 'self' https://sandbox.web.squarecdn.com https://pci-connect.squareupsandbox.com https://o160250.ingest.sentry.io",
-  "style-src 'self' 'unsafe-inline' https://sandbox.web.squarecdn.com",
+  `script-src 'self' 'unsafe-inline'${process.env.NODE_ENV === "development" ? " 'unsafe-eval'" : ""} ${squareCdnHost}`,
+  `frame-src 'self' ${squareCdnHost}`,
+  `connect-src 'self' ${squareCdnHost} ${squareConnectHost} https://o160250.ingest.sentry.io`,
+  `style-src 'self' 'unsafe-inline' ${squareCdnHost}`,
   "font-src 'self' data: https://square-fonts-production-f.squarecdn.com https://d1g145x70srn7h.cloudfront.net",
-  "img-src 'self' data: blob: https://sandbox.web.squarecdn.com",
+  `img-src 'self' data: blob: ${squareCdnHost}`,
 ].join("; ");
 
 const nextConfig: NextConfig = {
@@ -61,7 +71,7 @@ const nextConfig: NextConfig = {
         headers: [
           {
             key: "Content-Security-Policy",
-            value: squareSandboxContentSecurityPolicy,
+            value: squareContentSecurityPolicy,
           },
         ],
       },

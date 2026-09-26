@@ -189,6 +189,25 @@ const PHONE_PATTERN = /^\+?[\d\s().-]{10,20}$/;
 const STATE_PATTERN = /^[A-Za-z]{2}$/;
 const ZIP_PATTERN = /^\d{5}(?:-\d{4})?$/;
 
+function normalizeDuplicateContact(value: string) {
+  return value.trim().toLowerCase().replace(/[^a-z0-9]/g, "");
+}
+
+function duplicateTeamAnglerError(anglers: OnlineRegistrationAngler[]) {
+  if (anglers.length !== 2) return null;
+  const firstEmail = normalizeDuplicateContact(anglers[0]?.email ?? "");
+  const secondEmail = normalizeDuplicateContact(anglers[1]?.email ?? "");
+  const firstPhone = normalizeDuplicateContact(anglers[0]?.mobilePhone ?? "");
+  const secondPhone = normalizeDuplicateContact(anglers[1]?.mobilePhone ?? "");
+  const firstName = normalizeDuplicateContact(`${anglers[0]?.firstName ?? ""}${anglers[0]?.lastName ?? ""}`);
+  const secondName = normalizeDuplicateContact(`${anglers[1]?.firstName ?? ""}${anglers[1]?.lastName ?? ""}`);
+  const sameName = firstName && firstName === secondName;
+  if (sameName && ((firstEmail && firstEmail === secondEmail) || (firstPhone && firstPhone === secondPhone))) {
+    return "Angler 1 and Angler 2 appear to be the same person. Enter two different anglers before continuing to payment.";
+  }
+  return null;
+}
+
 function validateAngler(angler: OnlineRegistrationAngler, position: number): string[] {
   const prefix = `Angler ${position}`;
   const errors: string[] = [];
@@ -245,6 +264,10 @@ export function validateOnlineRegistrationRequest(
     } else {
       errors.push(...validateAngler(input.anglers[0], 1));
     }
+  }
+  if (input.registrationType === "team" && Array.isArray(input.anglers)) {
+    const duplicateError = duplicateTeamAnglerError(input.anglers);
+    if (duplicateError) errors.push(duplicateError);
   }
   const memberships = Array.isArray(input.anglers)
     ? input.anglers.flatMap((angler) => angler && typeof angler === "object" ? [angler.membership] : [])

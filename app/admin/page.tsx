@@ -135,6 +135,11 @@ export default async function AdminHomePage() {
               icon={ListChecks}
             />
             <QuickLink
+              href="/admin/payment-recovery"
+              title="Payment Recovery"
+              icon={ListChecks}
+            />
+            <QuickLink
               href="/admin/members"
               title="Members"
               icon={UsersRound}

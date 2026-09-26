@@ -149,6 +149,17 @@ describe("server-authoritative registration validation and pricing", () => {
     expect(quote.lineItems.map((item) => item.name)).toEqual(["Angler 2 Membership", "Tournament Entry"]);
     expect(quote.subtotalCents).toBe(10000);
   });
+  it("rejects duplicate Team anglers before payment", () => {
+    const angler = validRequest().anglers[0];
+    const duplicateTeam = validRequest({
+      registrationType: "team",
+      anglers: [angler, { ...angler }],
+    });
+
+    expect(validateOnlineRegistrationRequest(duplicateTeam, NOW).join(" ")).toContain(
+      "Angler 1 and Angler 2 appear to be the same person.",
+    );
+  });
   it("rejects a bypassed non-member classification at the server boundary", () => {
     const request = validRequest({ anglers: [{ ...validRequest().anglers[0], membership: "non-member" }] });
     expect(validateOnlineRegistrationRequest(request, NOW)).toContain("Angler 1 seasonal membership is required.");

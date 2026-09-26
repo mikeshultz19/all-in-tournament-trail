@@ -4,17 +4,18 @@ import { describe, expect, it } from "vitest";
 
 const nextConfig = readFileSync("next.config.ts", "utf8");
 
-describe("Square Sandbox Content Security Policy", () => {
+describe("Square Content Security Policy", () => {
   it("scopes the policy to registration routes", () => {
     expect(nextConfig).toContain('source: "/register/:path*"');
     expect(nextConfig).toContain('key: "Content-Security-Policy"');
   });
 
-  it("allows the existing Sandbox card integration without production origins", () => {
+  it("supports the configured Sandbox and production Square origins", () => {
     expect(nextConfig).toContain("https://sandbox.web.squarecdn.com");
     expect(nextConfig).toContain("https://pci-connect.squareupsandbox.com");
-    expect(nextConfig).not.toContain("https://web.squarecdn.com");
-    expect(nextConfig).not.toContain("https://pci-connect.squareup.com");
+    expect(nextConfig).toContain("https://web.squarecdn.com");
+    expect(nextConfig).toContain("https://pci-connect.squareup.com");
+    expect(nextConfig).toContain('process.env.SQUARE_ENVIRONMENT?.trim().toLowerCase()');
   });
 
   it("keeps restrictive defaults around the vendor-specific allowances", () => {

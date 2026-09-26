@@ -11,6 +11,14 @@ const REQUIRED_VARIABLES = [
   "NEXT_PUBLIC_SUPABASE_ANON_KEY",
   "SUPABASE_URL",
   "SUPABASE_SERVICE_ROLE_KEY",
+  "NEXT_PUBLIC_SQUARE_APPLICATION_ID",
+  "NEXT_PUBLIC_SQUARE_LOCATION_ID",
+  "SQUARE_ENVIRONMENT",
+  "SQUARE_ACCESS_TOKEN",
+  "SQUARE_WEBHOOK_SIGNATURE_KEY",
+  "SQUARE_WEBHOOK_NOTIFICATION_URL",
+  "RESEND_API_KEY",
+  "AITT_EMAIL_ENVIRONMENT",
 ];
 
 function parseEnvFile(contents) {
@@ -58,7 +66,7 @@ export function validateProductionEnvironment(environment) {
   );
   if (missing.length > 0) {
     throw new Error(
-      `Production Supabase configuration is incomplete. Missing: ${missing.join(", ")}`,
+      `Production configuration is incomplete. Missing: ${missing.join(", ")}`,
     );
   }
 
@@ -77,6 +85,20 @@ export function validateProductionEnvironment(environment) {
     throw new Error(
       `REFUSING PRODUCTION DEPLOYMENT: expected Supabase project ${PRODUCTION_PROJECT_REF}.`,
     );
+  }
+
+  if (environment.SQUARE_ENVIRONMENT.trim().toLowerCase() !== "production") {
+    throw new Error("REFUSING PRODUCTION DEPLOYMENT: Square production environment is required.");
+  }
+  if (environment.NEXT_PUBLIC_SQUARE_APPLICATION_ID.trim().toLowerCase().includes("sandbox")) {
+    throw new Error("REFUSING PRODUCTION DEPLOYMENT: sandbox Square application ID detected.");
+  }
+  if (environment.AITT_EMAIL_ENVIRONMENT.trim().toLowerCase() !== "production") {
+    throw new Error("REFUSING PRODUCTION DEPLOYMENT: production email environment is required.");
+  }
+  const webhookUrl = new URL(environment.SQUARE_WEBHOOK_NOTIFICATION_URL);
+  if (webhookUrl.protocol !== "https:" || webhookUrl.hostname !== "allintrail.com" || webhookUrl.pathname !== "/api/webhooks/square") {
+    throw new Error("REFUSING PRODUCTION DEPLOYMENT: Square webhook must target the production app.");
   }
 }
 
