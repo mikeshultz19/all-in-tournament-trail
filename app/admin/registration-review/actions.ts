@@ -128,10 +128,6 @@ function walkUpSaveErrorMessage(error: { message?: string } | null) {
       "This identity matches more than one member record. Resolve the member record before saving the walk-up.",
     AITT_WALKUP_MEMBER_EMAIL_REQUIRED:
       "An email address is required for an angler marked Joining / Purchasing.",
-    AITT_WALKUP_SELECTED_MEMBER_REQUIRED:
-      "Search and select the existing member before saving a Current Member with no email address.",
-    AITT_WALKUP_SELECTED_MEMBER_NOT_FOUND:
-      "The selected member is no longer active. Search again before saving.",
     AITT_WALKUP_EMAIL_REQUIRED:
       "A new member needs an email address before this walk-up can be saved.",
     AITT_WALKUP_PRICE_SNAPSHOT_INVALID:
@@ -246,7 +242,6 @@ export async function createWalkUpRegistrationAction(
       state: text(formData, "angler1State").toUpperCase(),
       zipCode: text(formData, "angler1ZipCode"),
       membership: angler1Membership,
-      selectedMemberId: selectedMemberIds[0],
     },
     ...(registrationType === "team"
       ? [{
@@ -259,7 +254,6 @@ export async function createWalkUpRegistrationAction(
           state: text(formData, "angler2State").toUpperCase(),
           zipCode: text(formData, "angler2ZipCode"),
           membership: angler2Membership,
-          selectedMemberId: selectedMemberIds[1],
         }]
       : []),
   ];

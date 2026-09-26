@@ -24,7 +24,7 @@ Populate `.env.production.local` and the production Worker secrets with the real
 ## Follow-up hardening
 
 - **H4:** membership attribution and cancellation now select the angler whose snapshot says `Joining`, including when that is Angler 2. The roster keeps a positional fallback only for older online snapshots that contain no participant classification.
-- **H5:** selected existing Current Members may be saved without an email; Joining / Purchasing still requires one. Migrations `202609170001_add_walkup_confirmation_email_delivery.sql` and `202609250002_allow_selected_current_member_without_email.sql` preserve the selected member identity while using a transaction-local placeholder only inside the durable identity boundary.
+- **H5 decision:** every walk-up contact field remains required, including email for both Current Member and Joining / Purchasing. This preserves identity validation before payment and avoids creating an unverified member record.
 - **H7:** public tournament reads remain available, while anonymous tournament mutations are removed by `202609250001_lock_public_tournament_updates.sql`.
 
-The H5 and H7 database changes are committed locally but require the staging Supabase migrations to be applied before those two behaviors can be rehearsed against the hosted database.
+The H7 database change is committed locally but requires the staging Supabase migration to be applied before that behavior can be rehearsed against the hosted database.
