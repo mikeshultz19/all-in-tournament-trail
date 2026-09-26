@@ -3,6 +3,28 @@ Last Updated: September 15, 2026
 
 # Decision Log
 
+## 2026-09-26 — Registration and tournament-closeout governance
+
+- **Status:** Approved business rules; staging verification remains required.
+- **Registration:** One active registration per angler per tournament is
+  allowed. A canceled online registration cannot be re-entered online, but the
+  entrant may return once as a tournament-day walk-up.
+- **Review:** Shared email addresses and contact differences go to Needs Review
+  instead of blocking registration. Every walk-up contact field, including
+  email, is required for every membership choice.
+- **Money:** The website records its calculated amount. Staff do not edit
+  payment summaries. Mark Collected is valid manual evidence for a membership;
+  partial-payment and bank-deposit issues are handled outside AITT.
+- **Closeout:** A paid no-show is a Tournament Director one-off. Cancellations
+  before WayFish import remove active/public, AOY, and Championship effects,
+  revoke memberships purchased through the registration, and prevent WayFish
+  export. WayFish results and Insurance Pot results are intentionally separate;
+  checks are generated once after all payout categories are validated.
+- **Reasoning:** Maximize successful customer registration while keeping
+  contact, membership, cancellation, and closeout cleanup controlled by staff.
+  Future audits should classify these as intentional governance rather than
+  missing customer-facing workflows.
+
 ## 2026-09-15 — Current production operating decisions
 
 ### Tournament Information owns public tournament display data

@@ -497,11 +497,31 @@ They are registration confirmations, not Square receipts.
 
 Online and walk-up recipients use the same trimmed, lowercase, deduplicated
 email selection. The unique registration/recipient constraint and provider
-idempotency key prevent duplicate delivery. A walk-up without a deliverable
-email remains saved and reports `Confirmation not sent — no email provided.`
-Delivery failure preserves the registration and remains visible in the existing
-failed/retry outbox state. An authenticated, allowlisted staging delivery
-rehearsal remains outstanding; automated tests do not replace that rehearsal.
+idempotency key prevent duplicate delivery. Every walk-up contact field,
+including email, is required for every angler regardless of Current Member or
+Joining / Purchasing selection. A missing required field rejects the walk-up
+before save/payment. If a valid collected email cannot be delivered, the
+registration remains valid and the delivery remains visible in the bounded
+retry/failed outbox state for Admin follow-up. An authenticated, allowlisted
+staging delivery rehearsal remains outstanding; automated tests do not replace
+that rehearsal.
+
+## Walk-up governance decisions
+
+These decisions supersede older walk-up wording elsewhere in this document:
+
+- Every walk-up contact field, including email, is required for every angler
+  regardless of Current Member or Joining / Purchasing selection. Member Search
+  identifies a person but does not waive contact collection.
+- Each angler may have one active registration per tournament. A canceled online
+  registration cannot be re-entered online; the only exception is one
+  tournament-day walk-up after cancellation.
+- Shared email addresses and contact differences go to Needs Review instead of
+  blocking registration. Contact-only review does not block check-in once
+  identity and membership are resolved.
+- A walk-up confirmation is a registration confirmation, not a Square receipt.
+  Email delivery is never required for payment or registration. Valid delivery
+  failures remain in bounded retry/failed state for Admin follow-up.
 
 ## 12. Administrative Experience
 

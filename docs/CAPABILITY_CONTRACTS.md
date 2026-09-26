@@ -16,7 +16,9 @@ The independent roster backup and outage procedure are documented in
 - Idempotency keys, unique database constraints, and retryable outbox state are
   preferred over client-only duplicate prevention.
 - No Show is not an application status. Attendance uses ordinary Check-In and
-  Pending Check-In; no replacement absence or zero-result workflow exists.
+  Pending Check-In. A paid no-show is handled as a Tournament Director
+  one-off outside the application; no replacement absence or zero-result
+  workflow exists.
 - Every current registration participant must be an active $40 seasonal member
   or purchase that season's membership during registration. Returning active
   members pay $0; new anglers pay $40 once per person per season. Historical
@@ -30,7 +32,7 @@ The independent roster backup and outage procedure are documented in
 | Capability | Entry point and primary implementation | Authoritative data / transition | Financial and safety contract | Tests / staging state |
 |---|---|---|---|---|
 | Online registration | Public registration routes; `app/register`, `lib/registration.ts` | `tournament_registrations`, payment attempts, snapshots; payment pending → verified → active | Completed Square evidence is required; server quote and idempotency key prevent duplicate charges | `tests/online-registration.test.tsx`, `tests/registration.test.tsx`; sandbox rehearsal still required |
-| Walk-up registration | Admin Registration Review walk-up form; `app/admin/registration-review/actions.ts`, `lib/walk-up-registration-form.ts` | `admin_create_sequential_walkup_registration`; durable save assigns the registration number | Cash/Other fee 0; Card uses configured fee; missing email saves without queueing | `tests/admin-walk-up-registration.test.ts`; authenticated staging rehearsal still required |
+| Walk-up registration | Admin Registration Review walk-up form; `app/admin/registration-review/actions.ts`, `lib/walk-up-registration-form.ts` | `admin_create_sequential_walkup_registration`; durable save assigns the registration number | Cash/Other fee 0; Card uses configured fee; every contact field, including email, is required for every angler before save/payment | `tests/admin-walk-up-registration.test.ts`; authenticated staging rehearsal still required |
 | Confirmation emails | `lib/registration-confirmation-email.ts`, `lib/registration-confirmation-email-template.ts` | `registration_confirmation_email_deliveries`; provider retry state | Online rows require completed payment-attempt ID. Walk-up rows use nullable `payment_attempt_id`, `registration_source='walk_up'`, stored snapshot, normalized recipient, and unique `(registration_id, normalized_recipient_email)` | `tests/registration-confirmation-email.test.ts`; live allowlisted delivery not rehearsed |
 | Identity and membership review | `lib/registration-identity-review.ts`, Registration Review actions | `registration_identity_reviews` and candidate/history tables; per-person pending → resolved | Review never fabricates money; resolution is audited and does not duplicate identity records | `tests/registration-identity-review.test.ts`; #16 currently differs from the requested unresolved rehearsal state |
 | Membership creation and eligibility | Admin Members routes and review actions; `lib/memberships.ts` | `members`, `memberships`, individual snapshots | Returning active member adds $0; Purchase Membership records exactly the collected $40; no shortfall/receivable; historical non-member rows remain readable | membership-review tests; live decision rehearsal remains required |
@@ -67,8 +69,33 @@ database/provider duplicate protections. Cash and Other store no card fee;
 Card stores the configured calculated fee. The renderer uses the stored
 registration number and the approved tournament-day paragraph, reports the
 recorded payment method and total, and never invents an online Square fee. A
-missing email saves normally and reports `Confirmation not sent — no email
-provided.` Delivery failure does not roll back the registration.
+Every walk-up contact field, including email, must be present before the
+registration can be saved or paid. If a valid collected email cannot be
+delivered, the registration remains valid and the delivery enters the bounded
+retry/failed state for Admin follow-up.
+
+## Registration governance decisions
+
+These decisions are authoritative where older historical wording differs:
+
+- Every walk-up contact field, including email, is required for every angler.
+  Member Search does not waive contact collection.
+- One active registration per angler per tournament is allowed. A canceled
+  online entry cannot be re-entered online, but may return once as a walk-up.
+- Shared email addresses and contact differences go to Needs Review instead of
+  blocking registration. Contact-only review does not block check-in after
+  identity and membership are resolved.
+- The website records its calculated amount. Staff do not edit payment
+  summaries; partial-payment and deposit issues are handled outside AITT.
+- Mark Collected is the Tournament Director's manual evidence for a membership
+  payment. The site does not verify cash or require a separate receipt.
+- A paid no-show is a Tournament Director one-off. A cancellation before
+  WayFish import removes the entry from active/public results, revokes
+  registration-purchased memberships, removes AOY and Championship effects,
+  and prevents WayFish export.
+- WayFish results and AITT Insurance Pot results are intentionally separate.
+  Insurance is reconciled after import, and checks are generated once after all
+  payout categories are validated.
 
 ## Recovery and release evidence
 

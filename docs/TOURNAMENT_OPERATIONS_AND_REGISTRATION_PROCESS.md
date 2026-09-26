@@ -237,6 +237,22 @@ AITT does not operate a morning point-of-sale screen, duplicate the WeighFish
 roster or cash-versus-card record, maintain a live morning Square ledger, or
 synchronize these systems in real time.
 
+### Walk-up governance
+
+Every angler must provide every contact field, including email, whether marked
+Current Member or Joining / Purchasing. Member Search helps identify an
+existing member but does not waive required contact collection. The Tournament
+Director collects the full calculated amount; staff do not edit the website's
+calculated payment summary. Partial-payment and bank-deposit issues are handled
+outside AITT.
+
+One active registration per angler per tournament is allowed. A canceled online
+registration cannot be re-entered online, but the entrant may return once as a
+tournament-day walk-up. Shared emails and contact differences go to Needs Review
+instead of blocking registration. A paid no-show is handled by the Tournament
+Director as a one-off administrative matter; AITT has no separate No Show
+workflow.
+
 ## 7. Registration Record Requirements
 
 Every online registration must store enough information to identify:
