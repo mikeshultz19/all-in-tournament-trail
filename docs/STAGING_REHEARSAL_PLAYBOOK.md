@@ -50,7 +50,6 @@ boundaries are in [Capability Contracts](CAPABILITY_CONTRACTS.md).
 | [Tournament Operations and Registration Process](TOURNAMENT_OPERATIONS_AND_REGISTRATION_PROCESS.md) | Tournament Director procedure, practice policy, payment ownership, cancellation, and payout-pot explanation. |
 | [Online Registration Workflow](ONLINE_REGISTRATION_WORKFLOW.md) | Online form, server validation, Square handoff, persistence, confirmation, and retry behavior. |
 | [Payment Operations](PAYMENT_OPERATIONS.md) | Payment evidence, financial controls, exceptions, and manual cancellation/refund handling. |
-| [Tournament Disaster Recovery](TOURNAMENT_DISASTER_RECOVERY.md) | Outage continuity, workbook/print fallback, and backup rehearsal boundaries. |
 | [Official Results Workflow](technical/OFFICIAL_RESULTS_WORKFLOW.md) | WeighFish CSV import, identity review, official results, and publication. |
 | [AOY Specification](AOY_SPECIFICATION.md) and [Championship Engine](technical/CHAMPIONSHIP_QUALIFICATION_ENGINE.md) | AOY points, best-five scoring, and five-of-eight Championship participation. |
 

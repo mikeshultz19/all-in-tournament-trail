@@ -1,6 +1,8 @@
 # AITT Tournament Readiness Checklist
 
-Disaster-recovery continuity is covered by [Tournament Disaster Recovery](TOURNAMENT_DISASTER_RECOVERY.md).
+Backup readiness is covered by the external-drive backup gate in the Project
+Deployment Checklist. Google Drive off-site backup is deferred until after the
+production release and will be a separate, non-transactional process.
 
 Use the [Hosted Staging Rehearsal Playbook](STAGING_REHEARSAL_PLAYBOOK.md) for
 the reusable execution sequence, scenario matrix, baseline capture, evidence

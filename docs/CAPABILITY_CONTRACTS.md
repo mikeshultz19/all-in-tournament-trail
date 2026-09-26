@@ -5,8 +5,9 @@ source files, migrations, and tests are authoritative for details. `Not
 Rehearsed` means that automated checks do not substitute for an authenticated
 staging rehearsal.
 
-The independent roster backup and outage procedure are documented in
-[Tournament Disaster Recovery](TOURNAMENT_DISASTER_RECOVERY.md).
+The current backup gate is the external-drive file backup documented in the
+Project Deployment Checklist. A future Google Drive copy will be a separate
+off-site archive process.
 
 ## Shared rules
 
@@ -47,7 +48,6 @@ The independent roster backup and outage procedure are documented in
 | AOY standings | `lib/aoy-engine-core.ts`, AOY routes | Competitive records and approved results | Current registrations are membership-qualified; points use official finishing position, 200 then one fewer, best 5 of 8; historical eligibility snapshots remain supported | `tests/aoy-engine.test.ts`; staging result rehearsal required |
 | Championship eligibility | `lib/championship-qualification-core.ts` | Season results and qualification records | Current entries qualify through five physical participations in eight regular-season events; historical eligibility snapshots remain supported; no No Show application branch | `tests/championship-qualification.test.ts`; staging rehearsal required |
 | Admin authentication/authorization | `lib/auth/admin.ts`, protected route/actions | Supabase Auth plus server-side admin checks | Unauthorized requests fail closed; credentials remain server-only | auth/route tests; authenticated UI rehearsal required |
-| Disaster-recovery roster backup | `lib/disaster-recovery/*`, GitHub Actions workflow, DR outbox migration, Registration Review status panel | `registration_disaster_recovery_events`; pending → processing → synchronized/failed | GitHub Actions is the planned processor; Google confirmation is required; retry/rebuild are idempotent; backup failure never rejects registration | `tests/registration-disaster-recovery.test.ts`; encrypted staging credentials, Sheet, and authenticated GitHub Actions rehearsal required |
 
 ## Confirmation-email contract
 

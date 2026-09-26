@@ -15,7 +15,7 @@ const row = (overrides: Partial<TournamentRegistrationRosterRow> = {}): Tourname
   ...overrides,
 });
 
-describe("registration disaster-recovery spreadsheet", () => {
+describe("registration roster spreadsheet", () => {
   it("exports all supplied rows and keeps individual statuses distinct", () => {
     const team = row({ registrationType: "team", angler2: { firstName: "Two", lastName: "Angler", displayName: "Two Angler", membership: "Non-Member", memberStatus: "Needs Review", eligibleForTournament: false, email: "two@example.test", phone: "555-2222" }, participantContactSnapshot: [{ firstName: "One", lastName: "Angler", streetAddress: "1 Main", city: "Dallas", state: "TX", zipCode: "75001", email: "one@example.test", phone: "555-1111", membership: "current" }, { firstName: "Two", lastName: "Angler", streetAddress: "2 Main", city: "Dallas", state: "TX", zipCode: "75001", email: "two@example.test", phone: "555-2222", membership: "non-member" }] });
     const rows = registrationSpreadsheetRows([row(), team], { tournamentName: "Test Tournament", tournamentDate: "2026-09-20", exportedAt: new Date("2026-09-18T12:00:00Z") });

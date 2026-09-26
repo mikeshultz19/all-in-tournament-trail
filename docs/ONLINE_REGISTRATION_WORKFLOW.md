@@ -1,7 +1,8 @@
 # Online Registration Workflow
 
-Disaster-recovery continuity, independent roster backup, and website-outage
-procedures are defined in [Tournament Disaster Recovery](TOURNAMENT_DISASTER_RECOVERY.md).
+The current backup gate is the external-drive database and application backup
+in the Project Deployment Checklist. Future off-site backup will use a simple
+Google Drive archive and will not participate in registration or payment.
 
 > **Reconciliation status (2026-08-25): Supporting implementation history.**
 > Current operational behavior is controlled by

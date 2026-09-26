@@ -3,8 +3,9 @@ Last Updated: July 27, 2026
 
 # Tournament Operations and Registration Process
 
-The complete website-outage and printed-roster procedure is documented in
-[Tournament Disaster Recovery](TOURNAMENT_DISASTER_RECOVERY.md).
+The current operational fallback is the paper registration process and the
+external-drive backup gate in the Project Deployment Checklist. A future
+Google Drive archive will be a separate backup process.
 
 ## Registration confirmation variants
 

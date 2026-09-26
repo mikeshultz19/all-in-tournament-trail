@@ -17,7 +17,8 @@ export async function GET(request: Request) {
     return new Response("A valid tournament is required.", { status: 400, headers: { "cache-control": "private, no-store" } });
   }
 
-  // Disaster recovery deliberately ignores UI search, filters, and pagination.
+  // The export deliberately ignores UI search, filters, and pagination so it
+  // always represents the complete selected-tournament roster.
   const rows = await getTournamentRegistrationRoster(tournament.id);
   const body = await buildRegistrationWorkbook(rows, {
     tournamentName: tournament.name,

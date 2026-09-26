@@ -29,11 +29,6 @@ const navigationItems: NavigationItem[] = [
     activePaths: ["/admin/financial-summary"],
   },
   {
-    href: "/admin/backups",
-    label: "Backups",
-    activePaths: ["/admin/backups"],
-  },
-  {
     href: "/admin/tournament",
     label: "Tournament Info",
     activePaths: ["/admin/tournament"],

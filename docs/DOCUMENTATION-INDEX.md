@@ -29,7 +29,6 @@ different rule.
 ## Capability contracts
 
 - [Capability Contracts](CAPABILITY_CONTRACTS.md) - business-capability boundaries, authoritative data, safety rules, tests, and rehearsal gaps.
-- [Tournament Disaster Recovery](TOURNAMENT_DISASTER_RECOVERY.md) - independent roster backup, outage procedure, and rehearsal evidence.
 - [Hosted Staging Rehearsal Playbook](STAGING_REHEARSAL_PLAYBOOK.md) - reusable phase gates, scenario matrix, evidence format, and partner-acceptance procedure.
 - Read-only staging reconciliation: `npx tsx scripts/reconcile-staging.ts --project-ref vcjhufuklqwvnqmarpqi --tournament-id <id>`; reports per-registration membership/payment/review invariants and exits nonzero on failure.
 
@@ -121,11 +120,11 @@ large sections into release notes or rehearsal records:
 | Area | Canonical source | Supporting references |
 |---|---|---|
 | Implemented lifecycle and current policy | [AITT Tournament Lifecycle and Operations](AITT_LIFECYCLE_OPERATIONS.md) | Capability Contracts; Knowledge Base |
-| Hosted staging execution and reconciliation | [Staging Rehearsal Playbook](STAGING_REHEARSAL_PLAYBOOK.md) | Readiness Checklist; Disaster Recovery |
+| Hosted staging execution and reconciliation | [Staging Rehearsal Playbook](STAGING_REHEARSAL_PLAYBOOK.md) | Readiness Checklist; Project Deployment Checklist |
 | Online registration, tournament-one guard, pricing, and confirmations | [Online Registration Workflow](ONLINE_REGISTRATION_WORKFLOW.md) | Memberships and Registration; Payment Operations |
 | Identity review, Confirm Match, Membership Dues, and actionable queues | [Registration Identity Review Queue](technical/REGISTRATION_IDENTITY_REVIEW_QUEUE.md) | Admin Center Guide; Staging Rehearsal Playbook |
 | Financial evidence, manual dues, refunds, and reconciliation | [Payment Operations](PAYMENT_OPERATIONS.md) | Tournament Operations and Registration Process |
-| Human tournament-day procedure | [Tournament Operations and Registration Process](TOURNAMENT_OPERATIONS_AND_REGISTRATION_PROCESS.md) | Knowledge Base; Disaster Recovery |
+| Human tournament-day procedure | [Tournament Operations and Registration Process](TOURNAMENT_OPERATIONS_AND_REGISTRATION_PROCESS.md) | Knowledge Base; Project Deployment Checklist |
 | Release and deployment controls | [Project Deployment Checklist](PROJECT_DEPLOYMENT_CHECKLIST.md) | Production Release Checklist; Readiness Checklist |
 
 Migration bookkeeping note: migration `202609230001` was manually executed once

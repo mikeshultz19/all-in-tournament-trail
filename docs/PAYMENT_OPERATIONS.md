@@ -1,8 +1,9 @@
 # Payment Operations Manual
 
-See [Tournament Disaster Recovery](TOURNAMENT_DISASTER_RECOVERY.md) for the
-independent roster backup and outage procedure. Backup failure never rejects a
-valid registration and does not replace payment reconciliation.
+The current backup gate is the external-drive database and application backup
+in the Project Deployment Checklist. A future Google Drive copy will be a
+separate off-site archive process and will not participate in registration or
+payment transactions.
 
 > **Reconciliation status (2026-08-25): Supporting financial detail.** The
 > current lifecycle, payout workflow, and public-total rule are controlled by
