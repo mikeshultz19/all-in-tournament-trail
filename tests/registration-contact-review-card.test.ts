@@ -31,6 +31,6 @@ describe("registration contact review card", () => {
     expect(form).toContain("SAME PERSON — UPDATE INFO");
     expect(form).toContain("SAME PERSON — KEEP EXISTING INFO");
     expect(form).toContain("DIFFERENT PERSON — APPROVE NEW MEMBER");
-    expect(page).toContain("reviewReason={review.reason}");
+    expect(page).not.toContain("RegistrationContactReviewForm");
   });
 });

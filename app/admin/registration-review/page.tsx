@@ -1,7 +1,6 @@
 import Link from "next/link";
 
 import RegistrationReviewResolutionForm from "@/components/admin/RegistrationReviewResolutionForm";
-import RegistrationContactReviewForm from "@/components/admin/RegistrationContactReviewForm";
 import HistoricalMembershipReviewForm from "@/components/admin/HistoricalMembershipReviewForm";
 import RegistrationCheckInControl from "@/components/admin/RegistrationCheckInControl";
 import RegistrationCheckInSummaryStat from "@/components/admin/RegistrationCheckInSummaryStat";
@@ -245,13 +244,12 @@ function RosterActions({ row, tournamentId, reviews }: { row: TournamentRegistra
 function RegistrationReviewPanels({ reviews, anglers }: { reviews: Awaited<ReturnType<typeof listRegistrationReviewItems>>; anglers: Awaited<ReturnType<typeof listReviewAnglerOptions>> }) {
   return <div className="grid min-w-0 gap-3" data-testid="registration-review-panels">
     {reviews.map((review) => {
+      if (review.reviewKind === "contact") return null;
       const presentation = getRegistrationReviewPresentation(review);
       return <details key={review.id} open className="min-w-0 border border-amber-400/20 bg-[#111] p-3">
         <summary className="cursor-pointer text-sm font-bold text-amber-200">{review.participantName} — {presentation.heading}</summary>
-        {review.reviewKind === "contact" ? null : <div className="mt-2 text-xs text-neutral-300"><p><span className="font-bold text-white">Issue:</span> {presentation.issue}</p>{presentation.identityFollowUp ? <p className="mt-1 text-neutral-400">{presentation.identityFollowUp}</p> : null}</div>}
-        {review.reviewKind === "contact" && review.existingContact && review.submittedContact && review.canonicalAnglerId
-          ? <RegistrationContactReviewForm reviewId={review.id} participantName={review.participantName} reviewReason={review.reason} existing={review.existingContact} submitted={review.submittedContact} differingFields={review.differingFields} canonicalAnglerId={review.canonicalAnglerId} />
-          : review.reviewKind === "membership" ? <HistoricalMembershipReviewForm reviewId={review.id} />
+        <div className="mt-2 text-xs text-neutral-300"><p><span className="font-bold text-white">Issue:</span> {presentation.issue}</p>{presentation.identityFollowUp ? <p className="mt-1 text-neutral-400">{presentation.identityFollowUp}</p> : null}</div>
+        {review.reviewKind === "membership" ? <HistoricalMembershipReviewForm reviewId={review.id} />
           : <RegistrationReviewResolutionForm reviewId={review.id} anglers={anglers} suggestedAnglerIds={review.suggestedAnglers.map((angler) => angler.id)} submission={{ name: review.participantName, email: review.email, phone: review.phone, membership: review.submittedMembership }} />}
       </details>;
     })}

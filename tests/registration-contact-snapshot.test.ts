@@ -4,6 +4,7 @@ import { describe, expect, it } from "vitest";
 const sync = readFileSync("supabase/migrations/202608200001_sync_online_memberships_after_identity_review.sql", "utf8");
 const membershipSync = readFileSync("supabase/migrations/202608220003_make_registration_identity_review_permissive.sql", "utf8");
 const walkup = readFileSync("supabase/migrations/202608200002_add_admin_walkup_registration.sql", "utf8");
+const simplified = readFileSync("supabase/migrations/202609270001_keep_canonical_contact_info.sql", "utf8");
 const page = readFileSync("app/admin/registration-review/page.tsx", "utf8");
 const actions = readFileSync("app/admin/registration-review/actions.ts", "utf8");
 const identityReview = readFileSync("lib/registration-identity-review.ts", "utf8");
@@ -26,7 +27,8 @@ describe("registration contact snapshots and member change review", () => {
     expect(sync).toContain("registration_contact_differences");
     for (const field of ["streetAddress", "phone", "email"]) expect(sync).toContain(`then '${field}' end`);
     expect(walkup).toContain("return v_registration");
-    expect(walkup).toContain("'contact', v_contact ->> 'membership'");
+    expect(simplified).not.toContain("'contact', v_contact ->> 'membership'");
+    expect(simplified).toContain("contact differences are informational only");
   });
 
   it("supports approve and keep while preserving the tournament snapshot", () => {
@@ -39,7 +41,7 @@ describe("registration contact snapshots and member change review", () => {
     expect(sync).toContain("contact_existing_kept");
     const resolver = sync.slice(sync.indexOf("create or replace function public.admin_resolve_registration_contact_review"));
     expect(resolver).not.toContain("update public.tournament_registrations");
-    expect(page).toContain("RegistrationContactReviewForm");
+    expect(page).not.toContain("RegistrationContactReviewForm");
   });
 
   it("keeps contact review compact while preserving expandable old and submitted values", () => {
@@ -56,7 +58,7 @@ describe("registration contact snapshots and member change review", () => {
     expect(normalizedContactReview).toContain("DIFFERENT PERSON — APPROVE NEW MEMBER");
     expect(actions).toContain('decision !== "different"');
     expect(actions).toContain("resolveRegistrationIdentityReview({");
-    expect(page).toContain("participantName={review.participantName}");
+    expect(page).not.toContain("participantName={review.participantName}");
   });
 
   it("keeps historical unknown membership state for manual review", () => {
