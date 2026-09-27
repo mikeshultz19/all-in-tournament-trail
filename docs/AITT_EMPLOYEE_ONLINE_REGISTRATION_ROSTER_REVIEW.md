@@ -150,6 +150,46 @@ area does even when only the owner is authorized to make the final change.
 | CSV import and identity reconciliation | Import the correct file, review mismatches, and escalate ambiguous names. | Tournament Director staff with owner support. |
 | Closeout, results, AOY, and Championship publication | Understand the sequence and required evidence. | Owner performs final approval and publication for now. |
 
+## Final pre-launch audit scope
+
+The final Codex audit and the independent Claude audit should use the same
+priority order. Compare findings after both audits and classify each item as a
+launch blocker, a Tournament Director manual step, or post-launch hardening.
+
+### Launch-critical
+
+- Successful online registration persistence after verified payment.
+- Square payment success, decline, interruption, retry, and recovery behavior.
+- No lost registration when the browser closes, refreshes, or the network
+  briefly fails.
+- Required-field and waiver behavior.
+- Team/Angler rules and membership review behavior.
+- Roster visibility in Registration Review and All Registrations.
+- Walk-up save, cancel, payment recording, membership validation, and check-in.
+- Financial Summary and payment-related counts being understandable and tied to
+  recorded registrations.
+- CSV export/import boundary and enough roster identity information to support
+  WeighFish operations.
+
+### Important but not a launch blocker
+
+- Payment Summary refinements, Generate Checks refinements, and reconciliation
+  conveniences when the same evidence is available in WeighFish.
+- Operational reporting improvements that do not prevent registration,
+  payment collection, check-in, or roster recovery.
+
+### Post-launch hardening
+
+- Public results presentation and publishing polish.
+- Winner Circle display and public tournament result accuracy review.
+- AOY point standings and Championship projections on the public website.
+- Final closeout and payout refinements that can be verified independently in
+  WeighFish before publication.
+
+Public publishing remains deliberately owner-controlled. A registration or
+payment must not be delayed because results, AOY, Championship, or Winner
+Circle data needs additional review later.
+
 ## Recommended teaching scenarios
 
 - Solo Current Member with complete information.
