@@ -1,6 +1,7 @@
 import AdminPanel from "@/components/admin/AdminPanel";
 import { requireAdminUser } from "@/lib/admin-auth";
 import { listPaymentRecoveryAttempts, type PaymentRecoveryAttempt } from "@/lib/admin-payment-recovery";
+import { listRegistrationReviewItems } from "@/lib/registration-identity-review";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 export const dynamic = "force-dynamic";
@@ -11,11 +12,33 @@ export default async function PaymentRecoveryPage() {
   await requireAdminUser();
 
   let attempts: PaymentRecoveryAttempt[] = [];
+  let manualCollections: ManualCollectionPending[] = [];
   let tournaments = new Map<string, TournamentSummary>();
   let loadError: string | null = null;
 
   try {
     attempts = await listPaymentRecoveryAttempts();
+    const reviews = await listRegistrationReviewItems();
+    const dueReviews = reviews.filter((review) => review.status === "review_required" && review.reviewKind === "membership" && review.submittedMembership === "current");
+    const dueRegistrationIds = [...new Set(dueReviews.map((review) => review.registrationId))];
+    const registrationNumbers = new Map<string, number | null>();
+    if (dueRegistrationIds.length > 0) {
+      const { data, error } = await createSupabaseServerClient()
+        .from("tournament_registrations")
+        .select("id,boat_number")
+        .in("id", dueRegistrationIds);
+      if (error) throw error;
+      for (const row of data ?? []) registrationNumbers.set(row.id, row.boat_number);
+    }
+    manualCollections = dueReviews.map((review) => ({
+      reviewId: review.id,
+      tournamentId: review.tournamentId,
+      tournamentName: review.tournamentName,
+      registrationId: review.registrationId,
+      registrationNumber: registrationNumbers.get(review.registrationId) ?? null,
+      participantName: review.participantName,
+      registeredAt: review.registeredAt,
+    }));
     const tournamentIds = [...new Set(attempts.map((attempt) => attempt.tournament_id))];
     if (tournamentIds.length > 0) {
       const { data, error } = await createSupabaseServerClient()
@@ -54,8 +77,40 @@ export default async function PaymentRecoveryPage() {
           ))}
         </div>
       )}
+
+      <ManualCollectionsPanel items={manualCollections} />
     </div>
   );
+}
+
+type ManualCollectionPending = {
+  reviewId: string;
+  tournamentId: string;
+  tournamentName: string;
+  registrationId: string;
+  registrationNumber: number | null;
+  participantName: string;
+  registeredAt: string;
+};
+
+function ManualCollectionsPanel({ items }: { items: ManualCollectionPending[] }) {
+  return <AdminPanel className="p-6">
+    <div className="flex flex-wrap items-baseline justify-between gap-3">
+      <div>
+        <h2 className="text-xl font-black uppercase text-white">Manual Collections Pending ({items.length})</h2>
+        <p className="mt-2 text-sm text-neutral-400">These are membership dues awaiting Tournament Director collection. Collect the $40 manually, then use Mark Collected in Registration Review.</p>
+      </div>
+      <p className="text-xs font-bold uppercase text-amber-200">No automatic payment action</p>
+    </div>
+    {items.length === 0 ? <p className="mt-4 border-t border-white/10 pt-4 text-sm text-neutral-500">No manual membership collections are currently pending.</p> : <div className="mt-4 grid gap-2 border-t border-white/10 pt-4">
+      {items.map((item) => <div key={item.reviewId} className="grid gap-3 border border-white/10 bg-black/20 p-3 text-sm sm:grid-cols-[1.5fr_1fr_1fr_auto] sm:items-center">
+        <div><p className="font-bold text-white">{item.tournamentName}</p><p className="mt-1 text-neutral-400">{item.participantName} · Registration #{item.registrationNumber ?? "—"}</p></div>
+        <div><p className="text-[10px] font-black uppercase tracking-[0.12em] text-neutral-500">Registered</p><p className="mt-1 font-bold text-white">{formatDate(item.registeredAt)}</p></div>
+        <div><p className="text-[10px] font-black uppercase tracking-[0.12em] text-neutral-500">Amount Due</p><p className="mt-1 font-bold text-amber-200">$40.00</p></div>
+        <p className="text-xs font-bold uppercase text-amber-200">Manual collection</p>
+      </div>)}
+    </div>}
+  </AdminPanel>;
 }
 
 function RecoveryCard({ attempt, tournament }: { attempt: PaymentRecoveryAttempt; tournament?: TournamentSummary }) {
@@ -114,4 +169,3 @@ function formatCurrency(amountCents: number) {
 function formatDate(value: string) {
   return new Intl.DateTimeFormat("en-US", { dateStyle: "medium", timeStyle: "short" }).format(new Date(value));
 }
-

@@ -15,4 +15,11 @@ describe("payment recovery visibility", () => {
     expect(page).toContain("never ask the customer to pay again");
     expect(page).toContain("Manual review required");
   });
+
+  it("shows pending manual collections as an informational-only list", () => {
+    const page = fs.readFileSync("app/admin/payment-recovery/page.tsx", "utf8");
+    expect(page).toContain("Manual Collections Pending");
+    expect(page).toContain("No automatic payment action");
+    expect(page).not.toContain("MARK COLLECTED");
+  });
 });
