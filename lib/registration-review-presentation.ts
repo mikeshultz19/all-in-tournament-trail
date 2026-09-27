@@ -28,7 +28,7 @@ export function getRegistrationReviewPresentation(
           ? "Current Member selected, but no active membership was verified."
           : "Membership status could not be verified.",
       identityFollowUp: identityUnresolved
-        ? "Confirm member or approve as new."
+        ? "Confirm the $40 membership below. If the angler does not pay, use Cancel Registration."
         : null,
     };
   }

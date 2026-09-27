@@ -124,7 +124,7 @@ function CurrentMemberConfirmationForm({ reviewId }: { reviewId: string }) {
     <form action={action} className="mt-4 grid gap-3 border border-amber-400/20 bg-black/20 p-3">
       <input type="hidden" name="reviewId" value={reviewId} />
       <p className="text-xs text-neutral-300">Current Member selected, but no active membership was verified.</p>
-      <p className="text-xs font-bold text-amber-200">Confirm the $40 membership with the angler, then resolve this review.</p>
+      <p className="text-xs font-bold text-amber-200">Confirm the $40 membership with the angler, then click Confirm Membership. If the angler does not pay, use Cancel Registration.</p>
       <button disabled={pending} className={adminButtonStyles("primary", "mt-1")}>{pending ? "Confirming..." : "CONFIRM MEMBERSHIP"}</button>
       {state.message ? <p role={state.status === "error" ? "alert" : "status"} className={`text-sm ${state.status === "error" ? "text-red-400" : "text-green-400"}`}>{state.message}</p> : null}
     </form>

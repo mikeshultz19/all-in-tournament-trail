@@ -325,11 +325,11 @@ function toRosterRow(
   const entryAmountCents = lineAmount(row.price_snapshot, (item) => item.code === "base_entry" || item.name === "Tournament Entry");
   const membershipLineAmountCents = lineAmount(row.price_snapshot, (item) => item.code === "annual_membership" || Boolean(item.name?.endsWith(" Membership")));
   const joiningMembershipCount = memberships.filter((item) => item.submittedClassification === "joining" || item.resolvedClassification === "joining").length;
-  const membershipAmountCents = row.registration_source === "walk_up" && joiningMembershipCount > 0
+  const membershipAmountCents = joiningMembershipCount > 0
     ? joiningMembershipCount * REGISTRATION_PRICING.annualMembership * 100
     : membershipLineAmountCents;
   const membershipCents = REGISTRATION_PRICING.annualMembership * 100;
-  const membershipPurchaseCount = row.registration_source === "walk_up"
+  const membershipPurchaseCount = joiningMembershipCount > 0
     ? joiningMembershipCount
     : membershipAmountCents !== null && membershipAmountCents % membershipCents === 0
       ? membershipAmountCents / membershipCents

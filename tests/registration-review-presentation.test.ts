@@ -13,7 +13,7 @@ describe("Admin registration review presentation", () => {
     expect(result).toEqual({
       heading: "Membership needs review",
       issue: "Current Member selected, but no active membership was verified.",
-      identityFollowUp: "Confirm member or approve as new.",
+      identityFollowUp: "Confirm the $40 membership below. If the angler does not pay, use Cancel Registration.",
     });
     expect(JSON.stringify(result)).not.toMatch(/canonical|review_kind|classification|transition/i);
   });

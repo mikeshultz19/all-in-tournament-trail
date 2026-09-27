@@ -125,6 +125,7 @@ describe("unified Registration & Check-In workflow", () => {
   it("uses a single Confirm Membership action and keeps check-in gated until it resolves", () => {
     expect(resolutionForm).toContain('submission.membership === "current" && suggestedAnglerIds.length === 0');
     expect(resolutionForm).toContain("CONFIRM MEMBERSHIP");
+    expect(resolutionForm).toContain("If the angler does not pay, use Cancel Registration");
     expect(resolutionForm).toContain("confirmCurrentMemberAsNewAction");
     expect(page).toContain("MembershipDuesControl");
     expect(page).toContain('item.status === "review_required" && item.reviewKind === "membership" && item.submittedMembership === "current"');
