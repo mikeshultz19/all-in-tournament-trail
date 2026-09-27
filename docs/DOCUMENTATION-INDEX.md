@@ -29,6 +29,7 @@ different rule.
 ## Capability contracts
 
 - [Capability Contracts](CAPABILITY_CONTRACTS.md) - business-capability boundaries, authoritative data, safety rules, tests, and rehearsal gaps.
+- [AITT Employee Online Registration and Roster Review List](AITT_EMPLOYEE_ONLINE_REGISTRATION_ROSTER_REVIEW.md) - staff walkthrough scenarios, expected behavior, ownership, and verification points.
 - [Hosted Staging Rehearsal Playbook](STAGING_REHEARSAL_PLAYBOOK.md) - reusable phase gates, scenario matrix, evidence format, and partner-acceptance procedure.
 - Read-only staging reconciliation: `npx tsx scripts/reconcile-staging.ts --project-ref vcjhufuklqwvnqmarpqi --tournament-id <id>`; reports per-registration membership/payment/review invariants and exits nonzero on failure.
 
