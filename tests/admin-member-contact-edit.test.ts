@@ -9,11 +9,11 @@ const editor = readFileSync("components/admin/EditMemberContactForm.tsx", "utf8"
 const history = readFileSync("components/admin/RegistrationHistoryList.tsx", "utf8");
 const historyLoader = readFileSync("lib/admin-registration-history.ts", "utf8");
 
-describe("simplified member contact correction", () => {
-  it("keeps Edit Member inside unresolved review flows and requires a selected canonical angler", () => {
+describe("member contact correction boundaries", () => {
+  it("keeps unresolved review focused on identity confirmation", () => {
     expect(roster).toContain('review.status === "review_required"');
-    expect(reviewForm).toContain("selectedAngler ? <details");
-    expect(reviewForm).toContain("EditMemberContactForm memberId={selectedAngler.id}");
+    expect(reviewForm).not.toContain("EditMemberContactForm");
+    expect(reviewForm).not.toContain("EDIT MEMBER");
     expect(contactForm).toContain("canonicalAnglerId");
     expect(contactForm).toContain("EditMemberContactForm memberId={canonicalAnglerId}");
     expect(roster).not.toContain("EditMemberContactForm");
