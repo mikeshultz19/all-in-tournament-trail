@@ -2,7 +2,6 @@ import "server-only";
 
 import { REGISTRATION_PRICING } from "@/data/registration";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
-import { buildManualMembershipCollectionCounts } from "@/lib/tournament-collection-calculator";
 
 export type RegistrationMembershipLabel = "Current Member" | "Purchased Membership / Joining" | "Non-Member";
 export type RegistrationMemberStatus = "Member" | "Non-Member" | "Needs Review";
@@ -281,7 +280,6 @@ function toRosterRow(
   names: Map<string, AnglerNameRow>,
   registrationReviews: ReadonlyMap<string, readonly ParticipantReviewTruth[]>,
   activeMembershipIds: ReadonlySet<string>,
-  manualMembershipCollectionCounts: ReadonlyMap<string, number>,
 ): TournamentRegistrationRosterRow {
   const memberships = row.membership_snapshot ?? [];
   const reviews = registrationReviews.get(row.id) ?? [];
@@ -327,16 +325,12 @@ function toRosterRow(
   const entryAmountCents = lineAmount(row.price_snapshot, (item) => item.code === "base_entry" || item.name === "Tournament Entry");
   const membershipLineAmountCents = lineAmount(row.price_snapshot, (item) => item.code === "annual_membership" || Boolean(item.name?.endsWith(" Membership")));
   const joiningMembershipCount = memberships.filter((item) => item.submittedClassification === "joining" || item.resolvedClassification === "joining").length;
-  const originalMembershipAmountCents = row.registration_source === "walk_up" && joiningMembershipCount > 0
+  const membershipAmountCents = row.registration_source === "walk_up" && joiningMembershipCount > 0
     ? joiningMembershipCount * REGISTRATION_PRICING.annualMembership * 100
     : membershipLineAmountCents;
-  const manualMembershipAmountCents = (manualMembershipCollectionCounts.get(row.id) ?? 0) * REGISTRATION_PRICING.annualMembership * 100;
-  const membershipAmountCents = originalMembershipAmountCents === null
-    ? manualMembershipAmountCents || null
-    : originalMembershipAmountCents + manualMembershipAmountCents;
   const membershipCents = REGISTRATION_PRICING.annualMembership * 100;
   const membershipPurchaseCount = row.registration_source === "walk_up"
-    ? joiningMembershipCount + (manualMembershipAmountCents / membershipCents)
+    ? joiningMembershipCount
     : membershipAmountCents !== null && membershipAmountCents % membershipCents === 0
       ? membershipAmountCents / membershipCents
       : 0;
@@ -368,7 +362,7 @@ function toRosterRow(
     angler1, angler2,
     entryType: entryAmountCents === 0 ? "Free Entry" : "Base Entry",
     bigBass: row.big_bass, memberPot: row.member_pot, insurance: row.insurance,
-    entryAmountCents, membershipAmountCents, manualMembershipAmountCents, membershipPurchaseCount, bigBassAmountCents, memberPotAmountCents,
+    entryAmountCents, membershipAmountCents, membershipPurchaseCount, bigBassAmountCents, memberPotAmountCents,
     insuranceAmountCents, processingFeeCents: validCents(row.price_snapshot?.cardProcessingFeeCents),
     totalPaidCents: validCents(row.price_snapshot?.totalCents), paymentStatus, needsReview,
     identityReviewStatus: row.identity_review_status, checkedInAt: row.checked_in_at,
@@ -487,13 +481,7 @@ export async function getTournamentRegistrationRoster(tournamentId: string): Pro
       if (membership.status === "active") activeMembershipIds.add(membership.angler_id);
     }
   }
-  const { data: reviewHistory, error: reviewHistoryError } = await supabase
-    .from("registration_identity_review_history")
-    .select("review_id,registration_id,review_note")
-    .in("registration_id", rows.map((row) => row.id));
-  if (reviewHistoryError) throw new Error("Registration review history could not be loaded.", { cause: reviewHistoryError });
-  const manualMembershipCollectionCounts = buildManualMembershipCollectionCounts(reviewHistory ?? []);
-  return rows.map((row) => toRosterRow(row, names, registrationReviews, activeMembershipIds, manualMembershipCollectionCounts));
+  return rows.map((row) => toRosterRow(row, names, registrationReviews, activeMembershipIds));
 }
 
 export async function listTournamentRegistrationRosterSummaries(tournamentIds: readonly string[]): Promise<Record<string, TournamentRegistrationRosterSummary>> {

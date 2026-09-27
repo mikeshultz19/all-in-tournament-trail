@@ -122,20 +122,20 @@ describe("unified Registration & Check-In workflow", () => {
     expect(page).toContain("<details key={review.id}");
   });
 
-  it("uses compact Membership Dues collection and keeps check-in gated until it resolves", () => {
+  it("uses a single Confirm Membership action and keeps check-in gated until it resolves", () => {
     expect(resolutionForm).toContain('submission.membership === "current" && suggestedAnglerIds.length === 0');
-    expect(resolutionForm).toContain("APPROVE NEW ANGLER");
-    expect(resolutionForm).toContain("$40 membership due after approval.");
+    expect(resolutionForm).toContain("CONFIRM MEMBERSHIP");
+    expect(resolutionForm).toContain("confirmCurrentMemberAsNewAction");
     expect(page).toContain("MembershipDuesControl");
     expect(page).toContain('item.status === "review_required" && item.reviewKind === "membership" && item.submittedMembership === "current"');
     expect(operationsControls).toContain("MembershipDuesControl");
     expect(operationsControls).toContain("MEMBERSHIP DUES ({dues.length})");
-    expect(operationsControls).toContain("MARK COLLECTED");
+    expect(operationsControls).not.toContain("MARK COLLECTED");
     expect(operationsControls).toContain("Collect at check-in");
     expect(page).toContain('registrationNumber: String(allRows.find((row) => row.id === item.registrationId)?.boatNumber ?? "—")');
     expect(page).toContain("participantName: item.participantName");
     expect(operationsControls).toContain("Registration #{due.registrationNumber} · {due.participantName}");
-    expect(operationsControls).toContain("Collect the $40 manually, then mark it collected to activate the membership.");
+    expect(operationsControls).toContain("Use Confirm Membership in the registration review");
     expect(operationsControls).not.toContain("confirm the existing membership review");
     expect(operationsControls).not.toContain("AITT-");
     expect(operationsControls).not.toContain("admin_resolve_unmatched_current_member_review");

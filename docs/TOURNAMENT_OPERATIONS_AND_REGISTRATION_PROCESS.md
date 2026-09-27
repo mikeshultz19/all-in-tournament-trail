@@ -806,14 +806,12 @@ For an overview of the project, begin with **00_START_HERE.md**.
 Registration may complete before membership verification. If an unmatched
 Current Member claim cannot be verified, **APPROVE NEW ANGLER** creates the
 canonical Angler only and leaves the membership review unresolved. The roster
-level **MEMBERSHIP DUES** control lists the $40 obligation. The Tournament
-Director collects and tracks it manually, then staff selects **MARK COLLECTED**
-to reuse the supported membership-confirmation operation. It records the
-confirming Admin and timestamp, activates the membership, and clears the
-review. It does not process payment or alter the registration price snapshot.
-The explicit collected $40 increases Memberships Collected and Total
-Registration Funds, but not Online Funds or Tournament Payout Funds; no
-collection email is sent. Existing member, contact, duplicate, and historical
+level **MEMBERSHIP DUES** control lists the $40 obligation. Staff explains the
+membership and selects **CONFIRM MEMBERSHIP** to activate it, record the Admin
+confirmation, and clear the review. If the participant declines, use Cancel
+Registration. There is no Mark Collected action, payment workflow, or change to
+the registration price snapshot. Payment Summary reports membership selections
+and their $40 equivalent; Payment Recovery is informational. Existing member, contact, duplicate, and historical
 membership reviews remain separate. Only explicitly recorded registration
 money or qualifying manual dues evidence is included in the Financial Summary.
 Walk-up snapshots can remain lump-sum and are retained as a known auditability

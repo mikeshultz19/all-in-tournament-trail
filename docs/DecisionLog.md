@@ -38,8 +38,10 @@ Last Updated: September 26, 2026
   instead of blocking registration. Every walk-up contact field, including
   email, is required for every membership choice.
 - **Money:** The website records its calculated amount. Staff do not edit
-  payment summaries. Mark Collected is valid manual evidence for a membership;
-  partial-payment and bank-deposit issues are handled outside AITT.
+  payment summaries. Payment Summary counts Joining/Purchasing selections and
+  their $40 equivalent. Confirm Membership resolves a paid Current Member
+  review; Payment Recovery is informational, and partial-payment or bank-
+  deposit issues are handled outside AITT.
 - **Closeout:** A paid no-show is a Tournament Director one-off. Cancellations
   before WayFish import remove active/public, AOY, and Championship effects,
   revoke memberships purchased through the registration, and prevent WayFish

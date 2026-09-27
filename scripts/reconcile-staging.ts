@@ -1,15 +1,10 @@
 import { createClient } from "@supabase/supabase-js";
 
-import {
-  buildManualMembershipCollectionCounts,
-  buildTournamentCollectionSummary,
-  type RegistrationCollectionRow,
-} from "../lib/tournament-collection-calculator";
+import { buildTournamentCollectionSummary, type RegistrationCollectionRow } from "../lib/tournament-collection-calculator";
 import { reconcileParticipant } from "./staging-reconciliation-core";
 
 const STAGING_PROJECT_REF = "vcjhufuklqwvnqmarpqi";
 const PRODUCTION_PROJECT_REF = "qrmnglzylrrdhcvashmx";
-const MANUAL_MARKER = "Manual $40 membership collected at check-in";
 
 type RegistrationRow = RegistrationCollectionRow & {
   boat_number: number | null;
@@ -25,12 +20,6 @@ type ReviewRow = {
   review_kind: string;
   review_status: string;
   submitted_membership: string | null;
-};
-
-type HistoryRow = {
-  review_id: string;
-  registration_id: string;
-  review_note: string | null;
 };
 
 type MembershipRow = {
@@ -81,14 +70,8 @@ async function main(): Promise<void> {
   const reviews = registrationIds.length
     ? await read<ReviewRow>(client.from("registration_identity_reviews").select("registration_id,participant_position,id,review_kind,review_status,submitted_membership").in("registration_id", registrationIds))
     : [];
-  const history = registrationIds.length
-    ? await read<HistoryRow>(client.from("registration_identity_review_history").select("review_id,registration_id,review_note").in("registration_id", registrationIds))
-    : [];
   const memberships = await read<MembershipRow>(client.from("memberships").select("angler_id,season_id,status").eq("season_id", seasonId));
   const activeMemberships = new Set(memberships.filter((row) => row.status === "active").map((row) => row.angler_id));
-  const manualCounts = buildManualMembershipCollectionCounts(history);
-  const markerReviewIds = history.filter((row) => row.review_note?.startsWith(MANUAL_MARKER)).map((row) => row.review_id);
-  const duplicateMarkerEvidence = markerReviewIds.length !== new Set(markerReviewIds).size;
   const reviewsByRegistration = new Map<string, ReviewRow[]>();
   for (const review of reviews) reviewsByRegistration.set(review.registration_id, [...(reviewsByRegistration.get(review.registration_id) ?? []), review]);
   const activeParticipantResults = active.flatMap((row) => ([row.angler1_id, row.angler2_id] as const).flatMap((anglerId, index) => {
@@ -105,17 +88,15 @@ async function main(): Promise<void> {
       reviewStatus: review?.review_status ?? null,
       reviewKind: review?.review_kind ?? null,
       submittedMembership: review?.submitted_membership ?? null,
-      manualCollectionMarkerCount: review ? history.filter((item) => item.review_id === review.id && item.review_note?.startsWith(MANUAL_MARKER)).length : 0,
       checkedIn: Boolean(row.checked_in_at),
     });
     return [{ registrationId, boatNumber: row.boat_number, participantPosition: position, state: result.state, checkInBlocked: result.checkInBlocked, reason: result.reason }];
   }));
-  const collection = buildTournamentCollectionSummary(tournamentId, active, undefined, [], activeMemberships, manualCounts);
+  const collection = buildTournamentCollectionSummary(tournamentId, active, undefined, [], activeMemberships);
   const warnings = collection.membershipReconciliationWarnings ?? [];
   const unresolvedDues = reviews.filter((review) => review.review_status === "review_required" && review.review_kind === "membership" && review.submitted_membership === "current");
   const invariantFailures = [
     ...activeParticipantResults.filter((result) => result.state === "invariant_failure").map((result) => `registration ${result.registrationId} participant ${result.participantPosition}: ${result.reason}`),
-    ...(duplicateMarkerEvidence ? ["duplicate manual collection evidence exists for a review_id"] : []),
     ...(unresolvedDues.length !== activeParticipantResults.filter((result) => result.state === "actionable" && result.reason === "membership dues remain unresolved").length ? ["Membership Dues count does not equal unresolved dues records"] : []),
     ...(warnings.length ? warnings.map((warning) => `financial warning: ${warning}`) : []),
     ...(active.length !== registrations.filter((row) => row.registration_status === "active").length ? ["active registration projection mismatch"] : []),

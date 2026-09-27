@@ -15,7 +15,7 @@ Admin Center after payment rather than unnecessarily blocking a customer.
 |---|---|---|---|---|
 | 1 | A required field is blank or the waiver acknowledgment is missing. | Payment is blocked until the required information or acknowledgment is provided. | Customer or Tournament Director assisting the customer. | The form identifies the missing field and no payment attempt is created. |
 | 2 | A Team is missing Angler 2, or the same person is entered twice in one Team. | The Team cannot proceed until two distinct anglers are entered. | Customer or Tournament Director. | The correction happens before payment and no incomplete Team reaches the roster. |
-| 3 | Someone selects Current Member but has no active membership for the season. | The registration and payment may proceed, then the entry goes to membership Needs Review. The Tournament Director collects the $40 manually when appropriate and uses Mark Collected. | Tournament Director. | The registration remains on the roster, check-in stays gated until resolved, and the Payment Recovery manual-collection history records the item as Pending and later Collected. |
+| 3 | Someone selects Current Member but has no active membership for the season. | The registration and payment may proceed, then the entry goes to membership Needs Review. Staff contacts the angler, confirms the $40 membership with **Confirm Membership**, or cancels the registration if they decline. | Tournament Director. | The registration remains on the roster, check-in stays gated until Confirm Membership resolves the review, and Payment Recovery retains an informational follow-up record. |
 | 4 | A name, address, phone number, email, ZIP code, or other contact detail is misspelled, outdated, or slightly different from the member record. | Structurally valid information does not unnecessarily block payment. The entry may go to identity or contact review for correction. | Tournament Director or Admin staff. | Payment, registration, roster membership, and review evidence remain connected. |
 | 5 | The same person is entered in two separate registrations. | Registration is allowed. A duplicate is an administrative issue, not an online payment blocker. | Tournament Director after payment; cancel one entry only if needed. | Both records and payments remain visible until the Director resolves the situation. |
 | 6 | Square declines the card, the browser closes, the customer refreshes, the payment button is double-clicked, or the network interrupts checkout. | A declined payment does not create a confirmed registration. A successful Square payment must not require a second charge. Durable payment recovery and idempotency handle interruptions. | System first; Admin staff uses Payment Recovery if a paid attempt does not finish registration. | Check Square status, payment attempts, registration state, and the Admin Payment Recovery page before asking anyone to pay again. |
@@ -30,7 +30,7 @@ payment, confirm the same entry in all relevant places:
 2. Admin Registration Review roster.
 3. All Registrations history and payment state.
 4. Tournament Funds Summary and related counts.
-5. Payment Recovery, including the manual-collection history when applicable.
+5. Payment Recovery, including the informational manual-membership follow-up history.
 6. Membership or Needs Review records when the test involved membership or identity.
 7. Check-In availability after any required review is resolved.
 
@@ -55,7 +55,7 @@ staging rather than only watch a demonstration.
 - Read the roster columns: participants, member status, membership fees, pots,
   insurance, Big Bass, registered time, and Check-In / Review status.
 - Open All Registrations and explain active versus canceled history.
-- Review Payment Recovery and the non-interactive Manual Collections Pending
+- Review Payment Recovery and the non-interactive manual membership follow-up
   history.
 - Open the Financial Summary and connect the displayed totals to recorded
   registrations and payments.
@@ -143,7 +143,7 @@ area does even when only the owner is authorized to make the final change.
 | Area | Staff should learn | Current primary responsibility |
 |---|---|---|
 | Online registration and walk-ups | Complete entries, collect payment, resolve ordinary prompts, and escalate uncertainty. | Tournament Director staff, with owner support. |
-| Membership validation and manual dues | Verify information, collect the $40 when required, and understand Mark Collected. | Tournament Director staff. |
+| Membership validation and review | Verify information, explain the $40 membership when required, and use Confirm Membership or Cancel Registration. | Tournament Director staff. |
 | Roster, Check-In, and cancellation | Review entries, check anglers in, and preserve cancellation evidence. | Tournament Director staff. |
 | Financial Summary and Payment Recovery | Read totals, identify unusual payment states, and never recharge uncertain customers. | Tournament Director staff; owner handles unusual corrections. |
 | Rules, FAQ, announcements, and Tournament Info | Locate information and prepare or review changes carefully. | Staff may assist; owner approves sensitive public changes. |

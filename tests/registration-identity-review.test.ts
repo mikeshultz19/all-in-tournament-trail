@@ -344,9 +344,10 @@ describe("durable review persistence and Admin workflow", () => {
     expect(identityResolution).toContain("when v_membership_review_pending then 'review_required'");
     expect(identityResolution).not.toContain("insert into public.memberships");
     expect(actions).not.toContain("resolveUnmatchedCurrentMemberReview");
-    expect(actions).toContain("markMembershipCollectedAction");
+    expect(actions).not.toContain("markMembershipCollectedAction");
+    expect(actions).toContain("confirmCurrentMemberAsNewAction");
     expect(actions).toContain('membership: "joining"');
-    expect(actions).toContain("Manual $40 membership collected at check-in");
+    expect(actions).toContain("Membership confirmed by");
     expect(actions).toContain("resolveRegistrationIdentityReview({");
   });
 

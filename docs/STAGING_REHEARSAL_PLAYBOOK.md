@@ -357,18 +357,14 @@ variants.
   registration collected $0 membership fees.
 - **Needs Review** means the required active membership could not be confidently
   verified. It is not an active Non-Member option.
-- For an unmatched Current Member claim, **APPROVE NEW ANGLER** creates the
-  canonical identity only; the membership review remains unresolved and
-  check-in remains blocked.
-- The roster-level **MEMBERSHIP DUES** control lists the $40 obligation and
-  shows **Collect at check-in**. The Tournament Director collects and tracks
-  the money manually, then staff selects **MARK COLLECTED**. This reuses the
-  existing membership-confirmation operation, records the confirming Admin and
-  timestamp, activates the membership, clears the review, and enables check-in.
-- This manual collection creates no Square request, payment transaction, or
-  registration price-snapshot change. Its explicit $40 is included in
-  Memberships Collected and Total Registration Funds, but not Online Funds or
-  Tournament Payout Funds; no collection email is sent.
+- For an unmatched Current Member claim, the roster-level **MEMBERSHIP DUES**
+  control lists the $40 obligation, check-in remains blocked, and staff uses
+  **CONFIRM MEMBERSHIP** after speaking with the participant. This records the
+  confirmation, activates the membership, clears the review, and enables
+  check-in. If the participant declines, use Cancel Registration.
+- There is no Mark Collected action, payment-reconciliation workflow, or
+  registration price-snapshot change. Payment Summary counts the membership
+  selection and its $40 equivalent; Payment Recovery is informational.
 - No active registration may finish with a Non-Member classification.
 - New-member cancellation revokes only memberships purchased through that
   registration's actual membership purchase lines.
@@ -386,9 +382,8 @@ batch can pass:
 
 - Every active participant is either a verified current-season member or is
   present in an unresolved actionable review/Membership Dues queue.
-- A financially counted New Member has a recorded $40 charge or exactly one
-  qualifying manual **MARK COLLECTED** marker.
-- Manual evidence is deduplicated by `review_id`.
+- A financially counted New Member has a Joining/Purchasing selection and the
+  summary counts exactly one $40 membership equivalent per angler.
 - A resolved identity review cannot leave an untracked membership problem.
 - Membership Dues count equals unresolved dues records.
 - An unresolved review blocks check-in and states why.
@@ -419,10 +414,9 @@ Keep a synthetic unmatched-Current-Member case in the permanent regression
 matrix. Identity approval may create or resolve the canonical Angler while the
 membership remains unverified. In that state the registration must remain in
 an actionable Membership Dues/review queue, CHECK IN must remain disabled, and
-the record must not disappear from every actionable queue. Only valid
-membership confirmation or **MARK COLLECTED** with qualifying evidence may
-clear the condition. A resolved identity review alone is not proof of a
-current-season membership.
+the record must not disappear from every actionable queue. Only **CONFIRM
+MEMBERSHIP** may clear the condition; otherwise use Cancel Registration. A
+resolved identity review alone is not proof of a current-season membership.
 
 After Confirm Match, an eligible active current-season membership must resolve
 automatically to Current Member / eligible with $0 membership fees. It must
@@ -594,5 +588,5 @@ clears the applicable review with the existing decision. The registration
 snapshot remains unchanged. All Registrations provides the same EDIT MEMBER
 correction for a linked participant when no active review remains. Do not use
 fuzzy matching, merging, uniqueness enforcement, or a new payment/membership
-path. A false Current Member claim still follows APPROVE NEW ANGLER,
-MEMBERSHIP DUES, and MARK COLLECTED.
+path. A false Current Member claim follows CONFIRM MEMBERSHIP or Cancel
+Registration.

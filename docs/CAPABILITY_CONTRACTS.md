@@ -88,8 +88,11 @@ These decisions are authoritative where older historical wording differs:
   identity and membership are resolved.
 - The website records its calculated amount. Staff do not edit payment
   summaries; partial-payment and deposit issues are handled outside AITT.
-- Mark Collected is the Tournament Director's manual evidence for a membership
-  payment. The site does not verify cash or require a separate receipt.
+- Confirm Membership is the single Admin resolution for a paid Current Member
+  claim with no active seasonal membership. It activates the seasonal membership,
+  clears the review, and enables check-in. If the participant declines, cancel the
+  registration. Payment Summary counts membership selections and their $40
+  equivalent; Payment Recovery is informational and non-interactive.
 - A paid no-show is a Tournament Director one-off. A cancellation before
   WayFish import removes the entry from active/public results, revokes
   registration-purchased memberships, removes AOY and Championship effects,

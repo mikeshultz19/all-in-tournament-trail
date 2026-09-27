@@ -185,14 +185,13 @@ Current registration identity-review actions are:
 
 This action creates the canonical Angler only and leaves the required
 membership review unresolved, so check-in remains blocked. The roster-level
-**MEMBERSHIP DUES** control lists the $40 obligation. The Tournament Director
-collects and tracks it manually, then staff selects **MARK COLLECTED**, which
-uses the existing membership-confirmation operation and records who confirmed
-collection and when. No payment or price-snapshot change is created. The
-explicit collected $40 increases Memberships Collected and Total Registration
-Funds, but not Online Funds or Tournament Payout Funds; no collection email is
-created. Existing-member matching, contact, and historical membership reviews
-retain their separate workflows. A repeated or previously canceled tournament
+**MEMBERSHIP DUES** control lists the $40 obligation. Staff confirms the $40
+with the participant using **CONFIRM MEMBERSHIP**, which activates the
+membership and clears the review. If the participant declines, use Cancel
+Registration. No Mark Collected action or payment-reconciliation workflow is
+needed. Payment Summary counts membership selections and their $40 equivalent;
+Payment Recovery is informational. Existing-member matching, contact, and
+historical membership reviews retain their separate workflows. A repeated or previously canceled tournament
 registration is not sent to Needs Review solely because it is repeated; the
 Tournament Director handles any rare duplicate after payment.
 

@@ -24,7 +24,7 @@ describe("automatic tournament collection reconciliation", () => {
     }], undefined, [], new Set(["angler-1"]));
     expect(summary.membershipMismatchCount).toBe(0);
     expect(summary.membershipReconciliationWarnings).toEqual([]);
-    expect(summary.membershipRevenueCents).toBe(4000);
+    expect(summary.membershipRevenueCents).toBe(0);
   });
 
   it("does not treat a resolved joining classification as a payment mismatch when current membership verifies it", () => {
@@ -61,7 +61,7 @@ describe("automatic tournament collection reconciliation", () => {
     }]);
     expect(summary.membershipMismatchCount).toBe(1);
     expect(summary.membershipReconciliationWarnings).toHaveLength(1);
-    expect(summary.membershipRevenueCents).toBe(4000);
+    expect(summary.membershipRevenueCents).toBe(0);
   });
 
   it("keeps an unresolved Current Member claim at zero collected membership revenue", () => {
@@ -126,41 +126,41 @@ describe("automatic tournament collection reconciliation", () => {
     expect(summary.membershipRevenueCents).toBe(4000);
   });
 
-  it("counts explicit manual membership collection markers without changing payout or online funds", () => {
+  it("counts confirmed joining selections in both the summary and source totals", () => {
     const summary = buildTournamentCollectionSummary("tournament-1", [collectedOnline({
       id: "manual-dues",
       membership_snapshot: [{ submittedClassification: "joining", resolvedClassification: "current" }],
       price_snapshot: snapshot(["Tournament Entry", 6000]),
-    })], undefined, [], new Set(["angler-1"]), new Map([["manual-dues", 1]]));
+    })], undefined, [], new Set(["angler-1"]));
     expect(summary.lines.find((line) => line.key === "membership")).toMatchObject({ count: 1, totalCents: 4000 });
     expect(summary.membershipRevenueCents).toBe(4000);
     expect(summary.totalRegistrationFundsCollectedCents).toBe(10000);
     expect(summary.totalTournamentPayoutFundsCents).toBe(6000);
-    expect(summary.onlineRegistrationFundsCents).toBe(6000);
+    expect(summary.onlineRegistrationFundsCents).toBe(10000);
   });
 
-  it("counts two explicit manual collections as $80 and combines them with an original paid membership", () => {
+  it("counts two joining selections as $80 without duplicate manual markers", () => {
     const manualOnly = buildTournamentCollectionSummary("tournament-1", [collectedOnline({
       id: "manual-dues-only",
-      membership_snapshot: [{ submittedClassification: "current", resolvedClassification: "current" }, { submittedClassification: "current", resolvedClassification: "current" }],
+      membership_snapshot: [{ submittedClassification: "joining", resolvedClassification: "current" }, { submittedClassification: "joining", resolvedClassification: "current" }],
       price_snapshot: snapshot(["Tournament Entry", 6000]),
-    })], undefined, [], new Set(["angler-1", "angler-2"]), new Map([["manual-dues-only", 2]]));
+    })], undefined, [], new Set(["angler-1", "angler-2"]));
     expect(manualOnly.lines.find((line) => line.key === "membership")).toMatchObject({ count: 2, totalCents: 8000 });
     expect(manualOnly.totalRegistrationFundsCollectedCents).toBe(14000);
 
     const summary = buildTournamentCollectionSummary("tournament-1", [
       collectedOnline({
         id: "manual-dues-team",
-        membership_snapshot: [{ submittedClassification: "current", resolvedClassification: "current" }, { submittedClassification: "current", resolvedClassification: "current" }],
-        price_snapshot: snapshot(["Tournament Entry", 6000], ["Angler 1 Membership", 4000]),
+      membership_snapshot: [{ submittedClassification: "joining", resolvedClassification: "current" }, { submittedClassification: "joining", resolvedClassification: "current" }],
+      price_snapshot: snapshot(["Tournament Entry", 6000]),
       }),
-    ], undefined, [], new Set(["angler-1", "angler-2"]), new Map([["manual-dues-team", 2]]));
+    ], undefined, [], new Set(["angler-1", "angler-2"]));
     const membership = summary.lines.find((line) => line.key === "membership");
-    expect(membership).toMatchObject({ count: 3, totalCents: 12000 });
-    expect(summary.membershipRevenueCents).toBe(12000);
-    expect(summary.totalRegistrationFundsCollectedCents).toBe(18000);
+    expect(membership).toMatchObject({ count: 2, totalCents: 8000 });
+    expect(summary.membershipRevenueCents).toBe(8000);
+    expect(summary.totalRegistrationFundsCollectedCents).toBe(14000);
     expect(summary.totalTournamentPayoutFundsCents).toBe(6000);
-    expect(summary.onlineRegistrationFundsCents).toBe(10000);
+    expect(summary.onlineRegistrationFundsCents).toBe(14000);
   });
 
   it("excludes marker-backed manual dues from canceled active totals", () => {
@@ -169,20 +169,20 @@ describe("automatic tournament collection reconciliation", () => {
       registration_status: "cancelled",
       membership_snapshot: [{ submittedClassification: "current", resolvedClassification: "current" }],
       price_snapshot: snapshot(["Tournament Entry", 6000]),
-    })], undefined, [], new Set(["angler-1"]), new Map([["canceled-manual-dues", 1]]));
+    })], undefined, [], new Set(["angler-1"]));
     expect(summary.membershipRevenueCents).toBe(0);
     expect(summary.totalRegistrationFundsCollectedCents).toBe(0);
     expect(summary.totalTournamentPayoutFundsCents).toBe(0);
   });
 
-  it("does not count normalization memberships without an explicit manual collection marker", () => {
+  it("counts every joining selection without a separate collection marker", () => {
     const summary = buildTournamentCollectionSummary("tournament-1", [collectedOnline({
       id: "admin-normalization",
       membership_snapshot: [{ submittedClassification: "joining", resolvedClassification: "current" }],
       price_snapshot: snapshot(["Tournament Entry", 6000]),
     })], undefined, [], new Set(["angler-1"]));
-    expect(summary.membershipRevenueCents).toBe(0);
-    expect(summary.totalRegistrationFundsCollectedCents).toBe(6000);
+    expect(summary.membershipRevenueCents).toBe(4000);
+    expect(summary.totalRegistrationFundsCollectedCents).toBe(10000);
   });
 
   it("counts a manual collection marker once even when the audit input repeats the same review", () => {

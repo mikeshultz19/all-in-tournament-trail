@@ -19,11 +19,11 @@ describe("payment recovery visibility", () => {
   it("shows pending manual collections as an informational-only list", () => {
     const page = fs.readFileSync("app/admin/payment-recovery/page.tsx", "utf8");
     const source = fs.readFileSync("lib/admin-payment-recovery.ts", "utf8");
-    expect(page).toContain("Manual Collections Pending");
-    expect(page).toContain("running list records manual membership collections");
+    expect(page).toContain("Manual Membership Follow-Up");
+    expect(page).toContain("running, non-interactive list records membership reviews");
     expect(page).toContain("No automatic payment action");
     expect(page).not.toContain("MARK COLLECTED");
-    expect(source).toContain("MANUAL_COLLECTION_MARKER");
-    expect(source).toContain('? "collected" : "pending"');
+    expect(source).toContain("MEMBERSHIP_CONFIRMATION_MARKER");
+    expect(source).toContain('? "confirmed" : "needs_attention"');
   });
 });

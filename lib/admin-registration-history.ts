@@ -1,8 +1,6 @@
 import "server-only";
 
 import { createSupabaseServerClient } from "@/lib/supabase/server";
-import { REGISTRATION_PRICING } from "@/data/registration";
-import { buildManualMembershipCollectionCounts } from "@/lib/tournament-collection-calculator";
 
 export type RegistrationHistorySource = "online" | "walk_up";
 export type RegistrationHistoryStatus = "active" | "cancelled";
@@ -244,7 +242,6 @@ export async function listAllRegistrationHistory(): Promise<AdminRegistrationHis
   for (const item of history) historyByReview.set(item.review_id, [...(historyByReview.get(item.review_id) ?? []), item]);
   const reviewsByRegistration = new Map<string, ReviewDbRow[]>();
   for (const review of reviews) reviewsByRegistration.set(review.registration_id, [...(reviewsByRegistration.get(review.registration_id) ?? []), review]);
-  const manualMembershipCollectionCounts = buildManualMembershipCollectionCounts(history);
   const anglerIds = registrations.flatMap((row) => [row.angler1_id, row.angler2_id]).filter((id): id is string => Boolean(id));
   const canonicalResult = anglerIds.length
     ? await supabase.from("anglers").select("id,first_name,last_name,email,phone,street_address,city,state,zip_code").in("id", [...new Set(anglerIds)])
@@ -298,7 +295,6 @@ export async function listAllRegistrationHistory(): Promise<AdminRegistrationHis
     cancellationAdmin: cancellation.admin ?? row.cancelled_by_admin_id,
     manualRefundStatus: cancellation.manualRefundStatus,
     membershipsRevoked: cancellation.membershipsRevoked,
-    manualMembershipAmountCents: (manualMembershipCollectionCounts.get(row.id) ?? 0) * REGISTRATION_PRICING.annualMembership * 100,
     identityReviewStatus: row.identity_review_status,
     reviews: (reviewsByRegistration.get(row.id) ?? []).map((review) => ({
       id: review.id,

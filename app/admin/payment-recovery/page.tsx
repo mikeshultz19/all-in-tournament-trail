@@ -66,17 +66,17 @@ function ManualCollectionsPanel({ items }: { items: ManualCollectionItem[] }) {
   return <AdminPanel className="p-6">
     <div className="flex flex-wrap items-baseline justify-between gap-3">
       <div>
-        <h2 className="text-xl font-black uppercase text-white">Manual Collections Pending ({items.length})</h2>
-        <p className="mt-2 text-sm text-neutral-400">This running list records manual membership collections, whether they are still pending or have been marked collected.</p>
+        <h2 className="text-xl font-black uppercase text-white">Manual Membership Follow-Up ({items.length})</h2>
+        <p className="mt-2 text-sm text-neutral-400">This running, non-interactive list records membership reviews that need human attention and the confirmation that resolved them.</p>
       </div>
       <p className="text-xs font-bold uppercase text-amber-200">No automatic payment action</p>
     </div>
-    {items.length === 0 ? <p className="mt-4 border-t border-white/10 pt-4 text-sm text-neutral-500">No manual membership collections are currently pending.</p> : <div className="mt-4 grid gap-2 border-t border-white/10 pt-4">
+    {items.length === 0 ? <p className="mt-4 border-t border-white/10 pt-4 text-sm text-neutral-500">No manual membership follow-up records are available.</p> : <div className="mt-4 grid gap-2 border-t border-white/10 pt-4">
       {items.map((item) => <div key={item.reviewId} className="grid gap-3 border border-white/10 bg-black/20 p-3 text-sm sm:grid-cols-[1.5fr_1fr_1fr_auto] sm:items-center">
         <div><p className="font-bold text-white">{item.tournamentName}</p><p className="mt-1 text-neutral-400">{item.participantName} · Registration #{item.registrationNumber ?? "—"}</p></div>
         <div><p className="text-[10px] font-black uppercase tracking-[0.12em] text-neutral-500">Registered</p><p className="mt-1 font-bold text-white">{formatDate(item.registeredAt)}</p></div>
         <div><p className="text-[10px] font-black uppercase tracking-[0.12em] text-neutral-500">Amount</p><p className="mt-1 font-bold text-amber-200">$40.00</p></div>
-        <p className={`text-xs font-bold uppercase ${item.status === "collected" ? "text-emerald-300" : "text-amber-200"}`}>{item.status === "collected" ? "Collected" : "Pending"}</p>
+        <p className={`text-xs font-bold uppercase ${item.status === "confirmed" ? "text-emerald-300" : "text-amber-200"}`}>{item.status === "confirmed" ? "Membership Confirmed" : "Needs Attention"}</p>
       </div>)}
     </div>}
   </AdminPanel>;

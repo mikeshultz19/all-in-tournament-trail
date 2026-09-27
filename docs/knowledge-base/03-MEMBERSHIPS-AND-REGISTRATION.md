@@ -44,14 +44,12 @@ Championship, and history. Review decisions are:
 - **APPROVE NEW ANGLER** for an unmatched Current Member claim.
 
 This creates the Angler only and leaves the membership review unresolved, so
-check-in remains blocked. A roster-level **MEMBERSHIP DUES** control lists the
-$40 obligation. The Tournament Director collects and tracks it manually, then
-staff selects **MARK COLLECTED** to reuse the existing membership-confirmation
-operation. That action records who confirmed collection and when, activates the
-membership, and clears the review. It does not process Square payment or change
-the price snapshot. The explicit collected $40 increases Memberships Collected
-and Total Registration Funds, but not Online Funds or Tournament Payout Funds;
-it does not send email.
+check-in remains blocked. Staff contacts the participant about the $40 seasonal
+membership and uses the single **CONFIRM MEMBERSHIP** action. That action
+activates the membership, records the Admin confirmation, and clears the review;
+check-in then becomes available. If the participant declines, use the existing
+Cancel Registration workflow. There is no separate Mark Collected action and no
+membership receivable or payment reconciliation workflow inside AITT.
 Existing-member, contact, and historical membership reviews are unchanged.
 Repeated or previously canceled registrations are allowed through the normal
 membership and payment flow; any rare duplicate is handled administratively
@@ -65,9 +63,10 @@ active members pay $0; new solo anglers pay $40; current/current teams pay $0,
 current/new teams pay $40, and new/new teams pay $80. Bronze, Silver, Gold, and
 Insurance are available to every current registered angler; only one of
 Bronze/Silver/Gold may be selected, while Big Bass and Insurance are independent
-add-ons. An unverified current claim becomes Needs Review. Do not create a
-membership shortfall or hypothetical receivable, and do not silently remove a
-paid/selected option because identity is uncertain; flag it for review.
+add-ons. An unverified current claim becomes Needs Review. Do not block the paid
+registration; keep check-in gated and resolve the review with Confirm Membership
+or Cancel Registration. Payment Summary reports membership selections and their
+$40 equivalent. Payment Recovery is a non-interactive reminder/history only.
 
 Historical non-member records remain readable and their stored historical
 eligibility snapshots are not rewritten by current policy.

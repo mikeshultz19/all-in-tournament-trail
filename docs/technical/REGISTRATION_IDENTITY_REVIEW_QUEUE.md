@@ -77,14 +77,13 @@ An Admin's current decision labels are:
 
 Unmatched Current Member approval uses the existing transaction-safe identity
 resolution, creates the Angler only, and leaves the membership review pending.
-The roster-level Membership Dues control exposes the $40 obligation. After the
-Tournament Director collects it manually, MARK COLLECTED reuses the supported
-membership-confirmation operation, records the Admin and timestamp in review
-history, activates the membership, and clears the review. No payment or
-price-snapshot behavior is added. The explicit collected $40 increases
-Memberships Collected and Total Registration Funds, but not Online Funds or
-Tournament Payout Funds; no email behavior is added. The
-existing-member, contact, and historical membership workflows remain separate.
+The roster-level Membership Dues control exposes the $40 obligation. Staff uses
+CONFIRM MEMBERSHIP to record the Admin confirmation, activate the membership,
+and clear the review; if the participant declines, Cancel Registration is used.
+No Mark Collected or payment-reconciliation action exists. Payment Summary
+counts the Joining/Purchasing selection and its $40 equivalent, while Payment
+Recovery remains informational. The existing-member, contact, and historical
+membership workflows remain separate.
 Repeated tournament registrations are not identity-review cases; the
 Tournament Director handles any rare duplicate administratively after payment.
 

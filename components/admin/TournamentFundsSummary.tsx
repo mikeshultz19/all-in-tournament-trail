@@ -30,12 +30,12 @@ export default function TournamentFundsSummary({ summary, className = "", collap
           </dl>
           <div className="mt-4 grid gap-3 border-t border-[#D4A017]/25 pt-4 text-sm sm:grid-cols-2">
             <SummaryValue label="Total Tournament Payout Funds" value={money(summary.totalTournamentPayoutFundsCents)} emphasized />
-            <SummaryValue label="New Memberships Purchased" value={`${summary.lines.find((line) => line.key === "membership")?.count ?? 0} — ${money(summary.membershipRevenueCents)} collected`} />
+            <SummaryValue label="New Memberships Selected" value={`${summary.lines.find((line) => line.key === "membership")?.count ?? 0} — ${money(summary.membershipRevenueCents)} expected`} />
             <SummaryValue label="Online Registration Funds" value={money(summary.onlineRegistrationFundsCents)} />
             <div className="border-t border-white/10 pt-3 sm:border-t-0 sm:pt-0"><p className="text-[10px] font-black uppercase tracking-[0.12em] text-neutral-500">Walk-Up Funds</p><dl className="mt-2 grid grid-cols-3 gap-2 text-xs"><WalkUpValue label="Cash" value={summary.walkUpFundsByMethod.cash} /><WalkUpValue label="Card" value={summary.walkUpFundsByMethod.card} /><WalkUpValue label="Other" value={summary.walkUpFundsByMethod.other} /></dl></div>
           </div>
           <div className="mt-4 flex flex-wrap items-baseline justify-between gap-3 border-l-2 border-[#D4A017] bg-[#D4A017]/5 px-3 py-3"><span className="text-xs font-black uppercase tracking-[0.12em] text-neutral-300">TOTAL REGISTRATION FUNDS COLLECTED</span><span className="text-xl font-black tabular-nums text-[#D4A017]">{money(summary.totalRegistrationFundsCollectedCents)}</span></div>
-          <p className="mt-2 text-xs text-neutral-500">Processing fees are excluded.</p>
+          <p className="mt-2 text-xs text-neutral-500">Processing fees are excluded. Memberships show selections and expected $40 amounts; manual follow-up is tracked separately.</p>
           {summary.registrationsNeedingReview > 0 || warningLines.length ? <div className="mt-3 text-xs leading-5 text-amber-200" role="alert">{summary.registrationsNeedingReview ? <p>{summary.registrationsNeedingReview} paid registration{summary.registrationsNeedingReview === 1 ? "" : "s"} still need{summary.registrationsNeedingReview === 1 ? "s" : ""} review.</p> : null}{warningLines.length ? <ul className="mt-1 list-disc space-y-1 pl-5">{warningLines.map((warning) => <li key={warning}>{warning}</li>)}</ul> : null}</div> : null}
         </div>
       )}

@@ -9,7 +9,7 @@ const summary: TournamentCollectionSummary = {
   tournamentId: "tournament-1",
   lines: [
     ...(["Base Entry", "Big Bass", "Bronze Pot", "Silver Pot", "Gold Pot", "Insurance Pot"] as const).map((label, index) => ({ key: (["base", "big_bass", "bronze", "silver", "gold", "insurance"] as const)[index], label, count: 0, onlineCount: 0, inPersonCount: 0, configuredFeeCents: 0, feeCents: 0, totalCents: 0 })),
-    { key: "membership", label: "Memberships Collected", count: 0, onlineCount: 0, inPersonCount: 0, configuredFeeCents: 4000, feeCents: 4000, totalCents: 0 },
+    { key: "membership", label: "Memberships Selected", count: 0, onlineCount: 0, inPersonCount: 0, configuredFeeCents: 4000, feeCents: 4000, totalCents: 0 },
   ],
   totalCollectedCents: 0,
   totalTournamentPayoutFundsCents: 0,
@@ -31,7 +31,7 @@ describe("Tournament Funds Summary", () => {
     expect(markup).toContain("Base Entry");
     expect(markup).toContain("Insurance Pot");
     expect(markup).toContain("Total Tournament Payout Funds");
-    expect(markup).toContain("New Memberships Purchased");
+    expect(markup).toContain("New Memberships Selected");
     expect(markup).not.toContain("Membership Charges Collected");
     expect(markup).toContain("TOTAL REGISTRATION FUNDS COLLECTED");
     expect(markup).not.toContain("Shortfall");
@@ -47,7 +47,7 @@ describe("Tournament Funds Summary", () => {
       missing: ["Walk-up face-value mismatch — Boat #5 (registration reg-5): recorded $700.70 vs expected $680.00; unexplained difference $20.70."],
       membershipReconciliationWarnings: ["Membership classification/payment mismatch — Boat #16 (registration reg-16), participant position 2."],
     }} />);
-    expect(markup).toContain("6 — $240.00 collected");
+    expect(markup).toContain("6 — $240.00 expected");
     expect(markup).not.toContain("Membership Charges Collected");
     expect(markup).toContain("Boat #5");
     expect(markup).toContain("Boat #16");

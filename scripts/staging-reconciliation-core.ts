@@ -6,7 +6,6 @@ export type ParticipantReconciliationInput = {
   reviewStatus: string | null;
   reviewKind: string | null;
   submittedMembership: string | null;
-  manualCollectionMarkerCount: number;
   checkedIn: boolean;
 };
 
@@ -25,14 +24,6 @@ export type ParticipantReconciliationResult = {
 export function reconcileParticipant(
   input: ParticipantReconciliationInput,
 ): ParticipantReconciliationResult {
-  if (input.manualCollectionMarkerCount > 1) {
-    return {
-      state: "invariant_failure",
-      checkInBlocked: true,
-      reason: "duplicate manual collection evidence",
-    };
-  }
-
   if (input.reviewStatus === "review_required") {
     return {
       state: "actionable",
@@ -48,10 +39,7 @@ export function reconcileParticipant(
     return {
       state: "verified",
       checkInBlocked: false,
-      reason:
-        input.manualCollectionMarkerCount === 1
-          ? "active membership and manual collection evidence verified"
-          : "active current-season membership verified",
+      reason: "active current-season membership verified",
     };
   }
 

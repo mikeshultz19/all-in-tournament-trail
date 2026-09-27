@@ -8,7 +8,7 @@ describe("Tournament Funds Summary", () => {
     const summary = {
       tournamentId: "tournament-1", lines: [
         ...(["base", "big_bass", "bronze", "silver", "gold", "insurance"] as const).map((key) => ({ key, label: key, count: 0, onlineCount: 0, inPersonCount: 0, configuredFeeCents: 0, feeCents: 0, totalCents: 0 })),
-        { key: "membership" as const, label: "Memberships Collected", count: 6, onlineCount: 3, inPersonCount: 3, configuredFeeCents: 4000, feeCents: 4000, totalCents: 24000 },
+        { key: "membership" as const, label: "Memberships Selected", count: 6, onlineCount: 3, inPersonCount: 3, configuredFeeCents: 4000, feeCents: 4000, totalCents: 24000 },
       ], totalCollectedCents: 0, totalTournamentPayoutFundsCents: 0, membershipRevenueCents: 24000, totalRegistrationFundsCollectedCents: 24000, onlineRegistrationFundsCents: 12000, walkUpFundsByMethod: { cash: 0, card: 0, other: 0 }, paidEntries: 3, confirmedPaidEntries: 3, registrationsNeedingReview: 0, morningCandidates: [], missing: [],
     };
     expect(renderToStaticMarkup(<TournamentFundsSummary summary={summary} />)).toContain("6 — $240.00");

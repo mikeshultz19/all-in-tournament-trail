@@ -160,15 +160,13 @@ payment state, and Square payment ID. Active walk-ups require a payment
 reference and a recorded Cash, Card, or Other method. Cancelled, failed,
 abandoned, duplicate/unpaid, and otherwise uncollected records are excluded.
 Check-In and DQ states do not change collected totals.
-Needs Review does not change a collected payment total, but remains visibly
-flagged for operational resolution. Manual membership revenue is counted only
-when the supported MARK COLLECTED action records exact deduplicated
-registration/review evidence; an active membership or identity normalization
-alone never implies revenue. Each qualifying marker counts once, adds $40 to
-Memberships Collected and Total Registration Funds, and does not change Online
-Funds, Square totals, or Tournament Payout Funds. The same registration-level
-component must be used by the roster, All Registrations, cancellation detail,
-and exports.
+Needs Review does not block a paid registration, but it gates check-in until
+staff selects Confirm Membership or cancels the registration. Payment Summary
+counts every Joining/Purchasing selection and calculates the $40 equivalent;
+it does not infer a separate receivable or depend on Mark Collected. Payment
+Recovery is a non-interactive informational record for manual follow-up. The
+same registration-level component must be used by the roster, All Registrations,
+cancellation detail, and exports.
 
 Walk-up records store payment method and selected registration fields, so the
 summary derives their face-value categories from those fields rather than the
@@ -473,16 +471,13 @@ For an overview of the project, begin with **00_START_HERE.md**.
 
 ## Membership review and collected funds
 
-The Financial Summary reports recorded registration funds only. An unverified
-Current Member claim is resolved through the Admin **APPROVE NEW ANGLER** path,
-which creates the canonical Angler only and leaves the membership review
-pending. The roster-level **MEMBERSHIP DUES** control lists the $40 obligation.
-After the Tournament Director collects it manually, **MARK COLLECTED** reuses
-the existing membership-confirmation operation and records the confirming Admin
-and timestamp. It does not process payment or alter the registration price
-snapshot. The explicit collected $40 increases Memberships Collected and Total
-Registration Funds, but not Online Funds or Tournament Payout Funds; it does
-not send collection email. Confirm Existing Member adds no membership
-revenue. Historical non-member records remain
+The Financial Summary reports registration selections and expected amounts. An
+unverified Current Member claim is resolved through the Admin **CONFIRM
+MEMBERSHIP** action, which creates the canonical Angler, activates the $40
+seasonal membership, and clears the review. The roster-level **MEMBERSHIP DUES**
+control lists the obligation until that action is taken. If the participant
+declines, use Cancel Registration. There is no Mark Collected action and no
+separate payment workflow. Confirm Existing Member adds no membership revenue.
+Historical non-member records remain
 available for recordkeeping. Processor and bank reconciliation remain separate
 operational checks.

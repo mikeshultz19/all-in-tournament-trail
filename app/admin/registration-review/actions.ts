@@ -577,23 +577,20 @@ export async function resolveHistoricalMembershipReviewAction(_previousState: Re
   }
 }
 
-export async function markMembershipCollectedAction(_previousState: RegistrationOperationsActionState, formData: FormData): Promise<RegistrationOperationsActionState> {
+export async function confirmCurrentMemberAsNewAction(_previousState: RegistrationReviewActionState, formData: FormData): Promise<RegistrationReviewActionState> {
   void _previousState;
   const admin = await requireAdminUser();
   const reviewId = text(formData, "reviewId");
-  if (!reviewId) return { status: "error", message: "Select a membership due." };
+  if (!reviewId) return { status: "error", message: "Select a membership review." };
   try {
-    await resolveHistoricalMembershipReview({
-      reviewId,
-      membership: "joining",
-      adminUserId: admin.id,
-      reviewNote: `Manual $40 membership collected at check-in by ${getAdminDisplayName(admin)} (${admin.id}).`,
-    });
+    const reviewNote = `Membership confirmed by ${getAdminDisplayName(admin)} (${admin.id}).`;
+    await resolveRegistrationIdentityReview({ reviewId, resolution: "new", existingAnglerId: null, adminUserId: admin.id, reviewNote });
+    await resolveHistoricalMembershipReview({ reviewId, membership: "joining", adminUserId: admin.id, reviewNote });
     revalidateRegistrationOperations();
-    return { status: "success", message: "Membership collected and confirmed." };
+    return { status: "success", message: "Membership confirmed. Check-in is now available." };
   } catch (error) {
-    console.error("Membership due confirmation failed.", error);
-    return { status: "error", message: "The membership due could not be confirmed." };
+    console.error("Current-member membership confirmation failed.", error);
+    return { status: "error", message: "The membership could not be confirmed." };
   }
 }
 
