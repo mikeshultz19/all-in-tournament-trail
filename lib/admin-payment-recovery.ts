@@ -29,3 +29,50 @@ export async function listPaymentRecoveryAttempts(): Promise<PaymentRecoveryAtte
   return (data ?? []) as PaymentRecoveryAttempt[];
 }
 
+export type ManualCollectionItem = {
+  reviewId: string;
+  tournamentId: string;
+  tournamentName: string;
+  registrationNumber: number | null;
+  participantName: string;
+  registeredAt: string;
+  amountCents: number;
+  status: "pending" | "collected";
+};
+
+const MANUAL_COLLECTION_MARKER = "Manual $40 membership collected at check-in";
+
+export async function listManualCollectionItems(): Promise<ManualCollectionItem[]> {
+  const { data, error } = await createSupabaseServerClient()
+    .from("registration_identity_reviews")
+    .select("id,review_status,review_note,review_kind,submitted_membership,original_display_name,registration:tournament_registrations!inner(id,boat_number,registered_at,registration_status,tournament:tournaments!inner(id,name))")
+    .eq("review_kind", "membership")
+    .eq("submitted_membership", "current")
+    .order("created_at", { ascending: false });
+
+  if (error) throw new Error("Manual collection records could not be loaded.", { cause: error });
+
+  type Row = {
+    id: string;
+    review_status: string;
+    review_note: string | null;
+    original_display_name: string;
+    registration: {
+      boat_number: number | null;
+      registered_at: string;
+      tournament: { id: string; name: string };
+    };
+  };
+  return ((data ?? []) as unknown as Row[])
+    .filter((row) => row.review_status === "review_required" || row.review_note?.startsWith(MANUAL_COLLECTION_MARKER))
+    .map((row) => ({
+      reviewId: row.id,
+      tournamentId: row.registration.tournament.id,
+      tournamentName: row.registration.tournament.name,
+      registrationNumber: row.registration.boat_number,
+      participantName: row.original_display_name,
+      registeredAt: row.registration.registered_at,
+      amountCents: 4000,
+      status: row.review_note?.startsWith(MANUAL_COLLECTION_MARKER) ? "collected" : "pending",
+    }));
+}
