@@ -96,6 +96,60 @@ and a manual $40 membership collection.
 - Record the scenario, observed result, expected result, and any follow-up
   change required after each rehearsal.
 
+## Additional Admin Center walkthrough
+
+The staff review should also cover the surrounding tools that support a
+tournament from preparation through results. Staff should understand what each
+area does even when only the owner is authorized to make the final change.
+
+### Public information and tournament setup
+
+- **Rules:** locate the Official Tournament Rules and explain which rules are
+  controlled documents rather than casual announcement text.
+- **FAQ:** use the FAQ to answer common angler questions and verify that answers
+  agree with the Official Rules.
+- **Announcements:** create, edit, publish, and remove an announcement in
+  staging; review the title, dates, practice information, registration timing,
+  and public wording before saving.
+- **Tournament Info:** review tournament name, date, lake, ramp, hours, stop
+  fishing, launch details, registration status, practice information, and
+  presented-by text. Confirm the selected tournament before saving.
+
+### Money and roster operations
+
+- Review online payment status, walk-up payment method, membership dues,
+  Payment Recovery, Financial Summary, canceled registrations, and manual
+  collection history.
+- Confirm that staff do not edit calculated totals or ask a customer to pay
+  again while a Square result is uncertain.
+- Practice checking a saved entry from Registration Review through Check-In.
+
+### CSV import and tournament completion
+
+- Download and identify the correct registration roster before tournament day.
+- Review the WeighFish CSV import screen and confirm the selected tournament
+  before importing.
+- Understand normal zero-fish and zero-weight rows versus identity or duplicate
+  rows that require review.
+- Reconcile unmatched names and misspellings without silently overwriting
+  registration evidence.
+- Review payout, Insurance Pot, closeout, and public-results readiness at a
+  high level.
+- The staff walkthrough should explain the path through closeout and results,
+  even if the owner performs the final approval and publication.
+
+## Responsibility boundaries
+
+| Area | Staff should learn | Current primary responsibility |
+|---|---|---|
+| Online registration and walk-ups | Complete entries, collect payment, resolve ordinary prompts, and escalate uncertainty. | Tournament Director staff, with owner support. |
+| Membership validation and manual dues | Verify information, collect the $40 when required, and understand Mark Collected. | Tournament Director staff. |
+| Roster, Check-In, and cancellation | Review entries, check anglers in, and preserve cancellation evidence. | Tournament Director staff. |
+| Financial Summary and Payment Recovery | Read totals, identify unusual payment states, and never recharge uncertain customers. | Tournament Director staff; owner handles unusual corrections. |
+| Rules, FAQ, announcements, and Tournament Info | Locate information and prepare or review changes carefully. | Staff may assist; owner approves sensitive public changes. |
+| CSV import and identity reconciliation | Import the correct file, review mismatches, and escalate ambiguous names. | Tournament Director staff with owner support. |
+| Closeout, results, AOY, and Championship publication | Understand the sequence and required evidence. | Owner performs final approval and publication for now. |
+
 ## Recommended teaching scenarios
 
 - Solo Current Member with complete information.
