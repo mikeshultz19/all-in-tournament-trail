@@ -34,6 +34,68 @@ payment, confirm the same entry in all relevant places:
 6. Membership or Needs Review records when the test involved membership or identity.
 7. Check-In availability after any required review is resolved.
 
+## Staff rehearsal structure
+
+Run the walkthrough in stages. Each participant should perform the clicks in
+staging rather than only watch a demonstration.
+
+### Stage 1 — Public online registration
+
+- Select the tournament and registration type.
+- Enter a Solo registration and a Team registration.
+- Search for an existing member and enter a new angler.
+- Review membership choices, side pots, payout pot selection, waiver
+  acknowledgment, totals, Square handoff, and confirmation.
+- Explain the difference between registration number, payment status, and
+  tournament-morning check-in.
+
+### Stage 2 — Tournament Director roster review
+
+- Open the selected tournament in Registration Review.
+- Read the roster columns: participants, member status, membership fees, pots,
+  insurance, Big Bass, registered time, and Check-In / Review status.
+- Open All Registrations and explain active versus canceled history.
+- Review Payment Recovery and the non-interactive Manual Collections Pending
+  history.
+- Open the Financial Summary and connect the displayed totals to recorded
+  registrations and payments.
+
+### Stage 3 — Tournament-morning walk-up process
+
+- Open Add Walk-Up and confirm the default Team workflow.
+- Use Member Search when appropriate, while still completing every required
+  contact field.
+- Confirm both team anglers, membership choices, payment method, member pot,
+  side pots, total collected, waiver reminder, Save Walk-Up, and Cancel Walk-Up.
+- Explain that the next registration number is assigned automatically and that
+  the boat number is handled during tournament check-in.
+- Check the saved entry in the active roster and confirm it can be checked in
+  when all review requirements are resolved.
+
+### Stage 4 — Failure and recovery rehearsal
+
+For each failure scenario, staff should answer three questions:
+
+1. What does the customer or staff member see?
+2. Does the registration or payment still exist?
+3. What is the next manual step, if any?
+
+Practice missing fields, membership Needs Review, contact differences, a
+missing Angler 2, a same-team duplicate, duplicate separate registrations,
+payment interruption, payment decline, email failure, walk-up cancellation,
+and a manual $40 membership collection.
+
+### Stage 5 — Escalation and debrief
+
+- Staff should pause and contact the Tournament Director when the payment
+  result is uncertain, rather than charging again.
+- The Tournament Director checks Square, the roster, All Registrations, Payment
+  Recovery, and the Financial Summary before deciding what to do.
+- If a correction is beyond the documented workflow, preserve the evidence and
+  escalate it to the owner before changing records.
+- Record the scenario, observed result, expected result, and any follow-up
+  change required after each rehearsal.
+
 ## Recommended teaching scenarios
 
 - Solo Current Member with complete information.
