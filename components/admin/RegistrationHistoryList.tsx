@@ -13,10 +13,14 @@ type MembershipSnapshot = {
 
 export default function RegistrationHistoryList({
   rows,
+  compact = false,
 }: {
   rows: readonly AdminRegistrationHistoryRow[];
+  compact?: boolean;
 }) {
   if (!rows.length) return null;
+
+  if (compact) return <CompactCanceledHistoryList rows={rows} />;
 
   return (
     <section className="mt-6 overflow-hidden rounded-sm border border-white/10 bg-[#111111]" aria-label="Registration history results">
@@ -275,6 +279,29 @@ function paymentSummary(row: AdminRegistrationHistoryRow) {
       : "Needs Review";
   }
   return row.paymentReference ? "Recorded" : "Needs Review";
+}
+
+function CompactCanceledHistoryList({ rows }: { rows: readonly AdminRegistrationHistoryRow[] }) {
+  return (
+    <section className="mt-6 overflow-hidden rounded-sm border border-white/10 bg-[#111111]" aria-label="Canceled registration history">
+      <div className="hidden border-b border-white/10 bg-black/40 px-4 py-3 text-[10px] font-black uppercase tracking-[0.14em] text-neutral-500 lg:grid lg:grid-cols-[74px_72px_minmax(220px,1fr)_144px_150px_120px_114px] lg:gap-4">
+        <span>Boat #</span><span>Type</span><span>Participants</span><span>Registration / Status</span><span>Member Status</span><span>Payment / Paid</span><span>Registered</span>
+      </div>
+      <div className="divide-y divide-white/10">
+        {rows.map((row) => (
+          <div key={row.id} className="grid gap-3 px-4 py-4 lg:grid-cols-[74px_72px_minmax(220px,1fr)_144px_150px_120px_114px] lg:items-center lg:gap-4">
+            <SummaryField label="Boat #" className="lg:justify-center"><span className="text-lg font-black text-[#D4A017] lg:text-base">{row.boatNumber?.toString() ?? "—"}</span></SummaryField>
+            <SummaryField label="Type" className="lg:justify-center"><AdminStatusBadge className="min-h-6">{row.registrationType === "team" ? "Team" : "Solo"}</AdminStatusBadge></SummaryField>
+            <SummaryField label="Participants"><span className="block break-words font-bold text-neutral-100">{row.angler1Name}{row.angler2Name ? ` / ${row.angler2Name}` : ""}</span></SummaryField>
+            <SummaryField label="Registration / Status"><div className="flex flex-wrap gap-2"><AdminStatusBadge tone={row.source === "walk_up" ? "attention" : "neutral"}>{row.source === "walk_up" ? "Walk-Up" : "Online"}</AdminStatusBadge><AdminStatusBadge tone="critical">Canceled</AdminStatusBadge></div></SummaryField>
+            <SummaryField label="Member Status"><span className="block text-sm font-semibold text-neutral-200">{memberStatusSummary(row)}</span></SummaryField>
+            <SummaryField label="Payment / Paid"><span className="block text-sm font-semibold text-neutral-200">{paymentSummary(row)}</span><span className="mt-0.5 block text-xs text-neutral-500">{money(row.priceSnapshot?.totalCents)}</span></SummaryField>
+            <SummaryField label="Registered"><span className="block text-sm font-semibold text-neutral-200">{dateOnly(row.registeredAt)}</span></SummaryField>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
 }
 
 function registrationPaymentMethod(row: AdminRegistrationHistoryRow) {

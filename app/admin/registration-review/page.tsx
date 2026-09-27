@@ -170,7 +170,7 @@ export default async function RegistrationReviewPage({ searchParams }: { searchP
           rangeStart={rangeStart}
           rangeEnd={rangeEnd}
         />
-      {isCancelledFilter ? <RegistrationHistoryList rows={cancelledHistory} /> : <>
+      {isCancelledFilter ? <RegistrationHistoryList rows={cancelledHistory} compact /> : <>
       <div className="grid gap-3 p-3 md:hidden" data-testid="mobile-registration-roster">
         {rows.map((row) => <MobileRosterCard key={row.id} row={row} tournamentId={selectedTournament.id} reviews={reviewsByRegistration.get(row.id) ?? []} anglers={anglers} />)}
         {!rows.length ? <p className="border border-white/10 bg-[#111] px-4 py-10 text-center text-sm text-neutral-500">{emptyRosterMessage(filter)}</p> : null}

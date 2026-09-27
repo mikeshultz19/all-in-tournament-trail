@@ -34,6 +34,7 @@ describe("manual registration cancellation", () => {
     expect(controls).toContain('name="cancellationNote"');
     expect(controls).toContain("minLength={3}");
     expect(reviewPage).toContain("<CancelRegistrationControl");
+    expect(reviewPage).toContain("<RegistrationHistoryList rows={cancelledHistory} compact />");
     expect(reviewPage).toContain("registrations={allRows.map");
     expect(reviewPage).not.toContain("<CancelRegistrationControl tournamentId={tournamentId}");
   });
@@ -73,5 +74,12 @@ describe("manual registration cancellation", () => {
   it("does not present canceled history as actively checked in", () => {
     expect(historyList).toContain('row.status === "active" && row.checkedInAt');
     expect(historyList).toContain("historical check-in recorded");
+  });
+
+  it("keeps canceled history compact while All Registrations retains the detail disclosure", () => {
+    expect(historyList).toContain("compact?: boolean");
+    expect(historyList).toContain("CompactCanceledHistoryList");
+    expect(historyList).toContain('aria-label="Canceled registration history"');
+    expect(historyList).toContain("<details key={row.id}");
   });
 });
