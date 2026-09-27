@@ -156,6 +156,15 @@ The final Codex audit and the independent Claude audit should use the same
 priority order. Compare findings after both audits and classify each item as a
 launch blocker, a Tournament Director manual step, or post-launch hardening.
 
+### Online-registration launch boundary
+
+The launch date for opening online registration ends at successful registration,
+payment collection, walk-up support, check-in, and reliable roster/financial
+evidence. CSV import and every workflow after CSV import are not required to
+open registration. They will be completed, tested, and audited during the
+month before the tournament, with WeighFish available as the operational
+fallback.
+
 ### Launch-critical
 
 - Successful online registration persistence after verified payment.
@@ -174,8 +183,9 @@ launch blocker, a Tournament Director manual step, or post-launch hardening.
 - Payment Summary refinements, Generate Checks refinements, and reconciliation
   conveniences when the same evidence is available in WeighFish.
 - CSV export/import and roster identity reconciliation. These are valuable to
-  verify, but WeighFish remains the operational fallback and they are not a
-  hard online-registration launch blocker.
+  verify during the month before the tournament, but WeighFish remains the
+  operational fallback and they are not part of the online-registration launch
+  gate.
 - Operational reporting improvements that do not prevent registration,
   payment collection, check-in, or roster recovery.
 
@@ -184,8 +194,9 @@ launch blocker, a Tournament Director manual step, or post-launch hardening.
 - Public results presentation and publishing polish.
 - Winner Circle display and public tournament result accuracy review.
 - AOY point standings and Championship projections on the public website.
-- Final closeout and payout refinements that can be verified independently in
-  WeighFish before publication.
+- CSV import, final closeout, payout refinements, results, AOY, Championship,
+  and Winner Circle work that can be verified independently in WeighFish before
+  publication.
 
 Public publishing remains deliberately owner-controlled. A registration or
 payment must not be delayed because results, AOY, Championship, or Winner
