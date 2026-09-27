@@ -168,13 +168,14 @@ launch blocker, a Tournament Director manual step, or post-launch hardening.
 - Walk-up save, cancel, payment recording, membership validation, and check-in.
 - Financial Summary and payment-related counts being understandable and tied to
   recorded registrations.
-- CSV export/import boundary and enough roster identity information to support
-  WeighFish operations.
 
 ### Important but not a launch blocker
 
 - Payment Summary refinements, Generate Checks refinements, and reconciliation
   conveniences when the same evidence is available in WeighFish.
+- CSV export/import and roster identity reconciliation. These are valuable to
+  verify, but WeighFish remains the operational fallback and they are not a
+  hard online-registration launch blocker.
 - Operational reporting improvements that do not prevent registration,
   payment collection, check-in, or roster recovery.
 
