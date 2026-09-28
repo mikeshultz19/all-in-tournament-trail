@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 
 import { getAdminDisplayName, requireAdminUser } from "@/lib/admin-auth";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
-import { getAdminMemberById } from "@/lib/admin-members";
+import { getAdminMemberByEmail, getAdminMemberById } from "@/lib/admin-members";
 import { getMembershipForAnglerAndSeason, listMembersForSeason } from "@/lib/memberships";
 import { getTournamentById } from "@/lib/tournaments";
 import { deliverRegistrationConfirmationEmails } from "@/lib/registration-confirmation-email";
@@ -302,6 +302,21 @@ export async function createWalkUpRegistrationAction(
       };
     });
   }
+
+  // Correct an accidental Joining/Purchasing claim when staff typed an
+  // existing active member manually. A name mismatch stays in identity review.
+  const manuallyTypedJoining = await Promise.all(anglers.map(async (angler) => {
+    if (angler.membership !== "joining" || !angler.email) return null;
+    const existing = await getAdminMemberByEmail(angler.email);
+    if (!existing || existing.membershipStatus !== "active") return null;
+    const normalize = (value: string) => value.trim().toLowerCase().replace(/\s+/g, " ");
+    return normalize(`${existing.firstName} ${existing.lastName}`) === normalize(`${angler.firstName} ${angler.lastName}`)
+      ? existing.id
+      : null;
+  }));
+  anglers = anglers.map((angler, index) => manuallyTypedJoining[index]
+    ? { ...angler, membership: "current" as const }
+    : angler);
 
   const memberPotValue = text(formData, "memberPot");
   const memberPot = ["bronze", "silver", "gold"].includes(memberPotValue)

@@ -154,6 +154,34 @@ export async function getAdminMemberById(
   };
 }
 
+export async function getAdminMemberByEmail(email: string): Promise<AdminMemberDetail | null> {
+  const normalizedEmail = email.trim().toLowerCase();
+  if (!normalizedEmail) return null;
+  const supabase = createSupabaseServerClient();
+  const { data, error } = await supabase
+    .from("anglers")
+    .select("id,first_name,last_name,email,phone,street_address,city,state,zip_code,is_active,merged_into_angler_id,memberships(status,effective_date,updated_at,season:seasons!inner(name,is_active),first_eligible_tournament:tournaments!memberships_first_eligible_tournament_id_fkey(name))")
+    .ilike("email", normalizedEmail)
+    .eq("is_active", true)
+    .is("merged_into_angler_id", null)
+    .maybeSingle();
+  if (error) throw new AdminMemberDataError("We could not load the member.", "invalid_reference", undefined, { cause: error });
+  if (!data) return null;
+  const row = data as unknown as AdminMemberDetailQueryRow;
+  const activeMembership = [...(row.memberships ?? [])].sort((left, right) => {
+    if (left.season.is_active !== right.season.is_active) return left.season.is_active ? -1 : 1;
+    return right.updated_at.localeCompare(left.updated_at);
+  })[0];
+  return {
+    id: row.id, firstName: row.first_name, lastName: row.last_name, email: row.email,
+    phone: row.phone, streetAddress: row.street_address, city: row.city, state: row.state,
+    zipCode: row.zip_code, active: row.is_active, mergedIntoAnglerId: row.merged_into_angler_id,
+    membershipStatus: activeMembership?.status ?? null, seasonName: activeMembership?.season.name ?? null,
+    firstEligibleTournamentName: activeMembership?.first_eligible_tournament?.name ?? null,
+    effectiveDate: activeMembership?.effective_date ?? null,
+  };
+}
+
 export async function setAdminMemberActive(
   memberId: string,
   active: boolean,

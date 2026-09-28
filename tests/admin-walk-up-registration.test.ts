@@ -7,6 +7,7 @@ const { deliverRegistrationConfirmationEmails, revalidatePath, requireAdminUser,
   requireAdminUser: vi.fn(),
   rpc: vi.fn(),
 }));
+const getAdminMemberByEmail = vi.hoisted(() => vi.fn());
 
 vi.mock("next/cache", () => ({
   revalidatePath,
@@ -14,6 +15,11 @@ vi.mock("next/cache", () => ({
 
 vi.mock("@/lib/admin-auth", () => ({
   requireAdminUser,
+}));
+
+vi.mock("@/lib/admin-members", () => ({
+  getAdminMemberById: vi.fn(),
+  getAdminMemberByEmail,
 }));
 
 vi.mock("@/lib/registration-confirmation-email", () => ({
@@ -78,6 +84,8 @@ describe("walk-up registration draft preservation", () => {
     requireAdminUser.mockResolvedValue({ id: "admin-1" });
     deliverRegistrationConfirmationEmails.mockResolvedValue({ sent: 2, failed: 0 });
     rpc.mockReset();
+    getAdminMemberByEmail.mockReset();
+    getAdminMemberByEmail.mockResolvedValue(null);
   });
 
   it("rejects a bypassed non-member walk-up classification", async () => {
@@ -156,6 +164,49 @@ describe("walk-up registration draft preservation", () => {
     expect(deliverRegistrationConfirmationEmails).toHaveBeenCalledWith("walk-up-registration-1");
     expect(revalidatePath).toHaveBeenCalledWith("/admin");
     expect(revalidatePath).toHaveBeenCalledWith("/registrations");
+  });
+
+  it("corrects a manually typed active member before membership pricing", async () => {
+    rpc.mockResolvedValue({ data: { id: "walk-up-existing-member" }, error: null });
+    getAdminMemberByEmail.mockResolvedValueOnce({
+      id: "member-1",
+      firstName: "Alex",
+      lastName: "Carter",
+      email: "alex.carter@example.com",
+      phone: "512-555-0101",
+      active: true,
+      mergedIntoAnglerId: null,
+      membershipStatus: "active",
+      seasonName: "2026",
+      firstEligibleTournamentName: null,
+      effectiveDate: "2026-01-01",
+      streetAddress: "101 Lake View Rd",
+      city: "Austin",
+      state: "TX",
+      zipCode: "78701",
+    });
+
+    const result = await createWalkUpRegistrationAction(
+      { status: "idle", message: "" },
+      buildWalkUpFormData({
+        memberPot: "",
+        bigBass: false,
+        insurance: false,
+        angler1Membership: "joining",
+        totalPaid: "60.00",
+      }),
+    );
+
+    expect(result.status).toBe("success");
+    expect(rpc).toHaveBeenCalledWith(
+      "admin_create_safe_walkup_registration",
+      expect.objectContaining({
+        p_total_paid_cents: 6000,
+        p_anglers: expect.arrayContaining([
+          expect.objectContaining({ firstName: "Alex", membership: "current" }),
+        ]),
+      }),
+    );
   });
 
   it("uses normalized deduplicated recipients for Team and Solo delivery counts", async () => {
