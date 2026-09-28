@@ -74,6 +74,7 @@ describe("verified Square registration payments", () => {
     expect(square).toContain("timingSafeEqual");
     expect(reconcile).toContain("reconcileOnlinePaymentAttempt");
     expect(attempts).toContain("retrieveSquarePayment(attempt.square_payment_id)");
+    expect(attempts).toContain('recover_stale_online_payment_attempt');
   });
 
   it("does not persist abandoned attempts as active registrations", () => {

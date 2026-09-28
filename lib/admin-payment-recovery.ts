@@ -19,6 +19,9 @@ export type PaymentRecoveryAttempt = {
 };
 
 export async function listPaymentRecoveryAttempts(): Promise<PaymentRecoveryAttempt[]> {
+  const { error: recoveryError } = await createSupabaseServerClient()
+    .rpc("admin_recover_stale_online_payment_attempts");
+  if (recoveryError) throw new Error("Stale payment attempts could not be recovered.", { cause: recoveryError });
   const { data, error } = await createSupabaseServerClient()
     .from("online_registration_payment_attempts")
     .select("id,tournament_id,registration_request,quote_snapshot,amount_cents,state,square_payment_id,square_status,registration_id,failure_code,failure_message,created_at,updated_at")

@@ -6,6 +6,7 @@ describe("payment recovery visibility", () => {
     const source = fs.readFileSync("lib/admin-payment-recovery.ts", "utf8");
     expect(source).toContain('from("online_registration_payment_attempts")');
     expect(source).toContain('.eq("state", "reconciliation_required")');
+    expect(source).toContain('admin_recover_stale_online_payment_attempts');
   });
 
   it("exposes the recovery queue in Admin navigation and warns against recharging", () => {

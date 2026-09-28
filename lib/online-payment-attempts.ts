@@ -169,6 +169,9 @@ export async function processOnlineCardPayment(attemptId: string, sourceId: stri
 }
 
 export async function reconcileOnlinePaymentAttempt(attemptId: string) {
+  await createSupabaseServerClient().rpc("recover_stale_online_payment_attempt", {
+    p_attempt_id: attemptId,
+  });
   const attempt = await loadAttempt(attemptId);
   if (attempt.state === "completed") {
     if (attempt.registration_id) await deliverCompletedRegistrationEmail(attempt.registration_id);
