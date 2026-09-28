@@ -62,6 +62,14 @@ export function getRegistrationReviewPresentation(
     };
   }
 
+  if (review.submittedMembership === "current") {
+    return {
+      heading: "Membership needs confirmation",
+      issue: "Current Member was selected, but the membership could not be verified automatically.",
+      identityFollowUp: "Confirm the angler below if they are the same person. If the $40 membership is not paid, use Cancel Registration.",
+    };
+  }
+
   if (/Canonical identity requires administrative approval/i.test(review.reason) && review.submittedMembership === "joining") {
     return {
       heading: "New membership needs approval",

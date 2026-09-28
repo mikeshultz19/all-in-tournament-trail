@@ -116,7 +116,7 @@ export default function RegistrationReviewResolutionForm({
   );
 }
 
-function CurrentMemberConfirmationForm({ reviewId }: { reviewId: string }) {
+export function CurrentMemberConfirmationForm({ reviewId }: { reviewId: string }) {
   const [state, action, pending] = useActionState(confirmCurrentMemberAsNewAction, initialState);
   return (
     <form action={action} className="mt-4 grid gap-3 border border-amber-400/20 bg-black/20 p-3">

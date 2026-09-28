@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-import RegistrationReviewResolutionForm from "@/components/admin/RegistrationReviewResolutionForm";
+import RegistrationReviewResolutionForm, { CurrentMemberConfirmationForm } from "@/components/admin/RegistrationReviewResolutionForm";
 import HistoricalMembershipReviewForm from "@/components/admin/HistoricalMembershipReviewForm";
 import RegistrationCheckInControl from "@/components/admin/RegistrationCheckInControl";
 import RegistrationCheckInSummaryStat from "@/components/admin/RegistrationCheckInSummaryStat";
@@ -249,7 +249,8 @@ function RegistrationReviewPanels({ reviews, anglers }: { reviews: Awaited<Retur
       return <details key={review.id} open className="min-w-0 border border-amber-400/20 bg-[#111] p-3">
         <summary className="cursor-pointer text-sm font-bold text-amber-200">{review.participantName} — {presentation.heading}</summary>
         <div className="mt-2 text-xs text-neutral-300"><p><span className="font-bold text-white">Issue:</span> {presentation.issue}</p>{presentation.identityFollowUp ? <p className="mt-1 text-neutral-400">{presentation.identityFollowUp}</p> : null}</div>
-        {review.reviewKind === "membership" ? <HistoricalMembershipReviewForm reviewId={review.id} />
+        {review.reviewKind === "membership" && review.submittedMembership === "current" ? <CurrentMemberConfirmationForm reviewId={review.id} />
+          : review.reviewKind === "membership" ? <HistoricalMembershipReviewForm reviewId={review.id} />
           : <RegistrationReviewResolutionForm reviewId={review.id} anglers={anglers} suggestedAnglerIds={review.suggestedAnglers.map((angler) => angler.id)} submission={{ name: review.participantName, email: review.email, phone: review.phone, membership: review.submittedMembership }} />}
       </details>;
     })}

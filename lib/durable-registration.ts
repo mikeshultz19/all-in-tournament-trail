@@ -61,10 +61,34 @@ export async function completeDurableRegistration(
       { cause: canonicalAnglersResult.error },
     );
   }
+  const inactiveAnglersResult = await supabase
+    .from("anglers")
+    .select("id,email")
+    .eq("is_active", false)
+    .is("merged_into_angler_id", null);
+  if (inactiveAnglersResult.error) {
+    throw new DurableRegistrationError(
+      "Registration identity could not be evaluated.",
+      { cause: inactiveAnglersResult.error },
+    );
+  }
   const identityClassification = classifyRegistrationIdentity(
     input.anglers,
     canonicalAnglersResult.data ?? [],
   );
+  for (const [index, submitted] of input.anglers.entries()) {
+    const normalizedEmail = submitted.email.trim().toLowerCase();
+    if (!normalizedEmail) continue;
+    const inactiveMatch = (inactiveAnglersResult.data ?? []).some(
+      (angler) => angler.email?.trim().toLowerCase() === normalizedEmail,
+    );
+    if (!inactiveMatch) continue;
+    const participant = identityClassification.participants[index];
+    participant.status = "review_required";
+    participant.reason = participant.reason
+      ? `${participant.reason} The submitted email belongs to an inactive member record; confirm the identity.`
+      : "The submitted email belongs to an inactive member record; confirm the identity.";
+  }
   const membershipIssues = await getRegistrationMembershipReviewIssues(
     input.anglers,
     tournament,

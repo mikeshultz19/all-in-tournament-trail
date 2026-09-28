@@ -134,6 +134,7 @@ export function AddWalkUpControl({ tournamentId }: { tournamentId: string }) {
         type="button"
         aria-label="Close walk-up form"
         onClick={closeWalkUp}
+        disabled={pending}
         className="absolute right-4 top-4 flex size-7 items-center justify-center border border-white/20 bg-black/70 text-xs font-black text-white transition hover:border-[#D4A017] hover:text-[#D4A017] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#D4A017]"
       >
         ×

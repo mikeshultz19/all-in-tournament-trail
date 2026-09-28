@@ -231,7 +231,7 @@ export async function createWalkUpRegistrationAction(
     registrationType === "team" ? (text(formData, "angler2SelectedMemberId") || null) : null,
   ];
 
-  const anglers = [
+  let anglers = [
     {
       firstName: text(formData, "angler1FirstName"),
       lastName: text(formData, "angler1LastName"),
@@ -276,6 +276,31 @@ export async function createWalkUpRegistrationAction(
     if (!selected || !selected.active || selected.mergedIntoAnglerId) {
       return { status: "error", message: "The selected member is no longer active. Search again.", draft };
     }
+  }
+
+  // A member selected from the Admin search is an explicit identity choice.
+  // Use the canonical record for that participant so a stale or misspelled
+  // form value cannot silently link the walk-up to a different person. An
+  // active season membership also means the walk-up is Current, not a second
+  // $40 Joining/Purchasing charge.
+  if (selectedIds.length) {
+    const selectedMembers = await Promise.all(selectedIds.map((id) => getAdminMemberById(id)));
+    anglers = anglers.map((angler, index) => {
+      const selected = selectedMembers[index];
+      if (!selected) return angler;
+      return {
+        ...angler,
+        firstName: selected.firstName,
+        lastName: selected.lastName,
+        email: selected.email?.trim().toLowerCase() ?? "",
+        mobilePhone: selected.phone ?? "",
+        streetAddress: selected.streetAddress ?? "",
+        city: selected.city ?? "",
+        state: selected.state ?? "",
+        zipCode: selected.zipCode ?? "",
+        membership: selected.membershipStatus === "active" ? "current" : angler.membership,
+      };
+    });
   }
 
   const memberPotValue = text(formData, "memberPot");

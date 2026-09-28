@@ -95,16 +95,28 @@ describe("registration identity classification", () => {
     expect(result.participants[0].suggestedAnglerIds).toHaveLength(1);
   });
 
-  it("uses matching email and phone as authoritative without rewriting the submitted name", () => {
+  it("requires confirmation when matching contact details conflict with the name", () => {
     const result = classifyRegistrationIdentity(
       [submitted({ firstName: "Jonathan" })],
       [angler("11111111-1111-4111-8111-111111111111", "John", "Smith", "john@example.com", "817-555-0100")],
     );
     expect(result.participants[0]).toMatchObject({
-      status: "verified",
-      reason: null,
+      status: "review_required",
+      reason: "Submitted email is already associated with John Smith.",
       suggestedAnglerIds: ["11111111-1111-4111-8111-111111111111"],
     });
+  });
+
+  it("routes team anglers sharing one email to review instead of treating them as one person", () => {
+    const result = classifyRegistrationIdentity(
+      [
+        submitted({ firstName: "Alpha", lastName: "One", email: "shared@example.com", mobilePhone: "817-555-0101" }),
+        submitted({ firstName: "Beta", lastName: "Two", email: "shared@example.com", mobilePhone: "817-555-0102" }),
+      ],
+      [],
+    );
+    expect(result.status).toBe("review_required");
+    expect(result.participants.every((participant) => participant.status === "review_required")).toBe(true);
   });
 
   it("treats a name difference by itself as a separate person", () => {

@@ -60,6 +60,7 @@ export function classifyRegistrationIdentity(
   const active = canonicalAnglers.filter(
     (angler) => angler.is_active && !angler.merged_into_angler_id,
   );
+  const submittedEmails = submittedAnglers.map((angler) => normalizeEmail(angler.email));
   const participants = submittedAnglers.map(
     (submitted, index): ParticipantIdentityClassification => {
       const email = normalizeEmail(submitted.email);
@@ -100,6 +101,11 @@ export function classifyRegistrationIdentity(
         emailAndPhoneMatches.length === 1
           ? emailAndPhoneMatches[0]
           : null;
+      const sharedEmailWithAnotherParticipant =
+        submittedEmails[index] !== null &&
+        submittedEmails.some((candidate, candidateIndex) =>
+          candidateIndex !== index && candidate === submittedEmails[index],
+        );
       const materiallyDifferentContact = soleContactCandidate
         ? (
           Boolean(soleContactCandidate.phone) &&
@@ -129,10 +135,12 @@ export function classifyRegistrationIdentity(
           .map((angler) => angler.display_name)
           .join(" and ");
         if (
+          !sharedEmailWithAnotherParticipant &&
           soleHighConfidenceCandidate &&
           !emailAndPhoneConflict &&
           emailMatches.length === 1 &&
-          phoneMatches.length === 1
+          phoneMatches.length === 1 &&
+          soleHighConfidenceCandidate.normalized_name === fullName
         ) {
           return {
             participantPosition: (index + 1) as 1 | 2,
@@ -164,6 +172,15 @@ export function classifyRegistrationIdentity(
           status: "review_required",
           reason,
           suggestedAnglerIds: [...exactCandidates],
+        };
+      }
+
+      if (sharedEmailWithAnotherParticipant) {
+        return {
+          participantPosition: (index + 1) as 1 | 2,
+          status: "review_required",
+          reason: "Two team anglers submitted the same email address; confirm each person before check-in.",
+          suggestedAnglerIds: exactCandidates.size > 0 ? [...exactCandidates] : [],
         };
       }
 
