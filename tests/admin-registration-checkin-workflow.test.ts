@@ -276,10 +276,11 @@ describe("unified Registration & Check-In workflow", () => {
     expect(controls).toContain("cancellationNote");
     expect(controls).toContain("manually through Chase outside AITT");
     expect(actions).toContain("cancelRegistrationAction");
-    expect(actions).toContain('registration_status: "cancelled"');
-    expect(actions).toContain("cancelled_by_admin_id: admin.id");
-    expect(actions).toContain("Cancellation reason:");
-    expect(actions).toContain("Manual refund status:");
+    expect(actions).toContain('rpc("admin_cancel_registration_atomic"');
+    expect(actions).toContain("p_admin_user_id: admin.id");
+    const cancellationMigration = readFileSync("supabase/migrations/202609280002_atomic_registration_cancellation.sql", "utf8");
+    expect(cancellationMigration).toContain("Cancellation reason:");
+    expect(cancellationMigration).toContain("Manual refund status:");
     expect(page).toContain("registrations={allRows.map");
     expect(page).not.toContain("<CancelRegistrationControl tournamentId={tournamentId}");
     expect(migration).toContain("registration_source = 'walk_up' and registration_status = 'active'");

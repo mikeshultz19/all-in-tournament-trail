@@ -448,89 +448,23 @@ export async function cancelRegistrationAction(
     return { status: "error", message: "Record whether the full manual refund is pending or completed." };
   }
 
-  const supabase = createSupabaseServerClient();
-  const current = await supabase
-    .from("tournament_registrations")
-    .select("id,registration_key,admin_notes,registration_status,payment_reference,price_snapshot,membership_snapshot,angler1_name,angler2_name")
-    .eq("id", registrationId)
-    .eq("tournament_id", tournamentId)
-    .maybeSingle();
-  if (current.error || !current.data || current.data.registration_status !== "active") {
-    return { status: "error", message: "This registration is no longer active." };
-  }
-
-  const registration = current.data as {
-    id: string;
-    registration_key: string;
-    admin_notes: string | null;
-    registration_status: string;
-    payment_reference: string | null;
-    price_snapshot: unknown;
-    membership_snapshot: unknown;
-    angler1_name: string;
-    angler2_name: string | null;
-  };
-  const membershipIds = purchasedMembershipIds(registration.membership_snapshot, registration.price_snapshot);
-  const membershipsToRevoke = membershipIds.length
-    ? await supabase
-      .from("memberships")
-      .select("id,status,payment_reference")
-      .in("id", membershipIds)
-      .eq("payment_reference", registration.payment_reference)
-    : { data: [], error: null };
-  if (membershipsToRevoke.error || (membershipsToRevoke.data ?? []).length !== membershipIds.length) {
-    return { status: "error", message: "Purchased memberships could not be verified. No cancellation was recorded." };
-  }
-  if ((membershipsToRevoke.data ?? []).some((membershipRecord) => membershipRecord.status !== "active")) {
-    return { status: "error", message: "A purchased membership is no longer active. Review the registration before cancelling." };
-  }
-
-  const revokedLabels = membershipIds.map((id, index) => `${index === 0 ? registration.angler1_name : registration.angler2_name ?? `Angler ${index + 1}`} (${id})`);
-  if (membershipIds.length) {
-    const membershipUpdate = await supabase
-      .from("memberships")
-      .update({
-        status: "cancelled",
-        admin_notes: `Membership revoked with cancelled registration ${registration.registration_key} by ${getAdminDisplayName(admin)} (${admin.id}).`,
-        updated_at: new Date().toISOString(),
-      })
-      .in("id", membershipIds)
-      .eq("status", "active")
-      .eq("payment_reference", registration.payment_reference);
-    if (membershipUpdate.error) {
-      return { status: "error", message: "Purchased memberships could not be revoked. No cancellation was recorded." };
-    }
-  }
-
-  const adminNotes = [
-    registration.admin_notes,
-    `Cancellation reason: ${note}`,
-    `Manual refund status: ${manualRefundStatus}`,
-    `Cancellation admin: ${getAdminDisplayName(admin)} (${admin.id})`,
-    `Memberships revoked through cancellation: ${revokedLabels.length ? revokedLabels.join(", ") : "None"}`,
-  ].filter(Boolean).join("\n");
-  const result = await supabase
-    .from("tournament_registrations")
-    .update({
-      registration_status: "cancelled",
-      cancelled_at: new Date().toISOString(),
-      cancelled_by_admin_id: admin.id,
-      admin_notes: adminNotes,
-    })
-    .eq("id", registrationId)
-    .eq("tournament_id", tournamentId)
-    .eq("registration_status", "active")
-    .select("id")
-    .maybeSingle();
-  if (result.error || !result.data) {
-    if (membershipIds.length) {
-      await supabase
-        .from("memberships")
-        .update({ status: "active", updated_at: new Date().toISOString() })
-        .in("id", membershipIds)
-        .eq("payment_reference", registration.payment_reference);
-    }
-    return { status: "error", message: "This registration could not be cancelled. Refresh and try again." };
+  const { error } = await createSupabaseServerClient().rpc("admin_cancel_registration_atomic", {
+    p_registration_id: registrationId,
+    p_tournament_id: tournamentId,
+    p_admin_user_id: admin.id,
+    p_admin_display_name: getAdminDisplayName(admin),
+    p_cancellation_note: note,
+    p_manual_refund_status: manualRefundStatus,
+  });
+  if (error) {
+    console.error("Atomic registration cancellation failed.", error);
+    const code = error.message.match(/AITT_[A-Z0-9_]+/)?.[0];
+    return {
+      status: "error",
+      message: code === "AITT_PURCHASED_MEMBERSHIP_EVIDENCE_INVALID"
+        ? "Purchased memberships could not be verified. No cancellation was recorded."
+        : "This registration could not be cancelled. Refresh and try again.",
+    };
   }
 
   revalidateRegistrationOperations();

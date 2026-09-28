@@ -12,10 +12,10 @@ describe("manual registration cancellation", () => {
     const action = actions.slice(actions.indexOf("export async function cancelRegistrationAction"));
     expect(action).toContain("requireAdminUser()");
     expect(action).toContain('text(formData, "cancellationNote")');
-    expect(action).toContain('registration_status: "cancelled"');
-    expect(action).toContain("cancelled_at");
-    expect(action).toContain("cancelled_by_admin_id: admin.id");
-    expect(action).toContain("admin_notes: adminNotes");
+    expect(action).toContain('rpc("admin_cancel_registration_atomic"');
+    expect(action).toContain("p_cancellation_note: note");
+    expect(action).toContain("p_manual_refund_status: manualRefundStatus");
+    expect(readFileSync("supabase/migrations/202609280002_atomic_registration_cancellation.sql", "utf8")).toContain("admin_notes = concat_ws");
     expect(action).not.toContain("square");
     expect(action).not.toContain("deliverRegistrationConfirmationEmails");
   });
@@ -67,8 +67,8 @@ describe("manual registration cancellation", () => {
 
   it("uses an active-row guard so duplicate submission has no second effect", () => {
     const action = actions.slice(actions.indexOf("export async function cancelRegistrationAction"));
-    expect(action).toContain('.eq("registration_status", "active")');
-    expect(action).toContain("if (result.error || !result.data)");
+    expect(action).toContain('rpc("admin_cancel_registration_atomic"');
+    expect(readFileSync("supabase/migrations/202609280002_atomic_registration_cancellation.sql", "utf8")).toContain("registration_status = 'active'");
   });
 
   it("does not present canceled history as actively checked in", () => {
