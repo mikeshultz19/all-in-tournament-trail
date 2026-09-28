@@ -144,7 +144,7 @@ describe("walk-up registration draft preservation", () => {
       message: "Walk-up added to the tournament roster.",
     });
     expect(rpc).toHaveBeenCalledWith(
-      "admin_create_sequential_walkup_registration",
+      "admin_create_safe_walkup_registration",
       expect.objectContaining({
         p_total_paid_cents: 8000,
         p_options: expect.objectContaining({
@@ -356,7 +356,7 @@ describe("walk-up registration draft preservation", () => {
 
     expect(result.status).toBe("success");
     expect(rpc).toHaveBeenCalledWith(
-      "admin_create_sequential_walkup_registration",
+      "admin_create_safe_walkup_registration",
       expect.objectContaining({
         p_payment_method: paymentMethod,
         p_total_paid_cents: totalCents,

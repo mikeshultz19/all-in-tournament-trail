@@ -239,7 +239,7 @@ describe("unified Registration & Check-In workflow", () => {
   it("creates a paid walk-up through the protected durable registration boundary", () => {
     const createWalkUpAction = actions.slice(actions.indexOf("export async function createWalkUpRegistrationAction"), actions.indexOf("export async function updateRegistrationOperationsAction"));
     expect(actions).toContain("await requireAdminUser()");
-    expect(createWalkUpAction).toContain('"admin_create_sequential_walkup_registration"');
+    expect(createWalkUpAction).toContain('"admin_create_safe_walkup_registration"');
     expect(createWalkUpAction).not.toContain("p_boat_number");
     expect(migration).toContain("public.complete_durable_registration(");
     expect(migration).toContain("registration_source = 'walk_up'");

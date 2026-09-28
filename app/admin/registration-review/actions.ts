@@ -344,7 +344,7 @@ export async function createWalkUpRegistrationAction(
     };
   }
   const { data: registration, error } = await createSupabaseServerClient().rpc(
-    "admin_create_sequential_walkup_registration",
+    "admin_create_safe_walkup_registration",
     {
       p_tournament_id: tournamentId,
       p_registration_type: registrationType,
