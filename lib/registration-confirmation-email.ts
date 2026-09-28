@@ -166,7 +166,18 @@ export async function deliverRegistrationConfirmationEmails(registrationId: stri
     try {
       assertRegistrationEmailRecipientAllowed(delivery.recipient_email);
       const email = await buildEmailForDelivery(delivery);
-      const result = await sendResendEmail({ to: delivery.recipient_email, subject: email.subject, html: email.html, idempotencyKey: delivery.provider_idempotency_key });
+      let result: { id: string } | null = null;
+      for (let attempt = 0; attempt < 2; attempt += 1) {
+        try {
+          result = await sendResendEmail({ to: delivery.recipient_email, subject: email.subject, html: email.html, idempotencyKey: delivery.provider_idempotency_key });
+          break;
+        } catch (retryError) {
+          const retryable = retryError instanceof EmailProviderError
+            && (retryError.code === "RESEND_NETWORK_ERROR" || retryError.code === "RESEND_TIMEOUT" || retryError.code.startsWith("RESEND_HTTP_5"));
+          if (!retryable || attempt === 1) throw retryError;
+        }
+      }
+      if (!result) throw new EmailProviderError("RESEND_INVALID_RESPONSE");
       await finishDelivery(delivery.id, true, result.id);
       sent += 1;
     } catch (deliveryError) {

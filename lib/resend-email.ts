@@ -19,6 +19,8 @@ export async function sendResendEmail(input: {
   if (!apiKey) throw new EmailProviderError("RESEND_NOT_CONFIGURED");
 
   let response: Response;
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 10_000);
   try {
     response = await fetch("https://api.resend.com/emails", {
       method: "POST",
@@ -33,9 +35,15 @@ export async function sendResendEmail(input: {
         subject: input.subject,
         html: input.html,
       }),
+      signal: controller.signal,
     });
-  } catch {
+  } catch (error) {
+    if (error instanceof Error && error.name === "AbortError") {
+      throw new EmailProviderError("RESEND_TIMEOUT");
+    }
     throw new EmailProviderError("RESEND_NETWORK_ERROR");
+  } finally {
+    clearTimeout(timeout);
   }
 
   if (!response.ok) {
