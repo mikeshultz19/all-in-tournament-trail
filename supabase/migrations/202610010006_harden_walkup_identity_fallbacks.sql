@@ -79,7 +79,7 @@ begin
     returning registration.* into v_registration;
   end if;
 
-  update public.tournament_registrations set boat_number = v_next_boat_number,$inject$,
+  update public.tournament_registrations set boat_number = v_next_boat_number,$inject$
   );
 
   if v_patched = v_definition then
