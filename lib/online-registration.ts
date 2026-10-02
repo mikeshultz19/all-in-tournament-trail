@@ -215,7 +215,8 @@ function validateAngler(angler: OnlineRegistrationAngler, position: number): str
   if (angler.firstName?.trim().length < 2) errors.push(`${prefix} first name is required.`);
   if (angler.lastName?.trim().length < 2) errors.push(`${prefix} last name is required.`);
   if (!EMAIL_PATTERN.test(angler.email?.trim() ?? "")) errors.push(`${prefix} email is invalid.`);
-  if (!PHONE_PATTERN.test(angler.mobilePhone?.trim() ?? "")) errors.push(`${prefix} mobile phone is invalid.`);
+  const phoneDigits = angler.mobilePhone?.trim().replace(/\D/g, "") ?? "";
+  if (!PHONE_PATTERN.test(angler.mobilePhone?.trim() ?? "") || phoneDigits.length < 10) errors.push(`${prefix} mobile phone is invalid.`);
   if (angler.streetAddress?.trim().length < 3) errors.push(`${prefix} street address is required.`);
   if (angler.city?.trim().length < 2) errors.push(`${prefix} city is required.`);
   if (!STATE_PATTERN.test(angler.state?.trim() ?? "")) errors.push(`${prefix} state must be a 2-letter code.`);

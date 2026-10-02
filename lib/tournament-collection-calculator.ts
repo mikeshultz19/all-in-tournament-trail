@@ -322,7 +322,7 @@ export function buildTournamentCollectionSummary(tournamentId: string, rows: rea
       const configured = category === "base" ? REGISTRATION_OPTION_CONFIG.tournament_entry.priceCents : category === "big_bass" ? REGISTRATION_OPTION_CONFIG.big_bass.priceCents : category === "insurance" ? REGISTRATION_PRICING.insurance * 100 : REGISTRATION_OPTION_CONFIG[category].priceCents;
       return sum + (categoryAmount(row, category, configured) ?? 0);
     }, 0);
-    return payout + membershipCount(row) * REGISTRATION_PRICING.annualMembership * 100;
+    return payout;
   }
 
   function onlineRowFunds(row: RegistrationCollectionRow) {
@@ -330,10 +330,7 @@ export function buildTournamentCollectionSummary(tournamentId: string, rows: rea
       const configured = category === "base" ? REGISTRATION_OPTION_CONFIG.tournament_entry.priceCents : category === "big_bass" ? REGISTRATION_OPTION_CONFIG.big_bass.priceCents : category === "insurance" ? REGISTRATION_PRICING.insurance * 100 : REGISTRATION_OPTION_CONFIG[category].priceCents;
       return sum + (categoryAmount(row, category, configured) ?? 0);
     }, 0);
-    const membership = hasLineItems(row.price_snapshot)
-      ? lineAmount(row.price_snapshot, (item) => item.code === "annual_membership" || Boolean(item.name?.endsWith(" Membership"))) ?? 0
-      : membershipCount(row) * REGISTRATION_PRICING.annualMembership * 100;
-    return payout + membership;
+    return payout;
   }
 }
 

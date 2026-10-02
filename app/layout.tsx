@@ -45,7 +45,7 @@ export default function RootLayout({
     {children}
   </div>
 
-  <Footer />
+  <div className="print:hidden"><Footer /></div>
   <FeedbackWidget />
 </body>
     </html>

@@ -384,7 +384,7 @@ describe("automatic tournament collection reconciliation", () => {
     expect(summary.totalTournamentPayoutFundsCents).toBe(6000);
     expect(summary.membershipRevenueCents).toBe(4000);
     expect(summary.totalRegistrationFundsCollectedCents).toBe(10000);
-    expect(summary.walkUpFundsByMethod.card).toBe(10000);
+    expect(summary.walkUpFundsByMethod.card).toBe(6000);
     expect(summary.missing).not.toContain("Walk-up face-value mismatch");
   });
 
@@ -492,7 +492,7 @@ describe("automatic tournament collection reconciliation", () => {
     ];
     const summary = buildTournamentCollectionSummary("tournament-1", [...onlineRows, ...walkUps]);
     expect(summary.lines.map((line) => [line.key, line.totalCents])).toEqual([["base", 84000], ["bronze", 8000], ["silver", 50000], ["gold", 150000], ["big_bass", 28000], ["membership", 12000], ["insurance", 14000]]);
-    expect(summary.onlineRegistrationFundsCents).toBe(216000);
+    expect(summary.onlineRegistrationFundsCents).toBe(204000);
     expect(summary.walkUpFundsByMethod).toEqual({ cash: 70000, card: 60000, other: 0 });
     expect(summary.totalTournamentPayoutFundsCents).toBe(334000);
     expect(summary.totalRegistrationFundsCollectedCents).toBe(346000);

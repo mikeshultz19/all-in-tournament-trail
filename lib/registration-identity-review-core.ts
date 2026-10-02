@@ -128,6 +128,29 @@ export function classifyRegistrationIdentity(
         ? active.filter((angler) => angler.normalized_name === fullName)
         : [];
 
+      const uniqueNameMatch = nameMatches.length === 1 ? nameMatches[0] : null;
+      const uniqueNameMatchEmail = normalizeEmail(uniqueNameMatch?.email);
+      const uniqueNameMatchEmailCount = uniqueNameMatchEmail
+        ? active.filter((angler) => normalizeEmail(angler.email) === uniqueNameMatchEmail).length
+        : 0;
+      const uniqueNameMatchHasAmbiguousEmail =
+        !uniqueNameMatchEmail || uniqueNameMatchEmailCount > 1;
+
+      if (
+        submitted.membership === "current" &&
+        emailMatches.length === 0 &&
+        phoneMatches.length === 0 &&
+        uniqueNameMatch &&
+        uniqueNameMatchHasAmbiguousEmail
+      ) {
+        return {
+          participantPosition: (index + 1) as 1 | 2,
+          status: "review_required",
+          reason: "Submitted name matches an existing angler whose email is shared or missing. Confirm the person before continuing.",
+          suggestedAnglerIds: [uniqueNameMatch.id],
+        };
+      }
+
       // A Current Member who has one unique exact-name match is still the
       // existing member when their submitted contact details are stale or
       // contain a typo. Keep the canonical All Members record unchanged.
@@ -135,7 +158,8 @@ export function classifyRegistrationIdentity(
         submitted.membership === "current" &&
         emailMatches.length === 0 &&
         phoneMatches.length === 0 &&
-        nameMatches.length === 1
+        nameMatches.length === 1 &&
+        !uniqueNameMatchHasAmbiguousEmail
       ) {
         return {
           participantPosition: (index + 1) as 1 | 2,

@@ -24,6 +24,10 @@ const existingMemberCorrectionMigration = readFileSync(
   "supabase/migrations/202609230001_resolve_existing_member_identity_reviews.sql",
   "utf8",
 );
+const walkupSnapshotMigration = readFileSync(
+  "supabase/migrations/202610020002_repair_walkup_membership_snapshots.sql",
+  "utf8",
+);
 const durableService = readFileSync("lib/durable-registration.ts", "utf8");
 const rosterService = readFileSync(
   "lib/tournament-registrations.ts",
@@ -160,6 +164,21 @@ describe("registration identity classification", () => {
       reason: null,
       suggestedAnglerIds: ["b02874df-b3d9-4828-a240-12486a404463"],
     });
+  });
+
+  it("routes a current-member name match with a shared stored email to review", () => {
+    const result = classifyRegistrationIdentity(
+      [submitted({ firstName: "Joe", lastName: "Johnson", membership: "current", email: "new-contact@example.com", mobilePhone: "817-555-2222" })],
+      [
+        angler("11111111-1111-4111-8111-111111111111", "Joe", "Johnson", "shared@example.com", "817-555-0100"),
+        angler("22222222-2222-4222-8222-222222222222", "Jane", "Doe", "shared@example.com", "817-555-0101"),
+      ],
+    );
+    expect(result.participants[0]).toMatchObject({
+      status: "review_required",
+      suggestedAnglerIds: ["11111111-1111-4111-8111-111111111111"],
+    });
+    expect(result.participants[0].reason).toContain("shared or missing");
   });
 
   it("keeps a high-confidence email and phone match despite other submitted snapshot differences", () => {
@@ -409,6 +428,13 @@ describe("durable review persistence and Admin workflow", () => {
   it("creates or reuses the validated Team or Solo Competitive Record", () => {
     expect(migration).toContain("public.create_competitive_record");
     expect(migration).toContain("v_registration.registration_type");
+  });
+
+  it("repairs approved walk-up membership snapshots during finalization", () => {
+    expect(walkupSnapshotMigration).toContain("membership_snapshot = (");
+    expect(walkupSnapshotMigration).toContain("resolvedClassification', 'current'");
+    expect(walkupSnapshotMigration).toContain("eligibleForTournament', true");
+    expect(walkupSnapshotMigration).toContain("identity_review_status = 'resolved_existing'");
   });
 
   it("records auditable resolution and reopen history", () => {

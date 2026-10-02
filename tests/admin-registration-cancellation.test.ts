@@ -30,7 +30,7 @@ describe("manual registration cancellation", () => {
     expect(controls).toContain("full recorded amount");
     expect(controls).toContain("manually through Chase outside AITT");
     expect(controls).toContain('name="manualRefundStatus"');
-    expect(controls).toContain("Active Boat / Registration");
+    expect(controls).toContain("Active Registration / Boat");
     expect(controls).toContain('name="cancellationNote"');
     expect(controls).toContain("minLength={3}");
     expect(reviewPage).toContain("<CancelRegistrationControl");

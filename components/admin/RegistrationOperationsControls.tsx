@@ -683,12 +683,12 @@ export function CancelRegistrationControl({
           <h3 id="cancel-registration-title" className="text-sm font-black uppercase text-white">Cancel Registration</h3>
           <form ref={formRef} action={action} className="mt-4 grid gap-3">
             <label className="text-xs font-bold uppercase text-neutral-300">
-              Active Boat / Registration
+              Active Registration / Boat
               <select name="registrationId" required value={selectedId} onChange={(event) => setSelectedId(event.target.value)} className={`${input} mt-1`}>
                 <option value="">Select an active registration</option>
                 {registrations.map((registration) => (
                   <option key={registration.id} value={registration.id}>
-                    Boat {registration.boatNumber ?? "—"} · #{registration.registrationNumber} · {registration.participantNames.join(" / ")}
+                    Reg #{registration.registrationNumber} · Boat {registration.boatNumber ?? "—"} · {registration.participantNames.join(" / ")}
                   </option>
                 ))}
               </select>
@@ -696,7 +696,7 @@ export function CancelRegistrationControl({
             {selected ? <div className="grid gap-3 border border-white/10 bg-[#111] p-3 text-xs text-neutral-300">
               <dl className="grid gap-2 sm:grid-cols-2">
               <div><dt className="font-bold text-white">Registration Number</dt><dd>#{selected.registrationNumber}</dd></div>
-              <div><dt className="font-bold text-white">Boat</dt><dd>{selected.boatNumber ?? "Unassigned"}</dd></div>
+              <div><dt className="font-bold text-white">Boat Number</dt><dd>{selected.boatNumber ?? "Unassigned"}</dd></div>
               <div><dt className="font-bold text-white">Participants</dt><dd>{selected.participantNames.join(" / ")}</dd></div>
               <div><dt className="font-bold text-white">Recorded Payment</dt><dd>{formatCurrencyFromCents(selected.amountCents ?? 0)} · {formatPaymentMethod(selected.paymentMethod)} · {selected.paymentStatus}</dd></div>
               </dl>

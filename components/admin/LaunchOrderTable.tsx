@@ -16,7 +16,6 @@ export default function LaunchOrderTable({ rows }: { rows: TournamentRegistratio
         .join(" ")
         .toLowerCase();
       return participants.includes(normalizedSearch)
-        || row.registrationKey.toLowerCase().includes(normalizedSearch)
         || String(row.boatNumber ?? "").includes(normalizedSearch)
         || String(row.assignedBoatNumber ?? "").includes(normalizedSearch);
     });

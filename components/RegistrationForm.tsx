@@ -104,7 +104,8 @@ function validateAngler(key: AnglerKey, angler: Angler, requiresNewMembership: b
   if (firstName.length < 2) errors[`${key}.firstName`] = "First name is required.";
   if (lastName.length < 2) errors[`${key}.lastName`] = "Last name is required.";
   if (!EMAIL_PATTERN.test(angler.email.trim())) errors[`${key}.email`] = "Enter a valid email address including a domain, such as name@example.com.";
-  if (!PHONE_PATTERN.test(angler.mobilePhone.trim())) errors[`${key}.mobilePhone`] = "Enter a valid mobile phone number.";
+  const phoneDigits = angler.mobilePhone.trim().replace(/\D/g, "");
+  if (!PHONE_PATTERN.test(angler.mobilePhone.trim()) || phoneDigits.length < 10) errors[`${key}.mobilePhone`] = "Enter a valid mobile phone number.";
   if (angler.streetAddress.trim().length < 3) errors[`${key}.streetAddress`] = "Street address is required.";
   if (angler.city.trim().length < 2) errors[`${key}.city`] = "City is required.";
   if (!STATE_PATTERN.test(angler.state.trim())) errors[`${key}.state`] = "Enter a valid 2-letter state code.";

@@ -22,7 +22,8 @@ export default function RegistrationHistoryList({
 
   return (
     <section className="mt-6 overflow-hidden rounded-sm border border-white/10 bg-[#111111]" aria-label="Registration history results">
-      <div className="hidden border-b border-white/10 bg-black/40 px-4 py-3 text-[10px] font-black uppercase tracking-[0.14em] text-neutral-500 lg:grid lg:grid-cols-[74px_minmax(170px,1.35fr)_72px_minmax(220px,1.6fr)_144px_150px_120px_114px_28px] lg:gap-4">
+      <div className="hidden border-b border-white/10 bg-black/40 px-4 py-3 text-[10px] font-black uppercase tracking-[0.14em] text-neutral-500 lg:grid lg:grid-cols-[74px_74px_minmax(170px,1.35fr)_72px_minmax(220px,1.6fr)_144px_150px_120px_114px_28px] lg:gap-4">
+        <span>Reg #</span>
         <span>Boat #</span>
         <span>Tournament</span>
         <span>Type</span>
@@ -37,10 +38,15 @@ export default function RegistrationHistoryList({
       <div className="divide-y divide-white/10">
         {rows.map((row) => (
           <details key={row.id} className="group">
-            <summary className="grid list-none cursor-pointer gap-3 px-4 py-4 transition hover:bg-white/[0.03] focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-[#D4A017] lg:grid-cols-[74px_minmax(170px,1.35fr)_72px_minmax(220px,1.6fr)_144px_150px_120px_114px_28px] lg:items-center lg:gap-4 [&::-webkit-details-marker]:hidden">
-              <SummaryField label="Boat #" className="lg:justify-center">
+            <summary className="grid list-none cursor-pointer gap-3 px-4 py-4 transition hover:bg-white/[0.03] focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-[#D4A017] lg:grid-cols-[74px_74px_minmax(170px,1.35fr)_72px_minmax(220px,1.6fr)_144px_150px_120px_114px_28px] lg:items-center lg:gap-4 [&::-webkit-details-marker]:hidden">
+              <SummaryField label="Reg #" className="lg:justify-center">
                 <span className="text-lg font-black text-[#D4A017] lg:text-base">
                   {row.boatNumber?.toString() ?? "—"}
+                </span>
+              </SummaryField>
+              <SummaryField label="Boat #" className="lg:justify-center">
+                <span className="text-lg font-black text-white lg:text-base">
+                  {row.assignedBoatNumber?.toString() ?? "—"}
                 </span>
               </SummaryField>
               <SummaryField label="Tournament">
@@ -267,13 +273,14 @@ function paymentSummary(row: AdminRegistrationHistoryRow) {
 function CompactCanceledHistoryList({ rows }: { rows: readonly AdminRegistrationHistoryRow[] }) {
   return (
     <section className="mt-6 overflow-hidden rounded-sm border border-white/10 bg-[#111111]" aria-label="Canceled registration history">
-      <div className="hidden border-b border-white/10 bg-black/40 px-4 py-3 text-[10px] font-black uppercase tracking-[0.14em] text-neutral-500 lg:grid lg:grid-cols-[74px_72px_minmax(220px,1fr)_144px_150px_120px_114px] lg:gap-4">
-        <span>Boat #</span><span>Type</span><span>Participants</span><span>Registration / Status</span><span>Member Status</span><span>Payment / Paid</span><span>Registered</span>
+      <div className="hidden border-b border-white/10 bg-black/40 px-4 py-3 text-[10px] font-black uppercase tracking-[0.14em] text-neutral-500 lg:grid lg:grid-cols-[74px_74px_72px_minmax(220px,1fr)_144px_150px_120px_114px] lg:gap-4">
+        <span>Reg #</span><span>Boat #</span><span>Type</span><span>Participants</span><span>Registration / Status</span><span>Member Status</span><span>Payment / Paid</span><span>Registered</span>
       </div>
       <div className="divide-y divide-white/10">
         {rows.map((row) => (
-          <div key={row.id} className="grid gap-3 px-4 py-4 lg:grid-cols-[74px_72px_minmax(220px,1fr)_144px_150px_120px_114px] lg:items-center lg:gap-4">
-            <SummaryField label="Boat #" className="lg:justify-center"><span className="text-lg font-black text-[#D4A017] lg:text-base">{row.boatNumber?.toString() ?? "—"}</span></SummaryField>
+          <div key={row.id} className="grid gap-3 px-4 py-4 lg:grid-cols-[74px_74px_72px_minmax(220px,1fr)_144px_150px_120px_114px] lg:items-center lg:gap-4">
+            <SummaryField label="Reg #" className="lg:justify-center"><span className="text-lg font-black text-[#D4A017] lg:text-base">{row.boatNumber?.toString() ?? "—"}</span></SummaryField>
+            <SummaryField label="Boat #" className="lg:justify-center"><span className="text-lg font-black text-white lg:text-base">{row.assignedBoatNumber?.toString() ?? "—"}</span></SummaryField>
             <SummaryField label="Type" className="lg:justify-center"><AdminStatusBadge className="min-h-6">{row.registrationType === "team" ? "Team" : "Solo"}</AdminStatusBadge></SummaryField>
             <SummaryField label="Participants"><span className="block break-words font-bold text-neutral-100">{row.angler1Name}{row.angler2Name ? ` / ${row.angler2Name}` : ""}</span></SummaryField>
             <SummaryField label="Registration / Status"><div className="flex flex-wrap gap-2"><AdminStatusBadge tone={row.source === "walk_up" ? "attention" : "neutral"}>{row.source === "walk_up" ? "Walk-Up" : "Online"}</AdminStatusBadge><AdminStatusBadge tone="critical">Canceled</AdminStatusBadge></div></SummaryField>

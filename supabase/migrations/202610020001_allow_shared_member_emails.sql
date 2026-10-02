@@ -17,6 +17,9 @@ begin
     raise exception 'Required admin member function is missing.';
   end if;
 
+  -- Normalize CRLF definitions before matching the removable block.
+  v_definition := replace(v_definition, chr(13) || chr(10), chr(10));
+
   if position('if v_email is not null then' in v_definition) = 0 then
     return;
   end if;
