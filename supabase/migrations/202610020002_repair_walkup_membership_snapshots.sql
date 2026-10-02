@@ -21,11 +21,10 @@ begin
     return;
   end if;
 
-  v_patched := replace(
+  v_patched := regexp_replace(
     v_definition,
-    '        competitive_record_id = (',
-    $inject$
-        membership_snapshot = (
+    'competitive_record_id[[:space:]]*=[[:space:]]*[(]',
+    $inject$membership_snapshot = (
           select coalesce(jsonb_agg(
             item || jsonb_build_object(
               'resolvedClassification', 'current',
@@ -40,7 +39,9 @@ begin
           from jsonb_array_elements(coalesce(v_registration.membership_snapshot, '[]'::jsonb))
             with ordinality as entries(item, ordinality)
         ),
-        competitive_record_id = ($inject$
+        competitive_record_id = ($inject$,
+    1,
+    1
   );
 
   if v_patched = v_definition then
