@@ -757,5 +757,16 @@ Use this document to record approved project decisions that affect architecture,
   confirm the existing person or approve a new angler. Member edits remain in
   All Members only.
 
+### 2026-10-01 — Use tournament-date sunrise as the public launch estimate
+
+- **Status:** Approved for launch.
+- **Decision:** The displayed approximate sunrise/Safe Light value is the
+  estimated official Fort Worth sunrise for the featured tournament date in
+  `America/Chicago`. Do not subtract an additional 30 minutes.
+- **Operational boundary:** This is a planning estimate only. Tournament
+  Officials determine final launch timing and may override the displayed value.
+- **Impact:** The homepage, registration page, confirmation messages, Rules,
+  waiver, and operations documentation must use the same sunrise-only wording.
+
 ---
 For an overview of the project, begin with **00_START_HERE.md**.

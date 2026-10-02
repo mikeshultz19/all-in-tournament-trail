@@ -603,10 +603,10 @@ Tournament Director approval.
 
 ### Launch and Safe Light
 
-Estimated Safe Light is calculated as official Fort Worth sunrise for the
-tournament date minus 30 minutes, using the `America/Chicago` time zone. It is
-a planning estimate, not a guaranteed launch time. Participants should be on
-the water and prepared to launch before the displayed estimate.
+Estimated Safe Light is the estimated official Fort Worth sunrise for the
+tournament date, using the `America/Chicago` time zone. It is a planning
+estimate, not a guaranteed launch time. Participants should be on the water
+and prepared to launch before the displayed estimate.
 
 Tournament Officials determine final launch timing and may manually override
 the displayed estimate. No participant may begin fishing before the official

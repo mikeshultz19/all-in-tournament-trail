@@ -459,7 +459,7 @@ Worth, Texas, as the reference location.
 
 Estimated safe light is calculated as:
 
-> Official Fort Worth sunrise for the tournament date minus 30 minutes
+> Official Fort Worth sunrise for the tournament date
 
 The calculation must use the `America/Chicago` time zone. Automatic daylight-
 saving adjustments must occur through that time zone. Safe Light does not
@@ -659,7 +659,7 @@ The Rules page must explain:
 - Cash has no processing fee; Square-reader card payments include the Square
   Service Fee (3% plus the internal $0.30 transaction component)
 - Estimated Safe Light is the official Fort Worth sunrise for the tournament
-  date minus 30 minutes, using the `America/Chicago` time zone
+  date, using the `America/Chicago` time zone
 - Estimated Safe Light is not a guaranteed launch schedule
 - The Tournament Director determines final launch timing
 - Open-Meteo and Weather Underground are used as primary weather references
@@ -712,7 +712,7 @@ records the registration and payment method in WeighFish.
 ### What time should I arrive, and what is Estimated Safe Light?
 
 Estimated safe light is the official Fort Worth sunrise for the tournament
-date minus 30 minutes, using the `America/Chicago` time zone, and is provided
+date, using the `America/Chicago` time zone, and is provided
 for planning purposes. Anglers should be on the water and prepared to launch
 before that time. Tournament Officials determine final launch timing.
 
