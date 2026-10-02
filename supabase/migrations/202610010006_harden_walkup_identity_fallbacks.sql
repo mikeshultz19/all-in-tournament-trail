@@ -23,8 +23,8 @@ begin
 
     v_patched := regexp_replace(
       v_definition,
-      $$(where lower\(btrim\(email\)\) = v_email\s+and )merged_into_angler_id is null$$,
-      $$\1is_active = true and merged_into_angler_id is null$$,
+      '(where lower[(]btrim[(]email[)][)] = v_email[[:space:]]+and )merged_into_angler_id is null',
+      chr(92) || '1is_active = true and merged_into_angler_id is null',
       'g'
     );
     if v_patched = v_definition then
