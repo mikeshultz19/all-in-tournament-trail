@@ -31,7 +31,7 @@ describe("Tournament Funds Summary", () => {
     expect(markup).toContain("Base Entry");
     expect(markup).toContain("Insurance Pot");
     expect(markup).toContain("Total Tournament Payout Funds");
-    expect(markup).toContain("New Memberships Selected");
+    expect(markup).toContain("Membership Revenue (outside payout funds)");
     expect(markup).not.toContain("Membership Charges Collected");
     expect(markup).toContain("TOTAL REGISTRATION FUNDS COLLECTED");
     expect(markup).not.toContain("Shortfall");

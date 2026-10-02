@@ -70,7 +70,7 @@ export default function AdminSidebar() {
   return (
     <aside
       aria-label="Admin navigation"
-      className="border-b border-white/10 bg-[#111111] md:w-64 md:border-b-0 md:border-r"
+      className="border-b border-white/10 bg-[#111111] md:w-64 md:border-b-0 md:border-r print:hidden"
     >
       <nav className="px-4 py-5 md:py-6">
         <ul className="space-y-1">

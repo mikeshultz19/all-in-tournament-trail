@@ -9,7 +9,7 @@ declare
   v_signature text;
 begin
   foreach v_signature in array array[
-    'public.complete_registration_for_identity_review_core(uuid,text,jsonb,jsonb,text,text,text,jsonb,jsonb)',
+    'public.complete_durable_registration_core(uuid,text,jsonb,jsonb,text,text,text,jsonb)',
     'public.admin_create_walkup_registration(uuid,text,jsonb,integer,jsonb,text,integer,uuid)'
   ] loop
     select pg_get_functiondef(p.oid)

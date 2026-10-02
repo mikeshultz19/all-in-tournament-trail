@@ -162,6 +162,11 @@ function joiningMembershipCount(row: RegistrationCollectionRow): number {
   return (row.membership_snapshot ?? []).filter((item) => item.submittedClassification === "joining" || item.resolvedClassification === "joining").length;
 }
 
+function membershipConfirmedOutsideWalkUpPayment(row: RegistrationCollectionRow): number {
+  if (row.registration_source !== "walk_up") return 0;
+  return (row.membership_snapshot ?? []).filter((item) => item.submittedClassification === "current" && item.resolvedClassification === "joining").length;
+}
+
 type MembershipReconciliation = {
   expectedCount: number;
   expectedAmountCents: number;
@@ -279,7 +284,10 @@ export function buildTournamentCollectionSummary(tournamentId: string, rows: rea
     else if (insuranceAmount > 0) categoryRows.get("insurance")?.push({ row, amount: insuranceAmount });
     const membership = membershipCount(row) * REGISTRATION_PRICING.annualMembership * 100;
     if (membership > 0) membershipRows.push({ row, amount: membership });
-    if (row.registration_source === "walk_up" && hasMalformedWalkUpPaymentSnapshot(row, rowFunds(row))) {
+    if (row.registration_source === "walk_up" && hasMalformedWalkUpPaymentSnapshot(
+      row,
+      rowFunds(row) - membershipConfirmedOutsideWalkUpPayment(row) * REGISTRATION_PRICING.annualMembership * 100,
+    )) {
       const recordedTotalCents = validCents(row.price_snapshot?.totalCents) ?? 0;
       const cardFeeCents = row.payment_method === "card" ? validCents(row.price_snapshot?.cardProcessingFeeCents ?? 0) ?? 0 : 0;
       const expectedTotalCents = rowFunds(row) + cardFeeCents;

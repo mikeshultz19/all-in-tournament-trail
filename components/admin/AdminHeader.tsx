@@ -9,7 +9,7 @@ export default function AdminHeader({
   adminName?: string | null;
 }) {
   return (
-    <header className="border-b border-white/10 bg-[#0B0B0B]">
+    <header className="border-b border-white/10 bg-[#0B0B0B] print:hidden">
       <div className="mx-auto flex max-w-7xl flex-col gap-5 px-5 py-5 sm:px-6 md:flex-row md:items-center md:justify-between">
         <Link
           href="/admin"

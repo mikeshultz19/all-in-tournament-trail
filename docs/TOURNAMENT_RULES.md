@@ -85,9 +85,9 @@ competitive integrity, legal compliance, or tournament operations.
 Membership status is determined independently for each angler. An angler may
 register as a current member or purchase an annual membership during
 registration. If AITT cannot immediately confirm an angler's current membership,
-the registration may be saved and placed in Needs Review. Staff may confirm the
-existing person or approve the angler as a new member; contact-data corrections
-can be handled later in All Members.
+the registration may still be submitted while staff verify the participant.
+AITT may require the applicable membership purchase before participation is
+finalized.
 
 ### Age Requirements
 
@@ -157,8 +157,7 @@ available, and the event is not completed, Cancelled, or Postponed. Multiple
 future tournaments may be open at the same time. Featured/current tournament
 selection does not control registration availability.
 
-There is no automatic website closing timestamp in the implemented public
-flow. AITT may suspend or close a tournament independently through its official
+AITT may suspend or close a tournament independently through its official
 lifecycle controls. Results Published tournaments display **REGISTRATION
 CLOSED** and cannot be reopened through normal registration controls.
 
@@ -206,11 +205,9 @@ Annual membership is required for every angler.
 Every registered angler has an active seasonal membership. Returning members do
 not purchase membership again, and new anglers purchase membership during
 registration. Membership is paid once per person per season. Online and walk-up
-registration offer only Current Member or Joining Today. If AITT cannot
-immediately confirm an angler's current membership, the registration may be
-saved and placed in Needs Review. Staff may confirm the existing person or
-approve the angler as a new member; contact-data corrections can be handled
-later in All Members.
+registration offer only Current Member or Joining Today. AITT verifies current
+membership claims and may require the applicable membership purchase before
+participation is finalized when a claim cannot be confirmed immediately.
 Membership supports:
 
 - Angler of the Year (AOY) points

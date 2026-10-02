@@ -410,6 +410,21 @@ describe("automatic tournament collection reconciliation", () => {
     expect(summary.missing[0]).toContain("registration walk-cash-malformed");
   });
 
+  it("does not flag membership confirmed outside the walk-up payment snapshot", () => {
+    const summary = buildTournamentCollectionSummary("tournament-1", [collectedOnline({
+      id: "walk-up-confirmed-membership",
+      registration_source: "walk_up",
+      payment_method: "cash",
+      payment_reference: "walk-up-confirmed-membership",
+      online_payment_state: null,
+      square_payment_id: null,
+      membership_snapshot: [{ submittedClassification: "current", resolvedClassification: "joining" }],
+      price_snapshot: { lineItems: [{ code: "walk_up_total", name: "Walk-Up Registration", priceCents: 6000 }], totalCents: 6000 },
+    })]);
+    expect(summary.membershipRevenueCents).toBe(4000);
+    expect(summary.missing).not.toContain("Walk-up face-value mismatch");
+  });
+
   it("classifies walk-up cash, card, and other funds from selections", () => {
     const rows = [
       collectedOnline({ registration_source: "walk_up", payment_method: "cash", payment_reference: "cash-1", online_payment_state: null, square_payment_id: null, member_pot: "bronze", price_snapshot: {} }),
