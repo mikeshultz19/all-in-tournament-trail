@@ -788,5 +788,21 @@ Use this document to record approved project decisions that affect architecture,
 - **Impact:** The homepage, registration page, confirmation messages, Rules,
   waiver, and operations documentation must use the same sunrise-only wording.
 
+### 2026-10-02 — Closed tournaments are not active eligibility test paths
+
+- **Status:** Accepted audit boundary.
+- **Decision:** A tournament that has been closed through the Tournament Manager
+  cannot accept new online or walk-up registrations. Therefore, a hypothetical
+  member who is not yet eligible for an earlier, already-closed tournament is
+  not an exposed production registration scenario.
+- **Audit rule:** Do not report that closed-tournament eligibility combination
+  as an active registration blocker. The realistic open-tournament case remains
+  an existing angler with an inactive or canceled membership who claims Current
+  Member; that case may be reviewed separately when a matching staging record
+  exists.
+- **Impact:** After results are posted and registration is closed, future audits
+  should treat that tournament as a historical/read-only workflow and focus on
+  publishing, results, and public history rather than new registration paths.
+
 ---
 For an overview of the project, begin with **00_START_HERE.md**.
