@@ -8,6 +8,9 @@ export const metadata: Metadata = {
   title: "Why We Chose No Forward-Facing Sonar | All In Tournament Trail",
   description:
     "Learn why All In Tournament Trail offers a traditional tournament competition option without forward-facing sonar.",
+  alternates: {
+    canonical: "/no-forward-facing-sonar",
+  },
 };
 
 const sectionHeadingClass =

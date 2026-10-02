@@ -5,8 +5,8 @@ import { describe, expect, it } from "vitest";
 const nextConfig = readFileSync("next.config.ts", "utf8");
 
 describe("Square Content Security Policy", () => {
-  it("scopes the policy to registration routes", () => {
-    expect(nextConfig).toContain('source: "/register/:path*"');
+  it("applies the policy globally so public responses share the security baseline", () => {
+    expect(nextConfig).toContain('source: "/:path*"');
     expect(nextConfig).toContain('key: "Content-Security-Policy"');
   });
 

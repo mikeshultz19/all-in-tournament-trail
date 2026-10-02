@@ -4,6 +4,7 @@ import Link from "next/link";
 export default function Hero() {
   return (
     <section className="bg-black">
+      <h1 className="sr-only">Texas Team Bass Fishing Tournament Trail</h1>
       <div className="mx-auto w-full max-w-[1700px] px-4 lg:px-8">
         <div className="relative">
           <Image

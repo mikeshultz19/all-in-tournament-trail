@@ -27,6 +27,23 @@ export const metadata: Metadata = {
   alternates: {
     canonical: "/",
   },
+  openGraph: {
+    type: "website",
+    locale: "en_US",
+    siteName: "All-In Tournament Trail",
+    title: "All-In Tournament Trail",
+    description:
+      "Texas team bass tournament trail featuring tournament schedules, results, AOY standings, rules, registration information, and event updates.",
+    url: "/",
+    images: [{ url: "/images/tournament-hero.png", alt: "All-In Tournament Trail" }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "All-In Tournament Trail",
+    description:
+      "Texas team bass tournament trail featuring tournament schedules, results, AOY standings, rules, registration information, and event updates.",
+    images: ["/images/tournament-hero.png"],
+  },
 };
 
 export default function RootLayout({

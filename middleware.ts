@@ -12,6 +12,17 @@ function isActiveAdmin(user: {
 
 export async function middleware(request: NextRequest) {
   let response = NextResponse.next({ request });
+  const forwardedProto = request.headers.get("x-forwarded-proto");
+  if (request.nextUrl.protocol === "http:" || forwardedProto === "http") {
+    const secureUrl = request.nextUrl.clone();
+    secureUrl.protocol = "https:";
+    return NextResponse.redirect(secureUrl, 308);
+  }
+
+  if (!request.nextUrl.pathname.startsWith("/admin")) {
+    return response;
+  }
+
 const url = process.env.NEXT_PUBLIC_SUPABASE_URL?.trim();
 const anonKey =
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY?.trim();
@@ -76,5 +87,5 @@ const anonKey =
 }
 
 export const config = {
-  matcher: ["/admin/:path*"],
+  matcher: ["/:path*"],
 };

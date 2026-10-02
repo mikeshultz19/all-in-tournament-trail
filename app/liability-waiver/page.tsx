@@ -7,6 +7,7 @@ export const dynamic = "force-dynamic";
 export const metadata: Metadata = {
   title: "Participant Liability Waiver | All-In Tournament Trail",
   description: "Review the All-In Tournament Trail Participant Liability Waiver and Assumption of Risk.",
+  alternates: { canonical: "/liability-waiver" },
 };
 
 export default async function LiabilityWaiverPage() {

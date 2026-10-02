@@ -7,6 +7,7 @@ import { PUBLIC_PAGE_CONTAINER } from "@/config/layout";
 export const metadata: Metadata = {
   title: "Terms of Use | All-In Tournament Trail",
   description: "Terms for using the All-In Tournament Trail website.",
+  alternates: { canonical: "/terms" },
 };
 
 export default function TermsPage() {
