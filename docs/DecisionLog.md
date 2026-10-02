@@ -3,6 +3,24 @@ Last Updated: September 26, 2026
 
 # Decision Log
 
+## 2026-10-02 — Public transport, security, and metadata hardening
+
+- **Status:** Implemented and deployed in production.
+- **Decision:** Public traffic redirects from HTTP to the canonical HTTPS
+  origin. HTTPS responses use HSTS and the standard security header baseline:
+  CSP, `X-Content-Type-Options`, same-origin framing protection,
+  `Referrer-Policy`, and `Permissions-Policy`. Next.js powered-by disclosure is
+  disabled.
+- **SEO and sharing:** The no-forward-facing-sonar page now declares its own
+  canonical URL. The homepage has a semantic, visually hidden H1. Default Open
+  Graph and Twitter card metadata are provided, and public legal/informational
+  pages are included in the sitemap.
+- **Explicitly unchanged:** Duplicate brand suffixes in page titles and the
+  existing “Learn more” sponsor link wording were intentionally left alone.
+- **Validation:** Full test suite passed (1,087 tests), production build
+  passed, and live production checks verified the HTTPS redirect, headers,
+  canonical tag, social metadata, homepage H1, and sitemap entries.
+
 ## 2026-09-26 — Mandatory external pre-production backups
 
 - **Status:** Approved pre-production gate.

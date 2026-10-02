@@ -1,6 +1,6 @@
 # AITT Current State
 
-Last verified: 2026-09-26
+Last verified: 2026-10-02
 
 ## Current Readiness
 
@@ -10,8 +10,14 @@ WeighFish import through identity ownership, payout/Insurance closeout,
 Official Results, AOY, and Championship qualification. The complete Eagle
 Mountain lifecycle was exercised in staging. Production rollout must remain
 incremental, explicitly approved, backed up, and migration-reviewed.
-Square-backed public registration is implemented; production enablement remains
-an environment and rollout decision.
+Square-backed public registration is implemented and production is enabled under
+the guarded release procedure.
+
+Public production hardening is deployed: HTTP permanently redirects to HTTPS;
+HTTPS responses provide HSTS, CSP, clickjacking protection, content-type
+sniffing protection, referrer and permissions policies; and Next.js powered-by
+disclosure is disabled. Public SEO/social metadata, the homepage semantic H1,
+correct page canonical metadata, and expanded sitemap coverage are also live.
 
 ## Current Production Capabilities
 

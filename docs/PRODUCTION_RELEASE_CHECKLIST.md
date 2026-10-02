@@ -171,14 +171,32 @@ the production migration ledger and must not be implied as a production change.
   `npm run deploy`.
 - [ ] Record the Cloudflare Worker deployment/version identifier.
 
-## 9. Public and authenticated smoke tests
+## 9. Public transport, security, and discoverability controls
+
+- [x] HTTP requests redirect permanently to the canonical HTTPS origin.
+- [x] HSTS is served on HTTPS responses after HTTPS behavior was verified.
+- [x] Public responses include CSP, `X-Content-Type-Options`, clickjacking
+      protection, `Referrer-Policy`, and `Permissions-Policy` headers.
+- [x] `X-Powered-By` is disabled.
+- [x] Public metadata includes canonical URLs, Open Graph metadata, and Twitter
+      card metadata.
+- [x] Homepage includes a semantic H1 without changing the visual hero design.
+- [x] Public legal and informational pages are included in the sitemap.
+- [ ] Cloudflare dashboard configuration should continue to enforce HTTPS for
+      every custom-domain request; verify this after any DNS or route change.
+
+The October 2, 2026 hardening release intentionally left duplicated brand
+suffixes in page titles and existing “Learn more” sponsor link wording
+unchanged by decision. Those are separate polish items, not release blockers.
+
+## 10. Public and authenticated smoke tests
 
 - [ ] Check homepage and all affected public routes.
 - [ ] Check authenticated Admin login/navigation and affected Admin routes.
 - [ ] Verify related workflows, not only the homepage.
 - [ ] Check Cloudflare logs for new runtime errors without exposing secrets.
 
-## 10. Rollback procedure
+## 11. Rollback procedure
 
 - [ ] Stop further changes if smoke tests fail.
 - [ ] Preserve deployment output and error evidence.
@@ -186,7 +204,7 @@ the production migration ledger and must not be implied as a production change.
 - [ ] Do not apply unapproved migrations or broaden scope as an emergency fix.
 - [ ] Re-run public and authenticated smoke tests after rollback.
 
-## 11. Post-release documentation
+## 12. Post-release documentation
 
 - [ ] Record commit, deployment/version ID, migration status, smoke-test results, and warnings.
 - [ ] Record any incident root cause and rollback details.
