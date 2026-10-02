@@ -81,9 +81,9 @@ const faqSections: FaqSection[] = [
           "No. Once your tournament registration is completed, your Bronze, Silver, or Gold Pot selection is final for that tournament. You cannot upgrade, downgrade, or switch to another payout pot after registration.",
       },
       {
-        question: "Can I cancel my registration or receive a refund?",
+        question: "What happens if the tournament cannot be held as scheduled?",
         answer:
-          "No. Tournament registrations are final, and no cancellations or refunds will be issued. If you have questions, contact the Tournament Director before the tournament date.",
+          "Registrations are final. If weather or other conditions prevent the tournament from being held as scheduled, the Tournament Director may postpone or reschedule it. Registrations will normally carry forward to the rescheduled date. Refunds are not ordinarily issued solely because an event is postponed or rescheduled.",
       },
       {
         question: "Can I register on tournament morning?",

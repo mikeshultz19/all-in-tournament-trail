@@ -3,6 +3,18 @@ Last Updated: September 26, 2026
 
 # Decision Log
 
+## 2026-10-02 — Public privacy and postponement wording
+
+- **Status:** Implemented and approved for production.
+- **Privacy:** The public notice states that AITT stores basic member
+  information for applicable tax purposes and membership history by season.
+  Payment-card credentials remain processed by Square and are not stored by
+  AITT.
+- **Postponement:** Public rules and FAQ wording focuses on postponement or
+  rescheduling when an event cannot be held as scheduled. Registrations
+  normally carry forward, and refunds are not ordinarily issued solely because
+  of postponement or rescheduling.
+
 ## 2026-10-02 — Public transport, security, and metadata hardening
 
 - **Status:** Implemented and deployed in production.

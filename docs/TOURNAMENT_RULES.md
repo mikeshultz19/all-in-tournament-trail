@@ -672,11 +672,13 @@ the examination together with all other available evidence; it is not
 required to treat a polygraph as the sole basis for a decision.
 
 <a id="refund-cancellation-policy"></a>
-## 14. Refund & Cancellation Policy
+## 14. Postponement & Refund Policy
 
-Tournament registrations are final. No cancellations or refunds will be
-issued. If you have questions, contact the Tournament Director before the
-tournament date.
+Tournament registrations are final. If weather or other conditions prevent the
+tournament from being held as scheduled, the Tournament Director may postpone
+or reschedule it. Registrations will normally carry forward to the rescheduled
+date. Refunds are not ordinarily issued solely because an event is postponed
+or rescheduled.
 
 <a id="media"></a>
 ## 15. Media
@@ -691,5 +693,7 @@ media channel, subject to applicable law.
 <a id="privacy"></a>
 ## 16. Privacy
 
-Payments are processed by Square, a third-party payment provider. AITT does
-not store credit-card numbers, CVV codes, or other payment-card credentials.
+AITT stores basic member information needed to administer tournaments, meet
+applicable tax purposes, and maintain membership history by season. Payments
+are processed by Square, a third-party payment provider. AITT does not store
+credit-card numbers, CVV codes, or other payment-card credentials.

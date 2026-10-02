@@ -6,7 +6,7 @@ import { PUBLIC_PAGE_CONTAINER } from "@/config/layout";
 
 export const metadata: Metadata = {
   title: "Privacy Policy",
-  description: "How All-In Tournament Trail handles online payment information.",
+  description: "How All-In Tournament Trail handles payment and basic member information.",
   alternates: { canonical: "/privacy" },
 };
 
@@ -24,11 +24,17 @@ export default function PrivacyPage() {
               Privacy Policy
             </h1>
             <p className="mt-4 max-w-3xl text-base leading-7 text-neutral-400">
-              This notice is published by All In Tournament Trail LLC and explains how AITT handles online payment information.
+              This notice is published by All In Tournament Trail LLC and explains how AITT handles payment and basic member information.
             </p>
           </header>
 
           <div className="max-w-3xl space-y-8 py-10 text-base leading-7 text-neutral-300">
+            <section>
+              <h2 className="text-xl font-black uppercase text-[#D4A017]">Member Information</h2>
+              <p className="mt-3">
+                AITT stores basic member information needed to administer tournaments, meet applicable tax purposes, and maintain membership history by season. AITT does not sell this information.
+              </p>
+            </section>
             <section>
               <h2 className="text-xl font-black uppercase text-[#D4A017]">Payment Information</h2>
               <p className="mt-3">

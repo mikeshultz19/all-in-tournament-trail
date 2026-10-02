@@ -71,14 +71,14 @@ describe("approved weigh-in and late check-in policies", () => {
     expect(html).not.toMatch(/weather decisions[^]*Open-Meteo/i);
     expect(html).not.toContain("Major League Fishing logo");
     expect(html).not.toContain("official association");
-    expect(html).toContain("Can I cancel my registration or receive a refund?");
-    expect(html).toContain("No. Tournament registrations are final, and no cancellations or refunds will be issued. If you have questions, contact the Tournament Director before the tournament date.");
+    expect(html).toContain("What happens if the tournament cannot be held as scheduled?");
+    expect(html).toContain("Registrations are final. If weather or other conditions prevent the tournament from being held as scheduled, the Tournament Director may postpone or reschedule it. Registrations will normally carry forward to the rescheduled date. Refunds are not ordinarily issued solely because an event is postponed or rescheduled.");
     expect(html).not.toMatch(/\bChase\b|Square refund|automatic refund|discretionary cancellation/i);
   });
 
   it("publishes final registration language on the public Rules page", async () => {
     const html = renderToStaticMarkup(await RulesPage());
-    expect(html).toContain("Tournament registrations are final. No cancellations or refunds will be issued. If you have questions, contact the Tournament Director before the tournament date.");
+    expect(html).toContain("Tournament registrations are final. If weather or other conditions prevent the tournament from being held as scheduled, the Tournament Director may postpone or reschedule it. Registrations will normally carry forward to the rescheduled date. Refunds are not ordinarily issued solely because an event is postponed or rescheduled.");
     const source = readFileSync(path.join(process.cwd(), "docs", "TOURNAMENT_RULES.md"), "utf8");
     expect(source).not.toMatch(/Square remains the system responsible|\bChase\b|automatic refund|discretionary cancellation/i);
   });
