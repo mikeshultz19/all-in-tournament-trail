@@ -123,9 +123,10 @@ AITT example:
 
 ### Required future production acceptance rehearsal
 
-This is a required future procedure, not completed production evidence. Keep
-registration closed during validation, take the approved production backup
-first, and use the controlled scenario matrix in the [Staging Rehearsal
+This is a required future procedure, not completed production evidence. Open
+only the intended tournament during validation; do not link or announce it
+until final reconciliation passes. Take the approved production backup first,
+and use the controlled scenario matrix in the [Staging Rehearsal
 Playbook](STAGING_REHEARSAL_PLAYBOOK.md) as the evidence format. The production
 acceptance set must include:
 
@@ -136,6 +137,9 @@ acceptance set must include:
   check-in, and export verification;
 - cancellation of both entries, the real Square refund, preservation/revocation
   verification, and exact return to the pre-test financial baseline;
+- if a confirmation page says payment is being verified, do not retry or submit
+  another payment; inspect Square and Payment Recovery first and stop if the
+  payment state is uncertain;
 - complete production reconciliation before registration is opened;
 - Eagle Mountain (regular-season tournament one): Current Member disabled and
   New Member required; and Squaw Creek (regular-season tournament two): Current

@@ -194,8 +194,16 @@ The deploy script builds with OpenNext and deploys through Wrangler. Do not
 manually upload `.next` output and do not use a Vercel deployment procedure.
 
 Production environment values and secrets are managed in Cloudflare. Keep
-local credentials in `.env.local`, keep elevated credentials out of
-`NEXT_PUBLIC_*`, and never copy secret values into this document or Git.
+staging credentials in `.env.local` and production build credentials in
+`.env.production.local`; build production from a fresh clone without either
+local file present. Keep elevated credentials out of `NEXT_PUBLIC_*`, and
+never copy secret values into this document or Git.
+
+For production payment validation, never retry a payment while the confirmation
+page says it is being verified. Inspect Square and Admin -> Payment Recovery
+first. Cancel designated test registrations through AITT before issuing the
+manual Square refund, then verify the refund and return the financial summary
+to its pre-test baseline.
 
 After deployment, smoke-check at minimum:
 
