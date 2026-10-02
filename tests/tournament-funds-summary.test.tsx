@@ -39,7 +39,7 @@ describe("Tournament Funds Summary", () => {
     expect(markup).not.toContain("Square Service Fee");
   });
 
-  it("combines membership metrics and renders reconciliation issues as separate lines", () => {
+  it("keeps reconciliation details in the summary model without showing yellow detail lines", () => {
     const markup = renderToStaticMarkup(<TournamentFundsSummary summary={{
       ...summary,
       lines: summary.lines.map((line) => line.key === "membership" ? { ...line, count: 6, totalCents: 24000 } : line),
@@ -49,10 +49,10 @@ describe("Tournament Funds Summary", () => {
     }} />);
     expect(markup).toContain("6 — $240.00 expected");
     expect(markup).not.toContain("Membership Charges Collected");
-    expect(markup).toContain("Boat #5");
-    expect(markup).toContain("Boat #16");
-    expect(markup).toContain("<ul");
-    expect(markup).toContain("<li");
+    expect(markup).not.toContain("Boat #5");
+    expect(markup).not.toContain("Boat #16");
+    expect(markup).not.toContain("Walk-up face-value mismatch");
+    expect(markup).not.toContain("Membership classification/payment mismatch");
   });
 
   it("uses review-neutral singular and plural warning wording", () => {
