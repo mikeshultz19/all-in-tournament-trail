@@ -25,7 +25,7 @@ untrusted device. Server actions recheck Admin status.
 | `/admin/announcements/[id]/edit` | Correct/delete one announcement. | Existing announcement fields. | Updates/removes homepage content. |
 | `/admin/conditions` | Current conditions management placeholder/entry. | Current implementation is limited. | Do not assume a complete persisted conditions workflow without simulation. |
 | `/admin/members` | Search/filter/paginate/export current-season members. | Search and Active/Inactive filter; member rows and CSV. | No direct public page. Confirms eligibility administration. |
-| `/admin/members/new` | Create member and membership from physical form. | Identity/contact, status, Effective Date, First Eligible Tournament. | Atomic save. Duplicate email stops creation. Does not create AOY, team, or registration. |
+| `/admin/members/new` | Create member and membership from physical form. | Identity/contact, status, Effective Date, First Eligible Tournament. | Atomic save. Shared email addresses are allowed because email is not a unique member key; phone duplicate handling remains separate. Does not create AOY, team, or registration. |
 | `/admin/members/[id]` | Review lifecycle and delete/deactivate/reactivate. | UUID-selected member and membership detail. | Delete is blocked for detected history; deactivate preserves history. No edit form currently exists despite an Edit button placeholder. |
 | `/admin/members/export` | On-demand current search/filter CSV. | Query/filter from Members. | Downloads data; treat contact information as private. |
 | `/admin/settings` | Select Active Membership Season. | One season. | Changes default/current membership administration context. High-impact but reversible. |

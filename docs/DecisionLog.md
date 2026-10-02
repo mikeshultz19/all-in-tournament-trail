@@ -723,6 +723,26 @@ Use this document to record approved project decisions that affect architecture,
 - **Correction path:** Tournament staff will correct membership information
   later in **All Members**, not during roster ingestion or registration review.
 
+### 2026-10-02 — Shared email is accepted member data
+
+- **Status:** Approved business rule; implementation migration pending staging
+  verification.
+- **Decision:** A shared email address is allowed for separate member records.
+  Email is contact information, not a unique identity key. Online and walk-up
+  registrations may enter Needs Review when a shared email makes identity
+  ambiguous, but registration and payment must never be blocked for that reason.
+- **Resolution:** Staff may confirm the intended existing person and save the
+  submitted data unchanged, or approve the angler as new. The All Members area
+  is the only place for later human cleanup; the roster never edits member
+  contact data.
+- **Audit instruction:** Future audits must classify this as intentional
+  governance, not a duplicate-email defect. Verify the review-and-confirm path,
+  not email uniqueness.
+- **Implementation:**
+  `202610020001_allow_shared_member_emails.sql` removes the All Members
+  duplicate-email creation guard while preserving the existing registration
+  Needs Review path.
+
 ### 2026-10-01 — Keep the public privacy notice limited to payment-card handling
 
 - **Status:** Approved for launch.

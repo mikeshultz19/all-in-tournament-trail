@@ -25,6 +25,13 @@ reviewed when the other strong identifier materially conflicts. A completely
 new joining member with no plausible canonical match also
 continues through the existing transaction.
 
+Email is contact information, not a unique member key. Multiple active Angler
+records may intentionally share one email address, such as spouses or family
+members. An ambiguous shared-email match is saved and routed to Needs Review;
+it is never a registration blocker. Staff may confirm the intended existing
+Angler and preserve the shared email, or approve a new Angler. Member-record
+cleanup remains a later All Members task.
+
 Review is required when the server finds:
 
 - an exact phone or name that conflicts with the submitted email;

@@ -159,6 +159,16 @@ describe("Add Member authorization and transaction", () => {
     expect(migration).toContain("from public, anon, authenticated");
   });
 
+  it("documents shared email as allowed member data", () => {
+    const migration = readFileSync(
+      "supabase/migrations/202610020001_allow_shared_member_emails.sql",
+      "utf8",
+    );
+
+    expect(migration).toContain("Shared email addresses are valid member data");
+    expect(migration).toContain("admin_create_member");
+  });
+
   it("keeps effective date and first eligible tournament as independent inputs", () => {
     const migration = readFileSync(
       "supabase/migrations/202607280006_create_admin_member_rpc.sql",
