@@ -21,6 +21,7 @@ describe("approved weigh-in and late check-in policies", () => {
 
     expect(html).toContain("Receives no tournament weight.");
     expect(html).toContain("Does not count toward the legal tournament limit.");
+    expect(html).toContain("Receives a one (1) pound penalty.");
     expect(html).toContain("one (1) pound penalty will be deducted for each legal fish");
     expect(html).toContain("Only legal live fish are eligible for a Big Bass payout.");
     expect(html).toContain("The Big Bass side pot pays two (2) places.");
@@ -48,8 +49,8 @@ describe("approved weigh-in and late check-in policies", () => {
     for (const question of approvedFaqQuestions) {
       expect(source).not.toContain(`### ${question}`);
     }
-    expect(source).toContain("17. [Version History](#version-history)");
-    expect(source).toContain("## 17. Version History");
+    expect(source).not.toContain("Version History");
+    expect(source).not.toContain("Pending approval");
   });
 
   it("publishes the approved public FAQs and policy links", () => {

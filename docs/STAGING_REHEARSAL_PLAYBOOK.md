@@ -161,7 +161,7 @@ until the actual values and evidence are recorded.
 | Expected roster result | Boat/status/filter/review outcome |
 | Expected Financial Summary delta | Each affected count and dollar total |
 | Expected email/confirmation | Content, recipient class, delivery/retry expectation |
-| Expected review state | No review or Needs Review; repeated registrations do not create duplicate review |
+| Expected review state | No review or Needs Review; unusual duplicate entries are handled administratively |
 | Expected cancellation behavior | Preserve/exclude/revoke behavior, if applicable |
 | Actual result | Recorded immediately after the scenario |
 | Pass/Fail | No blanks after review |
@@ -345,9 +345,8 @@ supported review action, stop before final reconciliation.
 Expected active result after the non-canceled matrix: Bronze 5, Silver 8,
 Gold 7. The matrix covers new solo, new team, returning solo, returning team,
 mixed team, Big Bass selected/omitted, Insurance selected/omitted, Online
-Sandbox, Cash, Card, Other, changed-contact matching, repeated-registration
-acceptance, unmatched current-member fail-closed review, and both cancellation
-variants.
+Sandbox, Cash, Card, Other, changed-contact matching, shared-email review,
+unmatched current-member review, and both cancellation variants.
 
 ## 8. Membership assertions
 
@@ -357,11 +356,11 @@ variants.
   registration collected $0 membership fees.
 - **Needs Review** means the required active membership could not be confidently
   verified. It is not an active Non-Member option.
-- For an unmatched Current Member claim, the roster-level **MEMBERSHIP DUES**
-  control lists the $40 obligation, check-in remains blocked, and staff uses
-  **CONFIRM MEMBERSHIP** after speaking with the participant. This records the
-  confirmation, activates the membership, clears the review, and enables
-  check-in. If the participant declines, use Cancel Registration.
+- For an unmatched Current Member claim, staff uses **CONFIRM MEMBERSHIP**
+  after speaking with the participant, or **APPROVE NEW ANGLER** when the
+  submitted person cannot be confirmed. If the participant declines, use
+  Cancel Registration. The existing member record is never edited in the
+  roster; corrections belong in All Members.
 - There is no Mark Collected action, payment-reconciliation workflow, or
   registration price-snapshot change. Payment Summary counts the membership
   selection and its $40 equivalent; Payment Recovery is informational.
@@ -583,10 +582,9 @@ creation as a separate integration finding.
 
 When a roster review flags a mismatch, the Tournament Director selects the
 likely existing angler, compares the submitted values with the member record,
-uses **EDIT MEMBER** to correct the canonical contact information, and then
-clears the applicable review with the existing decision. The registration
-snapshot remains unchanged. All Registrations provides the same EDIT MEMBER
-correction for a linked participant when no active review remains. Do not use
-fuzzy matching, merging, uniqueness enforcement, or a new payment/membership
-path. A false Current Member claim follows CONFIRM MEMBERSHIP or Cancel
+and confirms the identity while keeping the canonical contact information
+unchanged. If a correction is actually needed, staff handles it later from
+All Members. The registration snapshot remains unchanged. Do not use fuzzy
+matching, merging, uniqueness enforcement, or a new payment/membership path.
+A false Current Member claim follows CONFIRM MEMBERSHIP or Cancel
 Registration.

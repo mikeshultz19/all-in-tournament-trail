@@ -175,7 +175,9 @@ participants, itemized charges, and total paid, then record a required reason
 and whether the full manual Chase refund is pending or completed. Cancellation
 applies to the whole team or solo registration and does not issue a Square
 refund. Memberships purchased on that registration are revoked from their
-recorded purchase lines; pre-existing memberships are not revoked. Canceled
+recorded purchase lines only when no other active registration depends on the
+same membership record; a membership still referenced by another active
+registration is preserved. Pre-existing memberships are not revoked. Canceled
 registrations remain in the Canceled and All Registrations views for audit, but
 are excluded from active operations, funds/payouts, exports, results, AOY, and
 Championship eligibility.
@@ -597,8 +599,12 @@ If a tournament is cancelled:
 - Registration, credit, and refund handling must follow the final published
   policy
 
-The detailed refund-versus-credit policy is **pending business confirmation**.
-No final financial policy should be inferred or implemented until approved.
+Public policy: registrations are final, and AITT does not advertise routine
+cancellations, refunds, or credits. The Tournament Director may approve a rare
+private exception when a legitimate circumstance warrants it. Any approved
+exception must be documented by authorized staff and handled manually; the
+exception policy must not be presented as a normal customer self-service
+option.
 
 ## 15. Registration Page Requirements
 

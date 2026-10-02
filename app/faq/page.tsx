@@ -96,6 +96,11 @@ const faqSections: FaqSection[] = [
           "Online card and supported digital-wallet payments are processed through Square. Tournament-morning payments may be made by cash or through the Square reader. A SQUARE SERVICE FEE applies to payments processed through Square; cash payments have no service fee.",
       },
       {
+        question: "Does AITT store my credit-card information?",
+        answer:
+          "No. Payment-card information is handled by Square, a third-party payment provider. AITT does not store credit-card numbers, CVV codes, or other payment-card credentials.",
+      },
+      {
         question: "Does paying an entry fee count as participating?",
         answer:
           "No. Paying an entry fee without physically launching and competing does not count as tournament participation for AOY or Championship qualification.",
@@ -176,7 +181,7 @@ const faqSections: FaqSection[] = [
       {
         question: "What happens if I bring a short fish to the scales?",
         answer:
-          "A fish that does not meet the tournament's minimum legal length receives no tournament weight, does not count toward the legal tournament limit, and is not eligible for Big Bass.",
+          "A fish that does not meet the tournament's minimum legal length receives a one-pound penalty. That short fish is not counted toward the total tournament weight or the legal tournament limit; other legal fish are counted normally.",
       },
       {
         question: "What is the penalty for a dead fish?",

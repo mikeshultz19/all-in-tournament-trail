@@ -31,10 +31,9 @@ export function getSafeLight(
   if (!officialSunrise) {
     throw new Error(`Sunrise is unavailable for ${effectiveTournamentDate}.`);
   }
-  const calculatedSafeLight = new Date(
-    officialSunrise.getTime() -
-      SAFE_LIGHT_REFERENCE.minutesBeforeSunrise * 60 * 1000,
-  );
+  // Use the actual sunrise for the tournament date as the simple planning
+  // estimate. Tournament officials still control the final launch time.
+  const calculatedSafeLight = officialSunrise;
   const isOverridden = isValidTournamentTime(manualOverride);
 
   return {

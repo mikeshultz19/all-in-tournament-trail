@@ -38,25 +38,33 @@ function groupBy<T>(
   return groups;
 }
 
-function compareRecentFinish(
+function compareRecentSharedFinish(
   left: AoyTournamentPerformance[],
   right: AoyTournamentPerformance[],
 ): number | null {
   const leftByNumber = new Map(
-    left.filter((item) => item.aoyPlacement !== null)
-      .map((item) => [item.regularSeasonNumber, item.aoyPlacement!]),
+    left
+      .filter(
+        (item) =>
+          isParticipation(item.participationStatus) &&
+          item.officialPlacement !== null,
+      )
+      .map((item) => [item.regularSeasonNumber, item.officialPlacement!]),
   );
   const rightByNumber = new Map(
-    right.filter((item) => item.aoyPlacement !== null)
-      .map((item) => [item.regularSeasonNumber, item.aoyPlacement!]),
+    right
+      .filter(
+        (item) =>
+          isParticipation(item.participationStatus) &&
+          item.officialPlacement !== null,
+      )
+      .map((item) => [item.regularSeasonNumber, item.officialPlacement!]),
   );
 
   for (let number = 8; number >= 1; number -= 1) {
     const leftPlace = leftByNumber.get(number);
     const rightPlace = rightByNumber.get(number);
-    if (leftPlace === undefined && rightPlace === undefined) continue;
-    // The Constitution does not define how absence compares with a finish.
-    if (leftPlace === undefined || rightPlace === undefined) return null;
+    if (leftPlace === undefined || rightPlace === undefined) continue;
     if (leftPlace !== rightPlace) return leftPlace - rightPlace;
   }
   return 0;
@@ -242,19 +250,21 @@ export function calculateAoyStandings(
   );
 
   const comparator = (left: AoyStanding, right: AoyStanding) => {
+    const countedWeight = (standing: AoyStanding) =>
+      standing.countedPerformances.reduce(
+        (sum, row) =>
+          sum +
+          (isParticipation(row.participationStatus) ? row.officialWeight : 0),
+        0,
+      );
     const comparisons: Array<[number, AoyStanding["tie"]["resolvedBy"]]> = [
       [right.totalCountedPoints - left.totalCountedPoints, "points"],
-      [right.wins - left.wins, "wins"],
-      [right.topTens - left.topTens, "top_tens"],
-      [
-        right.totalOfficialSeasonWeight - left.totalOfficialSeasonWeight,
-        "season_weight",
-      ],
+      [countedWeight(right) - countedWeight(left), "counted_weight"],
     ];
     for (const [difference] of comparisons) {
       if (difference !== 0) return difference;
     }
-    const recent = compareRecentFinish(
+    const recent = compareRecentSharedFinish(
       [...left.countedPerformances, ...left.droppedPerformances],
       [...right.countedPerformances, ...right.droppedPerformances],
     );
@@ -291,14 +301,24 @@ export function calculateAoyStandings(
       const resolvedBy =
         !peer || row.totalCountedPoints !== peer.totalCountedPoints
           ? "points"
-          : row.wins !== peer.wins
-            ? "wins"
-            : row.topTens !== peer.topTens
-              ? "top_tens"
-              : row.totalOfficialSeasonWeight !==
-                  peer.totalOfficialSeasonWeight
-                ? "season_weight"
-                : "recent_aoy_finish";
+          : row.countedPerformances.reduce(
+                (sum, item) =>
+                  sum +
+                  (isParticipation(item.participationStatus)
+                    ? item.officialWeight
+                    : 0),
+                0,
+              ) !==
+              peer.countedPerformances.reduce(
+                (sum, item) =>
+                  sum +
+                  (isParticipation(item.participationStatus)
+                    ? item.officialWeight
+                    : 0),
+                0,
+              )
+            ? "counted_weight"
+            : "head_to_head";
       row.tie.resolvedBy = resolvedBy;
     }
   }

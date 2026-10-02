@@ -131,6 +131,12 @@ from the corresponding Markdown documents in `docs/`. Registration receives
 the current document versions from the same server-side loader, so the public
 policy content is not manually duplicated in page components.
 
+The paper Tournament-Morning Registration Form is a separate customer-facing
+artifact and must be reviewed whenever the Official Rules or Participant
+Liability Waiver changes. Before release, verify that the paper acknowledgment,
+participant fields, fee options, and registration identifiers agree with the
+current website and policy documents. Retire superseded printed forms.
+
 Production payment is disabled. Supabase Admin Auth, durable registration, and
 Registration Review exist. The repository does not provide live Square SDK
 payment creation, a verified production Square callback/webhook flow, or a
@@ -279,9 +285,17 @@ or Square Service Fee checkbox.
 The persisted design records one acceptance event containing the registration
 or draft ID, trusted acceptance timestamp, and all applicable policy versions.
 The checkbox copy states the participant's intent to provide an electronic
-signature where permitted by law. The liability waiver remains a draft pending
-qualified legal review, and final waiver and refund-policy language requires
-business and legal approval before production payment.
+signature where permitted by law. The public liability-waiver page and paper
+waiver form use the controlled Participant Liability Waiver document. Any
+waiver update must be synchronized across the public page, registration
+acknowledgment, and paper forms before release.
+
+If either registered angler is a minor, a parent or legal guardian must provide
+the required signed consent and waiver before that minor may compete. The
+parent or legal guardian does not need to be one of the registered anglers. An
+adult teammate or other approved adult may fish with the minor, but may not
+replace the parent or legal guardian's signature unless they are the minor's
+legal guardian.
 
 Waiver Version 1.0 expressly addresses participant responsibility for vessel
 operation and on-water decisions, including accidents, weather, navigation,
@@ -328,14 +342,14 @@ After verified payment, the confirmation page displays:
 - **REGISTRATION NUMBER** and the assigned number.
 - The exact online opening:
 
-  > Your registration is confirmed. Your registration number is #[NUMBER]. You
-  > are required to complete check-in before the tournament to receive your boat
-  > number, launch time, and stop-fishing time. Check the Announcements section
-  > of the AITT website for early check-in times and location. If you do not
-  > attend early check-in, you must check in on tournament morning.
+  > Please verify that you appear on the Early Entries list on the AITT website.
+  > Your registration is confirmed. Your registration number is [NUMBER]. Check
+  > the Announcements section of the AITT website for early check-in times and
+  > location. If you do not attend early check-in, you are required to check
+  > in at the tournament-morning registration table.
 
-- Online registration assigns a registration number. Boat number, launch time,
-  and stop-fishing time are provided during check-in.
+- Online registration assigns a registration number. Boat numbers and fishing
+  times are handled by tournament staff at registration and check-in.
 - Tournament, date, and venue.
 - Registered anglers.
 - Selected options.
@@ -346,9 +360,9 @@ After verified payment, the confirmation page displays:
 
 The online webpage and online email share this opening. The walk-up email is
 intentionally different: it says that the tournament-day registration is
-confirmed and that launch and stop-fishing times are provided by tournament
-staff. Neither variant calls the registration number a boat number or
-launch-order number.
+confirmed and that start and stop-fishing times are provided by tournament
+staff at registration. Neither variant calls the registration number a boat
+number or launch-order number.
 
 No full card data is displayed. A masked description may appear later only
 when supplied safely by Square and approved for the view model. If confirmation

@@ -73,6 +73,8 @@ describe("registration confirmation email outbox", () => {
     expect(identityReview).not.toContain("deliverRegistrationConfirmationEmails");
     expect(walkUpMigration).not.toMatch(/create trigger|after update/i);
     expect(delivery).toContain('registration.registration_source === "walk_up"');
+    expect(delivery).toContain('registration.registration_status !== "active"');
+    expect(delivery).toContain('REGISTRATION_NOT_ACTIVE');
     expect(delivery).toContain('delivery.payment_attempt_id !== null');
     expect(delivery).toContain('throw new EmailProviderError("WALKUP_CONFIRMATION_DATA_INVALID")');
   });
@@ -101,7 +103,7 @@ describe("registration confirmation email outbox", () => {
     expect(email.html).toContain("Smallmouth Bass: 14-inch minimum");
     expect(email.html).toContain("Spotted Bass: No minimum length");
     expect(email.html).toContain("#7");
-    expect(email.html).toContain("Your registration is confirmed. Your registration number is #7. You are required to complete check-in before the tournament to receive your boat number, launch time, and stop-fishing time. Check the Announcements section of the AITT website for early check-in times and location. If you do not attend early check-in, you must check in on tournament morning.");
+    expect(email.html).toContain("Please verify that you appear on the Early Entries list on the AITT website. Your registration is confirmed. Your registration number is 7. Check the Announcements section of the AITT website for early check-in times and location. If you do not attend early check-in, you are required to check in at the tournament-morning registration table.");
     expect(email.html).not.toContain("Registration / Boat Number");
     expect(email.html).not.toContain("Your boat number is your launch-order number");
     expect(email.html).not.toContain("Confirmation Number");
@@ -110,9 +112,8 @@ describe("registration confirmation email outbox", () => {
     expect(email.html).toContain("November 1, 2026");
     expect(email.html).not.toContain("2026-11-01T12:00:00+00:00");
     expect(email.html).not.toContain("Processing Fee");
-    expect(email.html).toContain("Estimated Launch / Safe Light");
-    expect(email.html).toContain("Sunrise");
-    expect(email.html).toContain("Have your boat in the water and ready to launch before this time.");
+    expect(email.html).toContain("Approximate Sunrise");
+    expect(email.html).toContain("This is the estimated sunrise for the tournament date.");
     expect(email.html).toContain("All tournament times are subject to change by the Tournament Director.");
     expect(email.html).toContain("Tournament Status");
     expect(email.html).toContain('href="https://allintrail.com"');
@@ -208,7 +209,7 @@ describe("registration confirmation email outbox", () => {
       totalCents: paymentMethod === "card" ? 14450 : 14000,
     });
     expect(email.html).toContain("REGISTRATION NUMBER");
-    expect(email.html).toContain("Your tournament-day registration is confirmed. Your registration number is #41. Please follow the launch and stop-fishing times provided by tournament staff.");
+    expect(email.html).toContain("Your tournament-day registration is confirmed. Your registration number is 41. Please follow the start and stop-fishing times provided by tournament staff at registration.");
     expect(email.html).not.toContain("Your registration is confirmed. Your registration number is #41.");
     expect(email.html).toContain(`Payment Method</td><td style="padding:6px 0;color:#111;font-size:14px;font-weight:700">${paymentMethod[0].toUpperCase()}${paymentMethod.slice(1)}`);
     expect(email.html).toContain("Angler 1 Membership — $40.00");

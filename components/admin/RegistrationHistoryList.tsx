@@ -1,8 +1,6 @@
 import { ChevronDown } from "lucide-react";
 import type { ReactNode } from "react";
 import AdminStatusBadge from "@/components/admin/AdminStatusBadge";
-import { RegistrationEditControl } from "@/components/admin/RegistrationOperationsControls";
-import EditMemberContactForm from "@/components/admin/EditMemberContactForm";
 import type { AdminRegistrationHistoryRow, RegistrationHistoryContact } from "@/lib/admin-registration-history";
 
 type MembershipSnapshot = {
@@ -110,13 +108,13 @@ export default function RegistrationHistoryList({
                       <a href={`mailto:${contact.email}`} className="break-all text-[#D4A017]">{contact.email}</a><br />
                       <a href={`tel:${contact.phone}`} className="text-[#D4A017]">{contact.phone}</a><br />
                       Membership selection: {membershipLabel(contact.membership)}
-                      {(index === 0 ? row.angler1Id : row.angler2Id) ? <details className="mt-3 border-t border-white/10 pt-3"><summary className="cursor-pointer text-xs font-bold text-[#D4A017]">EDIT MEMBER</summary><EditMemberContactForm memberId={(index === 0 ? row.angler1Id : row.angler2Id)!} contact={row.canonicalContacts?.[index] ?? contact} compact /></details> : null}
                     </address>
                   )) : <p className="text-sm text-neutral-500">No participant contact snapshot is stored for this historical record.</p>}
                 </DetailSection>
 
                 <DetailSection title="Registration Selections">
                   <DetailLine label="Type" value={row.registrationType} />
+                  <DetailLine label="Boat Number" value={row.assignedBoatNumber?.toString() ?? "Not assigned"} />
                   <DetailLine label="Big Bass" value={yesNo(row.bigBass)} />
                   <DetailLine label="Member Pot" value={row.memberPot ?? "None"} />
                   <DetailLine label="Insurance Pot" value={yesNo(row.insurance)} />
@@ -177,21 +175,6 @@ export default function RegistrationHistoryList({
                 </DetailSection>
               </div>
 
-              {row.status === "active" ? (
-                <div className="mt-5 border-t border-white/10 pt-4">
-                  <RegistrationEditControl
-                    tournamentId={row.tournamentId}
-                    registrationId={row.id}
-                    boatNumber={row.boatNumber}
-                    bigBass={row.bigBass}
-                    memberPot={row.memberPot}
-                    insurance={row.insurance}
-                    checkedIn={Boolean(row.checkedInAt)}
-                    walkUp={row.source === "walk_up"}
-                    contactSnapshot={row.contacts}
-                  />
-                </div>
-              ) : null}
             </div>
           </details>
         ))}

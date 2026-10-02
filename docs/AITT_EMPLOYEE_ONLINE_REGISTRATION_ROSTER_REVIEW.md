@@ -14,10 +14,11 @@ Admin Center after payment rather than unnecessarily blocking a customer.
 | # | Human or system situation | Expected behavior | Who handles it | What to verify |
 |---|---|---|---|---|
 | 1 | A required field is blank or the waiver acknowledgment is missing. | Payment is blocked until the required information or acknowledgment is provided. | Customer or Tournament Director assisting the customer. | The form identifies the missing field and no payment attempt is created. |
-| 2 | A Team is missing Angler 2, or the same person is entered twice in one Team. | The Team cannot proceed until two distinct anglers are entered. | Customer or Tournament Director. | The correction happens before payment and no incomplete Team reaches the roster. |
+| 2 | A Team is missing Angler 2. | The Team cannot proceed until Angler 2 is entered. | Customer or Tournament Director. | The correction happens before payment and no incomplete Team reaches the roster. |
+| 2a | An unusual duplicate or same person appears twice. | Save the entry and place it in Needs Review; do not create a special customer-facing duplicate workflow. Staff may confirm, approve a new angler, or cancel it. | Tournament Director. | The registration and payment remain visible while the Director decides. |
 | 3 | Someone selects Current Member but has no active membership for the season. | The registration and payment may proceed, then the entry goes to membership Needs Review. Staff contacts the angler, confirms the $40 membership with **Confirm Membership**, or cancels the registration if they decline. | Tournament Director. | The registration remains on the roster, check-in stays gated until Confirm Membership resolves the review, and Payment Recovery retains an informational follow-up record. |
-| 4 | A name, address, phone number, email, ZIP code, or other contact detail is misspelled, outdated, or slightly different from the member record. | Structurally valid information does not unnecessarily block payment. The entry may go to identity or contact review for correction. | Tournament Director or Admin staff. | Payment, registration, roster membership, and review evidence remain connected. |
-| 5 | The same person is entered in two separate registrations. | Registration is allowed. A duplicate is an administrative issue, not an online payment blocker. | Tournament Director after payment; cancel one entry only if needed. | Both records and payments remain visible until the Director resolves the situation. |
+| 4 | A name, address, phone number, email, ZIP code, or other contact detail is misspelled, outdated, or slightly different from the member record. | The entry is saved and may go to Needs Review. Staff confirms the person or approves a new angler; the roster does not edit member information. | Tournament Director. | The existing All Members record remains unchanged unless staff later edits it in All Members. |
+| 5 | Two people share an email address, such as spouses or family members. | Registration is allowed. Each person may retain a separate All Members record with the shared email. | Tournament Director if review is shown. | Confirm the person; do not block the entry solely because the email is shared. |
 | 6 | Square declines the card, the browser closes, the customer refreshes, the payment button is double-clicked, or the network interrupts checkout. | A declined payment does not create a confirmed registration. A successful Square payment must not require a second charge. Durable payment recovery and idempotency handle interruptions. | System first; Admin staff uses Payment Recovery if a paid attempt does not finish registration. | Check Square status, payment attempts, registration state, and the Admin Payment Recovery page before asking anyone to pay again. |
 | 7 | The confirmation email is delayed, rejected, or never delivered. | The registration remains valid. Email delivery is retryable or can be followed up manually; email failure does not reverse payment or registration. | System records delivery state; Admin staff follows up when needed. | The roster and payment records show the entry even if email delivery is not complete. |
 
@@ -65,6 +66,8 @@ staging rather than only watch a demonstration.
 - Open Add Walk-Up and confirm the default Team workflow.
 - Use Member Search when appropriate, while still completing every required
   contact field.
+- For a Solo walk-up, Angler 2 is disabled. Switch the entry type back to Team
+  before entering a second angler.
 - Confirm both team anglers, membership choices, payment method, member pot,
   side pots, total collected, waiver reminder, Save Walk-Up, and Cancel Walk-Up.
 - Explain that the next registration number is assigned automatically and that
@@ -81,9 +84,9 @@ For each failure scenario, staff should answer three questions:
 3. What is the next manual step, if any?
 
 Practice missing fields, membership Needs Review, contact differences, a
-missing Angler 2, a same-team duplicate, duplicate separate registrations,
-payment interruption, payment decline, email failure, walk-up cancellation,
-and a manual $40 membership collection.
+missing Angler 2, shared-email identity review, payment interruption, payment
+decline, email failure, walk-up cancellation, and a manual $40 membership
+collection.
 
 ### Stage 5 — Escalation and debrief
 
@@ -106,6 +109,14 @@ area does even when only the owner is authorized to make the final change.
 
 - **Rules:** locate the Official Tournament Rules and explain which rules are
   controlled documents rather than casual announcement text.
+- **Paper waiver:** open the standalone Participant Liability Waiver Form from
+  Admin Center > Forms, print it when needed, and retain both participant
+  signatures with the tournament registration records.
+- **Paper-form synchronization:** whenever the Official Rules or Participant
+  Liability Waiver changes, review the paper Tournament-Morning Registration
+  Form before release. Confirm its acknowledgment wording, participant fields,
+  fee options, and identifiers still match the current website and documents.
+  Do not use older printed forms after a rules or waiver update.
 - **FAQ:** use the FAQ to answer common angler questions and verify that answers
   agree with the Official Rules.
 - **Announcements:** create, edit, publish, and remove an announcement in
@@ -224,6 +235,11 @@ Circle data needs additional review later.
   been checked.
 - Do not edit calculated payment amounts in the Admin Center.
 - Do not treat a contact mismatch as proof that payment or registration failed.
+- Confirm the person in Needs Review when the match is clear. Keep the existing
+  canonical member information during that review; make any later contact
+  cleanup only from All Members.
+- If the person cannot be confirmed, approve a new angler or cancel the
+  registration. Do not edit member data from the roster.
 - Resolve a $40 manual membership collection through the existing Registration
   Review workflow. Payment Recovery is informational only.
 - Keep paper forms available for a true website, device, payment, or internet

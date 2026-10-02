@@ -34,6 +34,7 @@ export interface TournamentRegistrationRosterRow {
   registrationPeriod: "Early Online" | "Walk-Up";
   registrationSource: "online" | "walk_up";
   boatNumber: number | null;
+  assignedBoatNumber?: number | null;
   paymentMethod: "online" | "cash" | "card" | "other" | null;
   paymentReference?: string | null;
   participantContactSnapshot: RegistrationParticipantContactSnapshot[];
@@ -96,7 +97,7 @@ type RegistrationRow = {
   payment_reference: string | null; membership_snapshot: MembershipSnapshot[] | null;
   price_snapshot: PriceSnapshot | null; identity_review_status: string;
   checked_in_at: string | null; checked_in_by_admin_id: string | null;
-  boat_number: number | null; registration_source: "online" | "walk_up";
+  boat_number: number | null; assigned_boat_number: number | null; registration_source: "online" | "walk_up";
   payment_method: "online" | "cash" | "card" | "other" | null;
   participant_contact_snapshot: RegistrationParticipantContactSnapshot[] | null;
   registration_status: "active" | "cancelled";
@@ -356,7 +357,7 @@ function toRosterRow(
     angler1Id: row.angler1_id, angler2Id: row.angler2_id,
     membershipSnapshot: row.membership_snapshot,
     registrationPeriod: row.registration_source === "walk_up" ? "Walk-Up" : "Early Online",
-    registrationSource: row.registration_source, boatNumber: row.boat_number,
+    registrationSource: row.registration_source, boatNumber: row.boat_number, assignedBoatNumber: row.assigned_boat_number,
     paymentMethod: row.payment_method, paymentReference: row.payment_reference, registrationType: row.registration_type,
     participantContactSnapshot: row.participant_contact_snapshot ?? [],
     angler1, angler2,
@@ -457,7 +458,7 @@ export function paginateTournamentRegistrationRosterRows(
 export async function getTournamentRegistrationRoster(tournamentId: string): Promise<TournamentRegistrationRosterRow[]> {
   const supabase = createSupabaseServerClient();
   const { data, error } = await supabase.from("tournament_registrations")
-    .select("id,registration_key,registered_at,updated_at,registration_type,angler1_id,angler2_id,angler1_name,angler2_name,big_bass,member_pot,insurance,payment_reference,membership_snapshot,participant_contact_snapshot,price_snapshot,identity_review_status,checked_in_at,checked_in_by_admin_id,boat_number,registration_source,payment_method,registration_status,online_payment_state,square_payment_id")
+    .select("id,registration_key,registered_at,updated_at,registration_type,angler1_id,angler2_id,angler1_name,angler2_name,big_bass,member_pot,insurance,payment_reference,membership_snapshot,participant_contact_snapshot,price_snapshot,identity_review_status,checked_in_at,checked_in_by_admin_id,boat_number,assigned_boat_number,registration_source,payment_method,registration_status,online_payment_state,square_payment_id")
     .eq("tournament_id", tournamentId).eq("registration_status", "active").order("registered_at", { ascending: true });
   if (error) throw new Error("Tournament registration roster could not be loaded.", { cause: error });
   const rows = (data ?? []) as RegistrationRow[];

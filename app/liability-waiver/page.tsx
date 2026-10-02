@@ -15,7 +15,13 @@ export default async function LiabilityWaiverPage() {
   return (
     <main className="min-h-screen overflow-x-hidden bg-[#0B0B0B] text-white">
       <Header />
-      <PolicyDocument source={waiver.source} version={waiver.version} status={waiver.status} effectiveDate={waiver.effectiveDate} />
+      <PolicyDocument
+        source={waiver.source}
+        version={waiver.version}
+        status={waiver.status}
+        effectiveDate={waiver.effectiveDate}
+        publicLabels={["Participant Liability Waiver", "All-In Tournament Trail · All In Tournament Trail LLC"]}
+      />
     </main>
   );
 }

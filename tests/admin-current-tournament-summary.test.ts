@@ -6,7 +6,7 @@ describe("Admin Home current tournament summary", () => {
     const source = readFileSync("app/admin/page.tsx", "utf8");
     expect(source.match(/label="Registration & Check-In"/g) ?? []).toHaveLength(1);
     expect(source).not.toContain('label="New Memberships"');
-    expect(source).toContain('label="Website Status"');
+    expect(source).toContain('>Website Status</p>');
     expect(source).not.toContain('label="Results Import"');
     expect(source).not.toContain('label="Insurance Pot"');
     expect(source).not.toContain('label="Payouts"');

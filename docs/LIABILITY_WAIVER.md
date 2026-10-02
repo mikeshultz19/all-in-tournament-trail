@@ -2,19 +2,6 @@
 
 ## Participant Liability Waiver and Assumption of Risk
 
-**Version:** 1.0
-**Status:** Draft – Pending Legal Review
-**Effective Date:** TBD
-**Last Updated:** July 22, 2026
-
-> This document is a draft intended for review by qualified legal counsel
-> before official adoption.
-
-This draft is not legal advice, does not guarantee immunity from liability,
-and must not be represented as attorney-approved or legally enforceable in all
-circumstances. Its provisions apply only to the fullest extent permitted by
-applicable law.
-
 ## Contents
 
 1. [Agreement to Participate](#agreement-to-participate)
@@ -34,12 +21,10 @@ applicable law.
 15. [Photography, Video, and Media Release](#photography-video-and-media-release)
 16. [Minors](#minors)
 17. [Electronic Acknowledgment and Signature](#electronic-acknowledgment-and-signature)
-18. [Document Version and Recordkeeping](#document-version-and-recordkeeping)
 19. [Governing Law and Venue](#governing-law-and-venue)
 20. [Severability](#severability)
 21. [Entire Agreement and No Oral Modification](#entire-agreement-and-no-oral-modification)
 22. [Participant Safety Acknowledgment](#participant-safety-acknowledgment)
-23. [Version History](#version-history)
 
 <a id="agreement-to-participate"></a>
 ## 1. Agreement to Participate
@@ -53,7 +38,7 @@ confirms that the full waiver was available to read before registration and
 that the participant had an opportunity to review it and ask questions.
 
 The participant may decline this waiver by choosing not to register or
-participate. Visiting the AITT website or opening this page does not constitute
+participate. Visiting the AITT website or reviewing this waiver does not constitute
 acceptance.
 
 To the extent legally appropriate, this waiver applies to tournament-related
@@ -200,7 +185,7 @@ appropriate.
 The participant will not participate while impaired by alcohol, illegal
 drugs, or any medication or substance that makes participation unsafe. This
 waiver does not require disclosure of private medical information not
-otherwise required by an approved AITT process.
+otherwise required by AITT's registration or tournament process.
 
 The participant remains responsible for personal medical expenses arising
 from participation, except where responsibility cannot legally be assigned or
@@ -225,7 +210,7 @@ training and does not create a duty beyond what applicable law requires.
 <a id="release-of-liability"></a>
 ## 9. Release of Liability
 
-For this section, the **Released Parties** are All-In Tournament Trail and its
+For this section, the **Released Parties** are All In Tournament Trail LLC and its
 owners, officers, directors, Tournament Directors, employees, contractors,
 volunteers, scorekeepers, officials, sponsors, partners, host facilities,
 property owners, launch facilities, affiliated organizations, agents,
@@ -243,10 +228,8 @@ shelter, or failure to use appropriate safety equipment.
 **NOTICE REGARDING AITT'S OWN ORDINARY NEGLIGENCE: TO THE FULLEST EXTENT
 PERMITTED BY APPLICABLE LAW, THIS RELEASE IS ALSO INTENDED TO INCLUDE CLAIMS
 ALLEGING THE ORDINARY NEGLIGENCE OF A RELEASED PARTY IN CONNECTION WITH AN AITT
-EVENT. THIS PROVISION REQUIRES REVIEW BY QUALIFIED TEXAS COUNSEL BEFORE
-ADOPTION.**
+EVENT.**
 
-<!-- LEGAL REVIEW REQUIRED: Texas counsel should review the conspicuousness, express-negligence language, scope of released parties, and electronic acceptance process before publication. -->
 
 This release does not apply to gross negligence, reckless conduct,
 intentional misconduct, fraud, statutory rights that cannot legally be
@@ -270,7 +253,6 @@ permissible, and limited to loss caused by the participant's own conduct. It is
 not intended to create an unlimited obligation or cover conduct that cannot
 legally be shifted to the participant.
 
-<!-- LEGAL REVIEW REQUIRED: Texas counsel should review the scope, causation standard, defense obligations, and enforceability of this indemnification provision before publication. -->
 
 <a id="property-loss-and-damage"></a>
 ## 11. Property Loss and Damage
@@ -347,76 +329,61 @@ No additional compensation is required unless AITT and the participant agree
 otherwise in writing. These rights are limited to uses reasonably related to
 AITT activities and remain subject to applicable law.
 
-If a minor is permitted to participate, any media permission must be reviewed
-and accepted by a parent or legal guardian as required by law and approved AITT
-policy.
+If a minor participates, any media permission must be reviewed and accepted by
+a parent or legal guardian as required by law and these Official Tournament
+Rules.
 
 <a id="minors"></a>
 ## 16. Minors
 
-AITT's current Official Tournament Rules do not finalize minimum-age or
-parental-consent requirements. This section does not independently make a
-minor eligible to participate.
+Participants who are sixteen (16) years of age or older may compete as solo
+anglers, subject to all registration, waiver, safety, licensing, and eligibility
+requirements.
 
-If AITT approves participation by a minor, a parent or legal guardian must
-review and accept the applicable waiver, consent to the minor's participation,
-and accept responsibility to the extent permitted by law. Additional
-minor-specific documentation may be required. A minor is not assumed capable
-of independently waiving all legal claims.
+A participant under eighteen (18) years of age must have a parent or legal
+guardian complete and sign all required registration acknowledgments, liability
+waivers, and participation approvals before the participant may compete.
 
-<!-- LEGAL REVIEW REQUIRED: Qualified Texas counsel should review minor eligibility, parental consent, media permission, and the enforceability of any parent or guardian release before minors participate. -->
+The parent or legal guardian does not need to be Angler 1 or Angler 2. A minor
+may fish with another adult, including an adult teammate, but that adult may
+not replace the parent or legal guardian's signature unless they are the minor's
+legal guardian. A minor may not compete unless the parent or legal guardian has
+provided that signed consent.
+
+A participant under sixteen (16) years of age may not compete as a solo angler
+and must compete with a parent, legal guardian, or another adult approved by the
+parent or legal guardian. The accompanying adult is responsible for the minor
+participant's supervision, safety, compliance with tournament rules, and lawful
+operation of the boat. Stricter requirements imposed by applicable law control.
 
 <a id="electronic-acknowledgment-and-signature"></a>
 ## 17. Electronic Acknowledgment and Signature
 
-Checking the required registration acknowledgment box is intended to
-constitute an electronic signature. By affirmatively selecting it, the
-participant confirms that they had access to and reviewed:
+By checking the acknowledgment during online registration or signing this paper
+form, each participant confirms that they had access to and reviewed:
 
 - The [Official Tournament Rules](/rules)
 - This Participant Liability Waiver and Assumption of Risk
-- A Privacy Policy, if one is adopted and presented as part of registration
+- The AITT Privacy Policy
 
-The checkbox is not preselected. Visiting a policy page, browsing the website,
-or beginning a form does not constitute agreement. Electronic acceptance is
-intended to have the same effect as a handwritten signature where permitted
+Online acknowledgment requires an affirmative, unchecked-by-default action
+before payment. Visiting a policy page, browsing the website, or beginning a
+form does not constitute agreement. The online acknowledgment and handwritten
+signature are intended to record the participant's agreement where permitted
 by applicable law.
 
-AITT may record the date and time, document versions, participant identity,
-registration identifier, acknowledgment status, and related acceptance
-metadata.
-
-<a id="document-version-and-recordkeeping"></a>
-## 18. Document Version and Recordkeeping
-
-The registration system is designed to capture, once backend integration is
-complete:
-
-- Waiver version and Official Tournament Rules version
-- Date and time of acknowledgment
-- Registration identifier and participant name
-- Acknowledgment status and other reasonable audit information
-
-The current registration contract carries this information, but AITT does not
-yet claim that the acceptance record is permanently stored. Durable
-registration persistence and a trusted server acknowledgment time remain a
-future production requirement.
-
-Payment-card information is processed by Square. AITT does not store raw card
-numbers, CVV values, magnetic-stripe data, or unencrypted payment credentials.
+Payment-card information is processed by Square, a third-party payment
+provider. AITT does not store credit-card numbers, CVV codes, or other
+payment-card credentials.
 
 <a id="governing-law-and-venue"></a>
-## 19. Governing Law and Venue
+## 18. Governing Law
 
 This waiver is intended to be governed by the laws of the State of Texas,
 subject to any law that must apply regardless of this provision.
 
-Venue and jurisdiction language must be finalized following review by
-qualified Texas counsel. This draft does not select an exclusive county or
-venue.
-
 <a id="severability"></a>
-## 20. Severability
+## 19. Severability
 
 If a court or other authority determines that a provision is invalid or
 unenforceable, the remaining provisions should remain in effect to the fullest
@@ -427,7 +394,7 @@ only to the minimum extent necessary to make it enforceable. Severability does
 not expand any provision beyond what applicable law allows.
 
 <a id="entire-agreement-and-no-oral-modification"></a>
-## 21. Entire Agreement and No Oral Modification
+## 20. Entire Agreement and No Oral Modification
 
 This waiver, together with the Official Tournament Rules and applicable
 written registration terms, represents the participant's agreement concerning
@@ -442,7 +409,7 @@ emergency instructions, safety directions, schedule changes, or rules
 clarifications within their authority.
 
 <a id="participant-safety-acknowledgment"></a>
-## 22. Participant Safety Acknowledgment
+## 21. Participant Safety Acknowledgment
 
 I understand that competitive fishing and boating involve risks that cannot
 be completely eliminated.
@@ -461,14 +428,3 @@ permitted by applicable law.
 
 I understand that I may withdraw from participation whenever I believe
 conditions are unsafe.
-
-<a id="version-history"></a>
-## Version History
-
-| Version | Date | Summary |
-| --- | --- | --- |
-| 1.0 | July 22, 2026 | Initial comprehensive participant liability waiver draft for legal review, including assumption of risk, participant responsibility, boating decisions, weather decisions, accidents, negligence, electronic acknowledgment, and document-version capture. |
-
-
----
-For an overview of the project, begin with **00_START_HERE.md**.

@@ -140,7 +140,8 @@ describe("homepage latest tournament results", () => {
   it("always renders the mobile AOY leader box with an empty-state dash", () => {
     const source = readFileSync("components/MobileHomePage.tsx", "utf8");
     expect(source).toContain("AOY Leader");
-    expect(source).toContain('{aoyLeader ?? "—"}');
+    expect(source).toContain('{aoyLeader?.angler ?? "—"}');
+    expect(source).toContain("{aoyLeader.points} PTS");
   });
   it("shows the compact mobile payout winners with the base payout first", () => {
     const html = renderToStaticMarkup(

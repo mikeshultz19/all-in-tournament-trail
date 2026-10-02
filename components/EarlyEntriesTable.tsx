@@ -70,13 +70,13 @@ export default function EarlyEntriesTable({
         <caption className="sr-only">Tournament entries, ordered from oldest registration to newest.</caption>
         <thead className="bg-[#171717] text-xs font-black uppercase tracking-[0.12em] text-[#D4A017]">
           <tr>
-            <th scope="col" className="min-w-32 border-b border-[#4A3A12] px-4 py-3">BOAT #</th>
-            <th scope="col" className="min-w-32 border-b border-[#4A3A12] px-4 py-3">Competing As</th>
+            <th scope="col" className="min-w-32 border-b border-[#4A3A12] px-4 py-3">REG #</th>
+            <th scope="col" className="min-w-32 border-b border-[#4A3A12] px-4 py-3">TYPE</th>
             <th scope="col" className="min-w-44 border-b border-[#4A3A12] px-4 py-3">Angler 1</th>
             <th scope="col" className="min-w-44 border-b border-[#4A3A12] px-4 py-3">Angler 2</th>
             <th scope="col" className="min-w-28 border-b border-[#4A3A12] px-4 py-3">Big Bass</th>
             <th scope="col" className="min-w-32 border-b border-[#4A3A12] px-4 py-3">Bonus Pot</th>
-            <th scope="col" className="min-w-36 border-b border-[#4A3A12] px-4 py-3">Insurance Pot</th>
+            <th scope="col" className="min-w-36 border-b border-[#4A3A12] px-4 py-3">INSURANCE</th>
           </tr>
         </thead>
         <tbody className="divide-y divide-white/10 bg-[#0E0E0E] text-neutral-200">

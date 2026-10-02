@@ -34,9 +34,9 @@ Review is required when the server finds:
 - more than one plausible canonical Angler.
 
 A person who is already in the tournament is not sent to this queue solely for
-that reason. Separate repeated registrations use the ordinary membership and
-payment path and do not create a duplicate-registration review. The same person
-entered twice within one Team remains a structural validation error.
+that reason. If an unusual repeated or duplicate entry is submitted, preserve
+the registration and payment and let the Tournament Director resolve it in
+Needs Review; do not create a special duplicate-entry workflow.
 
 Name-only, nickname, reversed-name, address-only, and partial matches never
 cause automatic merging. Conflicting email and phone identifiers always require
@@ -66,14 +66,14 @@ This pending state does not invalidate the registration or payment.
 The page can be filtered by tournament and shows only operational identity
 information, not payment details.
 
-An Admin's current decision labels are:
+An Admin's current decisions are:
 
-- **SAME PERSON — UPDATE INFO**;
-- **SAME PERSON — KEEP EXISTING INFO**;
-- **APPROVE NEW ANGLER** for an unmatched Current Member claim;
-- resolve both members of a Team;
-- resolve a Solo participant;
-- reopen a previously resolved review.
+- **CONFIRM EXISTING PERSON** and retain the canonical All Members record;
+- **APPROVE NEW ANGLER** for an unmatched Current Member claim; or
+- **CANCEL REGISTRATION** when the entry should not remain active.
+
+The same binary identity decision applies to Solo and Team participants. The
+roster does not edit member contact data; corrections belong in All Members.
 
 Unmatched Current Member approval uses the existing transaction-safe identity
 resolution, creates the Angler only, and leaves the membership review pending.
@@ -84,18 +84,17 @@ No Mark Collected or payment-reconciliation action exists. Payment Summary
 counts the Joining/Purchasing selection and its $40 equivalent, while Payment
 Recovery remains informational. The existing-member, contact, and historical
 membership workflows remain separate.
-Repeated tournament registrations are not identity-review cases; the
-Tournament Director handles any rare duplicate administratively after payment.
+Repeated tournament registrations are rare administrative cases. The
+Tournament Director handles them after payment through the same confirm,
+approve-new, or cancel decisions.
 
-For a flagged contact mismatch, the Tournament Director selects the specific
-existing angler, uses **EDIT MEMBER** to correct the canonical All Members
-contact record, and then completes the existing review decision. The original
-registration contact snapshot remains the submitted historical evidence. The
-same EDIT MEMBER control is available inside an expanded All Registrations
-record for broader current-member corrections. This practical process does not
-add fuzzy matching, uniqueness enforcement, member merging, or a new audit
-subsystem; ambiguous information remains in Needs Review until staff verifies
-it.
+For a flagged contact mismatch, the Tournament Director confirms the specific
+existing angler and keeps the canonical member information as-is. The original
+registration contact snapshot remains the submitted historical evidence. If a
+canonical phone, address, or other contact correction is actually needed, staff
+handles it later from All Members. The review workflow does not add fuzzy
+matching, roster-side editing, member merging, or a new audit subsystem;
+ambiguous information remains in Needs Review until staff verifies it.
 
 When an Admin confirms an existing Angler for a Current Member claim, the
 system must immediately re-evaluate that Angler's current-season membership.
@@ -110,8 +109,8 @@ This is a queue invariant, not merely a display rule: every active participant
 must be either a verified current-season member or present in an actionable
 review/Membership Dues queue. A resolved identity review with an unresolved
 membership condition must remain visible, keep CHECK IN disabled, and identify
-the required next action. Valid membership confirmation or qualifying MARK
-COLLECTED evidence clears the condition; no active participant may disappear
+the required next action. Valid membership confirmation clears the condition;
+no active participant may disappear
 from all actionable queues.
 
 After all participants are resolved, the existing validated

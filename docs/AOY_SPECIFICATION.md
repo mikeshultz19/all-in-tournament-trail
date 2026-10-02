@@ -195,7 +195,8 @@ awarded.
 2. Season AOY standings use only the team's five highest AOY tournament scores.
 3. Scores outside the best five remain visible but do not contribute to the
    season AOY total.
-4. There is no minimum tournament requirement to win AOY.
+4. At final AOY qualification, each eligible Competitive Record must have
+   participated in at least five regular-season tournaments.
 5. The team with the highest final best-five AOY total wins AOY, subject to the
    tie-breaker rules.
 
@@ -246,17 +247,18 @@ A team may:
 
 Season AOY ties are resolved in this order:
 
-1. Most tournament wins
-2. Most Top 10 finishes
-3. Highest total official season weight
-4. Best finish in the most recent tournament relevant to the tied teams
+1. Highest combined official weight from the five tournaments counted toward
+   each team's final AOY score.
+2. If still tied, the higher finish in the most recent regular-season
+   tournament where both tied teams competed.
 
-The implementation must apply tie breakers consistently and must retain enough
-tournament-level data to explain the outcome publicly.
+There are eight regular-season tournaments and each eligible team must fish at
+least five, so tied teams will have at least one shared tournament for the
+head-to-head tiebreaker. No additional wins, Top-10, or discretionary
+tiebreaker is used.
 
-For the fourth tie breaker, compare the tied teams' AOY finishes beginning with
-the most recent regular-season tournament and continue backward through
-regular-season tournaments until the tie is broken.
+The implementation must apply these two tiebreakers consistently and retain
+enough tournament-level data to explain the outcome publicly.
 
 ## 13. Wins and Top 10s
 
@@ -269,12 +271,10 @@ regular-season tournaments until the tie is broken.
 
 ## 14. Total Season Weight
 
-1. Total Season Weight for tie-breaking purposes is the sum of the team's
-   official tournament weights from all AOY-eligible tournament appearances
-   during the season.
-2. Total Season Weight is not restricted to only the five tournaments that
-   count toward the AOY points total unless this rule is changed later by AITT.
-3. No-show and disqualified entries contribute zero weight.
+1. Total Season Weight for AOY tie-breaking is the sum of the team's official
+   tournament weights from the same five tournaments that count toward its
+   final AOY points total.
+2. No-show and disqualified entries contribute zero weight.
 
 ## 15. AOY Public Standings
 

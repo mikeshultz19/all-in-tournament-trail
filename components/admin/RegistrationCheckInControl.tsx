@@ -29,7 +29,24 @@ export default function RegistrationCheckInControl({ tournamentId, registrationI
 
   const confirmation = checkedIn ? "Reopen this checked-in registration for corrections?" : null;
   const checkInBlocked = membershipDue || reviewBlocked;
-  return <form action={action} className="min-w-32 print:hidden" onSubmit={(event) => { if (confirmation && !window.confirm(confirmation)) event.preventDefault(); }}>
+  return <form action={action} className="min-w-32 print:hidden" onSubmit={(event) => {
+    if (confirmation && !window.confirm(confirmation)) {
+      event.preventDefault();
+      return;
+    }
+    if (!checkedIn) {
+      const rosterContainer = event.currentTarget.closest("tr, article");
+      const boatInput = rosterContainer?.querySelector<HTMLInputElement>(`[data-assigned-boat-number="${registrationId}"]`)
+        ?? document.querySelector<HTMLInputElement>(`[data-assigned-boat-number="${registrationId}"]`);
+      event.currentTarget.querySelector<HTMLInputElement>("[data-assigned-boat-number-hidden]")?.remove();
+      const hiddenBoatNumber = document.createElement("input");
+      hiddenBoatNumber.type = "hidden";
+      hiddenBoatNumber.name = "assignedBoatNumber";
+      hiddenBoatNumber.dataset.assignedBoatNumberHidden = "true";
+      hiddenBoatNumber.value = boatInput?.value ?? "";
+      event.currentTarget.appendChild(hiddenBoatNumber);
+    }
+  }}>
     {checkedIn ? <div><p><AdminStatusBadge tone="positive">✓ Checked In</AdminStatusBadge></p><button type="submit" disabled={pending} className={adminButtonStyles("ghost", "mt-1 min-h-0 px-0 py-1 text-[10px] hover:bg-transparent hover:text-amber-300")}>{pending ? "Saving..." : "Edit / Reopen"}</button></div>
       : <div><button type="submit" disabled={pending || checkInBlocked} className={adminButtonStyles("secondary", checkInBlocked ? "cursor-not-allowed opacity-50 grayscale" : "")}>{pending ? "Saving..." : "Check In"}</button>{reviewBlocked ? <p className="mt-1 text-[10px] leading-4 text-neutral-400">Resolve registration review.</p> : membershipDue ? <p className="mt-1 text-[10px] leading-4 text-neutral-400">Verify membership dues.</p> : null}</div>}
     {state.status === "error" ? <p role="alert" className="mt-2 text-xs text-red-300">{state.message}</p> : null}

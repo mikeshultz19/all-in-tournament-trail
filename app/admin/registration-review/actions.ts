@@ -30,6 +30,8 @@ export interface RegistrationOperationsActionState {
   status: "idle" | "success" | "error";
   message: string;
   draft?: WalkUpRegistrationDraft;
+  needsReview?: boolean;
+  registrationId?: string;
 }
 
 function text(formData: FormData, name: string) {
@@ -139,6 +141,16 @@ function walkUpSaveErrorMessage(error: { message?: string } | null) {
     || "The walk-up registration could not be saved. Verify the identity and membership selections.";
 }
 
+function isCurrentMembershipReviewError(error: { message?: string } | null) {
+  const message = error?.message?.toLowerCase() ?? "";
+  return message.includes("aitt_registration_current_membership_not_found")
+    || (message.includes("current member") && (
+      message.includes("membership")
+      || message.includes("not found")
+      || message.includes("active")
+    ));
+}
+
 export type WalkUpMemberSearchResult = {
   anglerId: string;
   displayName: string;
@@ -237,6 +249,7 @@ export async function createWalkUpRegistrationAction(
       lastName: text(formData, "angler1LastName"),
       email: text(formData, "angler1Email").toLowerCase(),
       mobilePhone: text(formData, "angler1Phone"),
+      phone: text(formData, "angler1Phone"),
       streetAddress: text(formData, "angler1StreetAddress"),
       city: text(formData, "angler1City"),
       state: text(formData, "angler1State").toUpperCase(),
@@ -249,6 +262,7 @@ export async function createWalkUpRegistrationAction(
           lastName: text(formData, "angler2LastName"),
           email: text(formData, "angler2Email").toLowerCase(),
           mobilePhone: text(formData, "angler2Phone"),
+          phone: text(formData, "angler2Phone"),
           streetAddress: text(formData, "angler2StreetAddress"),
           city: text(formData, "angler2City"),
           state: text(formData, "angler2State").toUpperCase(),
@@ -262,19 +276,23 @@ export async function createWalkUpRegistrationAction(
     !tournamentId || !["solo", "team"].includes(registrationType)
     || !Number.isFinite(submittedTotalPaid) || submittedTotalPaid < 0
     || !["cash", "card", "other"].includes(paymentMethod)
-    || anglers.some((angler) => !angler.firstName || !angler.lastName || !angler.streetAddress || !angler.city || !angler.state || !angler.zipCode || !angler.mobilePhone || !angler.membership)
+    || anglers.some((angler) => !angler.firstName || !angler.lastName || !angler.streetAddress || !angler.city || !angler.state || !angler.zipCode || !angler.email || !angler.mobilePhone || !angler.membership)
   ) {
     return { status: "error", message: "Complete all required walk-up registration fields.", draft };
   }
 
-  const selectedIds = selectedMemberIds.filter((id): id is string => Boolean(id));
-  if (new Set(selectedIds).size !== selectedIds.length) {
+  const selectedIds = selectedMemberIds;
+  const nonEmptySelectedIds = selectedIds.filter((id): id is string => Boolean(id));
+  if (new Set(nonEmptySelectedIds).size !== nonEmptySelectedIds.length) {
     return { status: "error", message: "Select two different members for a Team entry.", draft };
   }
-  for (const selectedId of selectedIds) {
+  for (const selectedId of nonEmptySelectedIds) {
     const selected = await getAdminMemberById(selectedId);
     if (!selected || !selected.active || selected.mergedIntoAnglerId) {
       return { status: "error", message: "The selected member is no longer active. Search again.", draft };
+    }
+    if (!selected.firstName || !selected.lastName || !selected.streetAddress || !selected.city || !selected.state || !selected.zipCode || !selected.email || !selected.phone) {
+      return { status: "error", message: "This member record is missing required contact information. Update it in All Members before saving the walk-up.", draft };
     }
   }
 
@@ -283,8 +301,8 @@ export async function createWalkUpRegistrationAction(
   // form value cannot silently link the walk-up to a different person. An
   // active season membership also means the walk-up is Current, not a second
   // $40 Joining/Purchasing charge.
-  if (selectedIds.length) {
-    const selectedMembers = await Promise.all(selectedIds.map((id) => getAdminMemberById(id)));
+  if (nonEmptySelectedIds.length) {
+    const selectedMembers = await Promise.all(selectedIds.map((id) => id ? getAdminMemberById(id) : null));
     anglers = anglers.map((angler, index) => {
       const selected = selectedMembers[index];
       if (!selected) return angler;
@@ -358,14 +376,15 @@ export async function createWalkUpRegistrationAction(
       },
     };
   }
-  const { data: registration, error } = await createSupabaseServerClient().rpc(
-    "admin_create_safe_walkup_registration",
-    {
+  const rpcArgs = {
       p_tournament_id: tournamentId,
       p_registration_type: registrationType,
       p_anglers: anglers,
       p_options: {
         ...options,
+        // An explicit Member Search selection is authoritative even when a
+        // different synthetic or real member happens to share the same email.
+        selectedMemberIds: selectedIds,
         priceSnapshot: {
           lineItems: authoritativePricing.lineItems,
           subtotalCents: authoritativePricing.subtotalCents,
@@ -376,8 +395,60 @@ export async function createWalkUpRegistrationAction(
       p_payment_method: paymentMethod,
       p_total_paid_cents: authoritativeTotalCents,
       p_admin_user_id: admin.id,
-    },
+  };
+  const supabase = createSupabaseServerClient();
+  let { data: registration, error } = await supabase.rpc(
+    "admin_create_safe_walkup_registration",
+    rpcArgs,
   );
+  const originalError = error;
+  const hasCurrentMemberClaim = anglers.some((angler) => angler.membership === "current");
+  const activeCurrentMemberMatches = await Promise.all(anglers.map((angler) =>
+    angler.membership === "current" && angler.email
+      ? getAdminMemberByEmail(angler.email)
+      : null,
+  ));
+  const allCurrentMembersVerified = anglers.every((angler, index) =>
+    angler.membership !== "current"
+    || Boolean(selectedIds[index] || activeCurrentMemberMatches[index]?.membershipStatus === "active"),
+  );
+  const isStructuralWalkUpError = /AITT_(?:WALKUP_INPUT_INVALID|WALKUP_ANGLERS_INVALID|WALKUP_PRICE_SNAPSHOT_INVALID|REGISTRATION_TOURNAMENT_INVALID|REGISTRATION_NOT_YET_ELIGIBLE|REGISTRATION_MEMBER_OPTION_INELIGIBLE)/i.test(
+    error?.message ?? "",
+  );
+  if (error && hasCurrentMemberClaim && allCurrentMembersVerified && !isStructuralWalkUpError) {
+    const retry = await supabase.rpc("admin_create_sequential_walkup_registration", rpcArgs);
+    registration = retry.data;
+    error = retry.error;
+    // A selected Current member can still collide with another active record
+    // that shares the same email. Preserve the selected identity, but route
+    // the unresolved collision to the normal Needs Review workflow instead
+    // of blocking the walk-up after the sequential retry.
+    if (error && (
+      isCurrentMembershipReviewError(error)
+      || error.message?.includes("AITT_REGISTRATION_DUPLICATE_ANGLER")
+      || error.message?.includes("AITT_REGISTRATION_IDENTITY_REVIEW_REQUIRED")
+    )) {
+      const fallback = await supabase.rpc("admin_create_current_member_review_walkup", rpcArgs);
+      registration = fallback.data;
+      error = fallback.error ?? null;
+      if (error && isCurrentMembershipReviewError(originalError)) error = originalError;
+    }
+  } else if (
+    isCurrentMembershipReviewError(error)
+    || (hasCurrentMemberClaim && Boolean(error) && !isStructuralWalkUpError)
+    || error?.message?.includes("AITT_REGISTRATION_DUPLICATE_ANGLER")
+    || error?.message?.includes("AITT_REGISTRATION_IDENTITY_REVIEW_REQUIRED")
+  ) {
+    const fallback = await supabase.rpc("admin_create_current_member_review_walkup", rpcArgs);
+    registration = fallback.data;
+    // Keep the actionable membership reason if an older staging function is
+    // unavailable or rejects the review fallback. The walk-up must not turn
+    // into a generic "could not be saved" message.
+    error = fallback.error ?? null;
+    if (error && isCurrentMembershipReviewError(originalError)) {
+      error = originalError;
+    }
+  }
 
   if (error) {
     console.error("Walk-up registration save failed.", error);
@@ -387,7 +458,10 @@ export async function createWalkUpRegistrationAction(
   const recipients = uniqueRegistrationRecipients(anglers.map((angler) => angler.email));
   if (!recipients.length) {
     revalidateRegistrationOperations();
-    return { status: "success", message: "Confirmation not sent — no email provided." };
+    const needsReview = registration?.identity_review_status === "review_required";
+    return { status: "success", ...(needsReview ? { needsReview: true, registrationId: registration.id } : {}), message: needsReview
+      ? "Walk-up saved — Needs Review. Resolve the informational review from the roster when convenient."
+      : "Confirmation not sent — no email provided." };
   }
 
   if (!registration?.id) {
@@ -399,16 +473,25 @@ export async function createWalkUpRegistrationAction(
     const delivery = await deliverRegistrationConfirmationEmails(registration.id);
     if (delivery.failed > 0 || delivery.sent !== recipients.length) {
       revalidateRegistrationOperations();
-      return { status: "success", message: "Walk-up saved. Confirmation delivery is pending retry." };
+      const needsReview = registration.identity_review_status === "review_required";
+      return { status: "success", ...(needsReview ? { needsReview: true, registrationId: registration.id } : {}), message: needsReview
+        ? "Walk-up saved — Needs Review. Confirmation delivery is pending retry."
+        : "Walk-up saved. Confirmation delivery is pending retry." };
     }
   } catch (deliveryError) {
     console.error("Walk-up registration confirmation email processing is awaiting retry.", deliveryError);
     revalidateRegistrationOperations();
-    return { status: "success", message: "Walk-up saved. Confirmation delivery is pending retry." };
+    const needsReview = registration.identity_review_status === "review_required";
+    return { status: "success", ...(needsReview ? { needsReview: true, registrationId: registration.id } : {}), message: needsReview
+      ? "Walk-up saved — Needs Review. Confirmation delivery is pending retry."
+      : "Walk-up saved. Confirmation delivery is pending retry." };
   }
 
   revalidateRegistrationOperations();
-  return { status: "success", message: "Walk-up added to the tournament roster." };
+  const needsReview = registration.identity_review_status === "review_required";
+  return { status: "success", ...(needsReview ? { needsReview: true, registrationId: registration.id } : {}), message: needsReview
+    ? "Walk-up saved — Needs Review. Resolve the informational review from the roster when convenient."
+    : "Walk-up added to the tournament roster." };
 }
 
 export async function updateRegistrationOperationsAction(
@@ -486,6 +569,35 @@ export async function cancelRegistrationAction(
   return { status: "success", message: "Registration cancelled. Any refund must be handled separately." };
 }
 
+export async function updateRegistrationAssignedBoatNumberAction(
+  tournamentId: string,
+  registrationId: string,
+  _previousState: RegistrationOperationsActionState,
+  formData: FormData,
+): Promise<RegistrationOperationsActionState> {
+  void _previousState;
+  const admin = await requireAdminUser();
+  const value = text(formData, "assignedBoatNumber");
+  const assignedBoatNumber = value === "" ? null : Number(value);
+  if (assignedBoatNumber !== null && (!Number.isInteger(assignedBoatNumber) || assignedBoatNumber < 1 || assignedBoatNumber > 999)) {
+    return { status: "error", message: "Enter a boat number from 1 to 999." };
+  }
+
+  const { error } = await createSupabaseServerClient().rpc("admin_update_registration_assigned_boat_number", {
+    p_registration_id: registrationId,
+    p_tournament_id: tournamentId,
+    p_assigned_boat_number: assignedBoatNumber,
+    p_admin_user_id: admin.id,
+  });
+  if (error) {
+    console.error("Assigned boat number update failed.", error);
+    return { status: "error", message: error.code === "23505" ? "Duplicate numbers cannot be used." : "Boat number could not be saved. Reopen the registration and try again." };
+  }
+
+  revalidateRegistrationOperations();
+  return { status: "success", message: "Boat number saved." };
+}
+
 export async function resolveRegistrationContactReviewAction(
   _previousState: RegistrationReviewActionState,
   formData: FormData,
@@ -555,11 +667,51 @@ export async function confirmCurrentMemberAsNewAction(_previousState: Registrati
   void _previousState;
   const admin = await requireAdminUser();
   const reviewId = text(formData, "reviewId");
+  const existingAnglerId = text(formData, "existingAnglerId") || null;
   if (!reviewId) return { status: "error", message: "Select a membership review." };
   try {
     const reviewNote = `Membership confirmed by ${getAdminDisplayName(admin)} (${admin.id}).`;
-    await resolveRegistrationIdentityReview({ reviewId, resolution: "new", existingAnglerId: null, adminUserId: admin.id, reviewNote });
-    await resolveHistoricalMembershipReview({ reviewId, membership: "joining", adminUserId: admin.id, reviewNote });
+    // Approve New Angler may already have linked the submitted identity and
+    // created the canonical member. Confirming the membership must reuse that
+    // link rather than creating a second angler record.
+    const { data: review, error: reviewError } = await createSupabaseServerClient()
+      .from("registration_identity_reviews")
+      .select("canonical_angler_id,review_status,review_kind")
+      .eq("id", reviewId)
+      .maybeSingle();
+    if (
+      reviewError ||
+      !review ||
+      review.review_status !== "review_required" ||
+      (review.review_kind !== "membership" && review.review_kind !== "identity")
+    ) {
+      return { status: "error", message: "This membership review is no longer available. Refresh and try again." };
+    }
+    if (!review.canonical_angler_id) {
+      await resolveRegistrationIdentityReview({
+        reviewId,
+        resolution: existingAnglerId ? "existing" : "new",
+        existingAnglerId,
+        adminUserId: admin.id,
+        reviewNote,
+      });
+    }
+    // Identity confirmation can finish the review by itself when the
+    // selected existing angler already has an eligible active membership.
+    // Only resolve a second membership review when the database still shows
+    // that review as pending; otherwise the historical-membership RPC would
+    // incorrectly report that the review no longer exists.
+    const { data: refreshedReview, error: refreshedReviewError } = await createSupabaseServerClient()
+      .from("registration_identity_reviews")
+      .select("review_status,review_kind")
+      .eq("id", reviewId)
+      .maybeSingle();
+    if (refreshedReviewError || !refreshedReview) {
+      return { status: "error", message: "This membership review is no longer available. Refresh and try again." };
+    }
+    if (refreshedReview.review_status === "review_required" && refreshedReview.review_kind === "membership") {
+      await resolveHistoricalMembershipReview({ reviewId, membership: "joining", adminUserId: admin.id, reviewNote });
+    }
     revalidateRegistrationOperations();
     return { status: "success", message: "Membership confirmed. Check-in is now available." };
   } catch (error) {
@@ -592,13 +744,34 @@ export async function resolveRegistrationReviewAction(
   }
 
   try {
-    await resolveRegistrationIdentityReview({
-      reviewId,
-      resolution,
-      existingAnglerId,
-      adminUserId: admin.id,
-      reviewNote,
-    });
+    const { data: review, error: reviewError } = await createSupabaseServerClient()
+      .from("registration_identity_reviews")
+      .select("canonical_angler_id,review_kind")
+      .eq("id", reviewId)
+      .maybeSingle();
+    if (reviewError || !review) {
+      return {
+        status: "error",
+        message: "This registration review is no longer available. Refresh and try again.",
+      };
+    }
+    if (!review.canonical_angler_id) {
+      await resolveRegistrationIdentityReview({
+        reviewId,
+        resolution,
+        existingAnglerId,
+        adminUserId: admin.id,
+        reviewNote,
+      });
+    }
+    if (review.review_kind === "membership" && resolution === "new") {
+      await resolveHistoricalMembershipReview({
+        reviewId,
+        membership: "joining",
+        adminUserId: admin.id,
+        reviewNote,
+      });
+    }
     revalidatePath("/admin");
     revalidatePath("/admin/members");
     revalidatePath("/admin/registration-review");

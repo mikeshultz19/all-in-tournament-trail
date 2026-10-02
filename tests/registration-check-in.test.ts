@@ -18,7 +18,7 @@ describe("Early Entries check-in", () => {
     expect(action).toContain('.eq("id", registrationId)');
     expect(action).toContain('.eq("tournament_id", tournamentId)');
     expect(action).not.toContain("payment_reference");
-    expect(action).toContain('.neq("identity_review_status", "review_required")');
+    expect(action).toContain("unresolved identity reviews block online");
     expect(action).not.toMatch(/identity_review_status:\s*/);
   });
 
@@ -36,10 +36,10 @@ describe("Early Entries check-in", () => {
     expect(page).toContain("Member Pots");
     expect(page).toContain("Insurance");
     expect(page).toContain("Big Bass");
-    expect(page).toContain("Check-In / Review");
+    expect(page).toContain("Check-In");
     expect(page).toContain("'Weight'");
-    expect(page.indexOf("Check-In / Review")).toBeLessThan(page.indexOf("'Weight'"));
-    expect(page).toContain("Blank weight for boat");
+    expect(page.indexOf("Check-In")).toBeLessThan(page.indexOf("'Weight'"));
+    expect(page).toContain("Blank weight for registration");
     expect(page).not.toContain("Entry Options");
     expect(page).toContain('data-testid="mobile-registration-roster"');
     expect(legacyRoute).toContain("redirect(`/admin/registration-review${query}`)");

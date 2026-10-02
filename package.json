@@ -15,7 +15,6 @@
     "deploy:staging": "node scripts/deploy-staging.mjs",
     "deploy:staging:check": "node scripts/deploy-staging.mjs --check",
     "env:check": "node scripts/deploy-production.mjs --status",
-    "upload": "opennextjs-cloudflare build && opennextjs-cloudflare upload",
     "cf-typegen": "wrangler types --env-interface CloudflareEnv cloudflare-env.d.ts"
   },
   "dependencies": {

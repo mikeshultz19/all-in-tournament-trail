@@ -113,7 +113,7 @@ describe("Tournament Entries", () => {
 
   it("formats exact timestamps deterministically in America/Chicago", () => {
     const html = renderToStaticMarkup(<EarlyEntriesTable entries={entries} registrationHref="/register" registrationOpen />);
-    expect(html).toContain("BOAT #");
+    expect(html).toContain("REG #");
     expect(html).not.toContain("Registered");
     expect(html).not.toContain("July 10, 2026 at 6:34 PM");
     expect(entries.map((entry) => entry.boatNumber)).toEqual([17, 18, 19, 20]);
@@ -131,8 +131,8 @@ describe("Tournament Entries", () => {
 
   it("renders team and solo entries with their public names", () => {
     const html = renderToStaticMarkup(<EarlyEntriesTable entries={entries} registrationHref="/register" registrationOpen />);
-    expect(html).toContain("BOAT #");
-    expect(html).toContain("Competing As");
+    expect(html).toContain("REG #");
+    expect(html).toContain("TYPE");
     expect(html).toContain("Team");
     expect(html).toContain("Solo");
     expect(html).toContain("Caleb Brooks");

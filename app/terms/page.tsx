@@ -23,7 +23,7 @@ export default function TermsPage() {
               Terms of Use
             </h1>
             <p className="mt-4 max-w-3xl text-base leading-7 text-neutral-400">
-              These terms apply to use of the public AITT website.
+              These terms apply to use of the public AITT website and are published by All In Tournament Trail LLC.
             </p>
           </header>
 

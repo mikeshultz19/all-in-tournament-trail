@@ -7,13 +7,6 @@ import LiabilityWaiverPage from "@/app/liability-waiver/page";
 import RulesPage from "@/app/rules/page";
 import { REGISTRATION_POLICY_VERSIONS } from "@/lib/online-registration";
 
-function documentVersion(filename: string): string {
-  const source = readFileSync(path.join(process.cwd(), "docs", filename), "utf8");
-  const match = source.match(/\*\*Version:\*\*\s*([^\r\n]+)/);
-  if (!match?.[1]) throw new Error(`${filename} is missing its version.`);
-  return match[1].trim();
-}
-
 describe("public registration policy pages", () => {
   it("renders the current Official Tournament Rules document", async () => {
     const html = renderToStaticMarkup(await RulesPage());
@@ -22,15 +15,16 @@ describe("public registration policy pages", () => {
     expect(html).toContain('id="boat-safety"');
     expect(html).toContain('href="#fishing-rules"');
     expect(html).toContain('href="/register"');
+    expect(html).not.toContain("Version History");
+    expect(html).not.toContain("version-history");
     expect(html).not.toMatch(/Co-Angler|\d{3}[-.) ]\d{3}[-. ]\d{4}/i);
   });
 
-  it("renders the waiver and visibly preserves its legal-review status", async () => {
+  it("renders the public waiver without internal drafting metadata", async () => {
     const html = renderToStaticMarkup(await LiabilityWaiverPage());
     expect(html).toContain("Participant Liability Waiver and Assumption of Risk");
-    expect(html).toContain("Draft – Pending Legal Review");
-    expect(html).toContain(">1.0<");
-    expect(html).toContain("qualified legal counsel");
+    expect(html).toContain("All-In Tournament Trail");
+    expect(html).not.toMatch(/Draft|Pending Legal Review|qualified legal counsel|LEGAL REVIEW REQUIRED:|attorney-approved|Effective Date|Version History/i);
     expect(html).toContain('href="/register"');
   });
 
@@ -52,14 +46,13 @@ describe("public registration policy pages", () => {
     expect(html).toContain("gross negligence");
     expect(html).toContain("intentional misconduct");
     expect(html).not.toContain("LEGAL REVIEW REQUIRED:");
-    expect(html).toContain("must not be represented as attorney-approved");
     expect(html).not.toMatch(/(?:is|has been) attorney[- ]approved/i);
     expect(html).not.toMatch(/Co-Angler|\d{3}[-.) ]\d{3}[-. ]\d{4}/i);
   });
 
-  it("uses document versions in the registration contract", () => {
-    expect(REGISTRATION_POLICY_VERSIONS.rules).toBe(documentVersion("TOURNAMENT_RULES.md"));
-    expect(REGISTRATION_POLICY_VERSIONS.liability_waiver).toBe(documentVersion("LIABILITY_WAIVER.md"));
+  it("keeps internal policy versions in the registration contract", () => {
+    expect(REGISTRATION_POLICY_VERSIONS.rules).toBe("1.10");
+    expect(REGISTRATION_POLICY_VERSIONS.liability_waiver).toBe("1.1");
   });
 
   it("uses only local policy documents and icons", async () => {

@@ -165,12 +165,14 @@ manual Chase refund, membership-revocation, and active-operation exclusions.
 - [Official Tournament Rules — canonical source](TOURNAMENT_RULES.md), version
   1.8. The matching served copy is
   [`public/docs/TOURNAMENT_RULES.md`](../public/docs/TOURNAMENT_RULES.md).
-- [Liability Waiver — source copy](LIABILITY_WAIVER.md), currently marked draft
-  pending legal review. The matching served copy is
+- [Liability Waiver — source copy](LIABILITY_WAIVER.md), official public waiver
+  source. The matching served copy is
   [`public/docs/LIABILITY_WAIVER.md`](../public/docs/LIABILITY_WAIVER.md).
 
 The source and public copies of each official document must remain identical.
-Do not casually change Rules or waiver content.
+Do not casually change Rules or waiver content. Whenever Rules or waiver text
+changes, review the paper registration form and update it before release so the
+paper acknowledgment and fee/participant fields remain synchronized.
 
 ## Historical / Superseded
 

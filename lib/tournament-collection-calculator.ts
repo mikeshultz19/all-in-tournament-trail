@@ -301,7 +301,9 @@ export function buildTournamentCollectionSummary(tournamentId: string, rows: rea
   lines.push({ key: "insurance", label: "Insurance Pot", count: insuranceEntries.length, onlineCount: insuranceOnline.length, inPersonCount: insuranceEntries.length - insuranceOnline.length, configuredFeeCents: REGISTRATION_PRICING.insurance * 100, feeCents: REGISTRATION_PRICING.insurance * 100, totalCents: insuranceEntries.reduce((sum, entry) => sum + entry.amount, 0) });
 
   const totalTournamentPayoutFundsCents = lines.filter((line) => line.key !== "membership").reduce((sum, line) => sum + line.totalCents, 0);
-  const onlineRegistrationFundsCents = paidRows.filter((row) => row.registration_source !== "walk_up").reduce((sum, row) => sum + rowFunds(row), 0);
+  const onlineRegistrationFundsCents = paidRows
+    .filter((row) => row.registration_source !== "walk_up")
+    .reduce((sum, row) => sum + onlineRowFunds(row), 0);
   const walkUpFundsByMethod: WalkUpFundsByMethod = { cash: 0, card: 0, other: 0 };
   for (const row of paidRows.filter((entry) => entry.registration_source === "walk_up")) walkUpFundsByMethod[walkUpMethod(row)] += rowFunds(row);
   const totalRegistrationFundsCollectedCents = totalTournamentPayoutFundsCents + membershipRevenueCents;
@@ -313,6 +315,17 @@ export function buildTournamentCollectionSummary(tournamentId: string, rows: rea
       return sum + (categoryAmount(row, category, configured) ?? 0);
     }, 0);
     return payout + membershipCount(row) * REGISTRATION_PRICING.annualMembership * 100;
+  }
+
+  function onlineRowFunds(row: RegistrationCollectionRow) {
+    const payout = (["base", "bronze", "silver", "gold", "big_bass", "insurance"] as const).reduce((sum, category) => {
+      const configured = category === "base" ? REGISTRATION_OPTION_CONFIG.tournament_entry.priceCents : category === "big_bass" ? REGISTRATION_OPTION_CONFIG.big_bass.priceCents : category === "insurance" ? REGISTRATION_PRICING.insurance * 100 : REGISTRATION_OPTION_CONFIG[category].priceCents;
+      return sum + (categoryAmount(row, category, configured) ?? 0);
+    }, 0);
+    const membership = hasLineItems(row.price_snapshot)
+      ? lineAmount(row.price_snapshot, (item) => item.code === "annual_membership" || Boolean(item.name?.endsWith(" Membership"))) ?? 0
+      : membershipCount(row) * REGISTRATION_PRICING.annualMembership * 100;
+    return payout + membership;
   }
 }
 

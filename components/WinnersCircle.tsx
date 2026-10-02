@@ -22,6 +22,7 @@ import type {
   LatestTournamentResults,
   ResultEntry,
 } from "@/types/results";
+import type { PublicAoyStanding } from "@/lib/aoy-standings";
 
 type Icon = ComponentType<SVGProps<SVGSVGElement>>;
 type SidePotName = "bronze" | "silver" | "gold";
@@ -327,7 +328,7 @@ function SummaryRow({
   );
 }
 
-function AoyLeaderPlaceholder() {
+function AoyLeaderPlaceholder({ leader }: { leader: PublicAoyStanding | null }) {
   return (
     <section
       aria-labelledby="aoy-points-leader-heading"
@@ -345,9 +346,9 @@ function AoyLeaderPlaceholder() {
           AOY POINTS LEADER
         </h4>
       </div>
-      <p className="mt-4 text-2xl font-black uppercase text-white">—</p>
+      <p className="mt-4 text-lg font-black uppercase leading-tight text-white sm:text-xl">{leader?.angler ?? "—"}</p>
       <p className="mt-1 text-[0.92rem] font-black tabular-nums text-[#c9aa4a]">
-        —
+        {leader ? `${leader.points.toLocaleString()} PTS` : "—"}
       </p>
     </section>
   );
@@ -382,8 +383,10 @@ function ResultsActionButton({
 
 export default function WinnersCircle({
   latestResults,
+  aoyLeader = null,
 }: {
   latestResults: LatestTournamentResults | null;
+  aoyLeader?: PublicAoyStanding | null;
 }) {
   const hasResults = Boolean(latestResults);
   const results = latestResults?.results ?? null;
@@ -461,7 +464,7 @@ export default function WinnersCircle({
   const bigBassWeight = results?.big_bass_weight ?? null;
 
   return (
-    <section id="results" className="bg-black px-4 py-8 sm:px-6">
+    <section className="bg-black px-4 py-8 sm:px-6">
       <div className={`${styles.showcaseContainer} bg-[#0B0A09]`}>
         <article className="overflow-visible border border-[#8f762f]/60 bg-[#111111] shadow-[0_10px_30px_rgba(0,0,0,0.35)]">
           <TournamentHeader
@@ -502,7 +505,7 @@ export default function WinnersCircle({
   View Complete Results
 </ResultsActionButton>
 
-<AoyLeaderPlaceholder />
+<AoyLeaderPlaceholder leader={aoyLeader} />
             </section>
 
             <section className="flex min-w-0 flex-col border border-[#8f762f]/60 bg-[#111111] p-4 sm:p-5">

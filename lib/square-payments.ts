@@ -10,7 +10,7 @@ export type SquarePayment = {
 };
 
 export class SquarePaymentError extends Error {
-  constructor(message: string, readonly code = "SQUARE_PAYMENT_ERROR", readonly payment?: SquarePayment) {
+  constructor(message: string, readonly code = "SQUARE_PAYMENT_ERROR", readonly payment?: SquarePayment, readonly httpStatus?: number) {
     super(message);
     this.name = "SquarePaymentError";
   }
@@ -37,7 +37,7 @@ async function squareRequest(path: string, init: RequestInit): Promise<SquarePay
   const body = await response.json() as { payment?: SquarePayment; errors?: Array<{ code?: string; detail?: string }> };
   if (!response.ok || !body.payment) {
     const error = body.errors?.[0];
-    throw new SquarePaymentError(error?.detail ?? "Square could not complete the payment.", error?.code ?? "SQUARE_PAYMENT_FAILED", body.payment);
+    throw new SquarePaymentError(error?.detail ?? "Square could not complete the payment.", error?.code ?? "SQUARE_PAYMENT_FAILED", body.payment, response.status);
   }
   return body.payment;
 }

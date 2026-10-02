@@ -6,7 +6,7 @@ import { PUBLIC_PAGE_CONTAINER } from "@/config/layout";
 
 export const metadata: Metadata = {
   title: "Privacy Policy | All-In Tournament Trail",
-  description: "How All-In Tournament Trail handles website and tournament information.",
+  description: "How All-In Tournament Trail handles online payment information.",
 };
 
 export default function PrivacyPage() {
@@ -23,27 +23,15 @@ export default function PrivacyPage() {
               Privacy Policy
             </h1>
             <p className="mt-4 max-w-3xl text-base leading-7 text-neutral-400">
-              This notice explains the information AITT uses to operate its website and tournament activities.
+              This notice is published by All In Tournament Trail LLC and explains how AITT handles online payment information.
             </p>
           </header>
 
           <div className="max-w-3xl space-y-8 py-10 text-base leading-7 text-neutral-300">
             <section>
-              <h2 className="text-xl font-black uppercase text-[#D4A017]">Information We Use</h2>
+              <h2 className="text-xl font-black uppercase text-[#D4A017]">Payment Information</h2>
               <p className="mt-3">
-                AITT may use contact, registration, membership, eligibility, acknowledgment, tournament, and limited payment-reference information needed to administer events and respond to inquiries.
-              </p>
-            </section>
-            <section>
-              <h2 className="text-xl font-black uppercase text-[#D4A017]">Public Information</h2>
-              <p className="mt-3">
-                Only approved tournament information—such as display names, entries, results, and standings—is published. Private contact details, street addresses, payment details, and administrative notes are not displayed publicly.
-              </p>
-            </section>
-            <section>
-              <h2 className="text-xl font-black uppercase text-[#D4A017]">Website Analytics</h2>
-              <p className="mt-3">
-                AITT uses limited website activity information to understand page usage and improve the site. Payments are processed by Square; AITT does not store raw card numbers or security codes.
+                AITT does not store credit-card numbers, CVV codes, or other payment-card credentials. Online payments are processed by Square or another authorized third-party payment provider.
               </p>
             </section>
             <section>

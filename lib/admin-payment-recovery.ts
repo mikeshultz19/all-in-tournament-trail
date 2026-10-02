@@ -50,6 +50,7 @@ export async function listManualCollectionItems(): Promise<ManualCollectionItem[
     .from("registration_identity_reviews")
     .select("id,review_status,review_note,review_kind,submitted_membership,original_display_name,registration:tournament_registrations!inner(id,boat_number,registered_at,registration_status,tournament:tournaments!inner(id,name))")
     .eq("review_kind", "membership")
+    .eq("registration.registration_status", "active")
     .order("created_at", { ascending: false });
 
   if (error) throw new Error("Manual collection records could not be loaded.", { cause: error });

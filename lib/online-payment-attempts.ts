@@ -47,7 +47,7 @@ async function claimAttempt(attemptId: string): Promise<OnlinePaymentAttempt> {
 }
 
 async function updateAttempt(attemptId: string, values: Record<string, unknown>) {
-  const { error } = await createSupabaseServerClient().from("online_registration_payment_attempts").update(values).eq("id", attemptId);
+  const { error } = await createSupabaseServerClient().from("online_registration_payment_attempts").update(values).eq("id", attemptId).neq("state", "completed");
   if (error) throw new Error("Payment state could not be saved.", { cause: error });
 }
 
@@ -87,6 +87,12 @@ export async function completeAttemptFromVerifiedSquarePayment(attemptId: string
   assertPaymentIdentity(attempt, payment);
   if (payment.status !== "COMPLETED") throw new Error("Square payment is not complete.");
   await updateAttempt(attempt.id, { state: "processing", square_payment_id: payment.id, square_status: payment.status, failure_code: null, failure_message: null });
+  const claimed = await loadAttempt(attempt.id);
+  if (claimed.state === "completed" && claimed.registration_id) {
+    await deliverCompletedRegistrationEmail(claimed.registration_id);
+    return { status: "completed" as const, registrationId: claimed.registration_id };
+  }
+  if (claimed.state !== "processing") return { status: claimed.state as "reconciliation_required" | "failed" | "cancelled" | "pending", attemptId: claimed.id };
   try {
     const registration = await completeDurableRegistration(attempt.registration_request, {
       status: "authorized",
@@ -158,6 +164,25 @@ export async function processOnlineCardPayment(attemptId: string, sourceId: stri
           });
           return { status: "reconciliation_required" as const, attemptId };
         }
+      }
+      // A response without a payment object is ambiguous for transport,
+      // conflict, throttling, server, and malformed-success responses. Do
+      // not offer another card unless Square explicitly returned a terminal
+      // FAILED/CANCELED payment above; the original charge may still exist.
+      const ambiguousWithoutPayment = !error.payment && (
+        error.httpStatus === 200
+        || error.httpStatus === 408
+        || error.httpStatus === 409
+        || error.httpStatus === 429
+        || (error.httpStatus !== undefined && error.httpStatus >= 500)
+      );
+      if (ambiguousWithoutPayment) {
+        await updateAttempt(attempt.id, {
+          state: "reconciliation_required",
+          failure_code: error.code,
+          failure_message: error.message,
+        });
+        return { status: "reconciliation_required" as const, attemptId };
       }
       await updateAttempt(attempt.id, { state: "failed", failure_code: error.code, failure_message: error.message, square_payment_id: error.payment?.id ?? null, square_status: error.payment?.status ?? "FAILED" });
       return { status: "failed" as const, attemptId, retryAttemptId: await createRetryAttempt(attempt), message: "Payment was not completed. Try another card or payment method." };

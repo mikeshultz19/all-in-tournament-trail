@@ -177,11 +177,11 @@ membership, AOY, Championship qualification, and historical identity.
 - Do not silently remove paid/selected options because identity is uncertain;
   retain and review the evidence according to implemented rules.
 
-Current registration identity-review actions are:
+Current registration identity-review decisions are:
 
-- **SAME PERSON — UPDATE INFO**
-- **SAME PERSON — KEEP EXISTING INFO**
-- **APPROVE NEW ANGLER** for an unmatched Current Member claim.
+- **CONFIRM EXISTING PERSON** and keep the All Members record unchanged;
+- **APPROVE NEW ANGLER** when the submitted person cannot be confirmed; or
+- **CANCEL REGISTRATION** when staff decides the entry should not remain active.
 
 This action creates the canonical Angler only and leaves the required
 membership review unresolved, so check-in remains blocked. The roster-level
@@ -195,14 +195,13 @@ historical membership reviews retain their separate workflows. A repeated or pre
 registration is not sent to Needs Review solely because it is repeated; the
 Tournament Director handles any rare duplicate after payment.
 
-For practical contact corrections, the Tournament Director selects the
-specific existing angler in an unresolved roster review and uses EDIT MEMBER
-to update the canonical All Members record, then completes the existing review
-decision. All Registrations exposes the same correction for a linked participant
-after review resolution. The submitted registration contact snapshot remains
-historical evidence; no fuzzy matching, merging, uniqueness enforcement, or
-new audit subsystem is introduced. Ambiguous information remains actionable in
-Needs Review.
+For practical contact differences, the Tournament Director confirms the
+specific existing angler in an unresolved roster review and keeps the
+canonical All Members record unchanged. If a contact correction is actually
+needed, staff handles it later from All Members. The submitted registration
+contact snapshot remains historical evidence; no fuzzy matching, merging,
+or roster-side member editing is introduced. Ambiguous information remains
+actionable in Needs Review.
 
 For an existing-member Confirm Match, an eligible active current-season
 membership must be re-evaluated after identity linkage. It resolves the
@@ -283,8 +282,10 @@ Registration cancellation is a roster-level Admin action beside the walk-up
 control. The administrator selects an active boat/registration, reviews the
 registration number, participants, and recorded payment, enters a required
 note, and confirms cancellation for the entire solo or team entry. Cancellation
-removes the entry from active tournament operations but preserves payment
-history and memberships. AITT does not initiate a Square refund; any approved
+removes the entry from active tournament operations and preserves payment
+history. Purchased memberships are revoked only when no other active
+registration depends on them; memberships still referenced by another active
+registration, and pre-existing memberships, are preserved. AITT does not initiate a Square refund; any approved
 refund is handled manually through Chase outside AITT. Cancelled entries remain
 available in All Registrations for historical review.
 

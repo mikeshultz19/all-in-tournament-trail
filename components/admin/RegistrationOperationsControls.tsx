@@ -39,7 +39,7 @@ function useRefreshOnSuccess(state: RegistrationOperationsActionState) {
   }, [router, state.status]);
 }
 
-export function AddWalkUpControl({ tournamentId }: { tournamentId: string }) {
+export function AddWalkUpControl({ tournamentId, reviewSignature }: { tournamentId: string; reviewSignature: string }) {
   const [registrationType, setRegistrationType] = useState(initialDraft.registrationType);
   const [paymentMethod, setPaymentMethod] = useState(initialDraft.paymentMethod);
   const [angler1Membership, setAngler1Membership] = useState(initialDraft.angler1Membership);
@@ -57,6 +57,11 @@ export function AddWalkUpControl({ tournamentId }: { tournamentId: string }) {
       setFormWasReset(false);
       const nextState = await createWalkUpRegistrationAction(previousState, formData);
       setDisplayState(nextState);
+      if (nextState.status === "error") {
+        // A failed save must never carry a Member Search selection into the
+        // next person entered by staff.
+        setSelectedMembers({ 1: null, 2: null });
+      }
       if (nextState.status === "success") {
         setRegistrationType(initialDraft.registrationType);
         setPaymentMethod(initialDraft.paymentMethod);
@@ -68,13 +73,26 @@ export function AddWalkUpControl({ tournamentId }: { tournamentId: string }) {
         setFormInstance((current) => current + 1);
         setFormWasReset(true);
         setSelectedMembers({ 1: null, 2: null });
-        setWalkUpOpen(false);
+        if (!nextState.needsReview) setWalkUpOpen(false);
       }
       return nextState;
     },
     initialState,
   );
   useRefreshOnSuccess(state);
+
+  // The save message belongs to the walk-up review that was just created.
+  // Clear it when that review disappears from the server-rendered roster,
+  // while leaving the message visible until the review is actually resolved.
+  useEffect(() => {
+    if (
+      displayState.needsReview
+      && displayState.registrationId
+      && !reviewSignature.split(",").includes(displayState.registrationId)
+    ) {
+      setDisplayState(initialState);
+    }
+  }, [displayState.needsReview, displayState.registrationId, reviewSignature]);
 
   const draft = formWasReset ? initialDraft : state.draft ?? initialDraft;
   const formKey =
@@ -112,6 +130,10 @@ export function AddWalkUpControl({ tournamentId }: { tournamentId: string }) {
 
   function updateRegistrationType(value: "solo" | "team") {
     setRegistrationType(value);
+    if (value === "solo") {
+      setAngler2Membership(initialDraft.angler2Membership);
+      setSelectedMembers((current) => ({ ...current, 2: null }));
+    }
   }
 
   function updateMembership(position: 1 | 2, value: Membership) {
@@ -124,7 +146,11 @@ export function AddWalkUpControl({ tournamentId }: { tournamentId: string }) {
     <details
       data-walk-up-panel
       open={walkUpOpen}
-      onToggle={(event) => setWalkUpOpen(event.currentTarget.open)}
+      onToggle={(event) => {
+        const isOpen = event.currentTarget.open;
+        setWalkUpOpen(isOpen);
+        if (isOpen) setDisplayState(initialState);
+      }}
       className="relative"
     >
       <summary className="inline-flex min-h-10 cursor-pointer list-none items-center justify-center rounded-sm border border-red-400 bg-red-600 px-4 text-sm font-black uppercase tracking-[0.08em] text-white shadow-lg shadow-red-950/30 transition hover:bg-red-500 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-red-300">
@@ -174,7 +200,7 @@ export function AddWalkUpControl({ tournamentId }: { tournamentId: string }) {
         </div>
         <AnglerFields key="angler-1" position={1} required draft={draft} tournamentId={tournamentId} selectedOtherMemberId={selectedMembers[2]} onSelectedMember={(id) => setSelectedMembers((current) => ({ ...current, 1: id }))} membershipValue={angler1Membership} onMembershipChange={(value) => updateMembership(1, value)} />
         <input type="hidden" name="angler1SelectedMemberId" value={selectedMembers[1] ?? ""} />
-        <AnglerFields key="angler-2" position={2} required={registrationType === "team"} draft={draft} tournamentId={tournamentId} selectedOtherMemberId={selectedMembers[1]} onSelectedMember={(id) => setSelectedMembers((current) => ({ ...current, 2: id }))} membershipValue={angler2Membership} onMembershipChange={(value) => updateMembership(2, value)} />
+        <AnglerFields key="angler-2" position={2} disabled={registrationType === "solo"} required={registrationType === "team"} draft={draft} tournamentId={tournamentId} selectedOtherMemberId={selectedMembers[1]} onSelectedMember={(id) => setSelectedMembers((current) => ({ ...current, 2: id }))} membershipValue={angler2Membership} onMembershipChange={(value) => updateMembership(2, value)} />
         <input type="hidden" name="angler2SelectedMemberId" value={selectedMembers[2] ?? ""} />
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           <Field label="Member Pot">
@@ -253,6 +279,7 @@ function AnglerFields({
   selectedOtherMemberId,
   onSelectedMember,
   required = false,
+  disabled = false,
   membershipValue,
   onMembershipChange,
 }: {
@@ -262,6 +289,7 @@ function AnglerFields({
   selectedOtherMemberId: string | null;
   onSelectedMember: (id: string | null) => void;
   required?: boolean;
+  disabled?: boolean;
   membershipValue: Membership;
   onMembershipChange: (membership: Membership) => void;
 }) {
@@ -332,10 +360,10 @@ function AnglerFields({
         };
 
   return (
-    <fieldset ref={fieldsetRef} className="border border-white/10 p-3">
+    <fieldset ref={fieldsetRef} disabled={disabled} aria-disabled={disabled} className={`border border-white/10 p-3 ${disabled ? "pointer-events-none cursor-not-allowed opacity-50" : ""}`}>
       <legend className="px-2 text-xs font-black uppercase text-white">
         Angler {position}
-        {required ? "" : " — Team Entries"}
+        {required ? "" : " — Team Entries Only"}
       </legend>
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
         <label className="flex items-center gap-2 text-[11px] font-bold uppercase text-neutral-300 sm:col-span-2 lg:col-span-4">
@@ -440,6 +468,7 @@ export function RegistrationEditControl({
   tournamentId,
   registrationId,
   boatNumber,
+  assignedBoatNumber,
   bigBass,
   memberPot,
   insurance,
@@ -450,6 +479,7 @@ export function RegistrationEditControl({
   tournamentId: string;
   registrationId: string;
   boatNumber: number | null;
+  assignedBoatNumber?: number | null;
   bigBass: boolean;
   memberPot: "bronze" | "silver" | "gold" | null;
   insurance: boolean;
@@ -528,16 +558,7 @@ export function RegistrationEditControl({
         action={action}
         className="mt-3 grid gap-3 border border-white/10 bg-black/30 p-3"
       >
-        <Field label="Boat #">
-          <input
-            name="boatNumber"
-            type="number"
-            min="1"
-            required
-            defaultValue={boatNumber ?? ""}
-            className={input}
-          />
-        </Field>
+        <input type="hidden" name="boatNumber" value={boatNumber ?? 1} />
         {walkUp ? (
           <>
             <Field label="Member Pot">
@@ -572,6 +593,36 @@ export function RegistrationEditControl({
       </form>
     </details>
   );
+}
+
+export function BoatNumberEditField({
+  tournamentId,
+  registrationId,
+  assignedBoatNumber,
+  disabled = false,
+}: {
+  tournamentId: string;
+  registrationId: string;
+  assignedBoatNumber?: number | null;
+  disabled?: boolean;
+}) {
+  return <div className="relative flex items-center justify-center print:hidden">
+    <label className="sr-only" htmlFor={`assigned-boat-number-${registrationId}`}>Boat Number</label>
+    <input
+      id={`assigned-boat-number-${registrationId}`}
+      data-assigned-boat-number={registrationId}
+      name="assignedBoatNumber"
+      type="text"
+      inputMode="numeric"
+      pattern="[0-9]{1,3}"
+      maxLength={3}
+      aria-label="Boat Number"
+      defaultValue={assignedBoatNumber?.toString() ?? ""}
+      disabled={disabled}
+      placeholder="—"
+      className={`${input} h-8 w-12 px-1 text-center text-xs`}
+    />
+  </div>;
 }
 
 type CancellationRegistration = {
@@ -757,7 +808,7 @@ function ActionMessage({
   return state.status === "idle" ? null : (
     <p
       role={state.status === "error" ? "alert" : "status"}
-      className={`text-xs ${state.status === "error" ? "text-red-300" : "text-emerald-300"}`}
+      className={`text-xs ${state.status === "error" || state.needsReview ? "text-red-300" : "text-emerald-300"}`}
     >
       {state.message}
     </p>

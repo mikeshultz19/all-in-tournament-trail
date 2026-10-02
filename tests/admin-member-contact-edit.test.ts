@@ -14,8 +14,7 @@ describe("member contact correction boundaries", () => {
     expect(roster).toContain('review.status === "review_required"');
     expect(reviewForm).not.toContain("EditMemberContactForm");
     expect(reviewForm).not.toContain("EDIT MEMBER");
-    expect(contactForm).toContain("canonicalAnglerId");
-    expect(contactForm).toContain("EditMemberContactForm memberId={canonicalAnglerId}");
+    expect(contactForm).not.toContain("EditMemberContactForm");
     expect(roster).not.toContain("EditMemberContactForm");
   });
 
@@ -29,7 +28,7 @@ describe("member contact correction boundaries", () => {
     expect(editorAction).not.toContain("participant_contact_snapshot");
     expect(editorAction).not.toContain("memberships");
     expect(editor).toContain("registration submission snapshot remains unchanged");
-    expect(history).toContain("EditMemberContactForm");
+    expect(history).not.toContain("EditMemberContactForm");
     expect(historyLoader).toContain("angler1_id");
     expect(historyLoader).toContain("angler2_id");
     expect(historyLoader).toContain('from("anglers")');
@@ -37,7 +36,7 @@ describe("member contact correction boundaries", () => {
   });
 
   it("keeps the existing review resolver and membership dues workflow separate", () => {
-    expect(contactForm).toContain("SAME PERSON");
+    expect(contactForm).toContain("CONFIRM SAME PERSON");
     expect(contactForm).toContain("resolveRegistrationContactReviewAction");
     expect(reviewForm).toContain("Confirm Match");
     expect(reviewForm).toContain("APPROVE NEW ANGLER");

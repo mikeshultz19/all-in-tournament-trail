@@ -43,7 +43,7 @@ export default function RegistrationReviewResolutionForm({
   const matchReason = selectedAngler ? describeReviewCandidateMatch(submission, selectedAngler, suggestedAnglerIds.length) : null;
 
   if (submission.membership === "current" && suggestedAnglerIds.length === 0) {
-    return <CurrentMemberConfirmationForm reviewId={reviewId} />;
+    return <CurrentMemberConfirmationForm reviewId={reviewId} anglers={anglers} />;
   }
 
   return (
@@ -84,7 +84,7 @@ export default function RegistrationReviewResolutionForm({
       </div>
       <div className="border border-white/10 bg-black/20 p-3">
         <p className="text-xs font-black uppercase text-neutral-300">New angler</p>
-        <p className="mt-2 text-xs text-neutral-500">Use when this is a different person.</p>
+        <p className="mt-2 text-xs text-neutral-500">Use this when the angler is not an existing member.</p>
         {submission.membership === "current" ? <p className="mt-2 text-xs font-bold text-amber-200">$40 membership due after approval.</p> : null}
         <button
           name="resolution"
@@ -116,16 +116,30 @@ export default function RegistrationReviewResolutionForm({
   );
 }
 
-export function CurrentMemberConfirmationForm({ reviewId }: { reviewId: string }) {
-  const [state, action, pending] = useActionState(confirmCurrentMemberAsNewAction, initialState);
+export function CurrentMemberConfirmationForm({ reviewId, anglers = [] }: { reviewId: string; anglers?: RegistrationReviewAnglerOption[] }) {
+  const [confirmState, confirmAction, confirming] = useActionState(confirmCurrentMemberAsNewAction, initialState);
+  const [selectedAnglerId, setSelectedAnglerId] = useState("");
   return (
-    <form action={action} className="mt-4 grid gap-3 border border-amber-400/20 bg-black/20 p-3">
-      <input type="hidden" name="reviewId" value={reviewId} />
-      <p className="text-xs text-neutral-300">Current Member selected, but no active membership was verified.</p>
-      <p className="text-xs font-bold text-amber-200">Confirm the $40 membership with the angler, then click Confirm Membership. If the angler does not pay, use Cancel Registration.</p>
-      <button disabled={pending} className={adminButtonStyles("primary", "mt-1")}>{pending ? "Confirming..." : "CONFIRM MEMBERSHIP"}</button>
-      {state.message ? <p role={state.status === "error" ? "alert" : "status"} className={`text-sm ${state.status === "error" ? "text-red-400" : "text-green-400"}`}>{state.message}</p> : null}
-    </form>
+    <div className="mt-4 grid gap-3 border border-amber-400/20 bg-black/20 p-3 sm:grid-cols-2">
+      <form action={confirmAction} className="border border-white/10 p-3">
+        <input type="hidden" name="reviewId" value={reviewId} />
+        <p className="text-xs font-black uppercase text-neutral-300">Confirm Existing Person</p>
+        <p className="mt-2 text-xs text-neutral-400">Use this when the angler is an existing member whose submitted details did not match automatically.</p>
+        <select name="existingAnglerId" value={selectedAnglerId} onChange={(event) => setSelectedAnglerId(event.target.value)} disabled={confirming} className="mt-3 min-h-11 w-full border border-white/15 bg-[#0B0B0B] px-3 text-sm text-white">
+          <option value="">Select an existing angler</option>
+          {anglers.map((angler) => <option key={angler.id} value={angler.id}>{angler.display_name}{angler.email ? ` — ${angler.email}` : ""}</option>)}
+        </select>
+        <button disabled={confirming || !selectedAnglerId} className={adminButtonStyles("primary", "mt-3 w-full")}>{confirming ? "Confirming..." : "CONFIRM EXISTING PERSON"}</button>
+        {confirmState.message ? <p role={confirmState.status === "error" ? "alert" : "status"} className={`mt-2 text-sm ${confirmState.status === "error" ? "text-red-400" : "text-green-400"}`}>{confirmState.message}</p> : null}
+      </form>
+      <form action={confirmAction} className="border border-white/10 p-3">
+        <input type="hidden" name="reviewId" value={reviewId} />
+        <p className="text-xs font-black uppercase text-neutral-300">New member</p>
+        <p className="mt-2 text-xs text-neutral-400">Use this when the angler is not an existing member. A $40 membership will then need to be confirmed.</p>
+        <button disabled={confirming} className={adminButtonStyles("secondary", "mt-3 w-full")}>{confirming ? "Approving..." : "APPROVE NEW ANGLER"}</button>
+        {confirmState.message ? <p role={confirmState.status === "error" ? "alert" : "status"} className={`mt-2 text-sm ${confirmState.status === "error" ? "text-red-400" : "text-green-400"}`}>{confirmState.message}</p> : null}
+      </form>
+    </div>
   );
 }
 

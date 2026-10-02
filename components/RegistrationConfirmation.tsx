@@ -37,7 +37,7 @@ function TournamentDetail({ label, value, note }: { label: string; value?: strin
 
 export default function RegistrationConfirmation({ confirmation, recoveryMessage, recoveryAttemptId }: { confirmation: RegistrationConfirmationView | null; recoveryMessage?: string | null; recoveryAttemptId?: string | null }) {
   if (!confirmation) {
-    return <section className="mx-auto max-w-3xl px-5 py-16 sm:px-6"><h1 className="text-3xl font-black uppercase text-[#D4A017]">Confirmation Pending</h1><p className="mt-4 leading-7 text-neutral-300">{recoveryMessage ?? "No verified registration confirmation was supplied. If Square shows a successful payment, do not pay again. Contact AITT so the payment can be reconciled using its stable Square reference."}</p>{recoveryAttemptId ? <PaymentRecovery attemptId={recoveryAttemptId} /> : null}<Link href="/register" className="mt-8 inline-flex min-h-12 items-center border border-[#D4A017] px-5 text-sm font-black uppercase tracking-wide text-[#D4A017]">Return to Registration</Link></section>;
+    return <section className="mx-auto max-w-3xl px-5 py-16 sm:px-6"><h1 className="text-3xl font-black uppercase text-[#D4A017]">Confirmation Pending</h1><p className="mt-4 leading-7 text-neutral-300">{recoveryMessage ?? "Your payment is being verified. Do not pay again. Call 817-841-9120 or email info@allintrail.com if you need help."}</p>{recoveryAttemptId ? <PaymentRecovery attemptId={recoveryAttemptId} /> : null}<Link href="/register" className="mt-8 inline-flex min-h-12 items-center border border-[#D4A017] px-5 text-sm font-black uppercase tracking-wide text-[#D4A017]">Return to Registration</Link></section>;
   }
 
   return <section className="mx-auto max-w-3xl px-5 py-16 sm:px-6">
@@ -49,7 +49,7 @@ export default function RegistrationConfirmation({ confirmation, recoveryMessage
           <dd className="mt-1 break-words text-2xl font-black text-white">{confirmation.boatNumber ? `#${confirmation.boatNumber}` : "TBA"}</dd>
         </div>
       </dl>
-      <p className="mt-4 leading-7 text-neutral-300">Your registration is confirmed. Your registration number is {confirmation.boatNumber ? `#${confirmation.boatNumber}` : "#___"}. You are required to complete check-in before the tournament to receive your boat number, launch time, and stop-fishing time. Check the Announcements section of the AITT website for early check-in times and location. If you do not attend early check-in, you must check in on tournament morning.</p>
+      <p className="mt-4 leading-7 text-neutral-300"><strong className="text-white">Please verify that you appear on the Early Entries list on the AITT website.</strong> Your registration is confirmed. Your registration number is {confirmation.boatNumber ?? "___"}. Check the Announcements section of the AITT website for early check-in times and location. If you do not attend early check-in, you are required to check in at the tournament-morning registration table.</p>
     </section>
     <dl className="mt-6 grid gap-5 border-b border-[#4A3A12] pb-6 sm:grid-cols-2">
       <div><dt className="text-xs font-black uppercase text-[#D4A017]">Registered anglers</dt><dd className="mt-1 text-white">{confirmation.anglers.join(" / ")}</dd></div>
@@ -65,8 +65,7 @@ export default function RegistrationConfirmation({ confirmation, recoveryMessage
         <TournamentDetail label="Ramp / Launch Location" value={confirmation.ramp} />
         <TournamentDetail label="Launch Type / Numbered Launch" value={confirmation.launchType} />
         <TournamentDetail label="Morning Registration / Check-In" value={confirmation.morningRegistration} />
-        <TournamentDetail label="Estimated Launch / Safe Light" value={confirmation.launchTime} note="Have your boat in the water and ready to launch before this time." />
-        <TournamentDetail label="Sunrise" value={confirmation.officialSunrise} />
+        <TournamentDetail label="Approximate Sunrise" value={confirmation.officialSunrise} note="This is the estimated sunrise for the tournament date. Final launch timing is determined by tournament staff." />
         <TournamentDetail label="Scales Close / Weigh-In" value={confirmation.scalesClose} />
       </dl>
       <p className="mt-5 border-t border-[#2E2E2E] pt-3 text-xs italic leading-5 text-neutral-500">All tournament times are subject to change by the Tournament Director.</p>

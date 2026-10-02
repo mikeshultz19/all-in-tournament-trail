@@ -152,12 +152,14 @@ export default function DesktopHomePage({
         </div>
       </section>
 
-      <AOYPointsRaceStrip
-        standings={aoyStandings}
-        unavailable={aoyStandingsUnavailable}
-      />
+      <div id="winner-circle" data-winner-circle-target className="scroll-mt-32">
+        <AOYPointsRaceStrip
+          standings={aoyStandings}
+          unavailable={aoyStandingsUnavailable}
+        />
 
-      <WinnersCircle latestResults={latestResults} />
+        <WinnersCircle latestResults={latestResults} aoyLeader={aoyStandings[0] ?? null} />
+      </div>
 
       <AnalyticsSectionView name="Winner Circle" />
     </div>

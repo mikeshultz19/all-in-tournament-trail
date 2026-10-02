@@ -44,14 +44,14 @@ export function getRegistrationReviewPresentation(
     return {
       heading: "Identity needs review",
       issue: "The submitted email is already used by another angler.",
-      identityFollowUp: "Confirm same angler or new person.",
+      identityFollowUp: "Confirm the same angler or approve as a new member.",
     };
   }
   if (/submitted phone is already associated/i.test(review.reason)) {
     return {
       heading: "Identity needs review",
       issue: "The submitted phone number is already used by another angler.",
-      identityFollowUp: "Confirm same angler or new person.",
+      identityFollowUp: "Confirm the same angler or approve as a new member.",
     };
   }
   if (/contact information differs/i.test(review.reason)) {
@@ -74,7 +74,7 @@ export function getRegistrationReviewPresentation(
     return {
       heading: "New membership needs approval",
       issue: "This is a new membership purchase. Approve once to create the member record.",
-      identityFollowUp: "Approve as new if this is a different person.",
+      identityFollowUp: "Approve as new if the angler is not an existing member.",
     };
   }
 

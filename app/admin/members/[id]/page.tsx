@@ -135,6 +135,10 @@ export default async function MemberDetailPage({
             <Detail label="Last Name" value={member.lastName} />
             <Detail label="Email" value={member.email} />
             <Detail label="Phone" value={member.phone} />
+            <Detail label="Street Address" value={member.streetAddress} />
+            <Detail label="City" value={member.city} />
+            <Detail label="State" value={member.state} />
+            <Detail label="ZIP Code" value={member.zipCode} />
             <Detail
               label="Admin Status"
               value={member.active ? "Active" : "Inactive"}

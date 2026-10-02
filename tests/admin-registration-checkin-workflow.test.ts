@@ -14,6 +14,8 @@ const membershipForm = readFileSync("components/admin/HistoricalMembershipReview
 const allRegistrations = readFileSync("app/admin/registrations/page.tsx", "utf8");
 const migration = readFileSync("supabase/migrations/202608200002_add_admin_walkup_registration.sql", "utf8");
 const boatNumberMigration = readFileSync("supabase/migrations/202608220001_assign_sequential_boat_numbers.sql", "utf8");
+const walkUpAttendanceMigration = readFileSync("supabase/migrations/202609290001_allow_walkup_checkin_with_review.sql", "utf8");
+const restoredSafetyMigration = readFileSync("supabase/migrations/202610010005_restore_registration_safety_paths.sql", "utf8");
 
 describe("unified Registration & Check-In workflow", () => {
   it("defaults to the next active tournament and filters without a mutation action", () => {
@@ -74,8 +76,8 @@ describe("unified Registration & Check-In workflow", () => {
 
   it("removes payment and financial summaries from the tournament-morning roster", () => {
     expect(page).not.toContain('Metric label="Payment Recorded"');
-    expect(page).toContain("paymentStatus: row.paymentStatus"); // Used only in the cancellation confirmation, not as a roster summary.
-    expect(page).toContain("row.totalPaidCents"); // Used only in the cancellation confirmation, not as a roster summary.
+    expect(page).toContain("paymentStatus: row.paymentStatus");
+    expect(page).toContain("row.totalPaidCents");
     expect(page).not.toContain("MoneyLine");
     expect(page).not.toContain("Card Fee");
   });
@@ -93,7 +95,8 @@ describe("unified Registration & Check-In workflow", () => {
     expect(page).not.toContain("Bronze: No");
     expect(page).not.toContain("Silver: No");
     expect(page).not.toContain("Gold: No");
-    expect(page).toContain("'Boat #','Type','Participants'");
+    expect(page).toContain("'Reg #','Type','Participants'");
+    expect(page).toContain("'Boat Number','Weight'");
     expect(page).toContain("{title(row.registrationType)}</td>");
     expect(page).toContain('row.angler2 ? ` / ${row.angler2.displayName}` : ""');
   });
@@ -102,7 +105,7 @@ describe("unified Registration & Check-In workflow", () => {
     expect(page).not.toContain("RegistrationEditControl");
     expect(page).not.toContain("Edit / Registration Details");
     expect(allRegistrations).toContain("RegistrationHistoryList");
-    expect(readFileSync("components/admin/RegistrationHistoryList.tsx", "utf8")).toContain("RegistrationEditControl");
+    expect(readFileSync("components/admin/RegistrationHistoryList.tsx", "utf8")).not.toContain("RegistrationEditControl");
     expect(allRegistrations).toContain("filterRegistrationHistory");
   });
 
@@ -120,15 +123,15 @@ describe("unified Registration & Check-In workflow", () => {
     expect(page).not.toContain("Review complete.");
     expect(page).not.toContain("reopenRegistrationReviewAction");
     expect(page).toContain("<details key={review.id}");
+    expect(page).not.toContain("<details key={review.id} open");
   });
 
   it("uses a single Confirm Membership action and keeps check-in gated until it resolves", () => {
     expect(resolutionForm).toContain('submission.membership === "current" && suggestedAnglerIds.length === 0');
-    expect(resolutionForm).toContain("CONFIRM MEMBERSHIP");
-    expect(resolutionForm).toContain("If the angler does not pay, use Cancel Registration");
+    expect(resolutionForm).toContain("CONFIRM EXISTING PERSON");
     expect(resolutionForm).toContain("confirmCurrentMemberAsNewAction");
-    expect(page).toContain("MembershipDuesControl");
-    expect(page).toContain('item.status === "review_required" && item.reviewKind === "membership" && item.submittedMembership === "current"');
+    expect(page).toContain("<MembershipDuesControl");
+    expect(page).toContain("<CancelRegistrationControl");
     expect(operationsControls).toContain("MembershipDuesControl");
     expect(operationsControls).toContain("MEMBERSHIP DUES ({dues.length})");
     expect(operationsControls).not.toContain("MARK COLLECTED");
@@ -140,19 +143,20 @@ describe("unified Registration & Check-In workflow", () => {
     expect(operationsControls).not.toContain("confirm the existing membership review");
     expect(operationsControls).not.toContain("AITT-");
     expect(operationsControls).not.toContain("admin_resolve_unmatched_current_member_review");
-    expect(page).toContain("membershipDue={membershipDue}");
-    expect(page).toContain("reviewBlocked={needsReview}");
+    expect(page).toContain("membershipDue={membershipDue && !walkUpReviewWarning}");
+    expect(page).toContain("reviewBlocked={needsReview && !walkUpReviewWarning}");
+    expect(page).toContain("Walk-up saved. This review is informational and may be resolved after check-in.");
     expect(checkInControl).toContain("disabled={pending || checkInBlocked}");
     expect(checkInControl).toContain("Resolve registration review.");
     expect(checkInControl).toContain("opacity-50 grayscale");
     expect(checkInControl).toContain("Verify membership dues.");
     expect(checkInControl).toContain("membershipDue = false");
-    expect(checkIn).toContain("identity_review_status");
+    expect(walkUpAttendanceMigration).toContain("registration_source <> 'walk_up'");
   });
 
   it("renders expanded review content outside the narrow actions cell responsively", () => {
     expect(page).toContain('data-testid="expanded-registration-review-row"');
-    expect(page).toContain('colSpan={11}');
+    expect(page).toContain('colSpan={12}');
     expect(page).toContain('data-testid="registration-review-panels"');
     expect(page).toContain('data-testid="mobile-registration-card"');
     expect(page).toContain("min-w-0");
@@ -163,9 +167,11 @@ describe("unified Registration & Check-In workflow", () => {
     expect(page).toContain("getRegistrationReviewPresentation(review)");
     expect(resolutionForm).toContain("Confirm Match");
     expect(resolutionForm).toContain("APPROVE NEW ANGLER");
+    expect(actions).toContain('if (review.review_kind === "membership" && resolution === "new")');
+    expect(actions).toContain('membership: "joining"');
     expect(resolutionForm).toContain("$40 membership due after approval.");
     expect(resolutionForm).toContain("Optional review note");
-    expect(resolutionForm).not.toContain("Confirm Existing");
+    expect(resolutionForm).toContain("Confirm Existing Person");
     expect(membershipForm).toContain("Confirm Member");
     expect(membershipForm).not.toContain("Confirm Non-Member");
     expect(membershipForm).toContain("Confirm Membership Purchase");
@@ -221,12 +227,21 @@ describe("unified Registration & Check-In workflow", () => {
     expect(page).toContain("<RosterActions row={row}");
   });
 
-  it("requires a boat number and resolved review before saving check-in", () => {
+  it("requires a boat number and keeps online review blocking while allowing walk-up review", () => {
     expect(checkIn).toContain('.not("boat_number", "is", null)');
-    expect(checkIn).toContain('.neq("identity_review_status", "review_required")');
+    expect(walkUpAttendanceMigration).toContain("v_registration.registration_source <> 'walk_up'");
+    expect(walkUpAttendanceMigration).toContain("AITT_ATTENDANCE_REVIEW_REQUIRED");
     expect(checkIn).toContain("checked_in_at: checkedIn ? new Date().toISOString() : null");
     expect(checkIn).toContain('.eq("registration_status", "active")');
     expect(checkIn).toContain("await requireAdminUser()");
+  });
+
+  it("preserves the production-safe identity and contact paths", () => {
+    expect(restoredSafetyMigration).toContain("coalesce(v_registration.registration_source, '') <> 'walk_up'");
+    expect(restoredSafetyMigration).toContain("and is_active = true");
+    expect(restoredSafetyMigration).toContain("street_address = nullif(v_contact ->> 'streetAddress', '')");
+    expect(restoredSafetyMigration).toContain("city = nullif(v_contact ->> 'city', '')");
+    expect(restoredSafetyMigration).toContain("zip_code = nullif(v_contact ->> 'zipCode', '')");
   });
 
   it("locks normal edits after check-in and provides intentional reopening", () => {

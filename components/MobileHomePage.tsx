@@ -7,6 +7,7 @@ import SponsorHome from "@/components/SponsorHome";
 import BassStackScoreTracker from "@/components/home/BassStackScoreTracker";
 import MobileWinnerCircle from "@/components/MobileWinnerCircle";
 import RegistrationInterest from "@/components/RegistrationInterest";
+import type { PublicAoyStanding } from "@/lib/aoy-standings";
 import type { Announcement } from "@/types/announcement";
 
 type MobileHomePageProps = {
@@ -19,7 +20,7 @@ type MobileHomePageProps = {
   >[0]["operations"];
   homepageSponsors: Parameters<typeof SponsorHome>[0]["sponsors"];
   latestResults: Parameters<typeof MobileWinnerCircle>[0]["latestResults"];
-  aoyLeader: string | null;
+  aoyLeader: PublicAoyStanding | null;
 };
 
 export default function MobileHomePage({
@@ -76,15 +77,18 @@ export default function MobileHomePage({
 
         <BassStackScoreTracker />
 
-        <MobileWinnerCircle latestResults={latestResults} />
+        <div data-winner-circle-target className="scroll-mt-24">
+          <MobileWinnerCircle latestResults={latestResults} />
+        </div>
 
         <section className="rounded-xl border border-[#8f762f]/60 bg-[#101010] px-5 py-4 text-center">
           <p className="text-[0.65rem] font-black uppercase tracking-[0.18em] text-[#c9aa4a]">
             AOY Leader
           </p>
           <p className="mt-2 break-words text-sm font-black uppercase text-white">
-            {aoyLeader ?? "—"}
+            {aoyLeader?.angler ?? "—"}
           </p>
+          {aoyLeader ? <p className="mt-1 text-xs font-black uppercase tracking-[0.12em] text-[#D4A017]">{aoyLeader.points} PTS</p> : null}
         </section>
       </div>
     </section>

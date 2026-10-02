@@ -72,5 +72,6 @@ describe("Tournament Funds Summary", () => {
     expect(financial).toContain("<TournamentFundsSummary summary={summary} className=\"mt-5\" />");
     expect(component).toContain("aria-expanded={expanded}");
     expect(component).toContain('expanded ? "Collapse" : "Expand"');
+    expect(component).toContain("useState(false)");
   });
 });

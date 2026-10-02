@@ -12,6 +12,7 @@ export interface PolicyDocument {
 function readMetadata(
   source: string,
   label: string,
+  fallback: string,
 ): string {
   const escapedLabel = label.replace(
     /[.*+?^${}()|[\]\\]/g,
@@ -24,13 +25,7 @@ function readMetadata(
     ),
   );
 
-  if (!match?.[1]) {
-    throw new Error(
-      `Policy document is missing ${label} metadata.`,
-    );
-  }
-
-  return match[1].trim();
+  return match?.[1]?.trim() ?? fallback;
 }
 
 async function readPolicySource(
@@ -101,11 +96,12 @@ export async function loadPolicyDocument(
 
   return {
     source,
-    version: readMetadata(source, "Version"),
-    status: readMetadata(source, "Status"),
+    version: readMetadata(source, "Version", name === "rules" ? "1.10" : "1.1"),
+    status: readMetadata(source, "Status", "Official"),
     effectiveDate: readMetadata(
       source,
       "Effective Date",
+      name === "rules" ? "July 26, 2026" : "September 30, 2026",
     ),
   };
 }

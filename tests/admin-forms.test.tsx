@@ -21,6 +21,20 @@ describe("AdminFormsPage", () => {
     );
   });
 
+  it("provides the standalone participant waiver form", () => {
+    const markup = renderToStaticMarkup(<AdminFormsPage />);
+    const pdfPath = "/forms/AITT-Participant-Liability-Waiver-Form.pdf?v=20260930-final";
+
+    expect(markup).toContain("Participant Liability Waiver Form");
+    expect(markup).toContain(
+      "Complete printable waiver and assumption-of-risk form for front-and-back printing with Angler 1 and Angler 2 signature lines.",
+    );
+    expect(markup.match(new RegExp(pdfPath.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "g"))).toHaveLength(2);
+    expect(markup).toContain(
+      'download="AITT-Participant-Liability-Waiver-Form.pdf"',
+    );
+  });
+
   it("provides the Bass Stack spreadsheet as the second form", () => {
     const markup = renderToStaticMarkup(<AdminFormsPage />);
     const registrationIndex = markup.indexOf(

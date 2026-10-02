@@ -138,7 +138,7 @@ describe("Tournament Conditions", () => {
 
     expect(html).toContain("Tournament Conditions");
     expect(html).toContain("Scheduled");
-    expect(html).toContain("Safe Light");
+    expect(html).toContain("Approximate Sunrise");
     expect(html).toContain(operations.safeLight.time);
     expect(html).toContain(operations.safeLight.officialSunrise);
     expect(html).toContain('data-icon-src="/icons/sun-safe-light.svg"');
@@ -160,7 +160,7 @@ describe("Tournament Conditions", () => {
     expect(html).toContain(
       "Forecast unavailable: tournament weather location is not configured.",
     );
-    expect(html).toContain("Safe Light");
+    expect(html).toContain("Approximate Sunrise");
   });
 
   it("renders five compact chronological forecast days beginning today", () => {

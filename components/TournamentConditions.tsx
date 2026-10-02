@@ -117,7 +117,7 @@ export default function TournamentConditions({
 
             <div className="min-w-0">
               <h3 className="text-[11px] font-black uppercase tracking-[0.12em] text-neutral-500">
-                Safe Light
+                Approximate Sunrise
               </h3>
 
               <p className="mt-0.5 text-xl font-black text-white min-[1360px]:text-2xl">
@@ -125,7 +125,7 @@ export default function TournamentConditions({
               </p>
 
               <p className="mt-0.5 text-[10px] leading-4 text-neutral-500">
-                Approximately · Fort Worth sunrise {safeLight.officialSunrise}
+                Tournament-date Fort Worth sunrise
               </p>
             </div>
           </div>
@@ -137,8 +137,8 @@ export default function TournamentConditions({
           )}
 
           <p className="mt-2 text-[10px] leading-4 text-neutral-500">
-            Be prepared to launch before Safe Light. Tournament Officials
-            determine final launch timing.
+            Use this as a planning estimate. Tournament Officials determine
+            final launch timing.
           </p>
         </div>
 

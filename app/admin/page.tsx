@@ -8,7 +8,6 @@ import {
   UsersRound,
   type LucideIcon,
 } from "lucide-react";
-
 import AdminPanel from "@/components/admin/AdminPanel";
 import AdminStatusBadge from "@/components/admin/AdminStatusBadge";
 import { adminButtonStyles } from "@/components/admin/admin-button-styles";
@@ -17,7 +16,9 @@ import {
   getActiveSeasonSchedule,
   getNextUpcomingTournament,
 } from "@/lib/tournaments";
-import { listTournamentRegistrationRosterSummaries } from "@/lib/tournament-registration-roster";
+import { getTournamentRegistrationRoster, listTournamentRegistrationRosterSummaries } from "@/lib/tournament-registration-roster";
+import { listTournamentCollectionSummaries } from "@/lib/tournament-collection-summary";
+import { listTournamentInsurancePotResults } from "@/lib/insurance-pot-results";
 
 export const dynamic = "force-dynamic";
 
@@ -48,6 +49,10 @@ export default async function AdminHomePage() {
     selectedIdentifier,
     registrationSummary,
     websitePublished,
+    paymentSummary,
+    launchOrderCount,
+    checkInsRemaining,
+    walkUpCount,
   } = data;
 
   return (
@@ -80,25 +85,35 @@ export default async function AdminHomePage() {
                 </h2></div>
               </div>
 
-              <Link
-                href={`/admin/tournament-manager?tournament=${selectedIdentifier}`}
-                className={adminButtonStyles("primary", "min-h-11 px-5")}
-              >
-                Open Tournament Manager
-              </Link>
+              <div className="flex flex-col items-stretch gap-3 lg:items-end">
+                <Link
+                  href={`/admin/tournament-manager?tournament=${selectedIdentifier}`}
+                  className={adminButtonStyles("primary", "min-h-11 px-5")}
+                >
+                  Open Tournament Manager
+                </Link>
+                <div className="rounded-sm border border-white/10 bg-black/30 px-4 py-3 lg:min-w-52">
+                  <p className="text-[10px] font-black uppercase tracking-[0.14em] text-neutral-500">Website Status</p>
+                  <div className="mt-2"><AdminStatusBadge>{websitePublished ? "Published" : "Not Published"}</AdminStatusBadge></div>
+                </div>
+              </div>
             </div>
 
             <dl className="mt-6 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
               <StatusCard
                 label="Registration & Check-In"
                 value={String(registrationSummary?.total ?? 0)}
-                detail={`${registrationSummary?.needReview ?? 0} need review`}
+                detail={`${walkUpCount} walk-ups · ${registrationSummary?.needReview ?? 0} need review`}
                 actionHref={`/admin/registration-review?tournament=${encodeURIComponent(selectedTournament.id)}`}
                 actionLabel="Open Roster"
               />
+              <PaymentTotalsCard summary={paymentSummary} />
               <StatusCard
-                label="Website Status"
-                value={websitePublished ? "Published" : "Not Published"}
+                label="Launch Order by Boat Number"
+                value={`${launchOrderCount} assigned`}
+                detail={`${checkInsRemaining} check-ins remaining`}
+                actionHref={`/admin/launch-order?tournament=${encodeURIComponent(selectedTournament.id)}`}
+                actionLabel="Open Launch Order"
               />
             </dl>
           </AdminPanel>
@@ -172,6 +187,18 @@ async function loadAdminHomeData() {
 
   const selectedTournament = nextTournament ?? tournaments[0] ?? null;
   const selectedId = selectedTournament?.id;
+  const selectedRoster = selectedId ? await getTournamentRegistrationRoster(selectedId) : [];
+  const paymentSummary = selectedId
+    ? (await listTournamentCollectionSummaries(
+      [selectedId],
+      await listTournamentInsurancePotResults([selectedId]),
+    ))[selectedId] ?? null
+    : null;
+  const launchOrderCount = selectedRoster
+    .filter((row) => row.assignedBoatNumber !== null && row.assignedBoatNumber !== undefined)
+    .length;
+  const checkInsRemaining = selectedRoster.filter((row) => !row.checkedInAt).length;
+  const walkUpCount = selectedRoster.filter((row) => row.registrationSource === "walk_up").length;
 
   return {
     selectedTournament,
@@ -182,6 +209,10 @@ async function loadAdminHomeData() {
       ? registrationSummaries[selectedId]
       : undefined,
     websitePublished: Boolean(selectedTournament?.official_results_published_at),
+    paymentSummary,
+    launchOrderCount,
+    checkInsRemaining,
+    walkUpCount,
   };
 }
 
@@ -216,6 +247,26 @@ function StatusCard({
       ) : null}
     </div>
   );
+}
+
+function PaymentTotalsCard({ summary }: { summary: Awaited<ReturnType<typeof loadAdminHomeData>>["paymentSummary"] }) {
+  const money = (cents: number) => new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(cents / 100);
+  return (
+    <div className="rounded-sm border border-white/10 bg-black/30 p-4">
+      <dt className="text-[10px] font-black uppercase tracking-[0.14em] text-neutral-500">Payment Totals</dt>
+      {summary ? (
+        <dl className="mt-2 space-y-1.5 text-xs">
+          <PaymentTotal label="Total collected" value={money(summary.totalRegistrationFundsCollectedCents)} emphasized />
+          <PaymentTotal label="Payout funds" value={money(summary.totalTournamentPayoutFundsCents)} />
+          <PaymentTotal label="Memberships" value={money(summary.membershipRevenueCents)} />
+        </dl>
+      ) : <p className="mt-2 text-xs text-neutral-500">No payment totals available.</p>}
+    </div>
+  );
+}
+
+function PaymentTotal({ label, value, emphasized = false }: { label: string; value: string; emphasized?: boolean }) {
+  return <div className="flex items-baseline justify-between gap-2"><dt className="text-neutral-500">{label}</dt><dd className={`font-black tabular-nums ${emphasized ? "text-[#D4A017]" : "text-white"}`}>{value}</dd></div>;
 }
 
 function isStatusValue(value: string) {

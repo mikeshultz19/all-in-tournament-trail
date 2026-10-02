@@ -62,6 +62,7 @@ export interface AdminRegistrationHistoryRow {
   angler1Id?: string | null;
   angler2Id?: string | null;
   boatNumber: number | null;
+  assignedBoatNumber?: number | null;
   contacts: RegistrationHistoryContact[];
   canonicalContacts?: Array<RegistrationCanonicalContact | null>;
   membershipSnapshot: Array<Record<string, unknown>>;
@@ -107,6 +108,7 @@ type RegistrationDbRow = {
   angler1_id: string | null;
   angler2_id: string | null;
   boat_number: number | null;
+  assigned_boat_number: number | null;
   participant_contact_snapshot: RegistrationHistoryContact[] | null;
   membership_snapshot: Array<Record<string, unknown>> | null;
   price_snapshot: AdminRegistrationHistoryRow["priceSnapshot"];
@@ -217,7 +219,7 @@ export async function listAllRegistrationHistory(): Promise<AdminRegistrationHis
   const registrations = await readAll<RegistrationDbRow>(async (from, to) => {
     const result = await supabase
       .from("tournament_registrations")
-      .select("id,registration_key,tournament_id,registered_at,registration_type,registration_source,registration_status,angler1_id,angler2_id,angler1_name,angler2_name,boat_number,participant_contact_snapshot,membership_snapshot,price_snapshot,big_bass,member_pot,insurance,payment_reference,payment_method,online_payment_state,square_payment_id,checked_in_at,cancelled_at,cancelled_by_admin_id,admin_notes,identity_review_status,tournament:tournaments!inner(name,tournament_date)")
+      .select("id,registration_key,tournament_id,registered_at,registration_type,registration_source,registration_status,angler1_id,angler2_id,angler1_name,angler2_name,boat_number,assigned_boat_number,participant_contact_snapshot,membership_snapshot,price_snapshot,big_bass,member_pot,insurance,payment_reference,payment_method,online_payment_state,square_payment_id,checked_in_at,cancelled_at,cancelled_by_admin_id,admin_notes,identity_review_status,tournament:tournaments!inner(name,tournament_date)")
       .order("registered_at", { ascending: false })
       .range(from, to);
     return { data: result.data as unknown as RegistrationDbRow[] | null, error: result.error };
@@ -277,6 +279,7 @@ export async function listAllRegistrationHistory(): Promise<AdminRegistrationHis
     angler1Id: row.angler1_id,
     angler2Id: row.angler2_id,
     boatNumber: row.boat_number,
+    assignedBoatNumber: row.assigned_boat_number,
     contacts: row.participant_contact_snapshot ?? [],
     canonicalContacts: [row.angler1_id, row.angler2_id]
       .map((id) => id ? canonicalById.get(id) ?? null : null),

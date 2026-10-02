@@ -14,7 +14,10 @@ export const metadata: Metadata = { title: "Registration Confirmation | All-In T
 export default async function RegistrationConfirmationPage({ searchParams }: { searchParams: Promise<{ attempt?: string }> }) {
   const { attempt: attemptId } = await searchParams;
   let confirmation = null;
-  let recoveryMessage: string | null = null;
+  let canVerifyPayment = false;
+  let recoveryMessage: string | null = attemptId
+    ? null
+    : "We couldn't find a registration for this link.";
   if (attemptId) {
     try {
       const attempt = await getOnlinePaymentAttempt(attemptId);
@@ -47,10 +50,13 @@ export default async function RegistrationConfirmationPage({ searchParams }: { s
         };
       } else if (attempt.state === "failed" || attempt.state === "cancelled") {
         recoveryMessage = "Payment was not completed. You are not registered. Return to registration to try another card or payment method.";
+      } else if (attempt.state === "pending") {
+        recoveryMessage = "No payment has been completed yet. Return to registration if you still need to submit payment.";
       } else {
-        recoveryMessage = "Square payment confirmation is still being verified. Do not pay again. AITT will recover the registration automatically when confirmation arrives.";
+        recoveryMessage = "Your payment is being verified. Do not pay again. Call 817-841-9120 or email info@allintrail.com if you need help.";
+        canVerifyPayment = attempt.state === "processing" || attempt.state === "reconciliation_required";
       }
-    } catch { recoveryMessage = "Payment verification is temporarily unavailable. If Square shows success, do not pay again; contact AITT for reconciliation."; }
+    } catch { recoveryMessage = "If you already paid, do not pay again. Call 817-841-9120 or email info@allintrail.com for help."; }
   }
-  return <main className="min-h-screen bg-[#0B0B0B] text-[#F2F2F2]"><Header /><RegistrationConfirmation confirmation={confirmation} recoveryMessage={recoveryMessage} recoveryAttemptId={!confirmation ? attemptId : null} /></main>;
+  return <main className="min-h-screen bg-[#0B0B0B] text-[#F2F2F2]"><Header /><RegistrationConfirmation confirmation={confirmation} recoveryMessage={recoveryMessage} recoveryAttemptId={!confirmation && canVerifyPayment ? attemptId : null} /></main>;
 }

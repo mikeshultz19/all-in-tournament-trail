@@ -340,7 +340,7 @@ describe("durable review persistence and Admin workflow", () => {
   it("supports existing, different-existing, and approved-new resolution", () => {
     expect(actions).toContain("existingAnglerId");
     expect(resolutionForm).toContain("Confirm Match");
-    expect(resolutionForm).not.toContain("Confirm Existing");
+    expect(resolutionForm).toContain("Confirm Existing Person");
     expect(resolutionForm).toContain("APPROVE NEW ANGLER");
     expect(resolutionForm).toContain("$40 membership due after approval.");
     expect(migration).toContain("admin_confirmed_existing");
@@ -358,6 +358,8 @@ describe("durable review persistence and Admin workflow", () => {
     expect(actions).not.toContain("resolveUnmatchedCurrentMemberReview");
     expect(actions).not.toContain("markMembershipCollectedAction");
     expect(actions).toContain("confirmCurrentMemberAsNewAction");
+    expect(actions).toContain("canonical_angler_id");
+    expect(actions).toContain("review.review_status !== \"review_required\"");
     expect(actions).toContain('membership: "joining"');
     expect(actions).toContain("Membership confirmed by");
     expect(actions).toContain("resolveRegistrationIdentityReview({");

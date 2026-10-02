@@ -12,6 +12,16 @@ const forms = [
     viewHref: "/forms/AITT-Tournament-Morning-Registration-Form.pdf",
   },
   {
+    name: "Participant Liability Waiver Form",
+    description:
+      "Complete printable waiver and assumption-of-risk form for front-and-back printing with Angler 1 and Angler 2 signature lines.",
+    href: "/forms/AITT-Participant-Liability-Waiver-Form.pdf?v=20260930-final",
+    downloadName: "AITT-Participant-Liability-Waiver-Form.pdf",
+    type: "pdf",
+    viewLabel: "View / Print PDF",
+    viewHref: "/forms/AITT-Participant-Liability-Waiver-Form.pdf?v=20260930-final",
+  },
+  {
     name: "Bass Stack Weigh-In Log",
     description:
       "125-team paper backup scoring sheet with 25 weigh-in cycles, Total Weight, and Total Fish.",

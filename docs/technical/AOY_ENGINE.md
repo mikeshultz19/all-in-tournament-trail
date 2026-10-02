@@ -56,14 +56,14 @@ Records with fewer than five performances count all their performances.
 
 Season ties use, in order:
 
-1. Most AOY wins
-2. Most AOY Top 10s
-3. Highest total official weight from all eligible appearances
-4. AOY finish from Tournament 8 backward through Tournament 1
+1. Highest combined official weight from the five tournaments counted toward
+   each final AOY score
+2. Higher finish in the most recent regular-season tournament where both tied
+   records competed
 
-If all four remain equal, or one record lacks a comparable finish at the
-relevant recent tournament, the tied records share a rank and expose
-`unresolved` instead of using an invented fallback.
+Because the regular season has eight tournaments and each eligible record must
+fish at least five, tied records will have a shared tournament for the
+head-to-head comparison.
 
 The Constitution does not define tournament AOY point allocation when
 Official Results contain equal placements. Such a tournament returns

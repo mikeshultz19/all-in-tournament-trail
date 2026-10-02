@@ -124,6 +124,27 @@ export function classifyRegistrationIdentity(
           )
         : false;
 
+      const nameMatches = fullName
+        ? active.filter((angler) => angler.normalized_name === fullName)
+        : [];
+
+      // A Current Member who has one unique exact-name match is still the
+      // existing member when their submitted contact details are stale or
+      // contain a typo. Keep the canonical All Members record unchanged.
+      if (
+        submitted.membership === "current" &&
+        emailMatches.length === 0 &&
+        phoneMatches.length === 0 &&
+        nameMatches.length === 1
+      ) {
+        return {
+          participantPosition: (index + 1) as 1 | 2,
+          status: "verified",
+          reason: null,
+          suggestedAnglerIds: [nameMatches[0].id],
+        };
+      }
+
       const exactCandidates = new Set(
         [...emailMatches, ...phoneMatches].map((angler) => angler.id),
       );
@@ -184,9 +205,6 @@ export function classifyRegistrationIdentity(
         };
       }
 
-      const nameMatches = fullName
-        ? active.filter((angler) => angler.normalized_name === fullName)
-        : [];
       if (nameMatches.length > 0) {
         return {
           participantPosition: (index + 1) as 1 | 2,

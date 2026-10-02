@@ -40,6 +40,12 @@ export default async function PaymentRecoveryPage() {
         <p className="mt-2 max-w-3xl text-sm leading-6 text-neutral-400">
           Paid online attempts that did not finish creating a registration. Review the Square payment before taking any action; never ask the customer to pay again for the same attempt.
         </p>
+        <ol className="mt-4 max-w-3xl list-decimal space-y-1 pl-5 text-sm leading-6 text-amber-100">
+          <li>Find the attempt in Square and confirm whether the payment succeeded.</li>
+          <li>If Square shows a successful payment, do not charge the customer again. Let the original attempt finish or contact the Tournament Director.</li>
+          <li>Do not create a walk-up from this page. If the original attempt cannot complete, contact the Tournament Director for a documented manual decision.</li>
+          <li>If the payment did not succeed, tell the customer and let them register again normally.</li>
+        </ol>
       </header>
 
       {loadError ? (

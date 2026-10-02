@@ -157,6 +157,20 @@ An unchecked or unavailable layer keeps the result at `Needs Rehearsal`.
 - [ ] Rollback procedure and target are confirmed.
 - [ ] Explicit production approval is received.
 
+## Open-registration blockers
+
+These decisions and validations must be complete before opening registration for
+the tournament:
+
+- [ ] Decide and verify the official **Scales Close / Weigh-In** value displayed
+  in Tournament Information and confirmation communications.
+- [ ] Validate the published **sunrise** time and **estimated safe-light** time
+  against the tournament location and date; confirm any approved override.
+- [ ] Confirm the tournament-morning check-in instruction is present wherever
+  online confirmation instructions appear: anglers who do not attend early
+  check-in are required to check in at the tournament-morning registration
+  table.
+
 ## 1. Registration and Rules
 
 | ID | Test | Expected Result | Actual Result / Evidence | Status | Tested By / Date |

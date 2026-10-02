@@ -56,6 +56,15 @@ describe("verified Square registration payments", () => {
     expect(attempts).toContain('state: "reconciliation_required"');
   });
 
+  it("treats 200, 408, 409, 429, and 5xx responses without a payment as ambiguous", () => {
+    expect(attempts).toContain("const ambiguousWithoutPayment = !error.payment");
+    expect(attempts).toContain("error.httpStatus === 200");
+    expect(attempts).toContain("error.httpStatus === 408");
+    expect(attempts).toContain("error.httpStatus === 409");
+    expect(attempts).toContain("error.httpStatus === 429");
+    expect(attempts).toContain("error.httpStatus !== undefined && error.httpStatus >= 500");
+  });
+
   it("uses Square and database idempotency for browser, webhook, and reconciliation retries", () => {
     expect(square).toContain("idempotency_key: input.idempotencyKey");
     expect(square).toContain("reference_id: input.attemptId");

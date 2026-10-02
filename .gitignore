@@ -15,6 +15,7 @@
 
 # next.js
 /.next/
+/.next-staging-release/
 /out/
 
 # production
@@ -60,5 +61,8 @@ backup/
 
 # Supabase CLI-generated local linkage and metadata
 supabase/.temp/
+
+# Local generated release and rendering artifacts
+/tmp/
 
 .obsidian/

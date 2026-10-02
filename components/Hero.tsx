@@ -25,7 +25,6 @@ export default function Hero() {
 
         <div className="h-px bg-gradient-to-r from-transparent via-red-700/60 to-transparent" />
 
-        
       </div>
     </section>
   );

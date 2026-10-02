@@ -308,6 +308,9 @@ server-side contact submission endpoint.
 - [ ] Stock pens in sufficient quantity.
 - [ ] Stock permanent markers and Sharpies.
 - [ ] Print current paper registration forms for emergency fallback only.
+- [ ] After any Rules or Waiver change, review and replace the paper registration
+      form; verify its acknowledgment, participant fields, fees, and identifiers
+      match the current public documents before printing.
 - [ ] Print current payment, membership, and entry-option reference sheets.
 - [ ] Print an incident and exception log.
 - [ ] Obtain outdoor-rated extension cords and power strips where permitted.
@@ -339,12 +342,15 @@ server-side contact submission endpoint.
 - [ ] Confirm domain contact details and account recovery methods are current.
 - [ ] Verify DNS points to the approved production deployment.
 - [ ] Verify SSL is active and the public site loads securely on common devices.
+- [ ] After production deployment, verify `https://allintrail.com/#winner-circle` lands at the visible AOY/Winner's Circle section before posting the link on social media.
+- [ ] Before November 1, fix and verify the AOY points leader display in the Winner's Circle Final Standings left column.
 - [ ] Create and test official AITT email addresses used for public and operational communication.
 - [ ] Confirm email sender identity, reply handling, and spam-folder behavior.
 - [ ] Confirm production environment accounts and credentials are owned by AITT and recoverable.
 - [ ] Confirm authorized administrators can access the production administration tools.
 - [ ] Verify production tournament dates, locations, deadlines, contact details, and status are accurate.
 - [ ] Verify public rules, fees, payment options, privacy information, and tournament-morning instructions are current.
+- [ ] Before opening online registration for the first regular-season tournament, verify the `Current Member` option is temporarily disabled/greyed out and that it becomes available for tournament two and later in the series.
 - [ ] Confirm online registration remains disabled until persistence and secure Square payment confirmation are production-ready.
 - [ ] Complete a production-like online registration using approved test procedures.
 - [ ] Verify Square checkout displays the correct itemized subtotal, `SQUARE SERVICE FEE`, and total; the internal $0.30 component is not separately shown.

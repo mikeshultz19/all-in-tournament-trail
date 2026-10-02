@@ -52,6 +52,29 @@ Last Updated: September 26, 2026
   Future audits should classify these as intentional governance rather than
   missing customer-facing workflows.
 
+## 2026-09-30 — Walk-up review and dependent membership cancellation
+
+- **Status:** Approved and applied to staging.
+- **Walk-up review:** A walk-up that saves with an informational Needs Review
+  status is still a valid paid registration and may be checked in while staff
+  resolve the membership or identity review. The review is a control and
+  follow-up item, not a payment or roster block.
+- **Cancellation:** Canceling a registration removes it from active operations
+  and preserves payment history. A purchased membership is revoked only when
+  no other active registration depends on that membership record. A membership
+  referenced by another active registration, or a pre-existing membership, is
+  preserved.
+- **Implementation:** Migrations
+  `202609300001_preserve_memberships_on_dependent_cancellation.sql` and
+  `202609300002_save_unverified_current_member_walkups.sql`,
+  `202609300003_fix_walkup_membership_review_link.sql`, and
+  `202609300004_results_table_rls.sql` preserve the
+  cancellation dependency check and save unverifiable walk-up Current Member
+  claims into Needs Review, link them to the selected or uniquely matched
+  active angler, and protect results-table access. Future audits should treat
+  N1 as intentional workflow behavior and N5/WLK-1 as resolved backend
+  protection, while still verifying the behavior in the staging rehearsal.
+
 ### 2026-09-26 — Preserve payment capture for duplicate registrations
 
 - **Status:** Approved; supersedes the earlier duplicate-blocking proposal.
@@ -660,6 +683,79 @@ Use this document to record approved project decisions that affect architecture,
 - **Email boundary:** Resend supports registration-interest confirmation when
   configured. It is not the Contact delivery system or paid-registration
   confirmation.
+
+### 2026-09-30 — Treat membership contact differences as informational
+
+- **Status:** Approved for registration operations.
+- **Decision:** A changed phone number, email address, address, or spelling may
+  create a Needs Review flag, but it does not block saving, payment, or the
+  practical registration workflow once identity is confirmed.
+- **Resolution:** Staff may confirm the person and keep the existing member
+  record unchanged. Any membership-record correction can be handled later by
+  contacting the member and editing All Members.
+- **Roster boundary:** Registration Review must not edit member contact data.
+  The roster is for ingestion, identity confirmation, membership handling, and
+  check-in; member edits belong only in the **All Members** area.
+- **Boundary:** The review is an identity/membership safety check, not a demand
+  for perfect contact data during registration.
+
+### 2026-09-30 — Keep registration identity handling intentionally simple
+
+- **Shared contact information:** A husband and wife or other team members may
+  share an email address. The registration should be saved, and each person
+  may keep a separate All Members record with that shared email.
+- **Duplicate entries:** Do not build special workflows for repeated entries
+  or duplicate tournament registrations. If an unusual duplicate occurs, save
+  it to Needs Review and let staff confirm the existing member, approve a new
+  angler, or cancel it.
+- **Review choices:** Every unusual identity or membership case resolves to the
+  same two human decisions: confirm the existing person or approve a new
+  angler. No automatic member-data changes are required.
+
+### 2026-09-30 — Retain current contact validation for launch
+
+- **Decision:** Keep the existing basic input validation for online registration
+  and walk-ups for now, including the current phone, email, state, and ZIP
+  checks. Do not broaden or tighten these rules during this launch cycle.
+- **Membership boundary:** Contact differences in an otherwise valid submission
+  are handled as membership/identity review; they do not authorize roster-side
+  member-data editing.
+- **Correction path:** Tournament staff will correct membership information
+  later in **All Members**, not during roster ingestion or registration review.
+
+### 2026-10-01 — Keep the public privacy notice limited to payment-card handling
+
+- **Status:** Approved for launch.
+- **Decision:** The public Privacy Policy will state that Square, as the
+  third-party payment provider, processes payment-card information and that
+  AITT does not store card numbers, CVV codes, or payment-processing
+  credentials. Do not publish internal fee percentages or membership-data
+  retention details in that notice.
+- **Impact:** Registration acknowledgment, waiver Section 17, payment copy,
+  and the public Privacy page must use the same payment-card wording.
+
+### 2026-10-01 — Finalize registration operating decisions for launch
+
+- **Status:** Approved for launch.
+- **Cancellation:** Registrations are final and AITT does not advertise routine
+  cancellations or refunds. A Tournament Director may handle an exceptional
+  staff-approved cancellation when there is a legitimate reason.
+- **Registration cutoff:** Online registration remains open until the
+  Tournament Director closes it through the tournament manager; no separate
+  public cutoff time is promised.
+- **Minors:** A minor may fish with any approved adult teammate, including an
+  adult who is not a parent or legal guardian, but the minor may not compete
+  until a parent or legal guardian provides the required signed consent and
+  waiver. The parent or guardian does not need to be Angler 1 or Angler 2.
+- **Team acknowledgment:** Online registration keeps one acknowledgment for
+  the submitting registrant covering all listed participants. Paper forms use
+  the required participant signatures; one team member does not certify for the
+  other.
+- **Identity matching:** A unique-name match may assist staff review, but
+  contact differences and shared household email addresses do not block a
+  registration. Staff resolve unusual cases with the two simple choices:
+  confirm the existing person or approve a new angler. Member edits remain in
+  All Members only.
 
 ---
 For an overview of the project, begin with **00_START_HERE.md**.

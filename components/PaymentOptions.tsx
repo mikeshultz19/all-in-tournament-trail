@@ -40,19 +40,37 @@ export default function PaymentOptions({ total, canReview, reviewComplete = fals
   async function pay() {
     if (!cardRef.current || !activeAttemptId || !billingContact) return;
     setPaying(true); setMessage("");
+    let paymentRequestStarted = false;
     try {
       const token = await cardRef.current.tokenize({
         amount: total.replace(/[^0-9.]/g, ""), currencyCode: "USD", intent: "CHARGE", customerInitiated: true, sellerKeyedIn: false,
         billingContact: { givenName: billingContact.firstName, familyName: billingContact.lastName, email: billingContact.email, phone: billingContact.phone, addressLines: [billingContact.streetAddress], city: billingContact.city, state: billingContact.state, postalCode: billingContact.zipCode, countryCode: "US" },
       });
       if (token.status !== "OK" || !token.token) throw new Error(token.errors?.[0]?.message ?? "Card verification failed.");
+      paymentRequestStarted = true;
       const response = await fetch("/api/registrations/payment", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ attemptId: activeAttemptId, sourceId: token.token }) });
-      const result = await response.json() as { status?: string; attemptId?: string; retryAttemptId?: string; message?: string };
+      let result: { status?: string; attemptId?: string; retryAttemptId?: string; message?: string };
+      try {
+        result = await response.json() as { status?: string; attemptId?: string; retryAttemptId?: string; message?: string };
+      } catch {
+        window.location.assign(`/register/confirmation?attempt=${encodeURIComponent(activeAttemptId)}`);
+        return;
+      }
       if (result.status === "completed") { window.location.assign(`/register/confirmation?attempt=${encodeURIComponent(result.attemptId ?? activeAttemptId)}`); return; }
       if (result.status === "reconciliation_required") { window.location.assign(`/register/confirmation?attempt=${encodeURIComponent(result.attemptId ?? activeAttemptId)}`); return; }
       if (result.retryAttemptId) setActiveAttemptId(result.retryAttemptId);
-      setMessage(result.message ?? "Payment was not completed. Try another card or payment method.");
-    } catch (error) { setMessage(error instanceof Error ? error.message : "Payment was not completed. Try another card or payment method."); }
+      if (paymentRequestStarted && (!response.ok || !result.status)) {
+        window.location.assign(`/register/confirmation?attempt=${encodeURIComponent(result.attemptId ?? activeAttemptId)}`);
+        return;
+      }
+      setMessage(result.message ?? "Payment was not completed. Review the payment status before trying again.");
+    } catch (error) {
+      if (paymentRequestStarted) {
+        window.location.assign(`/register/confirmation?attempt=${encodeURIComponent(activeAttemptId)}`);
+        return;
+      }
+      setMessage(error instanceof Error ? error.message : "Card verification could not be completed.");
+    }
     finally { setPaying(false); }
   }
 

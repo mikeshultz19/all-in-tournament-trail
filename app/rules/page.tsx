@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 
 import Header from "@/components/Header";
 import PolicyDocument from "@/components/PolicyDocument";
@@ -26,7 +27,19 @@ function toPublicRulesSource(source: string): string {
       "That document supersedes conflicting language in these Official Tournament Rules.",
     )
     .replace(
+      /, and material changes will be reflected in the version history\./i,
+      ".",
+    )
+    .replace(
       /^\*\*Pending approval:\*\*[^\r\n]*(?:\r?\n(?!\r?$)[^\r\n]*)*\r?\n?/gm,
+      "",
+    )
+    .replace(
+      /\r?\n<a id="version-history"><\/a>[\s\S]*$/i,
+      "",
+    )
+    .replace(
+      /^\d+\. \[Version History\]\(#version-history\)\r?\n?/gim,
       "",
     );
 }
@@ -46,7 +59,6 @@ function addQuickLinks(source: string): string {
     "- [Fishing Rules](#fishing-rules)",
     "- [Tournament Operations](#tournament-operations)",
     "- [Refund & Cancellation](#refund-cancellation-policy)",
-    "- [Version History](#version-history)",
     "",
   ].join("\n");
 
@@ -66,6 +78,24 @@ export default async function RulesPage() {
   return (
     <main className="min-h-screen overflow-x-hidden bg-[#0B0B0B] text-white">
       <Header activeItem="Rules" />
+
+      <div className="mx-auto mt-6 max-w-5xl px-5 sm:px-6">
+        <div className="border-l-4 border-[#D4A017] bg-[#17130A] px-5 py-4">
+          <p className="text-sm font-bold uppercase tracking-[0.08em] text-[#D4A017]">
+            Participant Liability Waiver
+          </p>
+          <p className="mt-1 text-sm leading-6 text-neutral-200">
+            Read the waiver before registering:
+            {" "}
+            <Link
+              href="/liability-waiver"
+              className="font-black text-yellow-400 underline underline-offset-4 hover:text-yellow-300"
+            >
+              View the Participant Liability Waiver →
+            </Link>
+          </p>
+        </div>
+      </div>
 
       <PolicyDocument
         source={publicSource}

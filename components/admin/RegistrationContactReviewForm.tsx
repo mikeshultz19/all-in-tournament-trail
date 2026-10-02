@@ -7,7 +7,6 @@ import {
   type RegistrationReviewActionState,
 } from "@/app/admin/registration-review/actions";
 import { adminButtonStyles } from "@/components/admin/admin-button-styles";
-import EditMemberContactForm from "@/components/admin/EditMemberContactForm";
 import type { RegistrationContact } from "@/lib/registration-identity-review";
 
 const initialState: RegistrationReviewActionState = {
@@ -46,7 +45,6 @@ export default function RegistrationContactReviewForm({
   existing,
   submitted,
   differingFields,
-  canonicalAnglerId,
 }: {
   reviewId: string;
   participantName: string;
@@ -54,7 +52,6 @@ export default function RegistrationContactReviewForm({
   existing: RegistrationContact;
   submitted: RegistrationContact;
   differingFields: string[];
-  canonicalAnglerId: string;
 }) {
   const [state, action, pending] = useActionState(
     resolveRegistrationContactReviewAction,
@@ -79,10 +76,6 @@ export default function RegistrationContactReviewForm({
         <strong>Differences:</strong>{" "}
         {differingFields.map((field) => labels[field] ?? field).join(", ")}
       </p>
-      <details className="border-t border-white/10 pt-2">
-        <summary className="cursor-pointer text-xs font-bold text-[#D4A017]">EDIT MEMBER</summary>
-        <EditMemberContactForm memberId={canonicalAnglerId} contact={existing} compact />
-      </details>
       <details className="border-t border-white/10 pt-2">
         <summary className="cursor-pointer text-xs font-bold text-[#D4A017]">
           View differences
@@ -109,19 +102,11 @@ export default function RegistrationContactReviewForm({
       <div className="flex flex-wrap gap-2">
         <button
           name="decision"
-          value="approve"
-          disabled={pending}
-          className={adminButtonStyles("primary", "min-h-10")}
-        >
-          SAME PERSON — UPDATE INFO
-        </button>
-        <button
-          name="decision"
           value="keep"
           disabled={pending}
           className={adminButtonStyles("secondary", "min-h-10")}
         >
-          SAME PERSON — KEEP EXISTING INFO
+          CONFIRM SAME PERSON
         </button>
         <button
           name="decision"

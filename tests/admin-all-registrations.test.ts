@@ -80,7 +80,7 @@ describe("Admin All Registrations", () => {
     expect(list).toContain("Payment &amp; Pricing");
     expect(list).toContain("Membership Snapshot");
     expect(list).toContain("Needs Attention / Review History");
-    expect(list).toContain("RegistrationEditControl");
+    expect(list).not.toContain("RegistrationEditControl");
     expect(list).toContain("group-open:rotate-180");
     expect(list).not.toContain("View Full Registration");
   });

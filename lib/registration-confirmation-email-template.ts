@@ -46,10 +46,10 @@ function row(label: string, value: string | null | undefined): string {
 export function buildRegistrationConfirmationEmail(view: RegistrationConfirmationEmailView) {
   const tournamentLake = [...new Set([view.tournamentName, view.lake].filter(Boolean))].join(" · ");
   const date = formatRegistrationTournamentDate(view.tournamentDate);
-  const safeLight = `${row("Sunrise", view.officialSunrise)}${view.safeLight ? `${row("Estimated Launch / Safe Light", view.safeLight)}<tr><td></td><td style="padding:0 0 8px;color:#555;font-size:12px;line-height:1.5">Have your boat in the water and ready to launch before this time.</td></tr>` : ""}`;
+  const safeLight = row("Approximate Sunrise", view.officialSunrise) + (view.officialSunrise ? `<tr><td></td><td style="padding:0 0 8px;color:#555;font-size:12px;line-height:1.5">This is the estimated sunrise for the tournament date. Final launch timing is provided by tournament staff.</td></tr>` : "");
   const opening = view.variant === "walk_up"
-    ? `Your tournament-day registration is confirmed. Your registration number is ${view.boatNumber ? `#${view.boatNumber}` : "#___"}. Please follow the launch and stop-fishing times provided by tournament staff.`
-    : `Your registration is confirmed. Your registration number is ${view.boatNumber ? `#${view.boatNumber}` : "#___"}. You are required to complete check-in before the tournament to receive your boat number, launch time, and stop-fishing time. Check the Announcements section of the AITT website for early check-in times and location. If you do not attend early check-in, you must check in on tournament morning.`;
+    ? `Your tournament-day registration is confirmed. Your registration number is ${view.boatNumber ?? "___"}. Please follow the start and stop-fishing times provided by tournament staff at registration.`
+    : `Please verify that you appear on the Early Entries list on the AITT website. Your registration is confirmed. Your registration number is ${view.boatNumber ?? "___"}. Check the Announcements section of the AITT website for early check-in times and location. If you do not attend early check-in, you are required to check in at the tournament-morning registration table.`;
   const paymentMethod = view.variant === "walk_up" && view.paymentMethod
     ? row("Payment Method", `${view.paymentMethod[0].toUpperCase()}${view.paymentMethod.slice(1)}`)
     : "";

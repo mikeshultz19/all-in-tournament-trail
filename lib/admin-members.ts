@@ -164,10 +164,10 @@ export async function getAdminMemberByEmail(email: string): Promise<AdminMemberD
     .ilike("email", normalizedEmail)
     .eq("is_active", true)
     .is("merged_into_angler_id", null)
-    .maybeSingle();
+    .limit(2);
   if (error) throw new AdminMemberDataError("We could not load the member.", "invalid_reference", undefined, { cause: error });
-  if (!data) return null;
-  const row = data as unknown as AdminMemberDetailQueryRow;
+  if (!data?.length) return null;
+  const row = data[0] as unknown as AdminMemberDetailQueryRow;
   const activeMembership = [...(row.memberships ?? [])].sort((left, right) => {
     if (left.season.is_active !== right.season.is_active) return left.season.is_active ? -1 : 1;
     return right.updated_at.localeCompare(left.updated_at);

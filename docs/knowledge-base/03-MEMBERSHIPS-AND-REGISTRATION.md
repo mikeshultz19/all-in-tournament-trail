@@ -39,9 +39,9 @@ The submitted tournament identity snapshot remains the historical evidence for
 that event. Canonical members and Competitive Records support membership, AOY,
 Championship, and history. Review decisions are:
 
-- **SAME PERSON — UPDATE INFO**
-- **SAME PERSON — KEEP EXISTING INFO**
-- **APPROVE NEW ANGLER** for an unmatched Current Member claim.
+- **CONFIRM EXISTING PERSON** and keep the All Members record unchanged;
+- **APPROVE NEW ANGLER** for a different person; or
+- **CANCEL REGISTRATION** when the entry should not remain active.
 
 This creates the Angler only and leaves the membership review unresolved, so
 check-in remains blocked. Staff contacts the participant about the $40 seasonal
@@ -50,7 +50,10 @@ activates the membership, records the Admin confirmation, and clears the review;
 check-in then becomes available. If the participant declines, use the existing
 Cancel Registration workflow. There is no separate Mark Collected action and no
 membership receivable or payment reconciliation workflow inside AITT.
-Existing-member, contact, and historical membership reviews are unchanged.
+Existing-member and historical membership reviews are unchanged. A contact
+mismatch review confirms the identity without editing canonical contact
+information; staff can correct the All Members record later if the change
+matters.
 Repeated or previously canceled registrations are allowed through the normal
 membership and payment flow; any rare duplicate is handled administratively
 afterward.
@@ -83,7 +86,11 @@ Admin walk-ups are unchanged.
 
 Use the Registration & Check-In roster, provide boat numbers during check-in,
 add walkups sequentially, reconcile paper memberships, perform Membership
-Reconciliation, and make the AITT field agree with WeighFish. Insurance
+Reconciliation, and make the AITT field agree with WeighFish. A walk-up may
+save with an informational Needs Review status. The walk-up may still be
+checked in because the person is physically present; staff may resolve the
+informational membership or identity review before or after check-in. For Solo walk-ups, Angler 2 is disabled
+until the entry type is changed back to Team. Insurance
 participation is reconciled in AITT because WeighFish is not its authoritative
 workflow.
 

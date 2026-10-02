@@ -159,7 +159,10 @@ function main() {
     return;
   }
   run(process.execPath, [path.join(projectRoot, "node_modules", "@opennextjs", "cloudflare", "dist", "cli", "index.js"), "build"], process.env, projectRoot);
-  run("npx", ["wrangler", "deploy", "--config", "wrangler.staging.jsonc"], process.env, projectRoot);
+  // Invoke Wrangler's JS entry point directly so Windows does not need a shell
+  // to execute npx.cmd. Arguments remain isolated from shell interpretation.
+  const wranglerCli = path.join(projectRoot, "node_modules", "wrangler", "bin", "wrangler.js");
+  run(process.execPath, [wranglerCli, "deploy", "--config", "wrangler.staging.jsonc"], process.env, projectRoot);
 }
 
 if (process.argv[1] && path.resolve(process.argv[1]) === path.resolve(fileURLToPath(import.meta.url))) {

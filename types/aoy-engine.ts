@@ -56,10 +56,8 @@ export interface AoyTieDetails {
   status: "resolved" | "unresolved";
   resolvedBy:
     | "points"
-    | "wins"
-    | "top_tens"
-    | "season_weight"
-    | "recent_aoy_finish"
+    | "counted_weight"
+    | "head_to_head"
     | null;
   tiedWithCompetitiveRecordIds: string[];
   reason: string | null;

@@ -20,6 +20,7 @@ import {
   getHomepageAoyStandings,
   type PublicAoyStanding,
 } from "@/lib/aoy-standings";
+import WinnerCircleHashScroll from "@/components/WinnerCircleHashScroll";
 
 export const revalidate = 10800;
 export const dynamic = "force-dynamic";
@@ -110,13 +111,15 @@ export default async function HomePage() {
 
       <Hero />
 
+      <WinnerCircleHashScroll />
+
       <MobileHomePage
         announcements={announcements}
         featuredTournament={featuredTournament}
         operations={operations}
         homepageSponsors={homepageSponsors}
         latestResults={latestResults}
-        aoyLeader={aoyStandings[0]?.angler ?? null}
+        aoyLeader={aoyStandings[0] ?? null}
       />
 
       <div className="hidden md:block">

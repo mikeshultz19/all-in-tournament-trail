@@ -14,6 +14,7 @@ type WalkUpContact = { firstName?: unknown; lastName?: unknown };
 type WalkUpLineItem = { name?: unknown; priceCents?: unknown };
 type WalkUpRegistration = {
   boat_number: number | null;
+  registration_status: "active" | "cancelled";
   registration_source: string;
   tournament_id: string;
   participant_contact_snapshot: unknown;
@@ -44,10 +45,11 @@ async function buildEmailForDelivery(delivery: Delivery) {
   const supabase = createSupabaseServerClient();
   const { data: registration, error: registrationError } = await supabase
     .from("tournament_registrations")
-    .select("boat_number,online_payment_state,registration_source,tournament_id,participant_contact_snapshot,price_snapshot,payment_method")
+    .select("boat_number,registration_status,online_payment_state,registration_source,tournament_id,participant_contact_snapshot,price_snapshot,payment_method")
     .eq("id", delivery.registration_id)
     .single();
   if (registrationError || !registration) throw new EmailProviderError("CONFIRMATION_DATA_UNAVAILABLE");
+  if (registration.registration_status !== "active") throw new EmailProviderError("REGISTRATION_NOT_ACTIVE");
 
   if (registration.registration_source === "walk_up") {
     if (delivery.payment_attempt_id !== null) throw new EmailProviderError("WALKUP_PAYMENT_ATTEMPT_INVALID");

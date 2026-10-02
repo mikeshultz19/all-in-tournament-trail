@@ -65,7 +65,7 @@ function MobileWinnersHeader({
       {tournament ? (
         <p className="mt-1 inline-flex max-w-full flex-wrap items-center justify-center gap-x-1.5 gap-y-1 text-xs font-semibold uppercase tracking-[0.1em] text-neutral-400">
           <MapPin aria-hidden="true" className="size-3.5 shrink-0 text-[#c9aa4a]" />
-          {tournament.lake} Â· {formatResultsDate(tournament.tournament_date)}
+          {tournament.lake} · {formatResultsDate(tournament.tournament_date)}
         </p>
       ) : null}
     </div>

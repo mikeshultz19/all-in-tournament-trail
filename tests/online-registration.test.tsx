@@ -220,8 +220,8 @@ describe("server-authoritative registration validation and pricing", () => {
     expect(acceptance.registrationId).toBe("draft-123");
     expect(acceptance.acknowledgedAt).toBe(NOW.toISOString());
     expect(acceptance.acknowledgmentAccepted).toBe(true);
-    expect(acceptance.rulesVersion).toBe("1.9");
-    expect(acceptance.waiverVersion).toBe("1.0");
+    expect(acceptance.rulesVersion).toBe("1.10");
+    expect(acceptance.waiverVersion).toBe("1.1");
     expect(Object.keys(acceptance.policyVersions)).toEqual(["rules", "liability_waiver", "refund_policy", "payment_terms"]);
   });
   it("rejects malformed angler input safely", () => expect(validateOnlineRegistrationRequest(validRequest({ anglers: [null] as unknown as OnlineRegistrationRequest["anglers"] }), NOW)).toContain("Angler 1 information is required."));
@@ -268,23 +268,23 @@ describe("confirmation experience", () => {
     expect(html).not.toContain("Rules and Policies");
     expect(html).not.toContain('href="/schedule"');
     expect(html).not.toContain('href="/how-it-works"');
-    for (const value of ["Eagle Mountain Tournament · Eagle Mountain", "Twin Points Park", "Numbered Start", "4:30 AM", "6:45 AM", "7:01 AM", "3:00 PM"]) expect(html).toContain(value);
-    expect(html).toContain("Estimated Launch / Safe Light");
-    expect(html).toContain("Sunrise");
-    expect(html).toContain("Have your boat in the water and ready to launch before this time.");
+    for (const value of ["Eagle Mountain Tournament · Eagle Mountain", "Twin Points Park", "Numbered Start", "4:30 AM", "7:01 AM", "3:00 PM"]) expect(html).toContain(value);
+    expect(html).toContain("Approximate Sunrise");
+    expect(html).toContain("This is the estimated sunrise for the tournament date.");
     expect(html).toContain("All tournament times are subject to change by the Tournament Director.");
   });
   it("uses TBA for unavailable logistics and omits sunrise readiness copy", () => {
     const unavailable = renderToStaticMarkup(<RegistrationConfirmation confirmation={{ ...confirmation, ramp: null, launchType: null, morningRegistration: null, launchTime: null, officialSunrise: null, scalesClose: null }} />);
-    expect(unavailable.match(/>TBA</g)).toHaveLength(6);
-    expect(unavailable).not.toContain("Have your boat in the water and ready to launch before this time.");
+    expect(unavailable.match(/>TBA</g)).toHaveLength(5);
+    expect(unavailable).not.toContain("This is the estimated sunrise for the tournament date.");
   });
   it("shows one customer-facing registration number without obsolete launch-order guidance", () => {
     expect(html).not.toContain("Confirmation Number");
     expect(html).not.toContain("AITT-EM-0001");
     expect(html).toContain("Registration Number");
     expect(html).toContain("#17");
-    expect(html).toContain("Your registration is confirmed. Your registration number is #17. You are required to complete check-in before the tournament to receive your boat number, launch time, and stop-fishing time. Check the Announcements section of the AITT website for early check-in times and location. If you do not attend early check-in, you must check in on tournament morning.");
+    expect(html).toContain("Please verify that you appear on the Early Entries list on the AITT website.");
+    expect(html).toContain("Your registration is confirmed. Your registration number is 17. Check the Announcements section of the AITT website for early check-in times and location. If you do not attend early check-in, you are required to check in at the tournament-morning registration table.");
     expect(html).not.toContain("Your boat number is your launch-order number");
     expect(html).not.toContain("This is your boat number and will also be your launch-order number");
     expect(html).not.toContain("Registration / Boat Number");
@@ -307,7 +307,7 @@ describe("confirmation experience", () => {
     expect(html).toContain('href="/"');
     expect(html).toContain("Check AITT Homepage →");
   });
-  it("preserves a recovery message after browser interruption", () => expect(renderToStaticMarkup(<RegistrationConfirmation confirmation={null} />)).toContain("do not pay again"));
+  it("uses a plain customer-facing message while confirmation is pending", () => expect(renderToStaticMarkup(<RegistrationConfirmation confirmation={null} />)).toContain("Your payment is being verified. Do not pay again."));
 });
 
 describe("online payment presentation", () => {
@@ -365,7 +365,7 @@ describe("online payment presentation", () => {
   it("moves tournament data into one condensed header", () => {
     const operations = operationsBySlug[tournaments[0].slug];
     expect(html).not.toContain("Early Registration Deadline");
-    expect(html).toContain("Estimated Safe Light");
+    expect(html).toContain("Approximate Sunrise");
     expect(html).toContain(operations.safeLight.time);
     expect(html).toContain(operations.safeLight.officialSunrise);
     expect(html).toContain('data-icon-src="/icons/sun-safe-light.svg"');
@@ -376,7 +376,7 @@ describe("online payment presentation", () => {
     expect(html).not.toContain("Updated ");
     expect(html).not.toContain(tournaments[0].statusMessage);
     expect(html).not.toContain("Early Registration Deadline");
-    expect(html.match(/Estimated Safe Light/g)).toHaveLength(1);
+    expect(html.match(/Approximate Sunrise/g)).toHaveLength(1);
   });
   it("renders one required combined acknowledgment with policy links", () => {
     expect(html.match(/name="acknowledgment"/g)).toHaveLength(1);
@@ -389,7 +389,7 @@ describe("online payment presentation", () => {
     expect(html).not.toContain('id="acknowledgment-combined" type="checkbox" required="" checked=""');
     expect(html).toContain('aria-describedby="acknowledgment-requirement"');
     expect(html).toContain("Required before continuing to payment");
-    expect(html).toContain("Rules version 1.9; waiver version 1.0");
+    expect(html).toContain("Rules version 1.10; waiver version 1.1");
     expect(html).not.toContain("accurate information");
     expect(html).not.toContain("acknowledgment-rules");
   });

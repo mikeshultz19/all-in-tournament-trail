@@ -32,8 +32,7 @@ describe("registration contact snapshots and member change review", () => {
   });
 
   it("supports approve and keep while preserving the tournament snapshot", () => {
-    expect(normalizedContactReview).toContain("SAME PERSON — UPDATE INFO");
-    expect(normalizedContactReview).toContain("SAME PERSON — KEEP EXISTING INFO");
+    expect(normalizedContactReview).toContain("CONFIRM SAME PERSON");
     expect(normalizedContactReview).toContain("DIFFERENT PERSON — APPROVE NEW MEMBER");
     expect(actions).toContain("resolveRegistrationContactReview");
     expect(sync).toContain("if p_approve_update then");
@@ -53,8 +52,7 @@ describe("registration contact snapshots and member change review", () => {
     expect(normalizedContactReview).toContain('ContactBlock title="Existing Member"');
     expect(normalizedContactReview).toContain('ContactBlock title="Registration Submission"');
     expect(contactReview).toContain("Optional review note");
-    expect(normalizedContactReview).toContain("SAME PERSON — UPDATE INFO");
-    expect(normalizedContactReview).toContain("SAME PERSON — KEEP EXISTING INFO");
+    expect(normalizedContactReview).toContain("CONFIRM SAME PERSON");
     expect(normalizedContactReview).toContain("DIFFERENT PERSON — APPROVE NEW MEMBER");
     expect(actions).toContain('decision !== "different"');
     expect(actions).toContain("resolveRegistrationIdentityReview({");

@@ -24,9 +24,9 @@ function tournament(overrides: Partial<Tournament> = {}): Tournament {
 }
 
 describe("estimated safe light", () => {
-  it("is calculated sunrise minus 30 minutes", () => {
+  it("uses the sunrise for the tournament date", () => {
     const result = getSafeLight("2026-11-01");
-    expect(result.officialSunrise.getTime() - result.calculatedSafeLight.getTime()).toBe(30 * 60 * 1000);
+    expect(result.officialSunrise.getTime() - result.calculatedSafeLight.getTime()).toBe(0);
     expect(result.safeLight.getTime()).toBe(result.calculatedSafeLight.getTime());
   });
 

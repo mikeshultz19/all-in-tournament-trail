@@ -1,18 +1,9 @@
 # Official Tournament Rules
 
-**Version:** 1.9
-**Status:** Official
-**Effective Date:** July 26, 2026
-**Last Updated:** August 9, 2026
-
-These rules govern All-In Tournament Trail (AITT) events. They are intended to
+These rules govern All In Tournament Trail LLC (AITT) events. They are intended to
 provide a fair, safe, and professionally administered tournament experience.
 The rules in effect on the date of an event apply to that event. AITT may amend
-these rules, and material changes will be reflected in the version history.
-
-> **Draft notice:** Items expressly marked **Pending approval** are not final
-> rules and must not be enforced or represented as approved policy until AITT
-> publishes the applicable requirement.
+these rules when necessary for tournament operations and safety.
 >
 ## Table of Contents
 
@@ -32,7 +23,6 @@ these rules, and material changes will be reflected in the version history.
 14. [Refund & Cancellation Policy](#refund-cancellation-policy)
 15. [Media](#media)
 16. [Privacy](#privacy)
-17. [Version History](#version-history)
 
 <a id="introduction"></a>
 ## 1. Introduction
@@ -93,9 +83,11 @@ competitive integrity, legal compliance, or tournament operations.
 ### Membership
 
 Membership status is determined independently for each angler. An angler may
-register as a current member or purchase the **$40 annual membership** during
-registration. Names alone do not establish current membership status; a claimed
-current membership that cannot be verified remains **Needs Review**.
+register as a current member or purchase an annual membership during
+registration. If AITT cannot immediately confirm an angler's current membership,
+the registration may be saved and placed in Needs Review. Staff may confirm the
+existing person or approve the angler as a new member; contact-data corrections
+can be handled later in All Members.
 
 ### Age Requirements
 
@@ -106,6 +98,12 @@ requirements.
 A participant under eighteen (18) years of age must have a parent or legal
 guardian complete and sign all required registration acknowledgments, liability
 waivers, and participation approvals before the participant may compete.
+
+The parent or legal guardian does not need to be Angler 1 or Angler 2. A minor
+may fish with another adult, including an adult teammate, but that adult may
+not replace the parent or legal guardian's signature unless they are the minor's
+legal guardian. A minor may not compete unless the parent or legal guardian has
+provided that signed consent.
 
 A participant under sixteen (16) years of age may not compete as a solo angler
 and must compete with a parent, legal guardian, or another adult approved by the
@@ -144,8 +142,8 @@ add-ons cannot be entered without Tournament Entry.
 Early Online Registration is completed through the AITT website. The
 participant must select the tournament, provide all required angler and
 membership information, select eligible options, accept the required
-acknowledgment, review the server-calculated charges, and complete payment
-through Square.
+acknowledgment, review the registration total, and complete payment through the
+online payment process.
 
 Online registration requires immediate successful payment. A draft, quote,
 payment attempt, browser message, or payment redirect does not constitute a
@@ -166,68 +164,53 @@ CLOSED** and cannot be reopened through normal registration controls.
 
 ### Immediate Online Payment
 
-AITT stores an online registration as confirmed only after Square reports a
-successful payment and AITT completes confirmation. Online cash payments,
+AITT stores an online registration as confirmed only after the online payment
+process reports a successful payment and AITT completes confirmation. Online cash payments,
 unpaid reservations, payment at the ramp, Venmo, and Stripe are not offered.
 
 ### Tournament-Morning Registration
 
 Tournament-Morning Registration is a normal in-person registration period and
 is not late registration. It is conducted by the Tournament Director at the
-registration table and recorded in the AITT Registration & Check-In workflow,
-then reconciled with WeighFish. It is not submitted through the public AITT
-registration page.
+registration table and recorded in the AITT registration and check-in workflow.
+It is not submitted through the public AITT registration page.
 
-**Pending approval:** Exact tournament-morning operating hours and the final
-registration cutoff will be published with event instructions.
-
-### Payment Methods and Systems
-
-- **Square:** Processes online card and supported digital-wallet payments and
-  in-person electronic payments made through the Square reader.
-- **AITT:** Owns Registration & Check-In, walkup reconciliation, membership
-  reconciliation, Insurance participation, and durable tournament identities.
-- **WeighFish:** Owns tournament-day scoring and finish data entered during
-  weigh-in. AITT and WeighFish fields must be reconciled before publication.
-- **Cash:** Accepted only during Tournament-Morning Registration. Cash has no
-  Square Service Fee.
-- **Card and supported digital wallets:** The Square Service Fee is 3% of the
-  applicable subtotal plus $0.30 per transaction for online payments and
-  in-person payments processed through Square. Customer-facing itemization is
-labeled `SQUARE SERVICE FEE`; the $0.30 component is not separately
-  displayed. Cash has no Square Service Fee.
-
-AITT calculates charges on the server using integer cents. The percentage
-component is rounded to the nearest cent, with half-cent results rounded
-upward, and $0.30 is then added once per card transaction.
+Tournament-morning operating hours are set by the Tournament Director and
+published with event instructions. Online registration remains available while
+the tournament lifecycle is open and closes when the Tournament Director
+suspends or closes registration, or when the tournament reaches Results
+Published.
 
 ### Registration Confirmation
 
 A registration is confirmed only when payment is verified and AITT or the
 Tournament Director completes the applicable registration workflow:
 
-- Online: Square verifies payment and AITT finalizes the registration.
+- Online: The online payment process verifies payment and AITT finalizes the
+  registration.
 - Tournament morning: The Tournament Director records the participant and
-  payment method in WeighFish and completes any required Square transaction.
+  payment method in the registration workflow and completes any required
+  payment step.
 
 Participants must review confirmation details and promptly report an error to
-a Tournament Official. A Square receipt alone does not replace the official
+a Tournament Official. A payment receipt alone does not replace the official
 tournament roster.
 
 <a id="membership"></a>
 ## 4. Membership
 
-Annual membership is **$40 per angler**.
+Annual membership is required for every angler.
 
 ### Membership Benefits
 
-Every registered angler has an active seasonal membership; returning members pay
-no additional membership charge and new anglers purchase the $40 membership.
-Membership is paid once per person per season: a new solo angler pays $40,
-current/current teams pay $0, current/new teams pay $40, and new/new teams pay
-$80. Online and walk-up registration offer only Current Member or Purchase
-Membership. An unverified Current Member claim becomes Needs Review; it does
-not create a non-member registration, shortfall, or hypothetical receivable.
+Every registered angler has an active seasonal membership. Returning members do
+not purchase membership again, and new anglers purchase membership during
+registration. Membership is paid once per person per season. Online and walk-up
+registration offer only Current Member or Joining Today. If AITT cannot
+immediately confirm an angler's current membership, the registration may be
+saved and placed in Needs Review. Staff may confirm the existing person or
+approve the angler as a new member; contact-data corrections can be handled
+later in All Members.
 Membership supports:
 
 - Angler of the Year (AOY) points
@@ -371,12 +354,14 @@ its five highest point totals.
 ### AOY Ties
 
 If two or more eligible Competitive Records finish the regular season with the
-same final AOY point total, the tie will be resolved using the current
-published AOY tiebreaker procedure.
+same final AOY point total, the tie is resolved first by the highest combined
+official weight from the five tournaments counted toward each final AOY score.
+If the teams remain tied, the higher finish in the most recent regular-season
+tournament where both teams competed wins the tie.
 
-If no separate tiebreaker procedure has been published, the Tournament Director
-will resolve the tie using the official tournament records and a fair,
-consistently applied method.
+Because the regular season has eight tournaments and each eligible team must
+fish at least five, tied teams will have a shared tournament for the
+head-to-head comparison.
 
 ### Official AOY Standings
 
@@ -523,9 +508,9 @@ counted toward the tournament catch.
 
 A short fish:
 
+- Receives a one (1) pound penalty.
 - Receives no tournament weight.
 - Does not count toward the legal tournament limit.
-- Is not eligible for Big Bass.
 
 #### Dead Fish
 
@@ -672,10 +657,6 @@ A protest must:
 - Be submitted promptly enough to permit a fair investigation before results
   are finalized.
 
-**Pending approval:** AITT has not approved a specific protest filing time
-limit. The final time limit must be published before a protest may be rejected
-solely as untimely.
-
 The Tournament Director may interview participants and witnesses, inspect
 equipment and records, review available media or data, and take other
 reasonable steps to decide a protest. The Tournament Director's ruling,
@@ -715,39 +696,5 @@ media channel, subject to applicable law.
 <a id="privacy"></a>
 ## 16. Privacy
 
-AITT stores registration information needed to administer tournaments,
-membership, eligibility, communications, tax and payout records, and related
-operations. This may include participant identity and contact details,
-address, membership classification, selections, policy acknowledgments,
-registration status, and limited payment references.
-
-Payments are processed securely by Square. AITT does not store raw credit or
-debit card numbers, CVV values, magnetic-stripe data, or unencrypted payment
-credentials.
-
-WeighFish stores and manages the tournament-day roster, check-in, weigh-in,
-scoring, and official results. AITT may transfer confirmed registration data
-to WeighFish as needed for tournament operations.
-
-AITT may publish only approved public tournament information, such as angler
-display names, registration time, selected pots, results, and standings.
-Private contact information, street addresses, payment details,
-administrative notes, and internal identifiers must not be displayed publicly.
-
-<a id="version-history"></a>
-## 17. Version History
-
-| Version | Date | Summary |
-| --- | --- | --- |
-| 1.9 | September 21, 2026 | Made seasonal membership mandatory for every angler, set the $40 new-member charge, opened all side pots to registered anglers, and clarified membership review handling. |
-| 1.8 | August 25, 2026 | Aligned registration availability with manual per-tournament lifecycle controls, clarified AITT/WeighFish tournament-morning ownership, and documented species length minimums. |
-| 1.7 | August 9, 2026 | Clarified that disqualified entries receive no AOY points, Championship appearance credit, or tournament payouts. |
-| 1.6 | August 5, 2026 | Added approved participant age, parental-consent, adult-supervision, and applicable-law requirements. |
-| 1.5 | August 5, 2026 | Restored AOY and Championship Qualification sections. Confirmed best five of eight for AOY and five-of-eight participation for Championship qualification. |
-| 1.4 | July 31, 2026 | Added Bass Stack Challenge rules for the designated Squaw Creek #5 and Lewisville #8 events. |
-| 1.3 | July 30, 2026 | Approved the event-specific Practice and Off-Limits Policy: registered non-members are off-limits beginning Monday at 12:00 AM; current members registered for the event may practice either Friday or Saturday, but not both. |
-| 1.2 | July 28, 2026 | Finalized team continuity and substitute-partner rules and aligned AOY and Championship qualification with the five-tournament standard. |
-| 1.1 | July 22, 2026 | Added approved short-fish, dead-fish, Big Bass, and late check-in rules and FAQ guidance. |
-| 1.0 | July 22, 2026 | Initial website rulebook. |
-
----
+Payments are processed by Square, a third-party payment provider. AITT does
+not store credit-card numbers, CVV codes, or other payment-card credentials.

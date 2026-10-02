@@ -47,7 +47,7 @@ describe("Admin registration review presentation", () => {
     })).toEqual({
       heading: "New membership needs approval",
       issue: "This is a new membership purchase. Approve once to create the member record.",
-      identityFollowUp: "Approve as new if this is a different person.",
+      identityFollowUp: "Approve as new if the angler is not an existing member.",
     });
   });
 });

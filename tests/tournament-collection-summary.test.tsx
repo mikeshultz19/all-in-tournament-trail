@@ -136,7 +136,7 @@ describe("automatic tournament collection reconciliation", () => {
     expect(summary.membershipRevenueCents).toBe(4000);
     expect(summary.totalRegistrationFundsCollectedCents).toBe(10000);
     expect(summary.totalTournamentPayoutFundsCents).toBe(6000);
-    expect(summary.onlineRegistrationFundsCents).toBe(10000);
+    expect(summary.onlineRegistrationFundsCents).toBe(6000);
   });
 
   it("counts two joining selections as $80 without duplicate manual markers", () => {
@@ -160,7 +160,7 @@ describe("automatic tournament collection reconciliation", () => {
     expect(summary.membershipRevenueCents).toBe(8000);
     expect(summary.totalRegistrationFundsCollectedCents).toBe(14000);
     expect(summary.totalTournamentPayoutFundsCents).toBe(6000);
-    expect(summary.onlineRegistrationFundsCents).toBe(14000);
+    expect(summary.onlineRegistrationFundsCents).toBe(6000);
   });
 
   it("excludes marker-backed manual dues from canceled active totals", () => {

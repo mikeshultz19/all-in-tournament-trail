@@ -130,12 +130,11 @@ event operations, safety, fishing conduct, penalties, and related procedures.
     finish.
 17. A zero-weight score counts as a Top 10 only if the entry's actual reranked
     AOY finish is within the Top 10.
-18. AOY ties are documented as being resolved in this order:
-    1. Most AOY tournament wins
-    2. Most AOY Top 10 finishes
-    3. Highest total official season weight from all AOY-eligible appearances
-    4. Compare tied records' AOY finishes from the most recent regular-season
-       tournament backward until the tie is broken
+18. AOY ties are resolved in this order:
+    1. Highest combined official weight from the five tournaments counted
+       toward each final AOY score
+    2. Higher finish in the most recent regular-season tournament where both
+       tied records competed
 19. The regular season consists of eight scheduled tournaments.
 20. Each Competitive Record's final AOY score is the sum of its five highest
     point totals from those eight tournaments.
@@ -247,13 +246,13 @@ changes the published Official Tournament Results.
 6. The three lowest point totals are automatically discarded.
 7. Scores outside the best five remain visible but do not contribute to the
    season AOY total.
-8. There is no minimum tournament requirement to win AOY.
+8. At final AOY qualification, each eligible Competitive Record must have
+   participated in at least five regular-season tournaments.
 9. Championship participation is separate from the best-five AOY calculation.
-10. Total Season Weight for the AOY tie breaker includes all AOY-eligible
-   tournament appearances, not only the five scores included in the AOY total.
-11. Wins and Top 10s from every AOY-eligible tournament remain part of the
-    Competitive Record's season statistics and tie-break totals, including
-    tournaments whose point scores are outside the best five.
+10. The AOY tie-break weight total includes only the official weights from the
+    five tournaments included in the final AOY point total.
+11. Wins and Top 10s remain season statistics, but they are not AOY
+    tie-breakers.
 
 ## 8. Official Results
 

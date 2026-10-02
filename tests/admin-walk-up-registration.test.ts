@@ -8,6 +8,7 @@ const { deliverRegistrationConfirmationEmails, revalidatePath, requireAdminUser,
   rpc: vi.fn(),
 }));
 const getAdminMemberByEmail = vi.hoisted(() => vi.fn());
+const getAdminMemberById = vi.hoisted(() => vi.fn());
 
 vi.mock("next/cache", () => ({
   revalidatePath,
@@ -18,7 +19,7 @@ vi.mock("@/lib/admin-auth", () => ({
 }));
 
 vi.mock("@/lib/admin-members", () => ({
-  getAdminMemberById: vi.fn(),
+  getAdminMemberById,
   getAdminMemberByEmail,
 }));
 
@@ -85,7 +86,9 @@ describe("walk-up registration draft preservation", () => {
     deliverRegistrationConfirmationEmails.mockResolvedValue({ sent: 2, failed: 0 });
     rpc.mockReset();
     getAdminMemberByEmail.mockReset();
+    getAdminMemberById.mockReset();
     getAdminMemberByEmail.mockResolvedValue(null);
+    getAdminMemberById.mockResolvedValue(null);
   });
 
   it("rejects a bypassed non-member walk-up classification", async () => {
@@ -245,7 +248,7 @@ describe("walk-up registration draft preservation", () => {
     expect(deliverRegistrationConfirmationEmails).toHaveBeenCalledTimes(1);
   });
 
-  it("saves without queue processing when no recipient email is provided", async () => {
+  it("rejects a walk-up when any required contact email is missing", async () => {
     rpc.mockResolvedValue({ data: { id: "walk-up-registration-no-email" }, error: null });
     const result = await createWalkUpRegistrationAction(
       { status: "idle", message: "" },
@@ -258,8 +261,8 @@ describe("walk-up registration draft preservation", () => {
         angler2Email: "",
       }),
     );
-    expect(result).toEqual({ status: "success", message: "Confirmation not sent — no email provided." });
-    expect(rpc).toHaveBeenCalledTimes(1);
+    expect(result).toMatchObject({ status: "error", message: "Complete all required walk-up registration fields." });
+    expect(rpc).not.toHaveBeenCalled();
     expect(deliverRegistrationConfirmationEmails).not.toHaveBeenCalled();
   });
 
@@ -356,7 +359,7 @@ describe("walk-up registration draft preservation", () => {
     expect(controls).toContain("setFormWasReset(true)");
     expect(controls).toContain("const draft = formWasReset ? initialDraft : state.draft ?? initialDraft;");
     expect(controls).toContain("open={walkUpOpen}");
-    expect(controls).toContain("onToggle={(event) => setWalkUpOpen(event.currentTarget.open)}");
+    expect(controls).toContain("if (isOpen) setDisplayState(initialState);");
     expect(controls).toContain('label="Email"');
     expect(controls).toContain("required={required && Boolean(membershipValue)}");
   });
@@ -382,6 +385,57 @@ describe("walk-up registration draft preservation", () => {
     expect(price({ ...base, insurance: true })).toBe(8000);
     expect(price({ ...base, memberships: ["joining", "joining"], memberPot: "gold", bigBass: true, insurance: true })).toBe(68000);
     expect(price({ ...base, registrationType: "solo", memberships: ["current"], paymentMethod: "card" })).toBe(6210);
+  });
+
+  it("passes explicit Member Search identity so shared emails cannot override the selection", () => {
+    const actions = readFileSync("app/admin/registration-review/actions.ts", "utf8");
+    const migration = readFileSync("supabase/migrations/202609290002_selected_walkup_member_precedence.sql", "utf8");
+    expect(actions).toContain("selectedMemberIds: selectedIds");
+    expect(migration).toContain("p_options -> 'selectedMemberIds'");
+    expect(migration).toContain("v_selected_id");
+  });
+
+  it("routes a selected current member shared-email collision to Needs Review after retry", async () => {
+    const selectedMember = {
+      id: "member-1",
+      firstName: "Alex",
+      lastName: "Carter",
+      displayName: "Alex Carter",
+      email: "shared@example.com",
+      phone: "512-555-0101",
+      streetAddress: "101 Lake View Rd",
+      city: "Austin",
+      state: "TX",
+      zipCode: "78701",
+      active: true,
+      mergedIntoAnglerId: null,
+      membershipStatus: "active",
+    };
+    getAdminMemberById.mockResolvedValue(selectedMember);
+    getAdminMemberByEmail.mockResolvedValue(selectedMember);
+    rpc
+      .mockResolvedValueOnce({ data: null, error: { message: "AITT_REGISTRATION_IDENTITY_REVIEW_REQUIRED" } })
+      .mockResolvedValueOnce({ data: null, error: { message: "AITT_REGISTRATION_IDENTITY_REVIEW_REQUIRED" } })
+      .mockResolvedValueOnce({ data: { id: "walk-up-shared-email", identity_review_status: "review_required" }, error: null });
+
+    const result = await createWalkUpRegistrationAction(
+      { status: "idle", message: "" },
+      buildWalkUpFormData({
+        registrationType: "solo",
+        angler1SelectedMemberId: "member-1",
+        memberPot: "",
+        bigBass: false,
+        insurance: false,
+        totalPaid: "60.00",
+      }),
+    );
+
+    expect(result).toMatchObject({ status: "success", needsReview: true, registrationId: "walk-up-shared-email" });
+    expect(rpc.mock.calls.map(([name]) => name)).toEqual([
+      "admin_create_safe_walkup_registration",
+      "admin_create_sequential_walkup_registration",
+      "admin_create_current_member_review_walkup",
+    ]);
   });
 
   it.each([

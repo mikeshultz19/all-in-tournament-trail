@@ -229,10 +229,10 @@ describe("constitutional AOY engine", () => {
     );
   });
 
-  it("applies wins, Top 10s, season weight, then recent AOY finish", () => {
+  it("uses counted weight, then the most recent shared tournament finish", () => {
     const calculated = calculateAoyStandings(SEASON, [
-      result({ competitiveRecordId: "a", officialPlacement: 1 }),
-      result({ competitiveRecordId: "b", officialPlacement: 2 }),
+      result({ competitiveRecordId: "a", officialPlacement: 1, officialWeight: 0 }),
+      result({ competitiveRecordId: "b", officialPlacement: 2, officialWeight: 20 }),
       result({
         competitiveRecordId: "a",
         regularSeasonNumber: 2,
@@ -246,25 +246,43 @@ describe("constitutional AOY engine", () => {
         tournamentId: "event-2",
         officialResultId: "b-2",
         officialPlacement: 1,
+        officialWeight: 0,
       }),
     ]);
     expect(calculated.standings[0].competitiveRecordId).toBe("b");
-    expect(calculated.standings[0].tie.resolvedBy).toBe("recent_aoy_finish");
+    expect(calculated.standings[0].tie.resolvedBy).toBe("counted_weight");
   });
 
-  it("surfaces an unresolved season tie instead of guessing", () => {
+  it("uses the most recent shared tournament when counted weight is tied", () => {
     const standings = calculateAoyStandings(SEASON, [
-      result({ competitiveRecordId: "a", officialPlacement: 1 }),
+      result({ competitiveRecordId: "a", officialPlacement: 1, officialWeight: 0 }),
       result({
         competitiveRecordId: "b",
         tournamentId: "other-event",
         officialResultId: "b-result",
         officialPlacement: 1,
+        officialWeight: 0,
+      }),
+      result({
+        competitiveRecordId: "a",
+        regularSeasonNumber: 2,
+        tournamentId: "event-2",
+        officialResultId: "a-2",
+        officialPlacement: 2,
+        officialWeight: 0,
+      }),
+      result({
+        competitiveRecordId: "b",
+        regularSeasonNumber: 2,
+        tournamentId: "event-2",
+        officialResultId: "b-2",
+        officialPlacement: 3,
+        officialWeight: 0,
       }),
     ]).standings;
-    expect(standings[0].rank).toBe(1);
-    expect(standings[1].rank).toBe(1);
-    expect(standings[0].tie.status).toBe("unresolved");
+    expect(standings[0].competitiveRecordId).toBe("a");
+    expect(standings[0].tie.resolvedBy).toBe("head_to_head");
+    expect(standings[0].tie.status).toBe("resolved");
   });
 
   it("retains registration and publication ownership on every performance", () => {
