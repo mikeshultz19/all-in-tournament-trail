@@ -4,7 +4,7 @@ import LiveStreamPlayer from "@/components/LiveStreamPlayer";
 import { PUBLIC_PAGE_CONTAINER } from "@/config/layout";
 
 export const metadata: Metadata = {
-  title: "Watch Live | All In Tournament Trail",
+  title: "Watch Live",
   description:
     "Watch live All In Tournament Trail tournament weigh-in broadcasts and event coverage.",
   alternates: {

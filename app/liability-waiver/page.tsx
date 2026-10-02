@@ -5,7 +5,7 @@ import PolicyDocument from "@/components/PolicyDocument";
 import { loadPolicyDocument } from "@/lib/policy-documents";
 export const dynamic = "force-dynamic";
 export const metadata: Metadata = {
-  title: "Participant Liability Waiver | All-In Tournament Trail",
+  title: "Participant Liability Waiver",
   description: "Review the All-In Tournament Trail Participant Liability Waiver and Assumption of Risk.",
   alternates: { canonical: "/liability-waiver" },
 };

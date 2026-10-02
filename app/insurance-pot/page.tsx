@@ -6,7 +6,7 @@ import Header from "@/components/Header";
 import { PUBLIC_PAGE_CONTAINER } from "@/config/layout";
 
 export const metadata: Metadata = {
-  title: "The AITT Insurance Pot | All In Tournament Trail",
+  title: "The AITT Insurance Pot",
   description: "Learn how the optional AITT Insurance Pot creates more payout opportunities for eligible tournament entries.",
   alternates: {
     canonical: "/insurance-pot",

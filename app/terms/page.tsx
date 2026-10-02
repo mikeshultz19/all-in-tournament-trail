@@ -5,7 +5,7 @@ import Header from "@/components/Header";
 import { PUBLIC_PAGE_CONTAINER } from "@/config/layout";
 
 export const metadata: Metadata = {
-  title: "Terms of Use | All-In Tournament Trail",
+  title: "Terms of Use",
   description: "Terms for using the All-In Tournament Trail website.",
   alternates: { canonical: "/terms" },
 };

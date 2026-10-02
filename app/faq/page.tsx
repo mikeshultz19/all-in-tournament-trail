@@ -16,7 +16,7 @@ import Header from "@/components/Header";
 import { PUBLIC_PAGE_CONTAINER } from "@/config/layout";
 
 export const metadata: Metadata = {
-  title: "FAQ | All In Tournament Trail",
+  title: "FAQ",
   description:
     "Find answers about All In Tournament Trail registration, membership, tournament rules, payouts, AOY points, practice, and event formats.",
   alternates: {

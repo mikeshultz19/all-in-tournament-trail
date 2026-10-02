@@ -15,8 +15,9 @@ Last Updated: September 26, 2026
   canonical URL. The homepage has a semantic, visually hidden H1. Default Open
   Graph and Twitter card metadata are provided, and public legal/informational
   pages are included in the sitemap.
-- **Explicitly unchanged:** Duplicate brand suffixes in page titles and the
-  existing “Learn more” sponsor link wording were intentionally left alone.
+- **Explicitly unchanged:** The existing “Learn more” sponsor link wording
+  remains unchanged. Duplicate brand suffixes in page titles were corrected in
+  the follow-up metadata cleanup release.
 - **Validation:** Full test suite passed (1,087 tests), production build
   passed, and live production checks verified the HTTPS redirect, headers,
   canonical tag, social metadata, homepage H1, and sitemap entries.

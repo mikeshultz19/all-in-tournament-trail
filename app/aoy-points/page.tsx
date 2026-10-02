@@ -5,7 +5,7 @@ import Header from "@/components/Header";
 import { PUBLIC_PAGE_CONTAINER } from "@/config/layout";
 
 export const metadata: Metadata = {
-  title: "AOY Points Race | All In Tournament Trail",
+  title: "AOY Points Race",
   description:
     "Learn how All In Tournament Trail awards Angler of the Year points throughout the season.",
   alternates: {

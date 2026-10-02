@@ -11,7 +11,7 @@ import { getTournamentOperationsViewModel } from "@/lib/tournament-view-model";
 import { getTournamentEntrySummary } from "@/lib/public-early-entry";
 
 export const metadata: Metadata = {
-  title: "Tournament Entries | All-In Tournament Trail",
+  title: "Tournament Entries",
   description: "View the current tournament field and optional pot participation.",
 };
 

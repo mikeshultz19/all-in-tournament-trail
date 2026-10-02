@@ -6,7 +6,7 @@ import Header from "@/components/Header";
 import { PUBLIC_PAGE_CONTAINER } from "@/config/layout";
 
 export const metadata: Metadata = {
-  title: "Sponsors | All In Tournament Trail",
+  title: "Sponsors",
   description:
     "Meet the businesses that support All In Tournament Trail and competitive bass fishing.",
   alternates: {

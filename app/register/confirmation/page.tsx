@@ -9,7 +9,7 @@ import { getTournamentBySlug } from "@/lib/tournaments";
 import { getTournamentOperationsViewModel } from "@/lib/tournament-view-model";
 import { getRegistrationConfirmationIdentifiers } from "@/lib/tournament-registrations";
 
-export const metadata: Metadata = { title: "Registration Confirmation | All-In Tournament Trail" };
+export const metadata: Metadata = { title: "Registration Confirmation" };
 
 export default async function RegistrationConfirmationPage({ searchParams }: { searchParams: Promise<{ attempt?: string }> }) {
   const { attempt: attemptId } = await searchParams;

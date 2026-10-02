@@ -5,7 +5,7 @@ import Header from "@/components/Header";
 import { PUBLIC_PAGE_CONTAINER } from "@/config/layout";
 
 export const metadata: Metadata = {
-  title: "Why We Chose No Forward-Facing Sonar | All In Tournament Trail",
+  title: "Why We Chose No Forward-Facing Sonar",
   description:
     "Learn why All In Tournament Trail offers a traditional tournament competition option without forward-facing sonar.",
   alternates: {

@@ -5,7 +5,7 @@ import Header from "@/components/Header";
 import { PUBLIC_PAGE_CONTAINER } from "@/config/layout";
 
 export const metadata: Metadata = {
-  title: "Privacy Policy | All-In Tournament Trail",
+  title: "Privacy Policy",
   description: "How All-In Tournament Trail handles online payment information.",
   alternates: { canonical: "/privacy" },
 };

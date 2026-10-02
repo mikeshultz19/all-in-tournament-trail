@@ -185,9 +185,9 @@ the production migration ledger and must not be implied as a production change.
 - [ ] Cloudflare dashboard configuration should continue to enforce HTTPS for
       every custom-domain request; verify this after any DNS or route change.
 
-The October 2, 2026 hardening release intentionally left duplicated brand
-suffixes in page titles and existing “Learn more” sponsor link wording
-unchanged by decision. Those are separate polish items, not release blockers.
+The October 2, 2026 hardening release left existing “Learn more” sponsor link
+wording unchanged by decision. The duplicated brand suffixes in page titles
+were corrected in the follow-up metadata cleanup release.
 
 ## 10. Public and authenticated smoke tests
 

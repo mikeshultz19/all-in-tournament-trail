@@ -5,7 +5,7 @@ import Header from "@/components/Header";
 import { PUBLIC_PAGE_CONTAINER } from "@/config/layout";
 
 export const metadata: Metadata = {
-  title: "Bass Stack Tournament Results | All In Tournament Trail",
+  title: "Bass Stack Tournament Results",
   description:
     "View published Bass Stack tournament standings from All In Tournament Trail.",
   alternates: {

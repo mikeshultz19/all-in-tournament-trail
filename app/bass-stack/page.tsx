@@ -5,7 +5,7 @@ import Header from "@/components/Header";
 import { PUBLIC_PAGE_CONTAINER } from "@/config/layout";
 
 export const metadata: Metadata = {
-  title: "Bass Stack Challenge | All In Tournament Trail",
+  title: "Bass Stack Challenge",
   description:
     "Learn how the AITT Bass Stack Total Weight Challenge counts every legal bass at selected All In Tournament Trail events.",
   alternates: {
