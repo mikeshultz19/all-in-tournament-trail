@@ -27,10 +27,13 @@ begin
       chr(92) || '1is_active = true and merged_into_angler_id is null',
       'g'
     );
-    if v_patched = v_definition then
+    if v_patched = v_definition
+       and position('is_active = true and merged_into_angler_id is null' in v_definition) = 0 then
       raise exception 'Expected inactive-email match in registration function: %', v_signature;
     end if;
-    execute v_patched;
+    if v_patched <> v_definition then
+      execute v_patched;
+    end if;
   end loop;
 end;
 $$;
