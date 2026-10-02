@@ -1,5 +1,5 @@
 import { spawnSync } from "node:child_process";
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import path from "node:path";
 
@@ -165,6 +165,9 @@ function readOptionalProjectRef(projectRoot) {
 function main() {
   const scriptDirectory = path.dirname(fileURLToPath(import.meta.url));
   const projectRoot = path.resolve(scriptDirectory, "..");
+  if (existsSync(path.join(projectRoot, ".env.local"))) {
+    throw new Error("REFUSING PRODUCTION DEPLOYMENT: remove staging .env.local and deploy from a clean production checkout.");
+  }
   const productionValues = loadProductionEnvironment(
     path.join(projectRoot, ".env.production.local"),
   );

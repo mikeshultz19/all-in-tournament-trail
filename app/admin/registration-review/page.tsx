@@ -139,8 +139,8 @@ export default async function RegistrationReviewPage({ searchParams }: { searchP
           tournamentId={selectedTournament.id}
           registrations={allRows.map((row) => ({
             id: row.id,
-            boatNumber: row.boatNumber,
-            registrationNumber: row.registrationKey,
+            boatNumber: row.assignedBoatNumber ?? null,
+            registrationNumber: row.boatNumber,
             participantNames: [row.angler1.displayName, ...(row.angler2 ? [row.angler2.displayName] : [])],
             amountCents: (row.totalPaidCents ?? 0) + (row.manualMembershipAmountCents ?? 0),
             paymentMethod: row.paymentMethod,

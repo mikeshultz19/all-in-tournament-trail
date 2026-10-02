@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { EmailProviderError, sendResendEmail } from "@/lib/resend-email";
+import { assertRegistrationEmailRecipientAllowed } from "@/lib/registration-confirmation-email";
 
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -29,7 +30,7 @@ export async function POST(request: Request) {
 
   const supabase = createSupabaseServerClient();
 
-  const { error } = await supabase.from("registration_interest").upsert(
+  const { data: savedRows, error } = await supabase.from("registration_interest").upsert(
     {
       email,
       first_name: firstName,
@@ -37,8 +38,7 @@ export async function POST(request: Request) {
     {
       onConflict: "email",
       ignoreDuplicates: true,
-    },
-  );
+    }).select("email");
 
   if (error) {
     return NextResponse.json(
@@ -47,10 +47,12 @@ export async function POST(request: Request) {
     );
   }
 
-  if (process.env.RESEND_API_KEY) {
+  if (savedRows?.length && process.env.RESEND_API_KEY) {
     try {
+      assertRegistrationEmailRecipientAllowed(email);
+      const escapeHtml = (value: string) => value.replace(/[&<>"']/g, (character) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[character] ?? character);
       const greeting = firstName
-        ? `Hi ${firstName},`
+        ? `Hi ${escapeHtml(firstName)},`
         : "Welcome to All In Tournament Trail,";
 
       await sendResendEmail({

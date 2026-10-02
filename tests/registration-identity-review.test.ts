@@ -178,7 +178,7 @@ describe("registration identity classification", () => {
       status: "review_required",
       suggestedAnglerIds: ["11111111-1111-4111-8111-111111111111"],
     });
-    expect(result.participants[0].reason).toContain("shared or missing");
+    expect(result.participants[0].reason).toContain("strong contact identifiers do not match");
   });
 
   it("keeps a high-confidence email and phone match despite other submitted snapshot differences", () => {

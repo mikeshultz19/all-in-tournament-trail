@@ -630,7 +630,7 @@ export function BoatNumberEditField({
 type CancellationRegistration = {
   id: string;
   boatNumber: number | null;
-  registrationNumber: string;
+  registrationNumber: number | null;
   participantNames: string[];
   amountCents: number | null;
   paymentMethod: "online" | "cash" | "card" | "other" | null;
@@ -688,14 +688,14 @@ export function CancelRegistrationControl({
                 <option value="">Select an active registration</option>
                 {registrations.map((registration) => (
                   <option key={registration.id} value={registration.id}>
-                    Reg #{registration.registrationNumber} · Boat {registration.boatNumber ?? "—"} · {registration.participantNames.join(" / ")}
+                    Reg #{registration.registrationNumber ?? "—"} · Boat {registration.boatNumber ?? "—"} · {registration.participantNames.join(" / ")}
                   </option>
                 ))}
               </select>
             </label>
             {selected ? <div className="grid gap-3 border border-white/10 bg-[#111] p-3 text-xs text-neutral-300">
               <dl className="grid gap-2 sm:grid-cols-2">
-              <div><dt className="font-bold text-white">Registration Number</dt><dd>#{selected.registrationNumber}</dd></div>
+              <div><dt className="font-bold text-white">Registration Number</dt><dd>#{selected.registrationNumber ?? "—"}</dd></div>
               <div><dt className="font-bold text-white">Boat Number</dt><dd>{selected.boatNumber ?? "Unassigned"}</dd></div>
               <div><dt className="font-bold text-white">Participants</dt><dd>{selected.participantNames.join(" / ")}</dd></div>
               <div><dt className="font-bold text-white">Recorded Payment</dt><dd>{formatCurrencyFromCents(selected.amountCents ?? 0)} · {formatPaymentMethod(selected.paymentMethod)} · {selected.paymentStatus}</dd></div>

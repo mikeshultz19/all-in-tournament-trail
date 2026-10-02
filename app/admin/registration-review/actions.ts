@@ -291,9 +291,6 @@ export async function createWalkUpRegistrationAction(
     if (!selected || !selected.active || selected.mergedIntoAnglerId) {
       return { status: "error", message: "The selected member is no longer active. Search again.", draft };
     }
-    if (!selected.firstName || !selected.lastName || !selected.streetAddress || !selected.city || !selected.state || !selected.zipCode || !selected.email || !selected.phone) {
-      return { status: "error", message: "This member record is missing required contact information. Update it in All Members before saving the walk-up.", draft };
-    }
   }
 
   // A member selected from the Admin search is an explicit identity choice.
@@ -308,14 +305,14 @@ export async function createWalkUpRegistrationAction(
       if (!selected) return angler;
       return {
         ...angler,
-        firstName: selected.firstName,
-        lastName: selected.lastName,
-        email: selected.email?.trim().toLowerCase() ?? "",
-        mobilePhone: selected.phone ?? "",
-        streetAddress: selected.streetAddress ?? "",
-        city: selected.city ?? "",
-        state: selected.state ?? "",
-        zipCode: selected.zipCode ?? "",
+        firstName: selected.firstName || angler.firstName,
+        lastName: selected.lastName || angler.lastName,
+        email: selected.email?.trim().toLowerCase() || angler.email,
+        mobilePhone: selected.phone || angler.mobilePhone,
+        streetAddress: selected.streetAddress || angler.streetAddress,
+        city: selected.city || angler.city,
+        state: selected.state || angler.state,
+        zipCode: selected.zipCode || angler.zipCode,
         membership: selected.membershipStatus === "active" ? "current" : angler.membership,
       };
     });

@@ -95,7 +95,7 @@ function BassStackNavLink({
 export default function Header({ activeItem }: { activeItem?: string }) {
   return (
     <>
-      <header className="fixed inset-x-0 top-0 z-[100] w-full border-b border-zinc-800 bg-black/95 backdrop-blur">
+      <header className="fixed inset-x-0 top-0 z-[100] w-full border-b border-zinc-800 bg-black/95 backdrop-blur print:hidden">
         <div className="mx-auto flex w-full max-w-[1800px] items-center gap-2 px-2.5 py-3 min-[375px]:px-3 sm:gap-4 sm:px-4 lg:px-5">
           {/* Logo remains unchanged on desktop and scales down on mobile. */}
           <div className="relative flex min-w-0 shrink items-center">
