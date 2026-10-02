@@ -325,7 +325,7 @@ const faqSections: FaqSection[] = [
       {
         question: "Who is eligible to earn AOY points?",
         answer:
-          "Every angler who competes in an AITT regular-season tournament earns AOY points based on the official finishing position.",
+          "Every team or solo entry that competes in an AITT regular-season tournament earns AOY points based on the team's official finishing position. A solo entry is treated as its own team for AOY purposes.",
         link: {
           label: "View AOY Information",
           href: "/aoy-points",
@@ -339,7 +339,7 @@ const faqSections: FaqSection[] = [
       {
         question: "How are AOY points ranked?",
         answer:
-          "Official tournament results remain unchanged, and AOY points follow each angler's official finishing position.",
+          "Official tournament results remain unchanged, and AOY points follow each team's official finishing position. A solo entry is treated as its own team for AOY purposes.",
       },
       {
         question: "How many tournaments are required for Championship qualification?",

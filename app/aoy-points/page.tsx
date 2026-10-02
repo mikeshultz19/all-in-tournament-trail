@@ -52,7 +52,7 @@ export default function AoyPointsPage() {
                   How AOY Points Work
                 </h2>
                 <div className={sectionCopyClass}>
-                  <p>AOY points are awarded based on each angler&apos;s official finishing position at every regular-season tournament.</p>
+                  <p>AOY points are awarded based on each team&apos;s official finishing position at every regular-season tournament. A solo entry is treated as its own team for AOY purposes.</p>
                 </div>
               </section>
 

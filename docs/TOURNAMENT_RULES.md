@@ -83,7 +83,7 @@ competitive integrity, legal compliance, or tournament operations.
 ### Membership
 
 Membership status is determined independently for each angler. An angler may
-register as a current member or purchase an annual membership during
+register as a current member or purchase a seasonal membership during
 registration. If AITT cannot immediately confirm an angler's current membership,
 the registration may still be submitted while staff verify the participant.
 AITT may require the applicable membership purchase before participation is
@@ -151,27 +151,24 @@ confirmed registration.
 
 ### Registration Availability
 
-Each tournament has its own registration lifecycle. Online registration is
-available while that tournament is marked **Registration Open**, capacity is
-available, and the event is not completed, Cancelled, or Postponed. Multiple
-future tournaments may be open at the same time. Featured/current tournament
-selection does not control registration availability.
-
-AITT may suspend or close a tournament independently through its official
-lifecycle controls. Results Published tournaments display **REGISTRATION
-CLOSED** and cannot be reopened through normal registration controls.
+Online registration remains available while that tournament is open, capacity
+is available, and tournament staff have not closed registration. Staff may
+suspend or close registration when necessary. Once results are published,
+registration is closed and cannot be reopened through normal registration.
 
 ### Immediate Online Payment
 
-AITT stores an online registration as confirmed only after the online payment
-process reports a successful payment and AITT completes confirmation. Online cash payments,
-unpaid reservations, payment at the ramp, Venmo, and Stripe are not offered.
+AITT stores an online registration as confirmed only after Square reports a
+successful card payment and AITT completes confirmation. Online registration may
+remain available during tournament-morning hours while staff have not closed
+registration. Tournament-morning walk-ups are handled at the registration table,
+where staff may accept cash or card payment.
 
 ### Tournament-Morning Registration
 
 Tournament-Morning Registration is a normal in-person registration period and
 is not late registration. It is conducted by the Tournament Director at the
-registration table and recorded in the AITT registration and check-in workflow.
+registration table and recorded on the official registration roster.
 It is not submitted through the public AITT registration page.
 
 Tournament-morning operating hours are set by the Tournament Director and
@@ -198,7 +195,7 @@ tournament roster.
 <a id="membership"></a>
 ## 4. Membership
 
-Annual membership is required for every angler.
+Seasonal membership is required for every angler.
 
 ### Membership Benefits
 
@@ -303,7 +300,7 @@ different Teams or between Team and Individual Championship Identities.
 ### Administrative Corrections
 
 The Tournament Director may correct administrative, clerical, identity,
-software, payment, or mathematical errors.
+payment, or mathematical errors.
 
 Administrative corrections may not be used to change a Championship Identity or
 allow a prohibited substitution.
@@ -318,7 +315,8 @@ anglers.
 
 To earn AOY points:
 
-- Every registered angler earns AOY points from official finishing position.
+- Every team earns AOY points from its official finishing position. A solo entry
+  is treated as its own team for AOY purposes.
 - The Competitive Record must physically launch and compete in the tournament.
 - Paying an entry fee without physically competing does not earn AOY points.
 - Team and Individual Championship Identities remain separate.
@@ -365,7 +363,7 @@ head-to-head comparison.
 AOY standings are unofficial until the applicable tournament results have been
 reviewed and the AOY points have been processed.
 
-AITT may correct clerical, mathematical, identity, membership, or software
+AITT may correct clerical, mathematical, identity, membership, or administrative
 errors discovered in published standings.
 
 <a id="championship-qualification"></a>
@@ -421,7 +419,7 @@ payment, acknowledgment, or verification process.
 ### Administrative Review
 
 AITT may review and correct Championship qualification records when necessary
-to resolve a clerical, mathematical, identity, membership, software, or
+to resolve a clerical, mathematical, identity, membership, administrative, or
 participation-record error.
 
 Administrative corrections may not be used to transfer qualification between
