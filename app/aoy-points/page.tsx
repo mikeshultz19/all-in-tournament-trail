@@ -52,7 +52,7 @@ export default function AoyPointsPage() {
                   How AOY Points Work
                 </h2>
                 <div className={sectionCopyClass}>
-                  <p>AOY points are awarded based on each team&apos;s official finishing position at every regular-season tournament. A solo entry is treated as its own team for AOY purposes.</p>
+                  <p>Every registered team earns AOY points from its official finishing position at every regular-season tournament. A solo entry is treated as its own team for AOY purposes.</p>
                 </div>
               </section>
 

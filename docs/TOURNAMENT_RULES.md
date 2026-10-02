@@ -315,8 +315,9 @@ anglers.
 
 To earn AOY points:
 
-- Every team earns AOY points from its official finishing position. A solo entry
-  is treated as its own team for AOY purposes.
+- Every registered team earns AOY points from its official finishing position at
+  every regular-season tournament. A solo entry is treated as its own team for
+  AOY purposes.
 - The Competitive Record must physically launch and compete in the tournament.
 - Paying an entry fee without physically competing does not earn AOY points.
 - Team and Individual Championship Identities remain separate.
@@ -369,16 +370,17 @@ errors discovered in published standings.
 <a id="championship-qualification"></a>
 ## 7. Championship Qualification
 
-Championship qualification is earned by a Competitive Record during the
-eight-tournament regular season.
+Championship qualification is earned by a registered team during the
+eight-tournament regular season. A solo entry is treated as its own team.
 
 ### Five of Eight Participation Requirement
 
-A Competitive Record qualifies by physically competing in at least five of the
+A registered team qualifies by physically competing in at least five of the
 eight regular-season tournaments.
 
 Paying an entry fee, registering, or appearing on a tournament roster without
-physically launching and competing does not count as participation.
+the registered team physically launching and competing does not count as
+participation.
 
 ### Championship Identity
 

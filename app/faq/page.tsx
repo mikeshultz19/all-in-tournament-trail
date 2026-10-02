@@ -325,7 +325,7 @@ const faqSections: FaqSection[] = [
       {
         question: "Who is eligible to earn AOY points?",
         answer:
-          "Every team or solo entry that competes in an AITT regular-season tournament earns AOY points based on the team's official finishing position. A solo entry is treated as its own team for AOY purposes.",
+          "Every registered team earns AOY points from its official finishing position at every regular-season tournament. A solo entry is treated as its own team for AOY purposes.",
         link: {
           label: "View AOY Information",
           href: "/aoy-points",
@@ -339,17 +339,17 @@ const faqSections: FaqSection[] = [
       {
         question: "How are AOY points ranked?",
         answer:
-          "Official tournament results remain unchanged, and AOY points follow each team's official finishing position. A solo entry is treated as its own team for AOY purposes.",
+          "Every registered team earns AOY points from its official finishing position at every regular-season tournament. A solo entry is treated as its own team for AOY purposes.",
       },
       {
         question: "How many tournaments are required for Championship qualification?",
         answer:
-          "Competing in at least five of the eight regular-season tournaments qualifies an angler for the Championship.",
+          "Competing as a registered team in at least five of the eight regular-season tournaments qualifies the team for the Championship. A solo entry is treated as its own team.",
       },
       {
         question: "Does a paid no-show count toward Championship qualification?",
         answer:
-          "No. Payment without physically launching and competing does not count as participation.",
+          "No. Payment without the registered team physically launching and competing does not count as participation. A solo entry is treated as its own team.",
       },
       {
         question: "Where can I see published AOY standings?",

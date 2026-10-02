@@ -58,7 +58,7 @@ function addQuickLinks(source: string): string {
     "- [Boat & Safety](#boat-safety)",
     "- [Fishing Rules](#fishing-rules)",
     "- [Tournament Operations](#tournament-operations)",
-    "- [Refund & Cancellation](#refund-cancellation-policy)",
+    "- [Postponement & Refund](#refund-cancellation-policy)",
     "",
   ].join("\n");
 
