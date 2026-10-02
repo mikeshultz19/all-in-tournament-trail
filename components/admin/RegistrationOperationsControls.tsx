@@ -19,6 +19,7 @@ import {
 } from "@/lib/walk-up-registration-form";
 import { formatCurrencyFromCents } from "@/config/payment-policy";
 import { type Membership } from "@/lib/registration";
+import { formatPhoneInput } from "@/lib/phone-format";
 import type { RegistrationParticipantContactSnapshot } from "@/lib/tournament-registration-roster";
 
 const initialState: RegistrationOperationsActionState = {
@@ -444,7 +445,8 @@ function AnglerFields({
             type="tel"
             required={required}
             className={input}
-            defaultValue={values.phone}
+            defaultValue={formatPhoneInput(values.phone)}
+            onInput={(event) => { event.currentTarget.value = formatPhoneInput(event.currentTarget.value); }}
           />
         </Field>
         <Field label="Membership">

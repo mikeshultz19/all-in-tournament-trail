@@ -8,6 +8,7 @@ import SafeLightCard from "@/components/SafeLightCard";
 import { PUBLIC_PAGE_CONTAINER } from "@/config/layout";
 import { REGISTRATION_PRICING } from "@/data/registration";
 import { formatCurrencyFromCents } from "@/config/payment-policy";
+import { formatPhoneInput } from "@/lib/phone-format";
 import type { Tournament } from "@/data/tournaments";
 import type { TournamentOperationsViewModel } from "@/lib/tournament-view-model";
 import { getRegistrationPricing, validateRegistrationSelections, type MemberPot, type Membership, type RegistrationType } from "@/lib/registration";
@@ -136,7 +137,7 @@ function AnglerSection({ anglerKey, title, angler, errors, onChange, disabled, r
         const error = errors[`${anglerKey}.${field.key}`];
         return <div key={field.key} className={field.key === "streetAddress" ? "sm:col-span-2" : ""}>
           <label htmlFor={id} className="mb-2 block text-xs font-black uppercase tracking-[0.12em] text-[#C6C6C6]">{field.label}</label>
-          <input id={id} name={`${anglerKey}.${field.key}`} value={angler[field.key] ?? ""} onChange={(event) => onChange(anglerKey, field.key, field.key === "state" ? event.target.value.toUpperCase() : event.target.value)} onBlur={(event) => onChange(anglerKey, field.key, event.target.value.trim())} type={field.type} autoComplete={field.autoComplete} maxLength={"maxLength" in field ? field.maxLength : undefined} inputMode={"inputMode" in field ? field.inputMode : undefined} required disabled={disabled} aria-invalid={Boolean(error)} aria-describedby={error ? `${id}-error` : undefined} className="min-h-12 w-full rounded-sm border border-[#3A3A3A] bg-[#0B0B0B] px-4 text-base text-white outline-none transition focus:border-[#D4A017] focus:ring-1 focus:ring-[#D4A017] aria-invalid:border-red-500 disabled:cursor-not-allowed disabled:border-neutral-700 disabled:bg-neutral-900 disabled:text-neutral-500" />
+          <input id={id} name={`${anglerKey}.${field.key}`} value={angler[field.key] ?? ""} onChange={(event) => onChange(anglerKey, field.key, field.key === "mobilePhone" ? formatPhoneInput(event.target.value) : field.key === "state" ? event.target.value.toUpperCase() : event.target.value)} onBlur={(event) => onChange(anglerKey, field.key, field.key === "mobilePhone" ? formatPhoneInput(event.target.value) : event.target.value.trim())} type={field.type} autoComplete={field.autoComplete} maxLength={"maxLength" in field ? field.maxLength : undefined} inputMode={"inputMode" in field ? field.inputMode : undefined} required disabled={disabled} aria-invalid={Boolean(error)} aria-describedby={error ? `${id}-error` : undefined} className="min-h-12 w-full rounded-sm border border-[#3A3A3A] bg-[#0B0B0B] px-4 text-base text-white outline-none transition focus:border-[#D4A017] focus:ring-1 focus:ring-[#D4A017] aria-invalid:border-red-500 disabled:cursor-not-allowed disabled:border-neutral-700 disabled:bg-neutral-900 disabled:text-neutral-500" />
           {field.key === "email" && <p className="mt-2 text-xs font-semibold text-[#D4A017]">Verify email accuracy to receive your registration confirmation.</p>}
           {error && <p id={`${id}-error`} className="mt-2 text-sm text-red-400" role="alert">{error}</p>}
         </div>;
